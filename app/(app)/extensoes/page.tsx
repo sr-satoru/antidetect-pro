@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   TabelaExtensoes,
   ExtensionItem,
+  RecommendedExtension,
 } from '@/components/extensoes/tabela-extensoes';
 import { ModalAdicionarExtensao } from '@/components/extensoes/modal-adicionar-extensao';
-import { RecommendedExtension } from '@/services/extensions-catalog.service';
 import { api } from '@/services/api';
 
 export const ExtensoesPage: React.FC = () => {

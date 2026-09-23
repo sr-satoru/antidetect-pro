@@ -4,10 +4,8 @@ import { useAuth } from '@/contexts/auth-context';
 import {
   Download,
   ListTodo,
-  Upload,
   Wifi,
   Bell,
-  Zap,
   LogOut,
 } from 'lucide-react';
 
@@ -63,27 +61,6 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
             0
           </span>
         </button>
-
-        {/* Importar / Exportar */}
-        <div className="hidden md:flex items-center bg-[#15161D] border border-[#2B2D38] rounded-lg p-0.5">
-          <button
-            type="button"
-            onClick={() => alert('Importar Perfis')}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs text-[#9093A2] hover:text-white hover:bg-[#1E2028] transition-colors cursor-pointer"
-          >
-            <Upload size={12} />
-            <span>Importar</span>
-          </button>
-          <div className="w-px h-3.5 bg-[#2B2D38]" />
-          <button
-            type="button"
-            onClick={() => alert('Exportar Perfis')}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs text-[#9093A2] hover:text-white hover:bg-[#1E2028] transition-colors cursor-pointer"
-          >
-            <Download size={12} />
-            <span>Exportar</span>
-          </button>
-        </div>
 
         {/* Status de Rede & Notificações */}
         <div className="flex items-center gap-1">

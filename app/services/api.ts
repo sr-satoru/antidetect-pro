@@ -284,6 +284,28 @@ export const api = {
       request<void>(`/api/extensions/${id}`, {
         method: 'DELETE',
       }),
+    getCatalogCategories: () =>
+      request<string[]>('/api/extensions/catalog/categories'),
+    getCatalog: async (params?: { q?: string; category?: string; store?: string }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.q) searchParams.append('q', params.q);
+      if (params?.category && params.category !== 'All') searchParams.append('category', params.category);
+      if (params?.store && params.store !== 'all') searchParams.append('store', params.store);
+      const qs = searchParams.toString();
+      const list = await request<any[]>(`/api/extensions/catalog${qs ? `?${qs}` : ''}`);
+      return list.map((e) => ({
+        id: e.id,
+        name: e.name,
+        category: e.category,
+        description: e.description || '',
+        provider: e.provider || 'Firefox Add-ons',
+        providerUrl: e.provider_url || null,
+        iconType: e.icon_type || 'custom',
+        iconBg: e.icon_bg || '#1677FF',
+        iconUrl: e.icon_url || null,
+        bannerType: e.banner_type || null,
+      }));
+    },
     searchAmo: (q: string) =>
       request<any[]>(`/api/extensions/search-amo?q=${encodeURIComponent(q)}`),
   },

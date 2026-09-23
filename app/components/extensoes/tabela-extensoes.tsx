@@ -22,13 +22,34 @@ import {
   Loader2,
   Sparkles,
 } from 'lucide-react';
-import {
-  RecommendedExtension,
-  CATALOG_CATEGORIES,
-  CatalogCategory,
-  RECOMMENDED_EXTENSIONS_CATALOG,
-  searchExtensionsCatalog,
-} from '@/services/extensions-catalog.service';
+import { api } from '@/services/api';
+
+export const CATALOG_CATEGORIES = [
+  'All',
+  'Workflow and planning',
+  'Shopping',
+  'Tools',
+  'Developer tools',
+  'Privacy and security',
+  'Education',
+  'Accessibility',
+] as const;
+
+export type CatalogCategory = (typeof CATALOG_CATEGORIES)[number];
+
+export interface RecommendedExtension {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  provider: 'Firefox Add-ons' | 'Chrome Web Store' | string;
+  providerUrl?: string;
+  iconType: string;
+  iconBg: string;
+  iconUrl?: string;
+  featured?: boolean;
+  bannerType?: 'social-echo' | 'prime-spy';
+}
 
 export interface ExtensionItem {
   id: number;
@@ -219,10 +240,10 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
   );
   const [recommendedList, setRecommendedList] = useState<
     RecommendedExtension[]
-  >(RECOMMENDED_EXTENSIONS_CATALOG);
+  >([]);
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
-  // Efeito de busca do catálogo com debounce e suporte online
+  // Efeito de busca do catálogo chamando o backend Python
   useEffect(() => {
     if (activeTab !== 'recommended') return;
 
@@ -231,14 +252,16 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
 
     const timer = setTimeout(async () => {
       try {
-        const results = await searchExtensionsCatalog(
-          searchQuery,
-          selectedCategory,
-          storeFilter,
-        );
+        const results = await api.extensions.getCatalog({
+          q: searchQuery,
+          category: selectedCategory,
+          store: storeFilter,
+        });
         if (isMounted) {
-          setRecommendedList(results);
+          setRecommendedList(results as RecommendedExtension[]);
         }
+      } catch (err) {
+        console.error('Erro ao buscar catálogo de extensões:', err);
       } finally {
         if (isMounted) {
           setIsLoadingSearch(false);

@@ -5,7 +5,6 @@ import {
   SlidersHorizontal,
   Play,
   CircleX,
-  Bot,
   Upload,
   FolderInput,
   ExternalLink,
@@ -104,17 +103,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
             <span>Abrir</span>
           </button>
 
-          {/* 2. RPA Plus */}
-          <button
-            type="button"
-            className="h-[34px] px-3 rounded-md bg-[#14151B] hover:bg-[#1A1C24] border border-[#262732] text-[#8E92A2] hover:text-[#E1E4EE] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer"
-            title="RPA Plus"
-          >
-            <Bot size={14} />
-            <span>RPA Plus</span>
-          </button>
-
-          {/* 3. Fechar */}
+          {/* 2. Fechar */}
           <button
             type="button"
             onClick={onStopSelected}

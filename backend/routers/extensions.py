@@ -68,6 +68,24 @@ def delete_extension(
     session.commit()
     return None
 
+from services.extensions_catalog import search_extensions_catalog, CATALOG_CATEGORIES
+
+@router.get("/catalog/categories")
+def get_catalog_categories():
+    """Retorna as categorias disponíveis no catálogo de extensões."""
+    return CATALOG_CATEGORIES
+
+@router.get("/catalog")
+async def get_extensions_catalog(
+    q: Optional[str] = None,
+    category: Optional[str] = "All",
+    store: Optional[str] = "all",
+):
+    """
+    Busca extensões recomendadas no catálogo e Mozilla AMO diretamente pelo backend Python.
+    """
+    return await search_extensions_catalog(query=q, category=category, store=store)
+
 @router.get("/search-amo")
 async def search_amo(q: str = Query(..., min_length=2)):
     """
