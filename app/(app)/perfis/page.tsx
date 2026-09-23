@@ -135,32 +135,32 @@ export const PerfisPage: React.FC = () => {
     fetchProfiles();
   };
 
-  // Delete selected
+  // Delete selected (move to trash)
   const handleDeleteSelected = async () => {
     if (selectedIds.length === 0) return;
     if (
-      confirm(`Deseja excluir os ${selectedIds.length} perfis selecionados do banco de dados?`)
+      confirm(`Deseja mover os ${selectedIds.length} perfis selecionados para a lixeira?`)
     ) {
       try {
         await Promise.all(selectedIds.map((id) => api.profiles.delete(String(id))));
         setProfiles((prev) => prev.filter((p) => !selectedIds.includes(p.id)));
         setSelectedIds([]);
       } catch (err: any) {
-        alert(`Erro ao excluir perfis: ${err.message}`);
+        alert(`Erro ao mover perfis para a lixeira: ${err.message}`);
       }
     }
   };
 
-  // Single Delete
+  // Single Delete (move to trash)
   const handleDelete = async (id: string | number) => {
     const target = profiles.find((p) => p.id === id);
-    if (confirm(`Excluir permanentemente o perfil "${target?.name}"?`)) {
+    if (confirm(`Mover o perfil "${target?.name}" para a lixeira?`)) {
       try {
         await api.profiles.delete(String(id));
         setProfiles((prev) => prev.filter((p) => p.id !== id));
         setSelectedIds((prev) => prev.filter((item) => item !== id));
       } catch (err: any) {
-        alert(`Erro ao excluir perfil: ${err.message}`);
+        alert(`Erro ao mover perfil para a lixeira: ${err.message}`);
       }
     }
   };

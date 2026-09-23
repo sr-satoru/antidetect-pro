@@ -24,6 +24,35 @@ def verify_password(stored_hash: str, password: str) -> bool:
     except Exception:
         return False
 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Security
+
+bearer_scheme = HTTPBearer(auto_error=False)
+
+def get_current_user(
+    token: Optional[str] = None,
+    auth_cred: Optional[HTTPAuthorizationCredentials] = Security(bearer_scheme),
+    session: Session = Depends(get_session),
+) -> Optional[User]:
+    """Extrai e valida o usuário atual via token Bearer ou query param token."""
+    raw_token = None
+    if auth_cred and auth_cred.credentials:
+        raw_token = auth_cred.credentials
+    elif token:
+        raw_token = token
+
+    if raw_token and raw_token.startswith("fury_sess_"):
+        parts = raw_token.split("_")
+        # fury_sess_{user_id}_{secret}
+        if len(parts) >= 3 and parts[2].isdigit():
+            user_id = int(parts[2])
+            user = session.get(User, user_id)
+            if user:
+                return user
+
+    # Se não houver token ou for inválido, usa o primeiro usuário da máquina
+    return session.exec(select(User)).first()
+
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(user_in: UserCreate, session: Session = Depends(get_session)):
     is_offline = True
@@ -70,7 +99,7 @@ def register(user_in: UserCreate, session: Session = Depends(get_session)):
     session.commit()
     session.refresh(db_user)
 
-    token = f"fury_sess_{secrets.token_hex(24)}"
+    token = f"fury_sess_{db_user.id}_{secrets.token_hex(20)}"
     return {
         "success": True,
         "token": token,
@@ -96,7 +125,7 @@ def login(user_in: UserLogin, session: Session = Depends(get_session)):
             detail="Usuário/E-mail ou senha incorretos.",
         )
 
-    token = f"fury_sess_{secrets.token_hex(24)}"
+    token = f"fury_sess_{db_user.id}_{secrets.token_hex(20)}"
     return {
         "success": True,
         "token": token,
@@ -109,24 +138,16 @@ def login(user_in: UserLogin, session: Session = Depends(get_session)):
     }
 
 @router.get("/me")
-def get_current_user(token: Optional[str] = None, session: Session = Depends(get_session)):
-    if not token:
+def get_current_user_me(
+    current_user: Optional[User] = Depends(get_current_user),
+):
+    if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Não autenticado.")
 
-    # Retorna o primeiro usuário ativo ou offline
-    user = session.exec(select(User)).first()
-    if user:
-        return {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "is_offline": user.is_offline,
-        }
-
     return {
-        "id": 1,
-        "username": "offline_user",
-        "email": None,
-        "is_offline": True,
+        "id": current_user.id,
+        "username": current_user.username,
+        "email": current_user.email,
+        "is_offline": current_user.is_offline,
     }
 

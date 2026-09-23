@@ -25,6 +25,15 @@ class ProfileBase(SQLModel):
     # Dados completos de Fingerprint salvos em JSON
     fingerprint_json: str = Field(default="{}")
 
+    # Vínculo com Usuário / Criador
+    user_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    created_by: Optional[str] = Field(default=None)
+
+    # Controle de Lixeira (Soft Delete)
+    is_deleted: bool = Field(default=False, index=True)
+    deleted_at: Optional[datetime] = Field(default=None)
+    deleted_by: Optional[str] = Field(default=None)
+
 class Profile(ProfileBase, table=True):
     id: str = Field(primary_key=True)
     created_at: datetime = Field(default_factory=utc_now)
@@ -53,3 +62,8 @@ class ProfileUpdate(SQLModel):
     proxy_username: Optional[str] = None
     proxy_password: Optional[str] = None
     fingerprint_json: Optional[str] = None
+    user_id: Optional[int] = None
+    created_by: Optional[str] = None
+    is_deleted: Optional[bool] = None
+    deleted_at: Optional[datetime] = None
+    deleted_by: Optional[str] = None

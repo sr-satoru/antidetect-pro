@@ -1,19 +1,19 @@
-import React, { useState, useMemo } from 'react';
-import initialLixeiraData from '@/data/lixeira.json';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   HeaderLixeira,
   TabelaLixeira,
   ItemLixeira,
 } from '@/components/lixeira';
-import { Trash2, CheckCircle2, X } from 'lucide-react';
+import { Trash2, CheckCircle2, X, AlertTriangle, Loader2 } from 'lucide-react';
+import { api } from '@/services/api';
 
 export const LixeiraPage: React.FC = () => {
-  const [items, setItems] = useState<ItemLixeira[]>(
-    initialLixeiraData as ItemLixeira[],
-  );
+  const [items, setItems] = useState<ItemLixeira[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('Todos os grupos');
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
 
   const showNotification = (msg: string) => {
@@ -22,6 +22,23 @@ export const LixeiraPage: React.FC = () => {
       setNotification((curr) => (curr === msg ? null : curr));
     }, 4000);
   };
+
+  const fetchTrash = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await api.profiles.listTrash();
+      setItems(data);
+    } catch (err: any) {
+      setError(err.message || 'Erro ao carregar itens da lixeira.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTrash();
+  }, [fetchTrash]);
 
   // Distinct groups
   const groups = useMemo(() => {
@@ -49,7 +66,7 @@ export const LixeiraPage: React.FC = () => {
   }, [items, searchQuery, selectedGroup]);
 
   // Selection handlers
-  const handleSelectItem = (id: number) => {
+  const handleSelectItem = (id: string | number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
@@ -67,68 +84,93 @@ export const LixeiraPage: React.FC = () => {
   };
 
   // Action handlers
-  const handleRestore = (id: number) => {
+  const handleRestore = async (id: string | number) => {
     const target = items.find((item) => item.id === id);
-    setItems((prev) => prev.filter((item) => item.id !== id));
-    setSelectedIds((prev) => prev.filter((item) => item !== id));
-    showNotification(
-      `Perfil "${target?.name || id}" restaurado com sucesso!`,
-    );
+    try {
+      await api.profiles.restore(String(id));
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      setSelectedIds((prev) => prev.filter((item) => item !== id));
+      showNotification(`Perfil "${target?.name || id}" restaurado com sucesso!`);
+    } catch (err: any) {
+      alert(`Falha ao restaurar perfil: ${err.message}`);
+    }
   };
 
-  const handleRestoreSelected = () => {
+  const handleRestoreSelected = async () => {
     if (selectedIds.length === 0) return;
     const count = selectedIds.length;
-    setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
-    setSelectedIds([]);
-    showNotification(`${count} perfil(is) restaurado(s) com sucesso!`);
+    try {
+      await Promise.all(selectedIds.map((id) => api.profiles.restore(String(id))));
+      setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
+      setSelectedIds([]);
+      showNotification(`${count} perfil(is) restaurado(s) com sucesso!`);
+    } catch (err: any) {
+      alert(`Falha ao restaurar selecionados: ${err.message}`);
+      fetchTrash();
+    }
   };
 
-  const handleDeletePermanent = (id: number) => {
+  const handleDeletePermanent = async (id: string | number) => {
     const target = items.find((item) => item.id === id);
     if (
       window.confirm(
         `Tem certeza que deseja excluir permanentemente o perfil "${target?.name || id}"? Esta ação não pode ser desfeita.`,
       )
     ) {
-      setItems((prev) => prev.filter((item) => item.id !== id));
-      setSelectedIds((prev) => prev.filter((item) => item !== id));
-      showNotification('Perfil excluído permanentemente.');
+      try {
+        await api.profiles.deletePermanent(String(id));
+        setItems((prev) => prev.filter((item) => item.id !== id));
+        setSelectedIds((prev) => prev.filter((item) => item !== id));
+        showNotification('Perfil excluído permanentemente do banco de dados.');
+      } catch (err: any) {
+        alert(`Falha ao excluir permanentemente: ${err.message}`);
+      }
     }
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (selectedIds.length === 0) return;
     if (
       window.confirm(
         `Tem certeza que deseja excluir permanentemente os ${selectedIds.length} perfis selecionados? Esta ação não pode ser desfeita.`,
       )
     ) {
-      setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
-      setSelectedIds([]);
-      showNotification(
-        'Perfis selecionados excluídos permanentemente da lixeira.',
-      );
+      try {
+        await Promise.all(
+          selectedIds.map((id) => api.profiles.deletePermanent(String(id))),
+        );
+        setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
+        setSelectedIds([]);
+        showNotification('Perfis selecionados excluídos permanentemente.');
+      } catch (err: any) {
+        alert(`Falha ao excluir selecionados: ${err.message}`);
+        fetchTrash();
+      }
     }
   };
 
-  const handleEmptyTrash = () => {
+  const handleEmptyTrash = async () => {
     if (items.length === 0) return;
     if (
       window.confirm(
         'Tem certeza que deseja esvaziar toda a lixeira? Todos os perfis serão removidos permanentemente.',
       )
     ) {
-      setItems([]);
-      setSelectedIds([]);
-      showNotification('A lixeira foi completamente esvaziada.');
+      try {
+        await api.profiles.emptyTrash();
+        setItems([]);
+        setSelectedIds([]);
+        showNotification('A lixeira foi completamente esvaziada.');
+      } catch (err: any) {
+        alert(`Falha ao esvaziar lixeira: ${err.message}`);
+      }
     }
   };
 
   const handleRefresh = () => {
-    setItems(initialLixeiraData as ItemLixeira[]);
+    fetchTrash();
     setSelectedIds([]);
-    showNotification('Lista da lixeira atualizada.');
+    showNotification('Lixeira sincronizada com o banco de dados.');
   };
 
   return (
@@ -169,6 +211,22 @@ export const LixeiraPage: React.FC = () => {
         )}
       </div>
 
+      {/* Erro de conexão se houver */}
+      {error && (
+        <div className="flex items-center justify-between rounded-lg border border-[#EF4444]/40 bg-[#EF4444]/10 p-3 text-xs text-[#FF6B6B]">
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={15} />
+            <span>{error}</span>
+          </div>
+          <button
+            onClick={fetchTrash}
+            className="rounded bg-[#EF4444]/20 px-2 py-1 font-semibold hover:bg-[#EF4444]/30 text-white"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      )}
+
       {/* Barra de Filtro e Ações em Lote */}
       <HeaderLixeira
         searchQuery={searchQuery}
@@ -184,15 +242,24 @@ export const LixeiraPage: React.FC = () => {
         onRefresh={handleRefresh}
       />
 
-      {/* Tabela de Itens Excluídos */}
-      <TabelaLixeira
-        items={filteredItems}
-        selectedIds={selectedIds}
-        onSelectAll={handleSelectAll}
-        onSelectItem={handleSelectItem}
-        onRestore={handleRestore}
-        onDeletePermanent={handleDeletePermanent}
-      />
+      {/* Tabela de Itens Excluídos ou Loader */}
+      {loading ? (
+        <div className="flex flex-1 items-center justify-center rounded-2xl border border-[#3E404D] bg-[#24252B]">
+          <div className="flex flex-col items-center gap-2 text-xs text-[#8E92A2]">
+            <Loader2 className="animate-spin text-[#DFE104]" size={24} />
+            <span>Carregando itens da lixeira...</span>
+          </div>
+        </div>
+      ) : (
+        <TabelaLixeira
+          items={filteredItems}
+          selectedIds={selectedIds}
+          onSelectAll={handleSelectAll}
+          onSelectItem={handleSelectItem}
+          onRestore={handleRestore}
+          onDeletePermanent={handleDeletePermanent}
+        />
+      )}
     </div>
   );
 };

@@ -12,12 +12,19 @@ router = APIRouter(prefix="/api/proxies", tags=["Proxies"])
 def list_proxies(session: Session = Depends(get_session)):
     return session.exec(select(Proxy)).all()
 
+from models.user import User
+from routers.auth import get_current_user
+
 @router.post("", response_model=ProxyRead, status_code=status.HTTP_201_CREATED)
 def create_proxy(
     proxy_in: ProxyCreate,
     session: Session = Depends(get_session),
+    current_user: Optional[User] = Depends(get_current_user),
 ):
-    db_proxy = Proxy(**proxy_in.model_dump())
+    proxy_data = proxy_in.model_dump()
+    proxy_data["user_id"] = current_user.id if current_user else None
+    proxy_data["created_by"] = current_user.username if current_user else "offline_user"
+    db_proxy = Proxy(**proxy_data)
     session.add(db_proxy)
     session.commit()
     session.refresh(db_proxy)

@@ -169,6 +169,52 @@ export const api = {
       request<void>(`/api/profiles/${id}`, {
         method: 'DELETE',
       }),
+    listTrash: async (search?: string, group?: string) => {
+      const params = new URLSearchParams();
+      if (search) params.append('search', search);
+      if (group && group !== 'Todos os grupos') params.append('group', group);
+      const qs = params.toString();
+      const rawList = await request<any[]>(`/api/profiles/trash${qs ? `?${qs}` : ''}`);
+      return rawList.map((p) => {
+        const deletedDateObj = p.deleted_at ? new Date(p.deleted_at) : new Date();
+        const diffMs = Date.now() - deletedDateObj.getTime();
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.max(1, 7 - diffDays);
+
+        const formattedDeletedDate = deletedDateObj.toLocaleDateString('pt-BR', {
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        }).replace(',', '');
+
+        return {
+          id: p.id,
+          originalId: p.id,
+          name: p.name,
+          group: p.group || 'Desagrupado',
+          os: (p.os || 'windows').toLowerCase(),
+          ip: p.proxy_host || '',
+          country: p.proxy_type && p.proxy_type !== 'none' ? p.proxy_type.toUpperCase() : '',
+          deletedAt: formattedDeletedDate,
+          daysRemaining,
+          deletedBy: p.deleted_by || p.created_by || 'Local',
+          raw: p,
+        };
+      });
+    },
+    restore: (id: string) =>
+      request<any>(`/api/profiles/${id}/restore`, {
+        method: 'POST',
+      }),
+    deletePermanent: (id: string) =>
+      request<void>(`/api/profiles/${id}/permanent`, {
+        method: 'DELETE',
+      }),
+    emptyTrash: () =>
+      request<{ status: string; deleted_count: number }>('/api/profiles/trash/empty', {
+        method: 'DELETE',
+      }),
     launch: (id: string) =>
       request<{ status: string; profile_id: string; message: string }>(
         `/api/profiles/${id}/launch`,

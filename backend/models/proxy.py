@@ -16,6 +16,10 @@ class ProxyBase(SQLModel):
     latency_ms: Optional[int] = Field(default=None)
     country: Optional[str] = Field(default=None)
     exit_ip: Optional[str] = Field(default=None)
+    
+    # Vínculo com Usuário / Criador
+    user_id: Optional[int] = Field(default=None, foreign_key="user.id", index=True)
+    created_by: Optional[str] = Field(default=None)
 
 class Proxy(ProxyBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -39,3 +43,5 @@ class ProxyUpdate(SQLModel):
     latency_ms: Optional[int] = None
     country: Optional[str] = None
     exit_ip: Optional[str] = None
+    user_id: Optional[int] = None
+    created_by: Optional[str] = None

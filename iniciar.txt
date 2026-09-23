@@ -1,0 +1,13 @@
+# Comandos para iniciar o Fury
+
+# 1. Iniciar o Backend
+cd /home/vanir/fury/frontend/backend
+source venv/bin/activate
+uvicorn main:app --reload --port 8000
+
+# 2. Iniciar o Frontend
+cd /home/vanir/fury/frontend/app
+npm run dev
+
+# 3. Acessar a Documentação da API (Swagger)
+Abra no navegador: http://127.0.0.1:8000/docs

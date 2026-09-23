@@ -7,11 +7,11 @@ import { Trash2, AlertCircle } from 'lucide-react';
 
 interface TabelaLixeiraProps {
   items: ItemLixeira[];
-  selectedIds: number[];
+  selectedIds: (string | number)[];
   onSelectAll: () => void;
-  onSelectItem: (id: number) => void;
-  onRestore: (id: number) => void;
-  onDeletePermanent: (id: number) => void;
+  onSelectItem: (id: string | number) => void;
+  onRestore: (id: string | number) => void;
+  onDeletePermanent: (id: string | number) => void;
 }
 
 export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({

@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 
 export interface ItemLixeira {
-  id: number;
-  originalId: number;
+  id: string | number;
+  originalId: string | number;
   name: string;
   group: string;
   os: 'windows' | 'macos' | 'linux' | 'android' | 'ios' | string;
@@ -23,15 +23,16 @@ export interface ItemLixeira {
   deletedAt: string;
   daysRemaining: number;
   deletedBy: string;
+  raw?: any;
 }
 
 interface LinhaTabelaLixeiraProps {
   item: ItemLixeira;
   isSelected: boolean;
   index?: number;
-  onSelect: (id: number) => void;
-  onRestore: (id: number) => void;
-  onDeletePermanent: (id: number) => void;
+  onSelect: (id: string | number) => void;
+  onRestore: (id: string | number) => void;
+  onDeletePermanent: (id: string | number) => void;
 }
 
 const renderOsIcon = (os: string) => {
@@ -114,7 +115,7 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
 
       {/* 2. ID Original */}
       <td className="w-[75px] min-w-[75px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-white">
-        #{item.originalId < 10 ? `0${item.originalId}` : item.originalId}
+        #{typeof item.originalId === 'number' && item.originalId < 10 ? `0${item.originalId}` : item.originalId}
       </td>
 
       {/* 3. Nome do Perfil & Sistema Operacional */}
