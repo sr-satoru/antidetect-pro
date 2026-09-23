@@ -1,0 +1,10 @@
+node_modules
+.env
+.next
+venv
+.DS_Store
+*.db
+data
+dist
+__pycache__
+reserva-giit

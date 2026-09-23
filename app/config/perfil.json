@@ -1,0 +1,558 @@
+{
+  "tabs": [
+    { "id": "geral", "label": "Geral" },
+    { "id": "proxy", "label": "Proxy" },
+    { "id": "plataforma", "label": "Plataforma" },
+    { "id": "impressao", "label": "Impressão Digital" },
+    { "id": "avancado", "label": "Avançado" }
+  ],
+  "groups": [
+    { "id": "grp-1", "name": "Desagrupado" },
+    { "id": "grp-2", "name": "Contas Matriz" },
+    { "id": "grp-3", "name": "Twitter Farm" },
+    { "id": "grp-4", "name": "Gmail Auto" },
+    { "id": "grp-5", "name": "E-commerce & Dropshipping" },
+    { "id": "grp-6", "name": "Facebook Ads" },
+    { "id": "grp-7", "name": "Discord Bots" }
+  ],
+  "osOptions": [
+    {
+      "id": "windows",
+      "label": "Windows",
+      "desc": "Windows 10/11: Ideal para navegação convencional e automações compatíveis."
+    },
+    {
+      "id": "macos",
+      "label": "macOS",
+      "desc": "macOS Apple: Emula fontes nativas do Mac, renderização WebGL e perfil de alta confiabilidade."
+    },
+    {
+      "id": "linux",
+      "label": "Linux",
+      "desc": "Linux: Plataforma robusta para execução veloz em servidores e instâncias de nuvem."
+    },
+    {
+      "id": "android",
+      "label": "Android",
+      "desc": "Android Mobile: Simula viewport móvel, touch screen e User-Agent Chrome Mobile."
+    },
+    {
+      "id": "ios",
+      "label": "iOS",
+      "desc": "iOS Mobile: Simula ambiente Safari Mobile em dispositivos iPhone/iPad."
+    }
+  ],
+  "userAgentCategories": ["Todo", "Firefox", "Chrome", "Safari"],
+  "userAgents": {
+    "windows": [
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0",
+      "Mozilla/5.0 (Windows NT 11.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0"
+    ],
+    "macos": [
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 14.7; rv:150.0) Gecko/20100101 Firefox/150.0",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:150.0) Gecko/20100101 Firefox/150.0"
+    ],
+    "linux": [
+      "Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0",
+      "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0"
+    ],
+    "android": [
+      "Mozilla/5.0 (Android 14; Mobile; rv:150.0) Gecko/150.0 Firefox/150.0"
+    ],
+    "ios": [
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/150.0 Mobile/15E148 Safari/605.1.15"
+    ]
+  },
+  "defaultWebglRenderers": {
+    "windows": {
+      "vendor": "Google Inc. (Intel)",
+      "renderer": "ANGLE (Intel, Mesa Intel(R) Xe Graphics (TGL GT2), OpenGL 4.6)"
+    },
+    "macos": {
+      "vendor": "Apple",
+      "renderer": "Apple M2"
+    },
+    "linux": {
+      "vendor": "Google Inc. (Intel)",
+      "renderer": "ANGLE (Intel, Mesa Intel(R) Xe Graphics (TGL GT2), OpenGL 4.6)"
+    },
+    "android": {
+      "vendor": "Qualcomm",
+      "renderer": "Adreno (TM) 740"
+    },
+    "ios": {
+      "vendor": "Apple",
+      "renderer": "Apple GPU"
+    }
+  },
+  "webglRenderersPool": [
+    "ANGLE (Intel, Mesa Intel(R) Xe Graphics (TGL GT2), OpenGL 4.6)",
+    "ANGLE (NVIDIA GeForce RTX 4060 Direct3D11 vs_5_0 ps_5_0)",
+    "ANGLE (NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0)",
+    "ANGLE (AMD Radeon RX 6700 XT Direct3D11 vs_5_0 ps_5_0)",
+    "Apple M2",
+    "Apple M3 Max",
+    "Mesa Intel(R) UHD Graphics 620 (KBL GT2)",
+    "Adreno (TM) 740"
+  ],
+  "webglVendors": [
+    "Google Inc. (AMD)",
+    "Google Inc. (NVIDIA)",
+    "Google Inc. (Intel)",
+    "Google Inc. (Google)",
+    "Apple",
+    "Intel Inc.",
+    "Intel Open Source Technology Center",
+    "Mesa",
+    "NVIDIA Corporation"
+  ],
+  "proxyModes": [
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Configure manualmente IP, porta e credenciais do seu servidor proxy."
+    },
+    {
+      "id": "saved",
+      "label": "Proxies salvos",
+      "desc": "Selecione ou sorteie rapidamente um proxy cadastrado na sua lista."
+    },
+    {
+      "id": "rotating",
+      "label": "Proxy rotativo",
+      "desc": "Configure um link de rotação automática de IP móvel/residencial."
+    }
+  ],
+  "savedProxies": [],
+  "proxyTypes": [
+    { "id": "none", "label": "Sem Proxy (Rede local)" },
+    { "id": "socks5", "label": "SOCKS5" },
+    { "id": "http", "label": "HTTP" },
+    { "id": "https", "label": "HTTPS" }
+  ],
+  "rotatingProtocols": ["http", "https", "socks5"],
+  "ipCheckers": ["IP2Location", "ip-api.com", "ipinfo.io"],
+  "platforms": [
+    {
+      "id": "facebook",
+      "name": "facebook.com",
+      "domain": "facebook.com",
+      "requiresCustomDomain": false,
+      "iconType": "facebook"
+    },
+    {
+      "id": "amazon",
+      "name": "amazon.com",
+      "domain": "amazon.com",
+      "requiresCustomDomain": false,
+      "iconType": "amazon"
+    },
+    {
+      "id": "linkedin",
+      "name": "linkedin.com",
+      "domain": "linkedin.com",
+      "requiresCustomDomain": false,
+      "iconType": "linkedin"
+    },
+    {
+      "id": "x",
+      "name": "x.com",
+      "domain": "x.com",
+      "requiresCustomDomain": false,
+      "iconType": "x"
+    },
+    {
+      "id": "paypal",
+      "name": "paypal.com",
+      "domain": "paypal.com",
+      "requiresCustomDomain": false,
+      "iconType": "paypal"
+    },
+    {
+      "id": "google",
+      "name": "accounts.google.com",
+      "domain": "accounts.google.com",
+      "requiresCustomDomain": false,
+      "iconType": "google"
+    },
+    {
+      "id": "outlook",
+      "name": "outlook.com",
+      "domain": "outlook.com",
+      "requiresCustomDomain": false,
+      "iconType": "outlook"
+    },
+    {
+      "id": "vinted",
+      "name": "vinted.fr",
+      "domain": "vinted.fr",
+      "requiresCustomDomain": false,
+      "iconType": "vinted"
+    },
+    {
+      "id": "instagram",
+      "name": "instagram.com",
+      "domain": "instagram.com",
+      "requiresCustomDomain": false,
+      "iconType": "instagram"
+    },
+    {
+      "id": "tiktok",
+      "name": "tiktok.com",
+      "domain": "tiktok.com",
+      "requiresCustomDomain": false,
+      "iconType": "tiktok"
+    },
+    {
+      "id": "ebay",
+      "name": "ebay.com",
+      "domain": "ebay.com",
+      "requiresCustomDomain": false,
+      "iconType": "ebay"
+    },
+    {
+      "id": "other",
+      "name": "other",
+      "domain": "",
+      "requiresCustomDomain": true,
+      "iconType": "other"
+    }
+  ],
+  "webrtcModes": [
+    {
+      "id": "forward",
+      "label": "Encaminhar",
+      "desc": "Use Google Forwarding para mascarar seu IP real, adequado para sites de alta segurança (eBay, Discord)."
+    },
+    {
+      "id": "substitute",
+      "label": "Substituir",
+      "desc": "Substitui o endereço WebRTC pelo IP público do proxy selecionado."
+    },
+    {
+      "id": "real",
+      "label": "Real",
+      "desc": "Expõe seu endereço IP local e público real sem máscara."
+    },
+    {
+      "id": "disabled",
+      "label": "Desativado",
+      "desc": "Desativa o WebRTC completamente para evitar qualquer vazamento."
+    },
+    {
+      "id": "udp_proxy",
+      "label": "UDP via proxy",
+      "desc": "Encaminha os pacotes UDP diretamente pelo túnel do proxy."
+    }
+  ],
+  "timezoneModes": [
+    {
+      "id": "ip",
+      "label": "Com base no IP",
+      "desc": "Configura o fuso horário geográfico correspondente ao IP do proxy conectado."
+    },
+    {
+      "id": "real",
+      "label": "Real",
+      "desc": "Utiliza o fuso horário nativo configurado na máquina local."
+    },
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Permite selecionar manualmente qualquer timezone internacional."
+    }
+  ],
+  "timezones": [
+    {
+      "value": "America/Sao_Paulo",
+      "label": "America/Sao_Paulo (GMT-3 • Brasil)"
+    },
+    { "value": "America/Manaus", "label": "America/Manaus (GMT-4 • Amazonas)" },
+    {
+      "value": "America/New_York",
+      "label": "America/New_York (GMT-5 • EUA Leste)"
+    },
+    {
+      "value": "America/Chicago",
+      "label": "America/Chicago (GMT-6 • EUA Central)"
+    },
+    {
+      "value": "America/Los_Angeles",
+      "label": "America/Los_Angeles (GMT-8 • EUA Oeste)"
+    },
+    { "value": "Europe/London", "label": "Europe/London (GMT+0 • Londres/UK)" },
+    { "value": "Europe/Lisbon", "label": "Europe/Lisbon (GMT+0 • Portugal)" },
+    { "value": "Europe/Madrid", "label": "Europe/Madrid (GMT+1 • Espanha)" },
+    { "value": "Europe/Paris", "label": "Europe/Paris (GMT+1 • França)" },
+    { "value": "Europe/Berlin", "label": "Europe/Berlin (GMT+1 • Alemanha)" },
+    { "value": "Asia/Tokyo", "label": "Asia/Tokyo (GMT+9 • Japão)" },
+    { "value": "Asia/Dubai", "label": "Asia/Dubai (GMT+4 • Emirados Árabes)" }
+  ],
+  "languages": [
+    {
+      "label": "🇧🇷 Português (pt-BR)",
+      "value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+    },
+    { "label": "🇺🇸 Inglês (en-US)", "value": "en-US,en;q=0.9" },
+    { "label": "🇪🇸 Espanhol (es-ES)", "value": "es-ES,es;q=0.9,en;q=0.8" },
+    { "label": "🇩🇪 Alemão (de-DE)", "value": "de-DE,de;q=0.9,en;q=0.8" },
+    { "label": "🇫🇷 Francês (fr-FR)", "value": "fr-FR,fr;q=0.9,en;q=0.8" }
+  ],
+  "screenResolutions": [
+    "Com base no User-Agent",
+    "1920 x 1080 (Full HD)",
+    "2560 x 1440 (2K QHD)",
+    "1366 x 768 (Laptop)",
+    "1440 x 900 (MacBook)",
+    "1536 x 864 (Padrão)",
+    "3840 x 2160 (4K UHD)",
+    "1280 x 720 (HD)"
+  ],
+  "cpuCoresOptions": [2, 4, 6, 8, 10, 12, 16, 24, 32],
+  "ramOptions": [2, 4, 8, 16, 32, 64],
+  "locationModes": [
+    {
+      "id": "ip",
+      "label": "Com base no IP",
+      "desc": "Determina a latitude e longitude automaticamente através do IP de saída."
+    },
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Permite informar coordenadas GPS exatas (latitude e longitude) para o navegador."
+    },
+    {
+      "id": "block",
+      "label": "Bloquear",
+      "desc": "Nega e bloqueia qualquer consulta de geolocalização feita pelas páginas."
+    }
+  ],
+  "locationPermissions": [
+    {
+      "id": "block",
+      "text": "O site não pode acessar sua localização."
+    },
+    {
+      "id": "ask",
+      "text": "O site solicitará sua localização quando necessário."
+    }
+  ],
+  "languageModes": [
+    { "id": "ip", "label": "Com base no IP" },
+    { "id": "custom", "label": "Personalizado" }
+  ],
+  "screenResolutionModes": [
+    {
+      "id": "default",
+      "label": "Predefinido",
+      "desc": "Resolução padronizada e coerente com o User-Agent."
+    },
+    {
+      "id": "random",
+      "label": "Aleatório",
+      "desc": "Sorteia uma resolução comum realista do mercado."
+    },
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Define largura e altura em pixels sob medida."
+    }
+  ],
+  "fontsModes": [
+    {
+      "id": "default",
+      "label": "Predefinição",
+      "desc": "Fontes padrão e pacotes nativos do sistema emulado."
+    },
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Permite personalizar listas de fontes."
+    }
+  ],
+  "hardwareNoiseItems": [
+    {
+      "key": "canvas",
+      "label": "Canvas",
+      "desc": "Injeta micro-ruído determinístico no motor Skia para mascarar o hash de desenho 2D."
+    },
+    {
+      "key": "webglImage",
+      "label": "Imagem WebGL",
+      "desc": "Aplica perturbações leves nos shaders e texturas WebGL para impedir identificação gráfica."
+    },
+    {
+      "key": "audioContext",
+      "label": "AudioContext",
+      "desc": "Adiciona micro-variação estocástica no DynamicsCompressor do Web Audio API."
+    },
+    {
+      "key": "mediaDevices",
+      "label": "Dispositivo Multimídia [Auto]",
+      "desc": "Simula quantidade e identificadores virtuais de microfones, câmeras e alto-falantes."
+    },
+    {
+      "key": "clientRects",
+      "label": "ClientRects",
+      "desc": "Aplica ruído microscópico na medição de caixas de elementos e fontes na tela."
+    },
+    {
+      "key": "speechVoices",
+      "label": "SpeechVoices",
+      "desc": "Emula a lista de vozes sintetizadas nativas correspondente ao SO selecionado."
+    }
+  ],
+  "webglMetadataModes": [
+    {
+      "id": "real",
+      "label": "Real",
+      "desc": "Identifica a placa de vídeo real instalada no seu computador."
+    },
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Emula fornecedor e renderer gráfico de GPUs selecionadas."
+    }
+  ],
+  "webgpuModes": [
+    {
+      "id": "webgl",
+      "label": "Com base no WebGL",
+      "desc": "Sincroniza os adaptadores da nova WebGPU com os metadados WebGL."
+    },
+    {
+      "id": "real",
+      "label": "Real",
+      "desc": "Permite que sites usem o WebGPU direto do hardware físico."
+    },
+    {
+      "id": "disabled",
+      "label": "Desativado",
+      "desc": "Desativa totalmente o suporte à API WebGPU."
+    }
+  ],
+  "cpuModes": [
+    {
+      "id": "real",
+      "label": "Real",
+      "desc": "Lê navigator.hardwareConcurrency diretamente do processador real."
+    },
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Define uma quantidade específica de núcleos virtuais."
+    }
+  ],
+  "ramModes": [
+    {
+      "id": "real",
+      "label": "Real",
+      "desc": "Lê navigator.deviceMemory real da máquina."
+    },
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Emula a quantidade de memória RAM visível para páginas web."
+    }
+  ],
+  "batteryModes": [
+    {
+      "id": "desktop",
+      "label": "Tomada (Desktop 100%)",
+      "desc": "Emula dispositivo permanentemente conectado à rede elétrica."
+    },
+    {
+      "id": "laptop",
+      "label": "Bateria (Notebook 85%)",
+      "desc": "Emula notebook com bateria descarregando normalmente em nível verossímil."
+    },
+    {
+      "id": "disabled",
+      "label": "Desativado",
+      "desc": "Oculta e desabilita completamente a Battery API."
+    }
+  ],
+  "deviceNameModes": [
+    {
+      "id": "real",
+      "label": "Real",
+      "desc": "Utiliza o nome de dispositivo real da sua máquina local."
+    },
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Emula um hostname aleatório apropriado para o sistema operacional escolhido."
+    }
+  ],
+  "macAddressModes": [
+    {
+      "id": "real",
+      "label": "Real",
+      "desc": "Expõe o endereço MAC físico da placa de rede local."
+    },
+    {
+      "id": "custom",
+      "label": "Personalizado",
+      "desc": "Emula um endereço MAC exclusivo e randômico."
+    }
+  ],
+  "doNotTrackModes": [
+    {
+      "id": "default",
+      "label": "Predefinição",
+      "desc": "Mantém a configuração padrão do navegador nativo."
+    },
+    {
+      "id": "open",
+      "label": "Ativar",
+      "desc": "Envia cabeçalho DNT: 1 informando aos sites que não deseja ser rastreado."
+    },
+    {
+      "id": "close",
+      "label": "Desativar",
+      "desc": "Não envia solicitação de Do Not Track para os servidores web."
+    }
+  ],
+  "portScanProtectionModes": [
+    {
+      "id": "open",
+      "label": "Ativar",
+      "desc": "Bloqueia sites maliciosos de varrerem portas abertas na sua máquina local (localhost)."
+    },
+    {
+      "id": "close",
+      "label": "Desativar",
+      "desc": "Permite requisições para portas de loopback local."
+    }
+  ],
+  "hardwareAccelerationModes": [
+    {
+      "id": "default",
+      "label": "Predefinição",
+      "desc": "Utiliza o padrão configurado pelo motor Chromium."
+    },
+    {
+      "id": "open",
+      "label": "Ativar",
+      "desc": "Habilita GPU dedicada para aceleração gráfica e WebGL fluído."
+    },
+    {
+      "id": "close",
+      "label": "Desativar",
+      "desc": "Renderização gráfica efetuada exclusivamente por software (CPU)."
+    }
+  ],
+  "disableTlsFeaturesModes": [
+    {
+      "id": "open",
+      "label": "Ativar",
+      "desc": "Habilita suporte a extensões de cifragem e handshakes legados."
+    },
+    {
+      "id": "close",
+      "label": "Desativar",
+      "desc": "Utiliza exclusivamente handshakes modernos de TLS 1.3."
+    }
+  ]
+}
