@@ -14,26 +14,6 @@ CATALOG_CATEGORIES = [
 
 RECOMMENDED_EXTENSIONS_CATALOG: List[Dict[str, Any]] = [
     {
-        "id": "adspower-assistant",
-        "name": "AdsPower Assistant",
-        "category": "Workflow and planning",
-        "description": "AdsPower Assistant is a browser extension for managing multiple accounts and automating tasks, ensuring efficiency and security.",
-        "provider": "Chrome Web Store",
-        "provider_url": "https://chromewebstore.google.com/detail/adspower-assistant",
-        "icon_type": "fingerprint",
-        "icon_bg": "#1677FF",
-    },
-    {
-        "id": "adspower-authenticator",
-        "name": "AdsPower Authenticator",
-        "category": "Privacy and security",
-        "description": "2FA codes generator and auto-login manager. Together with the AdsPower browser, this tool makes the Internet a safer place.",
-        "provider": "Chrome Web Store",
-        "provider_url": "https://chromewebstore.google.com/detail/adspower-authenticator",
-        "icon_type": "keypad",
-        "icon_bg": "#1890FF",
-    },
-    {
         "id": "authenticator",
         "name": "Authenticator",
         "category": "Privacy and security",
@@ -62,17 +42,6 @@ RECOMMENDED_EXTENSIONS_CATALOG: List[Dict[str, Any]] = [
         "provider_url": "https://addons.mozilla.org/pt-BR/firefox/addon/ublock-origin/",
         "icon_type": "firefox",
         "icon_bg": "#FF7139",
-    },
-    {
-        "id": "banner-social-echo",
-        "name": "SocialEcho Management",
-        "category": "Workflow and planning",
-        "description": "AI Creation • Cross Posting • Shoppable Videos • Auto-response • Post tracking para redes sociais.",
-        "provider": "Chrome Web Store",
-        "provider_url": "https://chromewebstore.google.com",
-        "icon_type": "banner",
-        "icon_bg": "#0052CC",
-        "banner_type": "social-echo",
     },
     {
         "id": "adblock",
@@ -113,17 +82,6 @@ RECOMMENDED_EXTENSIONS_CATALOG: List[Dict[str, Any]] = [
         "provider_url": "https://chromewebstore.google.com/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb",
         "icon_type": "translate",
         "icon_bg": "#4285F4",
-    },
-    {
-        "id": "banner-primespy",
-        "name": "PrimeSPY Ad Spy & Tracking",
-        "category": "Shopping",
-        "description": "Massive Ad Library • Real-time Ad Tracking • Deep Ad Analytics para campanhas de e-commerce e afiliados.",
-        "provider": "Chrome Web Store",
-        "provider_url": "https://chromewebstore.google.com",
-        "icon_type": "banner",
-        "icon_bg": "#FF5722",
-        "banner_type": "prime-spy",
     },
     {
         "id": "captcha-solver",

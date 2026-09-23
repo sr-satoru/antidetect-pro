@@ -48,7 +48,6 @@ export interface RecommendedExtension {
   iconBg: string;
   iconUrl?: string;
   featured?: boolean;
-  bannerType?: 'social-echo' | 'prime-spy';
 }
 
 export interface ExtensionItem {
@@ -619,102 +618,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
             {recommendedList.length > 0 ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {recommendedList.map((recExt) => {
-                  // Card de Banner Promocional (SocialEcho)
-                  if (recExt.bannerType === 'social-echo') {
-                    return (
-                      <div
-                        key={recExt.id}
-                        className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#293249] bg-gradient-to-br from-[#121B2B] via-[#0E1522] to-[#0A0E18] p-5 shadow-xs transition-all hover:border-[#384E75]"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-black tracking-wider text-[#38BDF8] uppercase">
-                              SocialEcho
-                            </span>
-                            <span className="rounded-full bg-[#38BDF8]/15 px-2 py-0.5 text-[10px] font-semibold text-[#38BDF8]">
-                              Featured
-                            </span>
-                          </div>
-                          <h4 className="mt-1 text-sm font-bold text-white">
-                            Social Media Management
-                          </h4>
-                          <p className="mt-1.5 text-[11px] leading-relaxed text-[#94A3B8]">
-                            AI Creation • Cross Posting • Shoppable Videos •
-                            Auto-response
-                          </p>
-                          <div className="mt-3 flex flex-wrap items-center gap-1.5 opacity-90">
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#1877F2] text-[10px] font-bold text-white">
-                              f
-                            </span>
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-[9px] font-bold text-white">
-                              ig
-                            </span>
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white/20 bg-black text-[9px] font-bold text-white">
-                              tk
-                            </span>
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#FF0000] text-[9px] font-bold text-white">
-                              yt
-                            </span>
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0077B5] text-[9px] font-bold text-white">
-                              in
-                            </span>
-                          </div>
-                        </div>
-                        <div className="mt-4 pt-2">
-                          <a
-                            href="https://chromewebstore.google.com"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-[#0066FF] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#2575FC]"
-                          >
-                            <span>+ Free Trial</span>
-                            <ExternalLink size={11} />
-                          </a>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  // Card de Banner Promocional (PrimeSPY)
-                  if (recExt.bannerType === 'prime-spy') {
-                    return (
-                      <div
-                        key={recExt.id}
-                        className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#3E241E] bg-gradient-to-br from-[#261511] via-[#1C100E] to-[#120A09] p-5 shadow-xs transition-all hover:border-[#63352A]"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-black tracking-wider text-[#FB923C] uppercase">
-                              PrimeSPY
-                            </span>
-                            <span className="rounded-full bg-[#FB923C]/15 px-2 py-0.5 text-[10px] font-semibold text-[#FB923C]">
-                              Ad Intelligence
-                            </span>
-                          </div>
-                          <h4 className="mt-1 text-sm font-bold text-white">
-                            Multi-Platform Ad Spy & Tracking
-                          </h4>
-                          <p className="mt-1.5 text-[11px] leading-relaxed text-[#94A3B8]">
-                            Massive Ad Library • Real-time Ad Tracking • Deep Ad
-                            Analytics
-                          </p>
-                        </div>
-                        <div className="mt-4 pt-2">
-                          <a
-                            href="https://chromewebstore.google.com"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-[#EA580C] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#F97316]"
-                          >
-                            <span>Get for Free</span>
-                            <ExternalLink size={11} />
-                          </a>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  // Card de Extensão Padrão (AdsPower Style)
+                  // Card de Extensão
                   const isAlreadyAdded = extensions.some(
                     (item) =>
                       item.tab === 'team' &&

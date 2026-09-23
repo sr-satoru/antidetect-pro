@@ -303,7 +303,6 @@ export const api = {
         iconType: e.icon_type || 'custom',
         iconBg: e.icon_bg || '#1677FF',
         iconUrl: e.icon_url || null,
-        bannerType: e.banner_type || null,
       }));
     },
     searchAmo: (q: string) =>
