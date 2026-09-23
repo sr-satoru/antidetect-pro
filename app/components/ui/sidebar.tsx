@@ -8,7 +8,6 @@ import {
   Trash2,
   Bot,
   Repeat,
-  Cpu,
   Code,
   Users,
   FileText,
@@ -94,14 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         <div className="space-y-1">
           <NavLink to="/perfis" className={navItemClass} title="Perfis">
             <Layers size={17} className="shrink-0" />
-            {!isCollapsed && (
-              <div className="flex items-center justify-between flex-1 min-w-0">
-                <span className="truncate">Perfis</span>
-                <span className="bg-[#1e202c] text-[#8e92a4] text-[11px] font-semibold px-1.5 py-0.5 rounded-full">
-                  7
-                </span>
-              </div>
-            )}
+            {!isCollapsed && <span className="truncate">Perfis</span>}
           </NavLink>
 
           <NavLink to="/grupos" className={navItemClass} title="Grupos">
@@ -148,11 +140,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
           <NavLink to="/sincronizador" className={navItemClass} title="Sincronizador">
             <Repeat size={17} className="shrink-0" />
             {!isCollapsed && <span className="truncate">Sincronizador</span>}
-          </NavLink>
-
-          <NavLink to="/rpa-plus" className={navItemClass} title="RPA Plus">
-            <Cpu size={17} className="shrink-0" />
-            {!isCollapsed && <span className="truncate">RPA Plus</span>}
           </NavLink>
 
           <NavLink to="/api-mcp" className={navItemClass} title="API & MCP">

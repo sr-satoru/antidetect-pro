@@ -16,8 +16,6 @@ export const PerfisPage: React.FC = () => {
   const [selectedGroup, setSelectedGroup] = useState('Todos os grupos');
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [isSyncActive, setIsSyncActive] = useState(false);
-  const [isRpaActive, setIsRpaActive] = useState(false);
   const [editingProfile, setEditingProfile] = useState<any | null>(null);
   const [editNameInput, setEditNameInput] = useState('');
 
@@ -205,10 +203,6 @@ export const PerfisPage: React.FC = () => {
         profiles={profiles}
         selectedTag={selectedTag}
         onSelectTag={setSelectedTag}
-        isSyncActive={isSyncActive}
-        onToggleSync={() => setIsSyncActive((prev) => !prev)}
-        isRpaActive={isRpaActive}
-        onToggleRpa={() => setIsRpaActive((prev) => !prev)}
         onNewProfile={() => navigate('/criar-perfil')}
         onRefresh={fetchProfiles}
         onStartSelected={handleStartSelected}

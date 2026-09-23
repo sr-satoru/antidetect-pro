@@ -10,11 +10,6 @@ import { Previas } from '@/components/criar-perfil/previas';
 import { api } from '@/services/api';
 import { Loader2 } from 'lucide-react';
 
-export {
-  generateRandomSeed,
-  generateRandomDeviceName,
-  generateRandomMacAddress,
-} from '@/utils';
 import {
   generateRandomSeed,
   generateRandomDeviceName,
