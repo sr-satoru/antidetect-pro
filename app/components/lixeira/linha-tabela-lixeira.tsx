@@ -115,7 +115,7 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
 
       {/* 2. ID Original */}
       <td className="w-[75px] min-w-[75px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-white">
-        #{typeof item.originalId === 'number' && item.originalId < 10 ? `0${item.originalId}` : item.originalId}
+        #{!isNaN(Number(item.originalId)) && Number(item.originalId) < 10 ? `0${Number(item.originalId)}` : item.originalId}
       </td>
 
       {/* 3. Nome do Perfil & Sistema Operacional */}

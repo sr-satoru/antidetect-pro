@@ -1,4 +1,3 @@
-import uuid
 from typing import List, Optional
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -24,15 +23,27 @@ def list_profiles(
         query = query.where(Profile.group == group)
     return session.exec(query).all()
 
+def get_next_profile_id(session: Session) -> str:
+    """Calcula o próximo ID sequencial inteiro (1, 2, 3...) como string."""
+    all_profiles = session.exec(select(Profile.id)).all()
+    numeric_ids = []
+    for pid in all_profiles:
+        try:
+            numeric_ids.append(int(pid))
+        except (ValueError, TypeError):
+            pass
+    next_num = max(numeric_ids) + 1 if numeric_ids else 1
+    return str(next_num)
+
 @router.post("", response_model=ProfileRead, status_code=status.HTTP_201_CREATED)
 def create_profile(
     profile_in: ProfileCreate,
     session: Session = Depends(get_session),
     current_user: Optional[User] = Depends(get_current_user),
 ):
-    """Cria um perfil associando ao usuário criador."""
-    # Gera um ID único se não foi enviado
-    profile_id = profile_in.id or f"fury-{uuid.uuid4().hex[:8]}"
+    """Cria um perfil associando ao usuário criador com ID sequencial (1, 2, 3...)."""
+    # Gera um ID sequencial se não foi enviado
+    profile_id = (profile_in.id and str(profile_in.id).strip()) or get_next_profile_id(session)
     
     # Verifica se já existe
     existing = session.get(Profile, profile_id)

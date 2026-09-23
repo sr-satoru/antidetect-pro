@@ -130,7 +130,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
       {/* 2. Nº / ID */}
       <td className="w-[85px] min-w-[85px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-white">
-        #{profile.id < 10 ? `0${profile.id}` : profile.id}
+        #{!isNaN(Number(profile.id)) && Number(profile.id) < 10 ? `0${Number(profile.id)}` : profile.id}
       </td>
 
       {/* 3. Grupo */}

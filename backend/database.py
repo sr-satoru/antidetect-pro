@@ -38,6 +38,23 @@ def run_migrations() -> None:
             if "created_by" not in proxy_cols:
                 conn.exec_driver_sql("ALTER TABLE proxy ADD COLUMN created_by TEXT")
 
+        # Normaliza IDs legados na tabela profile para sequenciais (1, 2, 3...)
+        if res_profile:
+            legacy_rows = conn.exec_driver_sql("SELECT id FROM profile WHERE id LIKE 'fury-%' ORDER BY created_at ASC").fetchall()
+            if legacy_rows:
+                # Busca o maior id numérico atual
+                all_ids = conn.exec_driver_sql("SELECT id FROM profile").fetchall()
+                existing_nums = []
+                for (i,) in all_ids:
+                    try:
+                        existing_nums.append(int(i))
+                    except (ValueError, TypeError):
+                        pass
+                next_num = max(existing_nums) + 1 if existing_nums else 1
+                for (old_id,) in legacy_rows:
+                    conn.exec_driver_sql("UPDATE profile SET id = ? WHERE id = ?", (str(next_num), old_id))
+                    next_num += 1
+
         conn.commit()
 
 def init_db() -> None:
