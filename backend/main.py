@@ -4,8 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 
 from config import CORS_ORIGINS, APP_MODE
-from database import init_db, engine
-from models import Profile, Proxy, Extension
+from database import init_db, engine, Profile, Proxy, Extension
 from routers import auth_router, profiles_router, extensions_router, proxies_router
 
 def seed_defaults():

@@ -2,8 +2,13 @@ import httpx
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session, select
-from database import get_session
-from models.extension import Extension, ExtensionCreate, ExtensionRead, ExtensionUpdate
+from database import (
+    get_session,
+    Extension,
+    ExtensionCreate,
+    ExtensionRead,
+    ExtensionUpdate,
+)
 
 router = APIRouter(prefix="/api/extensions", tags=["Extensions"])
 

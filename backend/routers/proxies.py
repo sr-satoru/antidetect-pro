@@ -3,17 +3,14 @@ import httpx
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from database import get_session
-from models.proxy import Proxy, ProxyCreate, ProxyRead, ProxyUpdate
+from database import get_session, Proxy, ProxyCreate, ProxyRead, ProxyUpdate, User
+from routers.auth import get_current_user
 
 router = APIRouter(prefix="/api/proxies", tags=["Proxies"])
 
 @router.get("", response_model=List[ProxyRead])
 def list_proxies(session: Session = Depends(get_session)):
     return session.exec(select(Proxy)).all()
-
-from models.user import User
-from routers.auth import get_current_user
 
 @router.post("", response_model=ProxyRead, status_code=status.HTTP_201_CREATED)
 def create_proxy(

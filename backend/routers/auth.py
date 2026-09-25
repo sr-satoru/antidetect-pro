@@ -4,8 +4,7 @@ import secrets
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from database import get_session
-from models.user import User, UserCreate, UserLogin, UserRead
+from database import get_session, User, UserCreate, UserLogin, UserRead
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
