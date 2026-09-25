@@ -12,7 +12,7 @@ mod models;
 mod routes;
 mod storage;
 
-use storage::{ProfileStorage, ProxyStorage};
+use storage::{ExtensionStorage, ProfileStorage, ProxyStorage};
 
 #[tokio::main]
 async fn main() {
@@ -25,6 +25,7 @@ async fn main() {
     let data_dir = std::env::var("FURY_DATA_DIR").unwrap_or_else(|_| "./data".to_string());
     let profile_storage = Arc::new(ProfileStorage::new(&data_dir));
     let proxy_storage = Arc::new(ProxyStorage::new(&data_dir));
+    let extension_storage = Arc::new(ExtensionStorage::new(&data_dir));
 
     let cors = CorsLayer::new()
         .allow_origin(Any)
@@ -56,7 +57,8 @@ async fn main() {
     let extension_routes = Router::new()
         .route("/", get(routes::extensions::list_extensions).post(routes::extensions::create_extension))
         .route("/{id}", put(routes::extensions::update_extension).delete(routes::extensions::delete_extension))
-        .route("/catalog", get(routes::extensions::get_catalog));
+        .route("/catalog", get(routes::extensions::get_catalog))
+        .with_state(extension_storage);
 
     let auth_routes = Router::new()
         .route("/login", post(routes::auth::login))

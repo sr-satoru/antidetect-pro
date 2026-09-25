@@ -64,7 +64,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
             ? 'Extensão nativa do Firefox (.xpi) carregada manualmente.'
             : 'Extensão carregada manualmente por arquivo.'),
         iconType: isXpi ? 'firefox' : 'custom',
-        iconBg: isXpi ? '#FF7139' : '#1677FF',
+        iconBg: '#2F80ED',
         provider: isXpi ? 'Firefox Add-on (.xpi)' : 'Pacote Local',
         providerUrl: '#',
         tab: 'team',
@@ -93,7 +93,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
           description:
             'Extensão oficial importada do Firefox Add-ons (AMO). Compatível com Camoufox.',
           iconType: 'firefox',
-          iconBg: '#FF7139',
+          iconBg: '#2F80ED',
           provider: 'Firefox Add-ons',
           providerUrl: url,
           tab: 'team',
@@ -116,7 +116,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
           name: cleanName || 'Nova Extensão Chrome',
           description: 'Extensão importada diretamente da Chrome Web Store.',
           iconType: 'chrome',
-          iconBg: '#1677FF',
+          iconBg: '#2F80ED',
           provider: 'Chrome Web Store',
           providerUrl: url,
           tab: 'team',
@@ -208,7 +208,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
           <button
             type="button"
             onClick={handleConfirm}
-            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#1677FF] px-6 py-2 text-xs font-semibold text-white shadow-[0_2px_10px_rgba(22,119,255,0.25)] transition-all hover:bg-[#3B8BFF] active:scale-[0.98]"
+            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#2F80ED] px-6 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#256fd1] active:scale-[0.98]"
           >
             OK
           </button>

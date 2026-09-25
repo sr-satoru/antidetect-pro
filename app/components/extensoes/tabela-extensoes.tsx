@@ -78,38 +78,16 @@ const renderExtensionIcon = (ext: ExtensionItem) => {
       <img
         src={ext.iconUrl}
         alt={ext.name}
-        className="h-11 w-11 shrink-0 rounded-xl object-cover shadow-xs"
+        className="h-11 w-11 shrink-0 rounded-xl object-contain bg-[#191B22] p-1.5 border border-[#2D303E] shadow-xs"
       />
     );
   }
 
   const initial = ext.name ? ext.name.trim().charAt(0).toUpperCase() : '';
-  const isFirefox =
-    ext.iconType === 'firefox' || ext.provider?.includes('Firefox');
 
   return (
-    <div
-      className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-bold text-white shadow-xs ${
-        isFirefox
-          ? 'bg-gradient-to-tr from-[#FF3B30] via-[#FF9500] to-[#E66000]'
-          : ''
-      }`}
-      style={{
-        backgroundColor: !isFirefox ? ext.iconBg || '#2A2C38' : undefined,
-      }}
-    >
-      {initial ? (
-        <span className="text-base font-bold text-white">{initial}</span>
-      ) : isFirefox ? (
-        <Flame size={22} className="text-white" />
-      ) : (
-        <Puzzle size={22} className="text-[#DFE104]" />
-      )}
-      {isFirefox && (
-        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#14151B] p-0.5 shadow-xs">
-          <Flame size={10} className="text-[#FF9500]" />
-        </span>
-      )}
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#2D303E] bg-[#1E2028] text-base font-bold text-[#2F80ED] shadow-xs">
+      {initial || <Puzzle size={22} className="text-[#2F80ED]" />}
     </div>
   );
 };
@@ -120,102 +98,18 @@ const renderRecommendedIcon = (ext: RecommendedExtension) => {
       <img
         src={ext.iconUrl}
         alt={ext.name}
-        className="h-10 w-10 shrink-0 rounded-xl object-cover shadow-xs"
+        className="h-10 w-10 shrink-0 rounded-xl object-contain bg-[#191B22] p-1 border border-[#2D303E] shadow-xs"
       />
     );
   }
 
-  switch (ext.iconType) {
-    case 'fingerprint':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1677FF] to-[#0958D9] text-white shadow-xs">
-          <Fingerprint size={22} className="text-white" />
-        </div>
-      );
-    case 'keypad':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1890FF] to-[#0050B3] text-white shadow-xs">
-          <Key size={19} className="text-yellow-300" />
-        </div>
-      );
-    case 'authenticator':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#333644] bg-[#1C1E26] text-white shadow-xs">
-          <QrCode size={19} className="text-white" />
-        </div>
-      );
-    case 'octopus':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#096DD9] text-white shadow-xs">
-          <Bot size={22} className="text-white" />
-        </div>
-      );
-    case 'adblock':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#E02424] text-white shadow-xs">
-          <Ban size={21} className="text-white" />
-        </div>
-      );
-    case 'exvul':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#374151] bg-[#111827] font-bold text-white shadow-xs">
-          <span className="text-[11px] font-black tracking-wider text-[#38BDF8]">
-            EV
-          </span>
-        </div>
-      );
-    case 'cookie':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#6A3816] text-[#FBBF24] shadow-xs">
-          <Cookie size={21} />
-        </div>
-      );
-    case 'translate':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#4285F4] text-white shadow-xs">
-          <Languages size={21} />
-        </div>
-      );
-    case 'captcha':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0891B2] text-white shadow-xs">
-          <Lock size={19} />
-        </div>
-      );
-    case 'zhixia':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EA580C] text-white shadow-xs">
-          <ShoppingBag size={20} />
-        </div>
-      );
-    case 'firefox':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#FF3B30] via-[#FF9500] to-[#E66000] text-white shadow-xs">
-          <Flame size={20} />
-        </div>
-      );
-    case 'metamask':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F58220] text-white shadow-xs">
-          <Wallet size={20} />
-        </div>
-      );
-    case 'volume':
-      return (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#2563EB] text-white shadow-xs">
-          <Volume2 size={20} />
-        </div>
-      );
-    default:
-      return (
-        <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-bold text-white shadow-xs"
-          style={{ backgroundColor: ext.iconBg || '#2A2C38' }}
-        >
-          {ext.name.charAt(0).toUpperCase()}
-        </div>
-      );
-  }
+  const initial = ext.name ? ext.name.trim().charAt(0).toUpperCase() : '';
+
+  return (
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#2D303E] bg-[#1E2028] text-sm font-bold text-[#2F80ED] shadow-xs">
+      {initial || <Puzzle size={19} className="text-[#2F80ED]" />}
+    </div>
+  );
 };
 
 export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
@@ -332,7 +226,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
               <button
                 type="button"
                 onClick={onAddClick}
-                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#1677FF] px-4 py-2 text-xs font-semibold text-white shadow-[0_2px_10px_rgba(22,119,255,0.25)] transition-all hover:bg-[#3B8BFF] active:scale-[0.98]"
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#2F80ED] px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#256fd1] active:scale-[0.98]"
               >
                 <ArrowUpCircle size={16} />
                 <span>Adicionar extensão</span>
@@ -391,7 +285,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                             type="button"
                             onClick={() => onToggleEnabled(ext.id)}
                             className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${
-                              ext.enabled ? 'bg-[#1677FF]' : 'bg-[#3A3D4D]'
+                              ext.enabled ? 'bg-[#2F80ED]' : 'bg-[#3A3D4D]'
                             }`}
                           >
                             <span
@@ -428,11 +322,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           }
                           target="_blank"
                           rel="noreferrer"
-                          className={`font-medium hover:underline ${
-                            ext.provider?.includes('Firefox')
-                              ? 'text-[#FF7139]'
-                              : 'text-[#1677FF]'
-                          }`}
+                          className="font-medium text-[#2F80ED] hover:underline hover:text-[#5BA0FF]"
                         >
                           {ext.provider}
                         </a>
@@ -528,7 +418,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
               {isLoadingSearch && (
                 <Loader2
                   size={13}
-                  className="absolute top-1/2 right-3 -translate-y-1/2 animate-spin text-[#1677FF]"
+                  className="absolute top-1/2 right-3 -translate-y-1/2 animate-spin text-[#2F80ED]"
                 />
               )}
             </div>
@@ -539,7 +429,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 href="https://addons.mozilla.org/pt-BR/firefox/"
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium text-[#FF7139] underline underline-offset-2 hover:text-[#FFA07A]"
+                className="font-medium text-[#2F80ED] underline underline-offset-2 hover:text-[#5BA0FF]"
               >
                 Procure no Firefox AMO
               </a>{' '}
@@ -566,7 +456,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   onClick={() => setSelectedCategory(cat)}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
                     selectedCategory === cat
-                      ? 'bg-[#3A3D4D] text-white shadow-xs'
+                      ? 'bg-[#2F80ED] text-white shadow-xs'
                       : 'text-[#8E92A2] hover:bg-[#1E202B] hover:text-white'
                   }`}
                 >
@@ -582,7 +472,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 onClick={() => setStoreFilter('all')}
                 className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${
                   storeFilter === 'all'
-                    ? 'bg-[#2B2D3B] text-white'
+                    ? 'bg-[#2F80ED] text-white'
                     : 'text-[#7C8092] hover:text-white'
                 }`}
               >
@@ -593,7 +483,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 onClick={() => setStoreFilter('firefox')}
                 className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${
                   storeFilter === 'firefox'
-                    ? 'bg-[#FF7139]/20 text-[#FFA07A]'
+                    ? 'bg-[#2F80ED] text-white'
                     : 'text-[#7C8092] hover:text-white'
                 }`}
               >
@@ -604,7 +494,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 onClick={() => setStoreFilter('chrome')}
                 className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${
                   storeFilter === 'chrome'
-                    ? 'bg-[#2F80ED]/20 text-[#70A9FF]'
+                    ? 'bg-[#2F80ED] text-white'
                     : 'text-[#7C8092] hover:text-white'
                 }`}
               >
@@ -658,7 +548,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                                 onClick={() =>
                                   onAddRecommended && onAddRecommended(recExt)
                                 }
-                                className="cursor-pointer rounded-md border border-[#3E4256] bg-[#161720] px-3.5 py-1.5 text-[11.5px] font-semibold text-white transition-all hover:border-[#1677FF] hover:bg-[#1677FF] active:scale-95"
+                                className="cursor-pointer rounded-md border border-[#3E4256] bg-[#161720] px-3.5 py-1.5 text-[11.5px] font-semibold text-white transition-all hover:border-[#2F80ED] hover:bg-[#2F80ED] active:scale-95"
                               >
                                 Adicionar
                               </button>
@@ -680,11 +570,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                             href={recExt.providerUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className={`font-medium hover:underline ${
-                              recExt.provider === 'Firefox Add-ons'
-                                ? 'text-[#FF7139]'
-                                : 'text-[#1677FF]'
-                            }`}
+                            className="font-medium text-[#2F80ED] hover:underline hover:text-[#5BA0FF]"
                           >
                             {recExt.provider}
                           </a>

@@ -65,7 +65,7 @@ export const ExtensoesPage: React.FC = () => {
     const payload = {
       name: data.name || 'Nova Extensão',
       iconType: data.iconType || 'custom',
-      iconBg: data.iconBg || '#1677FF',
+      iconBg: data.iconBg || '#2F80ED',
       enabled: true,
       status: 'available',
       description:

@@ -1,44 +1,70 @@
 use axum::{
-    extract::Path,
+    extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
     Json,
 };
+use serde::Deserialize;
+use std::sync::Arc;
 
-pub async fn list_extensions() -> impl IntoResponse {
-    Json(serde_json::json!([]))
+use crate::models::{CreateExtensionDto, UpdateExtensionDto};
+use crate::storage::ExtensionStorage;
+
+#[derive(Debug, Deserialize)]
+pub struct CatalogParams {
+    pub q: Option<String>,
+    pub category: Option<String>,
+    pub store: Option<String>,
 }
 
-pub async fn create_extension(Json(payload): Json<serde_json::Value>) -> impl IntoResponse {
-    (StatusCode::CREATED, Json(payload))
+pub async fn list_extensions(
+    State(storage): State<Arc<ExtensionStorage>>,
+) -> impl IntoResponse {
+    let list = storage.list();
+    Json(list)
+}
+
+pub async fn create_extension(
+    State(storage): State<Arc<ExtensionStorage>>,
+    Json(payload): Json<CreateExtensionDto>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    match storage.create(payload) {
+        Ok(item) => Ok((StatusCode::CREATED, Json(item))),
+        Err(err) => Err((StatusCode::BAD_REQUEST, err)),
+    }
 }
 
 pub async fn update_extension(
-    Path(_id): Path<String>,
-    Json(payload): Json<serde_json::Value>,
+    State(storage): State<Arc<ExtensionStorage>>,
+    Path(id): Path<u64>,
+    Json(payload): Json<UpdateExtensionDto>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    match storage.update(id, payload) {
+        Ok(item) => Ok(Json(item)),
+        Err(err) => Err((StatusCode::NOT_FOUND, err)),
+    }
+}
+
+pub async fn delete_extension(
+    State(storage): State<Arc<ExtensionStorage>>,
+    Path(id): Path<u64>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    match storage.delete(id) {
+        Ok(_) => Ok(StatusCode::NO_CONTENT),
+        Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, err)),
+    }
+}
+
+pub async fn get_catalog(
+    State(storage): State<Arc<ExtensionStorage>>,
+    Query(params): Query<CatalogParams>,
 ) -> impl IntoResponse {
-    Json(payload)
-}
-
-pub async fn delete_extension(Path(_id): Path<String>) -> impl IntoResponse {
-    StatusCode::NO_CONTENT
-}
-
-pub async fn get_catalog() -> impl IntoResponse {
-    Json(serde_json::json!([
-        {
-            "id": "ublock-origin",
-            "name": "uBlock Origin",
-            "version": "1.58.0",
-            "description": "Bloqueador de anúncios eficiente e rápido.",
-            "category": "Segurança"
-        },
-        {
-            "id": "cookie-editor",
-            "name": "Cookie-Editor",
-            "version": "1.12.2",
-            "description": "Gerenciador simples e avançado de cookies para navegação.",
-            "category": "Produtividade"
-        }
-    ]))
+    let list = storage
+        .search_catalog(
+            params.q.as_deref(),
+            params.category.as_deref(),
+            params.store.as_deref(),
+        )
+        .await;
+    Json(list)
 }
