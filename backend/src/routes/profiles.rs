@@ -107,7 +107,7 @@ pub async fn launch_profile(
     State(storage): State<Arc<ProfileStorage>>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
-    match storage.launch(&id) {
+    match storage.launch(&id).await {
         Ok((profile, pid)) => Ok(Json(serde_json::json!({
             "status": "launched",
             "profile_id": profile.id,

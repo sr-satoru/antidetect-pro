@@ -18,7 +18,10 @@ export interface ImpressaoDigitalData {
   socks_remote_dns?: boolean;
 
   // Extensões e contas
-  extensoes_ids?: string[] | string;
+  extension_mode?: string;
+  extension_category?: string;
+  extensoes_ids?: any[];
+  extensions?: any[];
   platform_url?: string;
   platform_accounts?: any[];
   open_tabs_urls?: string;
@@ -126,9 +129,12 @@ export function extrairImpressaoDigitalLimpa(formData: any): ImpressaoDigitalDat
     proxy_password: formData.proxyPass || undefined,
     proxy_rotation_url: formData.proxyRotationUrl || undefined,
     ip_checker: formData.ipChecker || 'IP2Location',
-    socks_remote_dns: formData.socksRemoteDns ?? true,
-
-    extensoes_ids: formData.extensions || [],
+    extension_mode: formData.extensionMode || 'team',
+    extension_category: formData.extensionCategory || 'kit_basico',
+    extensoes_ids: Array.isArray(formData.extensions)
+      ? formData.extensions.map((e: any) => e.id ?? e)
+      : [],
+    extensions: Array.isArray(formData.extensions) ? formData.extensions : [],
     platform_url: formData.platformUrl || undefined,
     platform_accounts: formData.platformAccounts || [],
     open_tabs_urls: formData.openTabsUrls || undefined,
@@ -250,6 +256,11 @@ export const impressaoDigitalService = {
       proxy_port: impressao.proxy_port,
       proxy_username: impressao.proxy_username,
       proxy_password: impressao.proxy_password,
+
+      // Configuração de extensões para o launcher instalar no Camoufox
+      extension_mode: impressao.extension_mode,
+      extension_category: impressao.extension_category,
+      extensions: impressao.extensions,
 
       // 4. Objeto de Impressão Digital estruturado (sem lixo duplicado)
       fingerprint_json: JSON.stringify(impressao),

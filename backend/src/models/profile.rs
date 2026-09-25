@@ -80,6 +80,14 @@ pub struct Profile {
     // Impressão digital bruta / estruturada do Camoufox
     #[serde(default = "default_json_obj")]
     pub fingerprint_json: serde_json::Value,
+
+    // Configuração de Extensões vinculadas ao perfil
+    #[serde(default)]
+    pub extension_mode: Option<String>,
+    #[serde(default)]
+    pub extension_category: Option<String>,
+    #[serde(default)]
+    pub extensions: Option<serde_json::Value>,
 }
 
 fn default_group() -> String {
@@ -121,6 +129,10 @@ pub struct CreateProfileDto {
     pub proxy_password: Option<String>,
 
     pub fingerprint_json: Option<serde_json::Value>,
+
+    pub extension_mode: Option<String>,
+    pub extension_category: Option<String>,
+    pub extensions: Option<serde_json::Value>,
 }
 
 /// DTO para atualização parcial de perfil

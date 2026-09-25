@@ -167,6 +167,17 @@ impl ProfileStorage {
             socks_remote_dns: true,
         };
 
+        let extension_mode = dto.extension_mode.clone();
+        let extension_category = dto.extension_category.clone();
+        let extensions = dto.extensions.clone().or_else(|| {
+            if let Some(ref fp) = dto.fingerprint_json {
+                if let Some(arr) = fp.get("extensions") {
+                    return Some(arr.clone());
+                }
+            }
+            None
+        });
+
         let profile = Profile {
             id: id.clone(),
             name: dto.name.unwrap_or_else(|| format!("Perfil #{id}")),
@@ -184,6 +195,9 @@ impl ProfileStorage {
             deleted_at: None,
             proxy,
             fingerprint_json: dto.fingerprint_json.unwrap_or_else(|| serde_json::json!({})),
+            extension_mode,
+            extension_category,
+            extensions,
         };
 
         // Grava no disco em data/profiles/<id>/metadata.json
@@ -282,9 +296,9 @@ impl ProfileStorage {
         Ok(count)
     }
 
-    pub fn launch(&self, id: &str) -> Result<(Profile, u32), String> {
+    pub async fn launch(&self, id: &str) -> Result<(Profile, u32), String> {
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
-        let pid = self.process_manager.launch(&profile, &self.data_dir)?;
+        let pid = self.process_manager.launch(&profile, &self.data_dir).await?;
         let now = Self::now_secs();
         profile.status = "running".to_string();
         profile.last_launch = Some(now);

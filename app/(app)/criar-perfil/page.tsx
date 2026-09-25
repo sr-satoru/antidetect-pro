@@ -127,6 +127,9 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
     enablePassword: false,
     password: '',
     launchHook: '',
+    extensionMode: 'team',
+    extensionCategory: 'kit_basico',
+    extensions: [],
   };
 };
 

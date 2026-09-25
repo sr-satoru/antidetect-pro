@@ -32,10 +32,34 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
   const currentMode = formData.extensionMode || 'team';
   const selectedCategory = formData.extensionCategory || 'kit_basico';
 
+  // Sincroniza extensões padrão quando carregadas
+  React.useEffect(() => {
+    if (
+      currentMode === 'team' &&
+      (!formData.extensions || formData.extensions.length === 0) &&
+      teamExtensions.length > 0
+    ) {
+      onChange('extensions', teamExtensions);
+    }
+  }, [currentMode, teamExtensions, formData.extensions, onChange]);
+
   const handleSelectMode = (mode: string, categoryId?: string) => {
     onChange('extensionMode', mode);
     if (categoryId) {
       onChange('extensionCategory', categoryId);
+      const found = categories.find((c) => c.id === categoryId);
+      if (found) {
+        const exts =
+          categoryId === 'kit_basico' &&
+          (!found.extensions || found.extensions.length === 0)
+            ? teamExtensions
+            : found.extensions || [];
+        onChange('extensions', exts);
+      }
+    } else if (mode === 'team') {
+      onChange('extensions', teamExtensions);
+    } else if (mode === 'none') {
+      onChange('extensions', []);
     }
     setShowExtensionDropdown(false);
   };
