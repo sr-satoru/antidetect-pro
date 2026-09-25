@@ -91,6 +91,38 @@ const renderPlatformBadge = (platformName: string): React.ReactNode => {
   }
 };
 
+const formatDateDisplay = (
+  val?: number | string | null,
+): { date: string; time: string } | null => {
+  if (!val) return null;
+  let d: Date;
+  if (typeof val === 'number') {
+    d = new Date(val * 1000);
+  } else if (typeof val === 'string') {
+    if (val.includes(' ')) {
+      const parts = val.split(' ');
+      return { date: parts[0], time: parts[1] || '' };
+    }
+    const num = Number(val);
+    if (!isNaN(num) && num > 100000000) {
+      d = new Date(num * 1000);
+    } else {
+      d = new Date(val);
+    }
+  } else {
+    return null;
+  }
+  if (isNaN(d.getTime())) return null;
+
+  return {
+    date: d.toLocaleDateString('pt-BR'),
+    time: d.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+  };
+};
+
 export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   profile,
   isSelected,
@@ -114,6 +146,45 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       ? 'bg-[#2C2D33] group-hover:bg-[#484848]'
       : 'bg-[#383838] group-hover:bg-[#484848]';
 
+  const isRunning = profile.status === 'running' || profile.isRunning;
+  const osKey = (profile.os || 'linux').toLowerCase();
+
+  const idStr = String(profile.id || '');
+  const idDisplay = idStr.length > 8 ? `${idStr.substring(0, 8)}...` : idStr;
+
+  const proxyHost =
+    profile.ip ||
+    profile.proxy?.host ||
+    (profile.proxy?.type && profile.proxy.type !== 'none'
+      ? `${(profile.proxy.proxy_type || profile.proxy.type).toUpperCase()} Proxy`
+      : 'DIRECT');
+
+  const proxyTypeDesc =
+    profile.proxy?.type && profile.proxy.type !== 'none'
+      ? profile.proxy.host
+        ? `${profile.proxy.type.toUpperCase()}:${profile.proxy.port || ''}`
+        : profile.proxy.type.toUpperCase()
+      : profile.country
+        ? profile.country.toUpperCase()
+        : 'NO PROXY';
+
+  const isProxyConnected =
+    profile.proxyConnected ||
+    (profile.proxy?.type && profile.proxy.type !== 'none');
+
+  const lastOpened = formatDateDisplay(
+    profile.last_launch || profile.lastOpened,
+  );
+  const createdAt = formatDateDisplay(
+    profile.created_at || profile.createdAt,
+  ) || { date: 'Hoje', time: '' };
+
+  const tagsList: string[] = Array.isArray(profile.tags)
+    ? profile.tags
+    : typeof profile.tags === 'string' && profile.tags
+      ? profile.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
+      : [];
+
   return (
     <tr
       className={`group h-[62px] border-b border-[#44444C] transition-colors ${rowBg}`}
@@ -129,13 +200,16 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       </td>
 
       {/* 2. Nº / ID */}
-      <td className="w-[85px] min-w-[85px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-white">
-        #{!isNaN(Number(profile.id)) && Number(profile.id) < 10 ? `0${Number(profile.id)}` : profile.id}
+      <td
+        className="w-[85px] min-w-[85px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-white"
+        title={idStr}
+      >
+        #{idDisplay}
       </td>
 
       {/* 3. Grupo */}
       <td className="w-[115px] min-w-[115px] px-3.5 py-2.5 text-[11px] font-medium whitespace-nowrap text-[#C8CBD4] uppercase">
-        {profile.group.toUpperCase()}
+        {(profile.group || 'Desagrupado').toUpperCase()}
       </td>
 
       {/* 4. Nome + OS */}
@@ -145,9 +219,9 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
         title="Editar perfil"
       >
         <div className="flex items-center gap-2">
-          {OS_ICONS[profile.os] || OS_ICONS.windows}
+          {OS_ICONS[osKey] || OS_ICONS.windows}
           <span className="text-xs font-semibold tracking-wide text-white uppercase">
-            {profile.name.toUpperCase()}
+            {(profile.name || 'Sem nome').toUpperCase()}
           </span>
           <button
             type="button"
@@ -168,15 +242,15 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           <ArrowLeftRight size={12} className="shrink-0 text-[#9EA2AE]" />
           <span
             className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-              profile.proxyConnected ? 'bg-[#10b981]' : 'bg-[#52525b]'
+              isProxyConnected ? 'bg-[#10b981]' : 'bg-[#52525b]'
             }`}
           />
           <div className="flex flex-col leading-tight">
             <span className="font-mono text-[11px] font-semibold text-white">
-              {profile.ip || 'DIRECT'}
+              {proxyHost}
             </span>
             <span className="text-[10px] text-[#9EA2AE] uppercase">
-              {profile.country ? profile.country.toUpperCase() : 'NO PROXY'}
+              {proxyTypeDesc}
             </span>
           </div>
         </div>
@@ -184,14 +258,10 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
       {/* 6. Última Sessão */}
       <td className="w-[120px] min-w-[120px] px-3.5 py-2.5 whitespace-nowrap">
-        {profile.lastOpened ? (
+        {lastOpened ? (
           <div className="flex flex-col font-mono leading-tight">
-            <span className="text-[11px] text-[#C8CBD4]">
-              {profile.lastOpened.split(' ')[0]}
-            </span>
-            <span className="text-[10px] text-[#9EA2AE]">
-              {profile.lastOpened.split(' ')[1]}
-            </span>
+            <span className="text-[11px] text-[#C8CBD4]">{lastOpened.date}</span>
+            <span className="text-[10px] text-[#9EA2AE]">{lastOpened.time}</span>
           </div>
         ) : (
           <span className="text-[#9EA2AE]">-</span>
@@ -200,18 +270,20 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
       {/* 7. Plataforma */}
       <td className="w-[210px] min-w-[210px] px-3.5 py-2.5 whitespace-nowrap">
-        {profile.platform ? (
+        {profile.platform && typeof profile.platform === 'object' && profile.platform.handle ? (
           <div className="flex items-center gap-2">
-            {renderPlatformBadge(profile.platform.name)}
+            {renderPlatformBadge(profile.platform.name || '')}
             <div className="flex flex-col leading-tight">
               <span className="text-[11px] font-medium text-white uppercase">
-                {profile.platform.handle.toUpperCase()}
+                {String(profile.platform.handle).toUpperCase()}
               </span>
               <span className="text-[10px] text-[#9EA2AE]">
                 @{profile.platform.handle}
               </span>
             </div>
           </div>
+        ) : typeof profile.platform === 'string' && profile.platform ? (
+          <span className="text-[11px] text-white uppercase">{profile.platform}</span>
         ) : (
           <span className="text-[#9EA2AE]">-</span>
         )}
@@ -219,9 +291,9 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
       {/* 8. Tags */}
       <td className="w-[190px] min-w-[190px] px-3.5 py-2.5 whitespace-nowrap">
-        {profile.tags && profile.tags.length > 0 ? (
+        {tagsList.length > 0 ? (
           <div className="flex items-center gap-1 overflow-hidden">
-            {profile.tags.map((t: string) => (
+            {tagsList.map((t: string) => (
               <span
                 key={t}
                 className="inline-block shrink-0 rounded border border-[#44444C] bg-[#282930] px-1.5 py-0.5 text-[10px] font-medium text-[#C8CBD4] uppercase transition-colors hover:border-[#DFE104] hover:text-[#DFE104]"
@@ -243,12 +315,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       {/* 10. Criação */}
       <td className="w-[120px] min-w-[120px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex flex-col font-mono leading-tight">
-          <span className="text-[11px] text-[#C8CBD4]">
-            {profile.createdAt.split(' ')[0]}
-          </span>
-          <span className="text-[10px] text-[#9EA2AE]">
-            {profile.createdAt.split(' ')[1]}
-          </span>
+          <span className="text-[11px] text-[#C8CBD4]">{createdAt.date}</span>
+          <span className="text-[10px] text-[#9EA2AE]">{createdAt.time}</span>
         </div>
       </td>
 
@@ -260,17 +328,17 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           type="button"
           onClick={() => onToggleRunning(profile.id)}
           className={`inline-flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 rounded-md px-3.5 text-xs font-bold transition-all active:scale-[0.98] ${
-            profile.isRunning
+            isRunning
               ? 'border border-[#ff334b]/35 bg-[#ff334b]/12 text-[#ff334b] hover:bg-[#ff334b] hover:text-black'
               : 'border border-[#DFE104]/35 bg-[#DFE104]/12 text-[#DFE104] hover:bg-[#DFE104] hover:text-black'
           }`}
         >
-          {profile.isRunning ? (
+          {isRunning ? (
             <Square size={11} fill="currentColor" />
           ) : (
             <Play size={11} fill="currentColor" />
           )}
-          <span>{profile.isRunning ? 'Parar' : 'Iniciar'}</span>
+          <span>{isRunning ? 'Parar' : 'Iniciar'}</span>
         </button>
       </td>
 
@@ -292,3 +360,4 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 };
 
 export default LinhaTabela;
+

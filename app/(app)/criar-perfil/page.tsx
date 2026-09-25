@@ -16,7 +16,7 @@ import {
   generateRandomMacAddress,
 } from '@/utils';
 
-export const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
+const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
   const osKey = (
     suggestedOS in config.userAgents ? suggestedOS : 'linux'
   ) as keyof typeof config.userAgents;
@@ -33,7 +33,7 @@ export const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
     name: '',
     group: 'Desagrupado',
     tags: [] as string[],
-    kernel: 'FlowerBrowser',
+    kernel: 'Camoufox',
     kernelVersion: '150',
     os: osKey,
     osVersion: 'Linux x86_64',

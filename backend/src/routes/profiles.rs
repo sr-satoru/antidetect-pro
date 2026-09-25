@@ -108,12 +108,28 @@ pub async fn launch_profile(
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     match storage.launch(&id) {
-        Ok(profile) => Ok(Json(serde_json::json!({
+        Ok((profile, pid)) => Ok(Json(serde_json::json!({
             "status": "launched",
             "profile_id": profile.id,
+            "pid": pid,
             "kernel": profile.kernel,
-            "message": format!("Navegador {} iniciado com sucesso.", profile.kernel)
+            "message": format!("Navegador {} iniciado com sucesso (PID: {pid}).", profile.kernel)
+        }))),
+        Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, err)),
+    }
+}
+
+pub async fn stop_profile(
+    State(storage): State<Arc<ProfileStorage>>,
+    Path(id): Path<String>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    match storage.stop(&id) {
+        Ok(profile) => Ok(Json(serde_json::json!({
+            "status": "stopped",
+            "profile_id": profile.id,
+            "message": "Navegador finalizado com sucesso."
         }))),
         Err(err) => Err((StatusCode::NOT_FOUND, err)),
     }
 }
+

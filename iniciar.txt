@@ -1,13 +1,14 @@
 # Comandos para iniciar o Fury
 
-# 1. Iniciar o Backend
+# 1. Iniciar o Backend (Rust + Axum)
 cd /home/vanir/fury/frontend/backend
-source venv/bin/activate
-uvicorn main:app --reload --port 8000
+cargo run
 
-# 2. Iniciar o Frontend
+# 2. Iniciar o Frontend (Vite + React)
 cd /home/vanir/fury/frontend/app
 npm run dev
 
-# 3. Acessar a Documentação da API (Swagger)
-Abra no navegador: http://127.0.0.1:8000/docs
+# 3. Portas dos Serviços
+# Frontend: http://localhost:5174
+# Backend:  http://127.0.0.1:8000
+

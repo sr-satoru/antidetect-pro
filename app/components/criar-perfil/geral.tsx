@@ -56,6 +56,25 @@ const renderOSIcon = (os: string): React.ReactNode => {
 export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
   const [showGroupDropdown, setShowGroupDropdown] = useState(false);
   const [showUaDropdown, setShowUaDropdown] = useState(false);
+  const [showTagInput, setShowTagInput] = useState(false);
+  const [newTagText, setNewTagText] = useState('');
+
+  const currentTags: string[] = Array.isArray(formData.tags)
+    ? formData.tags
+    : typeof formData.tags === 'string' && formData.tags
+    ? formData.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
+    : [];
+
+  const handleAddTag = (tag: string) => {
+    const trimmed = tag.trim();
+    if (!trimmed || currentTags.includes(trimmed)) return;
+    onChange('tags', [...currentTags, trimmed]);
+    setNewTagText('');
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    onChange('tags', currentTags.filter((t) => t !== tagToRemove));
+  };
 
   const osList = config.osOptions.map((item) => ({
     ...item,
@@ -108,65 +127,35 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
           Browser Kernel
         </label>
         <div className="flex flex-wrap items-center gap-3">
-          {/* SunBrowser */}
+          {/* Camoufox Nativo */}
           <Tooltip
-            content="Motor Chromium (Chrome): máxima compatibilidade com extensões e sites da web."
-            position="top"
-          >
-            <div
-              onClick={() => onChange('kernel', 'SunBrowser')}
-              className={`flex cursor-pointer items-center gap-2 rounded-md border px-3.5 py-2 transition-all select-none ${
-                formData.kernel === 'SunBrowser'
-                  ? 'border-[#2F80ED] bg-[#1D2536] text-white'
-                  : 'border-[#333541] bg-[#1C1D24] text-[#9A9EB0] hover:border-[#444756]'
-              }`}
-            >
-              <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF7A00] to-[#2F80ED] text-[10px] font-bold text-white">
-                S
-              </div>
-              <span className="text-[13px] font-medium">SunBrowser</span>
-              <svg
-                className="ml-1 h-3.5 w-3.5 opacity-60"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </div>
-          </Tooltip>
-
-          {/* FlowerBrowser */}
-          <Tooltip
-            content="Motor Firefox / Camoufox: isolamento anti-impressão digital reforçado para perfis de alta proteção."
+            content="Motor Camoufox nativo (base Gecko / Firefox 150): evasão avançada de fingerprinting, isolamento de perfis e spoofing de hardware/WebRTC."
             position="top"
           >
             <div className="flex flex-col">
               <div
-                onClick={() => onChange('kernel', 'FlowerBrowser')}
-                className={`flex cursor-pointer items-center gap-2 rounded-md border px-3.5 py-2 transition-all select-none ${
-                  formData.kernel === 'FlowerBrowser'
-                    ? 'border-[#2F80ED] bg-[#192233] text-white ring-1 ring-[#2F80ED]/30'
-                    : 'border-[#333541] bg-[#1C1D24] text-[#9A9EB0] hover:border-[#444756]'
-                }`}
+                onClick={() => onChange('kernel', 'Camoufox')}
+                className="flex cursor-pointer items-center gap-2.5 rounded-md border border-[#2F80ED] bg-[#192233] px-4 py-2.5 text-white ring-1 ring-[#2F80ED]/30 transition-all select-none"
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-tr from-[#2F80ED] to-[#00D2FF] text-[10px] font-bold text-white">
-                  ✿
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF7A00] to-[#E65100] text-[11px] font-bold text-white shadow-sm">
+                  🦊
                 </div>
-                <span className="text-[13px] font-medium">FlowerBrowser</span>
+                <span className="text-[13px] font-semibold text-white">Camoufox</span>
+                <span className="rounded bg-[#2F80ED]/20 px-1.5 py-0.5 text-[10px] font-semibold text-[#64B5F6]">
+                  Nativo
+                </span>
                 <svg
-                  className="ml-1 h-3.5 w-3.5 opacity-60"
+                  className="ml-1 h-3.5 w-3.5 text-[#2F80ED]"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="2.5"
                 >
-                  <polyline points="6 9 12 15 18 9" />
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <span className="pt-1 pl-1 text-[11px] text-[#787D90]">
-                Cromado Firefox 150
+              <span className="pt-1.5 pl-1 text-[11px] text-[#787D90]">
+                Base Gecko / Firefox 150 · Motor padrão ativo
               </span>
             </div>
           </Tooltip>
@@ -336,33 +325,110 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
             )}
           </div>
 
-          <button
-            type="button"
-            className="flex cursor-pointer items-center gap-1.5 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#2F80ED] select-none hover:border-[#2F80ED]/50"
-          >
-            <svg
-              className="h-3.5 w-3.5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowTagInput(!showTagInput)}
+              className={`flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-2 text-[12.5px] transition-colors select-none ${
+                showTagInput || currentTags.length > 0
+                  ? 'border-[#2F80ED] bg-[#1D2536] text-white'
+                  : 'border-[#333541] bg-[#1C1D24] text-[#2F80ED] hover:border-[#2F80ED]/50'
+              }`}
             >
-              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-              <line x1="7" y1="7" x2="7.01" y2="7" />
-            </svg>
-            <span>Tags</span>
-            <svg
-              className="h-3 w-3 opacity-60"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
+              <svg
+                className="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
+              <span>Tags {currentTags.length > 0 && `(${currentTags.length})`}</span>
+              <svg
+                className="h-3 w-3 opacity-60"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {showTagInput && (
+              <div className="absolute right-0 top-full z-20 mt-1.5 w-64 rounded-md border border-[#363845] bg-[#212229] p-2.5 shadow-xl">
+                <div className="flex items-center gap-1.5 pb-2">
+                  <input
+                    type="text"
+                    value={newTagText}
+                    onChange={(e) => setNewTagText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddTag(newTagText);
+                      }
+                    }}
+                    placeholder="Adicionar tag e dar Enter..."
+                    className="flex-1 rounded border border-[#3A3D4D] bg-[#17181F] px-2 py-1 text-[12px] text-white placeholder-[#686D80] focus:border-[#2F80ED] focus:outline-none"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleAddTag(newTagText)}
+                    className="cursor-pointer rounded bg-[#2F80ED] px-2.5 py-1 text-[12px] font-medium text-white hover:bg-[#256ECC]"
+                  >
+                    +
+                  </button>
+                </div>
+                {currentTags.length > 0 ? (
+                  <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto pt-1">
+                    {currentTags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="flex items-center gap-1 rounded bg-[#2A3142] px-2 py-0.5 text-[11px] text-[#A8C7FA]"
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTag(tag)}
+                          className="cursor-pointer text-[#8C93A8] hover:text-red-400"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-[#717688]">Nenhuma tag adicionada.</p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Badges de Tags ativas visíveis */}
+      {currentTags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 sm:pl-[146px]">
+          {currentTags.map((tag) => (
+            <span
+              key={tag}
+              className="flex items-center gap-1.5 rounded-full border border-[#2F80ED]/30 bg-[#1D2536] px-2.5 py-0.5 text-[11.5px] font-medium text-[#99C5FF]"
+            >
+              #{tag}
+              <button
+                type="button"
+                onClick={() => handleRemoveTag(tag)}
+                className="cursor-pointer text-[#6B7898] transition-colors hover:text-red-400"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* 6. Cookie */}
       <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-start sm:gap-4">

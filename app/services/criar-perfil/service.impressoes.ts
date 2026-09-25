@@ -134,7 +134,7 @@ export function extrairImpressaoDigitalLimpa(formData: any): ImpressaoDigitalDat
     open_tabs_urls: formData.openTabsUrls || undefined,
     cookies: formData.cookies || undefined,
 
-    kernel: formData.kernel || 'FlowerBrowser',
+    kernel: formData.kernel || 'Camoufox',
     kernel_version: formData.kernelVersion || '150',
     os: (formData.os || 'windows').toLowerCase(),
     os_version: formData.osVersion || 'Linux x86_64',

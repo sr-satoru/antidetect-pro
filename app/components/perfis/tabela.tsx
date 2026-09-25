@@ -28,7 +28,7 @@ export const Tabela: React.FC<TabelaProps> = ({
 }) => {
   const isAllSelected =
     profiles.length > 0 && selectedIds.length === profiles.length;
-  const runningCount = profiles.filter((p) => p.isRunning).length;
+  const runningCount = profiles.filter((p) => p.isRunning || p.status === 'running').length;
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-[#3E404D] bg-[#24252B] shadow-xs">

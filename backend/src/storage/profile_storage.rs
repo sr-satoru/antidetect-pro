@@ -1,10 +1,13 @@
+use crate::launcher::ProcessManager;
 use crate::models::{CreateProfileDto, Profile, ProfileProxyConfig, UpdateProfileDto};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub struct ProfileStorage {
     data_dir: PathBuf,
+    process_manager: Arc<ProcessManager>,
 }
 
 impl ProfileStorage {
@@ -13,6 +16,7 @@ impl ProfileStorage {
         let _ = fs::create_dir_all(&dir);
         Self {
             data_dir: dir,
+            process_manager: Arc::new(ProcessManager::new()),
         }
     }
 
@@ -35,8 +39,15 @@ impl ProfileStorage {
                     if file_type.is_dir() {
                         let meta_path = entry.path().join("metadata.json");
                         if let Ok(content) = fs::read_to_string(meta_path) {
-                            if let Ok(profile) = serde_json::from_str::<Profile>(&content) {
+                            if let Ok(mut profile) = serde_json::from_str::<Profile>(&content) {
                                 if !profile.is_deleted {
+                                    // Sincroniza em tempo real o status com o processo no SO
+                                    let is_alive = self.process_manager.is_running(&profile.id);
+                                    if is_alive && profile.status != "running" {
+                                        profile.status = "running".to_string();
+                                    } else if !is_alive && profile.status == "running" {
+                                        profile.status = "ready".to_string();
+                                    }
                                     profiles.push(profile);
                                 }
                             }
@@ -101,10 +112,17 @@ impl ProfileStorage {
     pub fn get(&self, id: &str) -> Option<Profile> {
         let path = self.get_profile_path(id);
         if let Ok(content) = fs::read_to_string(path) {
-            serde_json::from_str(&content).ok()
-        } else {
-            None
+            if let Ok(mut profile) = serde_json::from_str::<Profile>(&content) {
+                let is_alive = self.process_manager.is_running(&profile.id);
+                if is_alive && profile.status != "running" {
+                    profile.status = "running".to_string();
+                } else if !is_alive && profile.status == "running" {
+                    profile.status = "ready".to_string();
+                }
+                return Some(profile);
+            }
         }
+        None
     }
 
     pub fn create(&self, dto: CreateProfileDto) -> Result<Profile, String> {
@@ -156,7 +174,7 @@ impl ProfileStorage {
             tags,
             notes: dto.notes.unwrap_or_default(),
             status: dto.status.unwrap_or_else(|| "ready".to_string()),
-            kernel: dto.kernel.unwrap_or_else(|| "FlowerBrowser".to_string()),
+            kernel: dto.kernel.unwrap_or_else(|| "Camoufox".to_string()),
             browser_version: dto.browser_version.unwrap_or_else(|| "150".to_string()),
             os: dto.os.unwrap_or_else(|| "windows".to_string()),
             created_at: now,
@@ -194,6 +212,9 @@ impl ProfileStorage {
             profile.notes = notes;
         }
         if let Some(status) = dto.status {
+            if status == "ready" {
+                let _ = self.process_manager.stop(id);
+            }
             profile.status = status;
         }
         if let Some(tags_val) = dto.tags {
@@ -219,6 +240,7 @@ impl ProfileStorage {
     }
 
     pub fn soft_delete(&self, id: &str) -> Result<(), String> {
+        let _ = self.process_manager.stop(id);
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
         profile.is_deleted = true;
         profile.deleted_at = Some(Self::now_secs());
@@ -243,6 +265,7 @@ impl ProfileStorage {
     }
 
     pub fn permanent_delete(&self, id: &str) -> Result<(), String> {
+        let _ = self.process_manager.stop(id);
         let profile_dir = self.data_dir.join(id);
         if profile_dir.exists() {
             fs::remove_dir_all(profile_dir).map_err(|e| e.to_string())?;
@@ -259,11 +282,25 @@ impl ProfileStorage {
         Ok(count)
     }
 
-    pub fn launch(&self, id: &str) -> Result<Profile, String> {
+    pub fn launch(&self, id: &str) -> Result<(Profile, u32), String> {
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
+        let pid = self.process_manager.launch(&profile, &self.data_dir)?;
         let now = Self::now_secs();
         profile.status = "running".to_string();
         profile.last_launch = Some(now);
+        profile.updated_at = now;
+
+        let meta_file = self.get_profile_path(id);
+        let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
+        fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
+        Ok((profile, pid))
+    }
+
+    pub fn stop(&self, id: &str) -> Result<Profile, String> {
+        let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
+        self.process_manager.stop(id)?;
+        let now = Self::now_secs();
+        profile.status = "ready".to_string();
         profile.updated_at = now;
 
         let meta_file = self.get_profile_path(id);

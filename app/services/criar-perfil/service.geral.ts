@@ -44,7 +44,7 @@ export const serviceGeral = {
 
     return {
       name: (formData.name && formData.name.trim()) || 'NOVO PERFIL',
-      kernel: formData.kernel || 'FlowerBrowser',
+      kernel: formData.kernel || 'Camoufox',
       kernel_version: formData.kernelVersion || '150',
       os: (formData.os || 'linux').toLowerCase(),
       user_agent: formData.userAgent || '',

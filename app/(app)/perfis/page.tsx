@@ -19,15 +19,16 @@ export const PerfisPage: React.FC = () => {
   const [editingProfile, setEditingProfile] = useState<any | null>(null);
   const [editNameInput, setEditNameInput] = useState('');
 
-  // Carrega perfis reais do backend local SQLite
+  // Carrega perfis reais do backend local
   const fetchProfiles = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
       const data = await api.profiles.list(searchQuery, selectedGroup);
-      setProfiles(data);
+      const list = Array.isArray(data) ? data : [];
+      setProfiles(list);
     } catch (err: any) {
-      setError(err.message || 'Erro ao carregar perfis do banco local.');
+      setError(err.message || 'Erro ao carregar perfis do backend local.');
     } finally {
       setIsLoading(false);
     }
@@ -45,8 +46,9 @@ export const PerfisPage: React.FC = () => {
         !q ||
         (p.name && p.name.toLowerCase().includes(q)) ||
         (p.ip && p.ip.toLowerCase().includes(q)) ||
-        (p.tags &&
-          p.tags.some((t: string) => t.toLowerCase().includes(q)));
+        (p.proxy?.host && p.proxy.host.toLowerCase().includes(q)) ||
+        (Array.isArray(p.tags) &&
+          p.tags.some((t: string) => typeof t === 'string' && t.toLowerCase().includes(q)));
 
       const matchesGroup =
         selectedGroup === 'Todos os grupos' || p.group === selectedGroup;
@@ -99,9 +101,9 @@ export const PerfisPage: React.FC = () => {
     } else {
       // Parar perfil
       try {
-        await api.profiles.update(String(id), { status: 'ready' });
+        await api.profiles.stop(String(id));
         setProfiles((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, isRunning: false } : p)),
+          prev.map((p) => (p.id === id ? { ...p, isRunning: false, status: 'ready' } : p)),
         );
       } catch (err: any) {
         console.error('Erro ao parar perfil:', err);
@@ -125,7 +127,7 @@ export const PerfisPage: React.FC = () => {
   const handleStopSelected = async () => {
     for (const id of selectedIds) {
       try {
-        await api.profiles.update(String(id), { status: 'ready' });
+        await api.profiles.stop(String(id));
       } catch (err) {
         console.error(err);
       }
@@ -209,6 +211,20 @@ export const PerfisPage: React.FC = () => {
         onStopSelected={handleStopSelected}
         onDeleteSelected={handleDeleteSelected}
       />
+
+      {/* Alerta de erro de comunicação */}
+      {error && (
+        <div className="flex items-center justify-between rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-xs text-red-400">
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={fetchProfiles}
+            className="cursor-pointer font-semibold underline hover:text-red-300"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      )}
 
       {/* Tabela de dados */}
       {isLoading ? (

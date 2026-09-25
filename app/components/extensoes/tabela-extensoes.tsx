@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/services/index.api';
 
-export const CATALOG_CATEGORIES = [
+const CATALOG_CATEGORIES = [
   'All',
   'Workflow and planning',
   'Shopping',

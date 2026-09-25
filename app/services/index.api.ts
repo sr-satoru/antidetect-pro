@@ -55,6 +55,8 @@ export const api = {
       http.delete<any>(`/api/profiles/${id}`),
     launch: (id: string | number) =>
       http.post<any>(`/api/profiles/${id}/launch`),
+    stop: (id: string | number) =>
+      http.post<any>(`/api/profiles/${id}/stop`),
     listTrash: () => http.get<any[]>('/api/profiles/trash'),
     restore: (id: string | number) =>
       http.post<any>(`/api/profiles/${id}/restore`),

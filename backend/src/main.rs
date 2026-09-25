@@ -7,6 +7,7 @@ use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+mod launcher;
 mod models;
 mod routes;
 mod storage;
@@ -41,6 +42,7 @@ async fn main() {
                 .delete(routes::profiles::delete_profile),
         )
         .route("/{id}/launch", post(routes::profiles::launch_profile))
+        .route("/{id}/stop", post(routes::profiles::stop_profile))
         .route("/{id}/restore", post(routes::profiles::restore_profile))
         .route("/{id}/permanent", delete(routes::profiles::delete_permanent))
         .with_state(profile_storage);

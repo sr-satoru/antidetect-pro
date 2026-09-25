@@ -8,7 +8,7 @@
  */
 
 export type OsType = 'windows' | 'macos' | 'linux';
-export type KernelType = 'FlowerBrowser' | 'SunBrowser';
+export type KernelType = 'Camoufox' | 'FlowerBrowser' | 'SunBrowser';
 export type ProfileStatus = 'ready' | 'running' | 'error';
 export type SyncStatus = 'local' | 'synced' | 'pending_upload' | 'pending_download';
 
