@@ -1,12 +1,18 @@
 /**
- * Service Avançado (Criar Perfil) — Configurações avançadas do perfil.
- * Focado exclusivamente nas opções da aba "Avançado" na criação de perfil.
+ * Service Avançado (Criar Perfil) — Configurações avançadas de automação.
+ *
+ * Corresponde ao componente avancado.tsx (aba "Avançado"):
+ *   - Scripts em segundo plano
+ *   - Porta de depuração remota
+ *   - Extensões do navegador
+ *
+ * Nota: O componente avancado.tsx ainda é um placeholder.
+ * Este service será expandido conforme as configurações forem implementadas.
  */
 
 export const serviceAvancado = {
   /**
-   * Monta o fragmento de configurações avançadas para inclusão no payload.
-   * Campos como: Do Not Track, Port Scan, Hardware Acceleration, TLS, Launch Hook.
+   * Extrai as configurações avançadas do formulário de criação de perfil.
    */
   extrairConfigAvancada: (formData: any) => ({
     do_not_track_mode: formData.doNotTrackMode || 'default',
