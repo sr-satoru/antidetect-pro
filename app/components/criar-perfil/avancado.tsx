@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, PlusCircle, AlertCircle, Check } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronUp,
+  PlusCircle,
+  AlertCircle,
+  Check,
+} from 'lucide-react';
 import { useRegisteredExtensions } from '@/utils/extensions';
+import {
+  useExtensionCategories,
+  ExtensionCategory,
+} from '@/utils/extension-categories';
+import { ModalNovaCategoriaExtensao } from './modal-nova-categoria-extensao';
 
 interface AvancadoTabProps {
   formData: any;
@@ -12,23 +23,30 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
   onChange,
 }) => {
   const [showExtensionDropdown, setShowExtensionDropdown] = useState(false);
-  const { extensions, loading } = useRegisteredExtensions({ onlyEnabled: true });
+  const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
+
+  const { extensions: teamExtensions, loading: loadingExtensions } =
+    useRegisteredExtensions({ onlyEnabled: true });
+  const { categories } = useExtensionCategories();
 
   const currentMode = formData.extensionMode || 'team';
   const selectedCategory = formData.extensionCategory || 'kit_basico';
 
-  const handleSelectMode = (mode: string, category?: string) => {
+  const handleSelectMode = (mode: string, categoryId?: string) => {
     onChange('extensionMode', mode);
-    if (category) {
-      onChange('extensionCategory', category);
+    if (categoryId) {
+      onChange('extensionCategory', categoryId);
     }
     setShowExtensionDropdown(false);
   };
 
   const getDisplayLabel = () => {
     if (currentMode === 'none') return 'Não usar extensões';
-    if (currentMode === 'category' && selectedCategory === 'kit_basico') return 'kit basico';
     if (currentMode === 'team') return 'Usar extensões da equipe';
+    if (currentMode === 'category') {
+      const found = categories.find((c) => c.id === selectedCategory);
+      return found ? found.name : 'kit basico';
+    }
     return 'Select';
   };
 
@@ -63,7 +81,10 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                 {/* 1. Botão Topo: + Nova categoria */}
                 <button
                   type="button"
-                  onClick={() => alert('Funcionalidade de criar nova categoria em breve.')}
+                  onClick={() => {
+                    setShowExtensionDropdown(false);
+                    setShowCreateCategoryModal(true);
+                  }}
                   className="flex w-full cursor-pointer items-center justify-center gap-2 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2A2C35]"
                 >
                   <PlusCircle size={15} className="text-white" />
@@ -89,65 +110,82 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                   </div>
                 </div>
 
-                {/* 3. Opção com ícones de extensões registradas: kit basico */}
-                <div className="px-2 py-0.5">
-                  <div
-                    onClick={() => handleSelectMode('category', 'kit_basico')}
-                    className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 transition-colors ${
-                      currentMode === 'category' && selectedCategory === 'kit_basico'
-                        ? 'bg-[#2A2C35]'
-                        : 'hover:bg-[#2A2C35]'
-                    }`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <span className="block text-[13px] font-medium text-white">
-                        kit basico
-                      </span>
+                {/* 3. Opções de Categorias (kit basico e categorias personalizadas) */}
+                {categories.map((cat: ExtensionCategory) => {
+                  const isSelected =
+                    currentMode === 'category' && selectedCategory === cat.id;
 
-                      {/* Miniaturas das extensões registradas com badge verde */}
-                      <div className="flex flex-wrap items-center gap-1.5 pt-1.5">
-                        {loading ? (
-                          <span className="text-[11px] text-[#6E7385]">
-                            Carregando extensões...
+                  // Se for kit basico usa as da equipe caso a categoria não tenha lista própria
+                  const categoryExtensions =
+                    cat.id === 'kit_basico' && (!cat.extensions || cat.extensions.length === 0)
+                      ? teamExtensions
+                      : cat.extensions || [];
+
+                  return (
+                    <div key={cat.id} className="px-2 py-0.5">
+                      <div
+                        onClick={() => handleSelectMode('category', cat.id)}
+                        className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 transition-colors ${
+                          isSelected ? 'bg-[#2A2C35]' : 'hover:bg-[#2A2C35]'
+                        }`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <span className="block text-[13px] font-medium text-white">
+                            {cat.name}
                           </span>
-                        ) : extensions.length > 0 ? (
-                          extensions.map((ext) => (
-                            <div
-                              key={ext.id}
-                              title={ext.name}
-                              className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] border border-[#383A4A] bg-[#1A1C24] p-0.5 shadow-2xs"
-                            >
-                              {ext.iconUrl ? (
-                                <img
-                                  src={ext.iconUrl}
-                                  alt={ext.name}
-                                  className="h-full w-full rounded-[3px] object-contain"
-                                />
-                              ) : (
-                                <span className="text-[10px] font-bold text-[#2F80ED]">
-                                  {ext.name.charAt(0).toUpperCase()}
-                                </span>
-                              )}
-                              {/* Bolinha verde indicador de ativa (igual screenshot) */}
-                              <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#52C41A] ring-1 ring-[#1A1C24]" />
-                            </div>
-                          ))
-                        ) : (
-                          <span className="text-[11px] text-[#6E7385]">
-                            Nenhuma extensão na equipe ainda
-                          </span>
-                        )}
+
+                          {/* Miniaturas das extensões com badge verde */}
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1.5">
+                            {cat.id === 'kit_basico' && loadingExtensions ? (
+                              <span className="text-[11px] text-[#6E7385]">
+                                Carregando extensões...
+                              </span>
+                            ) : categoryExtensions.length > 0 ? (
+                              categoryExtensions.map((ext: any) => (
+                                <div
+                                  key={ext.id}
+                                  title={ext.name}
+                                  className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] border border-[#383A4A] bg-[#1A1C24] p-0.5 shadow-2xs"
+                                >
+                                  {ext.iconUrl ? (
+                                    <img
+                                      src={ext.iconUrl}
+                                      alt={ext.name}
+                                      className="h-full w-full rounded-[3px] object-contain"
+                                    />
+                                  ) : (
+                                    <span className="text-[10px] font-bold text-[#2F80ED]">
+                                      {ext.name.charAt(0).toUpperCase()}
+                                    </span>
+                                  )}
+                                  <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#52C41A] ring-1 ring-[#1A1C24]" />
+                                </div>
+                              ))
+                            ) : (
+                              <span className="text-[11px] text-[#6E7385]">
+                                Nenhuma extensão selecionada nesta categoria
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="ml-3 shrink-0 flex items-center gap-2">
+                          {isSelected && (
+                            <Check size={14} className="text-[#2F80ED]" />
+                          )}
+                          <div
+                            title={cat.description || 'Categoria de extensões'}
+                          >
+                            <AlertCircle
+                              size={15}
+                              className="text-[#6E7385] hover:text-[#9BA1B4]"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
-
-                    <div className="ml-3 shrink-0">
-                      <AlertCircle
-                        size={15}
-                        className="text-[#6E7385] hover:text-[#9BA1B4]"
-                      />
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
 
                 {/* 4. Footer: Não há mais conteúdo */}
                 <div className="pt-3 pb-2 text-center text-[11px] text-[#6E7385] select-none">
@@ -167,6 +205,15 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
           </p>
         </div>
       </div>
+
+      {/* Modal para criar Nova Categoria */}
+      <ModalNovaCategoriaExtensao
+        isOpen={showCreateCategoryModal}
+        onClose={() => setShowCreateCategoryModal(false)}
+        onSuccess={(newCat) => {
+          handleSelectMode('category', newCat.id);
+        }}
+      />
     </div>
   );
 };
