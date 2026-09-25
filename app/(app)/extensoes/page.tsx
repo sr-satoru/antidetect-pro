@@ -5,7 +5,7 @@ import {
   RecommendedExtension,
 } from '@/components/extensoes/tabela-extensoes';
 import { ModalAdicionarExtensao } from '@/components/extensoes/modal-adicionar-extensao';
-import { api } from '@/services/api';
+import { api } from '@/services/index.api';
 
 export const ExtensoesPage: React.FC = () => {
   const [extensions, setExtensions] = useState<ExtensionItem[]>([]);

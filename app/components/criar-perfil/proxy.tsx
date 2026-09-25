@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
 import config from '@/config/perfil.json';
-import { api } from '@/services/api';
+import { api } from '@/services/index.api';
 
 interface ProxyTabProps {
   formData: any;

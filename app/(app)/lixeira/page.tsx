@@ -5,7 +5,7 @@ import {
   ItemLixeira,
 } from '@/components/lixeira';
 import { Trash2, CheckCircle2, X, AlertTriangle, Loader2 } from 'lucide-react';
-import { api } from '@/services/api';
+import { api } from '@/services/index.api';
 
 export const LixeiraPage: React.FC = () => {
   const [items, setItems] = useState<ItemLixeira[]>([]);

@@ -1,0 +1,277 @@
+/**
+ * Service dedicado para gestão e formatação das Impressões Digitais (Fingerprint).
+ * Extrai e envia ao backend apenas as configurações técnicas estritamente necessárias.
+ */
+
+import { http } from '../http';
+
+export interface ImpressaoDigitalData {
+  // Proxy associado
+  proxy_mode?: 'custom' | 'saved' | 'none';
+  proxy_type?: string;
+  proxy_host?: string;
+  proxy_port?: number;
+  proxy_username?: string;
+  proxy_password?: string;
+  proxy_rotation_url?: string;
+  ip_checker?: string;
+  socks_remote_dns?: boolean;
+
+  // Extensões e contas
+  extensoes_ids?: string[] | string;
+  platform_url?: string;
+  platform_accounts?: any[];
+  open_tabs_urls?: string;
+  cookies?: string;
+
+  // Sistema e Kernel
+  kernel?: string;
+  kernel_version?: string;
+  os?: string;
+  os_version?: string;
+  user_agent?: string;
+  user_agent_category?: string;
+
+  // WebRTC e Fuso Horário
+  webrtc_mode?: string;
+  timezone_mode?: string;
+  custom_timezone?: string;
+
+  // Geolocalização
+  location_mode?: string;
+  location_permission?: string;
+  custom_latitude?: string;
+  custom_longitude?: string;
+  custom_accuracy?: number;
+
+  // Língua
+  language_mode?: string;
+  custom_language?: string;
+
+  // Resolução de Ecrã
+  screen_resolution_mode?: string;
+  screen_resolution?: string;
+  custom_screen_width?: number;
+  custom_screen_height?: number;
+  color_depth?: number;
+  device_pixel_ratio?: number;
+  max_touch_points?: number;
+
+  // Fontes
+  fonts_mode?: string;
+
+  // Ruído de Hardware (Anti-Fingerprint)
+  hardware_noise?: {
+    canvas?: boolean;
+    webgl_image?: boolean;
+    audio_context?: boolean;
+    media_devices?: boolean;
+    client_rects?: boolean;
+    speech_voices?: boolean;
+    font_pack?: boolean;
+    font_metrics?: boolean;
+  };
+
+  // Seeds
+  canvas_seed?: string;
+  webgl_seed?: string;
+  audio_seed?: string;
+  client_rects_seed?: string;
+  audio_sample_rate?: number;
+
+  // GPU & WebGL
+  webgl_metadata_mode?: string;
+  webgl_vendor?: string;
+  webgl_renderer?: string;
+  webgpu_mode?: string;
+
+  // CPU e Memória
+  cpu_mode?: string;
+  cpu_cores?: number;
+  ram_mode?: string;
+  ram_gb?: number;
+
+  // Identificação da Máquina
+  battery_mode?: string;
+  device_name_mode?: string;
+  device_name?: string;
+  mac_address_mode?: string;
+  mac_address?: string;
+
+  // Dispositivos de Mídia
+  micros_count?: number;
+  webcams_count?: number;
+  speakers_count?: number;
+
+  // Segurança e Rede
+  do_not_track_mode?: string;
+  port_scan_protection?: string;
+  port_scan_allowed_ports?: string;
+  hardware_acceleration?: string;
+  disable_tls_features?: string;
+  launch_hook?: string;
+}
+
+/**
+ * Converte o formulário bruto da tela de Criar Perfil em uma
+ * estrutura limpa e sem dados duplicados para o backend.
+ */
+export function extrairImpressaoDigitalLimpa(formData: any): ImpressaoDigitalData {
+  return {
+    proxy_mode: formData.proxyMode || 'custom',
+    proxy_type: formData.proxyType || 'none',
+    proxy_host: formData.proxyHost || undefined,
+    proxy_port: formData.proxyPort ? Number(formData.proxyPort) : undefined,
+    proxy_username: formData.proxyUser || undefined,
+    proxy_password: formData.proxyPass || undefined,
+    proxy_rotation_url: formData.proxyRotationUrl || undefined,
+    ip_checker: formData.ipChecker || 'IP2Location',
+    socks_remote_dns: formData.socksRemoteDns ?? true,
+
+    extensoes_ids: formData.extensions || [],
+    platform_url: formData.platformUrl || undefined,
+    platform_accounts: formData.platformAccounts || [],
+    open_tabs_urls: formData.openTabsUrls || undefined,
+    cookies: formData.cookies || undefined,
+
+    kernel: formData.kernel || 'FlowerBrowser',
+    kernel_version: formData.kernelVersion || '150',
+    os: (formData.os || 'windows').toLowerCase(),
+    os_version: formData.osVersion || 'Linux x86_64',
+    user_agent: formData.userAgent || undefined,
+    user_agent_category: formData.userAgentCategory || 'Todo',
+
+    webrtc_mode: formData.webrtcMode || 'disabled',
+    timezone_mode: formData.timezoneMode || 'ip',
+    custom_timezone: formData.customTimezone || 'America/Sao_Paulo',
+
+    location_mode: formData.locationMode || 'ip',
+    location_permission: formData.locationPermission || 'ask',
+    custom_latitude: formData.customLatitude || undefined,
+    custom_longitude: formData.customLongitude || undefined,
+    custom_accuracy: formData.customAccuracy ? Number(formData.customAccuracy) : 1000,
+
+    language_mode: formData.languageMode || 'ip',
+    custom_language: formData.customLanguage || 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+
+    screen_resolution_mode: formData.screenResolutionMode || 'default',
+    screen_resolution: formData.screenResolution || 'Com base no User-Agent',
+    custom_screen_width: formData.customScreenWidth ? Number(formData.customScreenWidth) : 1920,
+    custom_screen_height: formData.customScreenHeight ? Number(formData.customScreenHeight) : 1080,
+    color_depth: formData.colorDepth ? Number(formData.colorDepth) : 24,
+    device_pixel_ratio: formData.devicePixelRatio ? Number(formData.devicePixelRatio) : 1.0,
+    max_touch_points: formData.maxTouchPoints ? Number(formData.maxTouchPoints) : 0,
+
+    fonts_mode: formData.fontsMode || 'default',
+
+    hardware_noise: {
+      canvas: !!formData.hardwareNoise?.canvas,
+      webgl_image: !!formData.hardwareNoise?.webglImage,
+      audio_context: !!formData.hardwareNoise?.audioContext,
+      media_devices: !!formData.hardwareNoise?.mediaDevices,
+      client_rects: !!formData.hardwareNoise?.clientRects,
+      speech_voices: !!formData.hardwareNoise?.speechVoices,
+      font_pack: !!formData.hardwareNoise?.fontPack,
+      font_metrics: !!formData.hardwareNoise?.fontMetrics,
+    },
+
+    canvas_seed: formData.canvasSeed,
+    webgl_seed: formData.webglSeed,
+    audio_seed: formData.audioSeed,
+    client_rects_seed: formData.clientRectsSeed,
+    audio_sample_rate: formData.audioSampleRate ? Number(formData.audioSampleRate) : 48000,
+
+    webgl_metadata_mode: formData.webglMetadataMode || 'custom',
+    webgl_vendor: formData.webglVendor,
+    webgl_renderer: formData.webglRenderer,
+    webgpu_mode: formData.webgpuMode || 'webgl',
+
+    cpu_mode: formData.cpuMode || 'custom',
+    cpu_cores: formData.cpuCores ? Number(formData.cpuCores) : 10,
+    ram_mode: formData.ramMode || 'custom',
+    ram_gb: formData.ramGb ? Number(formData.ramGb) : 8,
+
+    battery_mode: formData.batteryMode || 'desktop',
+    device_name_mode: formData.deviceNameMode || 'custom',
+    device_name: formData.deviceName,
+    mac_address_mode: formData.macAddressMode || 'custom',
+    mac_address: formData.macAddress,
+
+    micros_count: formData.mediaDevicesCount?.micros ?? 1,
+    webcams_count: formData.mediaDevicesCount?.webcams ?? 1,
+    speakers_count: formData.mediaDevicesCount?.speakers ?? 2,
+
+    do_not_track_mode: formData.doNotTrackMode || 'default',
+    port_scan_protection: formData.portScanProtection || 'open',
+    port_scan_allowed_ports: formData.portScanAllowedPorts || undefined,
+    hardware_acceleration: formData.hardwareAcceleration || 'default',
+    disable_tls_features: formData.disableTlsFeatures || 'close',
+    launch_hook: formData.launchHook || undefined,
+  };
+}
+
+export const impressaoDigitalService = {
+  /**
+   * Prepara o payload completo e limpo para envio ao endpoint POST /api/profiles.
+   * Envia os campos cadastrais do perfil junto com a impressão digital estruturada.
+   */
+  montarPayloadPerfil: (formData: any) => {
+    const impressao = extrairImpressaoDigitalLimpa(formData);
+
+    let tagsString = '';
+    if (Array.isArray(formData.tags)) {
+      tagsString = formData.tags.join(',');
+    } else if (formData.tags) {
+      tagsString = String(formData.tags);
+    }
+
+    return {
+      // 1. Dados cadastrais do Perfil
+      name: (formData.name && formData.name.trim()) || 'NOVO PERFIL',
+      group: formData.group || 'Desagrupado',
+      tags: tagsString,
+      notes: formData.notes || '',
+      status: 'ready',
+
+      // 2. Atalhos diretos para a tabela de listagem
+      kernel: impressao.kernel,
+      browser_version: impressao.kernel_version,
+      os: impressao.os,
+      proxy_type: impressao.proxy_type,
+      proxy_host: impressao.proxy_host,
+      proxy_port: impressao.proxy_port,
+      proxy_username: impressao.proxy_username,
+      proxy_password: impressao.proxy_password,
+
+      // 3. Objeto de Impressão Digital estruturado (sem lixo duplicado)
+      fingerprint_json: JSON.stringify(impressao),
+    };
+  },
+
+  /**
+   * Obtém a impressão digital detalhada de um perfil pelo ID
+   */
+  getById: (id: string | number) => {
+    return http.get<ImpressaoDigitalData>(`/api/profiles/${id}`);
+  },
+
+  /**
+   * Testa a conexão de um proxy informado
+   */
+  testarProxy: (proxyConfig: {
+    type: string;
+    host: string;
+    port: number | string;
+    username?: string;
+    password?: string;
+  }) => {
+    return http.post<{
+      status: string;
+      latency_ms: number | null;
+      exit_ip: string | null;
+      message: string;
+    }>('/api/proxies/test', proxyConfig);
+  },
+};
+
+export default impressaoDigitalService;

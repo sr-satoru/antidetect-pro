@@ -7,7 +7,7 @@ import { ImpressaoDigitalTab } from '@/components/criar-perfil/impressoes';
 import { PlataformaTab } from '@/components/criar-perfil/plataforma';
 import { AvancadoTab } from '@/components/criar-perfil/avancado';
 import { Previas } from '@/components/criar-perfil/previas';
-import { api } from '@/services/api';
+import { api } from '@/services/index.api';
 import { Loader2 } from 'lucide-react';
 
 import {

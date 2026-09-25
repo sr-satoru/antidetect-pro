@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeaderTabela } from '@/components/perfis/headerTabela';
 import { Tabela } from '@/components/perfis/tabela';
-import { api } from '@/services/api';
+import { api } from '@/services/index.api';
 import { X, Check, Loader2 } from 'lucide-react';
 
 export const PerfisPage: React.FC = () => {

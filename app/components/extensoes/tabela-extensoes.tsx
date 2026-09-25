@@ -22,7 +22,7 @@ import {
   Loader2,
   Sparkles,
 } from 'lucide-react';
-import { api } from '@/services/api';
+import { api } from '@/services/index.api';
 
 export const CATALOG_CATEGORIES = [
   'All',

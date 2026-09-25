@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { TabelasProxies } from '@/components/proxy/tabelas-proxies';
-import { api } from '@/services/api';
+import { api } from '@/services/index.api';
 import {
   Search,
   Plus,
