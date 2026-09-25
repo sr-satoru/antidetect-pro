@@ -113,8 +113,16 @@ export const LoginPage: React.FC = () => {
             {loading ? (
               <Loader2 size={16} className="animate-spin text-black" />
             ) : (
-              <span>Entrar no Fury</span>
+              <span>Entrar na Nuvem</span>
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/perfis')}
+            className="flex h-9 w-full cursor-pointer items-center justify-center rounded-lg border border-[#2B2D38] bg-[#181A22] text-xs font-medium text-[#8E92A2] hover:bg-[#20222D] hover:text-white transition-colors"
+          >
+            ⚡ Continuar no Modo Offline (Sem Conta)
           </button>
         </form>
 
@@ -126,7 +134,7 @@ export const LoginPage: React.FC = () => {
               to="/auth/register"
               className="font-semibold text-[#DFE104] hover:underline"
             >
-              Criar Conta (Offline ou Nuvem)
+              Criar Conta na Nuvem
             </Link>
           </p>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth-context';
 import {
   Download,
@@ -15,6 +15,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ title }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   const getAutoTitle = () => {
@@ -85,31 +86,45 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         {/* Separador fino */}
         <div className="w-px h-4 bg-[#2B2D38] mx-1" />
 
-        {/* User Profile Badge & Logout */}
+        {/* User Profile Badge & Nuvem Controls */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 rounded-lg border border-[#2B2D38] bg-[#15161D] px-2.5 py-1 select-none">
-            <div className="w-6 h-6 rounded-full bg-[#1F222D] border border-[#323647] flex items-center justify-center text-xs font-bold text-[#1677FF]">
-              {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="text-[12px] font-semibold text-[#F4F4F6] leading-tight">
-                @{user?.username || 'usuario'}
-              </span>
-              <span className="text-[9.5px] text-[#52C41A] leading-tight font-medium">
-                {user?.is_offline ? '⚡ Modo Offline (Sem E-mail)' : '☁️ Nuvem'}
-              </span>
-            </div>
-          </div>
+          {user?.is_offline ? (
+            <button
+              type="button"
+              onClick={() => navigate('/auth/login')}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1677FF]/15 hover:bg-[#1677FF]/25 text-[#4096ff] text-xs font-medium border border-[#1677FF]/30 transition-all cursor-pointer shadow-xs"
+              title="Clique para sincronizar ou conectar à sua conta na Nuvem"
+            >
+              <span className="flex h-2 w-2 rounded-full bg-[#52C41A] animate-pulse" />
+              <span>⚡ Modo Offline</span>
+              <span className="text-[10px] text-[#8E92A2] ml-0.5">· Conectar Nuvem</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 rounded-lg border border-[#2B2D38] bg-[#15161D] px-2.5 py-1 select-none">
+                <div className="w-6 h-6 rounded-full bg-[#1677FF]/20 border border-[#1677FF]/40 flex items-center justify-center text-xs font-bold text-[#1677FF]">
+                  {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-[12px] font-semibold text-[#F4F4F6] leading-tight">
+                    @{user?.username}
+                  </span>
+                  <span className="text-[9.5px] text-[#4096ff] leading-tight font-medium">
+                    ☁️ Sincronizado
+                  </span>
+                </div>
+              </div>
 
-          {/* Botão Sair / Trocar Usuário */}
-          <button
-            type="button"
-            onClick={logout}
-            title="Sair / Trocar de Usuário"
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-[#787C8A] transition-colors hover:bg-[#2B1B20] hover:text-[#FF6B6B]"
-          >
-            <LogOut size={14} />
-          </button>
+              <button
+                type="button"
+                onClick={logout}
+                title="Desconectar da Nuvem"
+                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-[#787C8A] transition-colors hover:bg-[#2B1B20] hover:text-[#FF6B6B]"
+              >
+                <LogOut size={14} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

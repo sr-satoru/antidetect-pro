@@ -22,6 +22,7 @@ import { servicePlataforma } from './criar-perfil/service.plataforma';
 import { impressaoDigitalService } from './criar-perfil/service.impressoes';
 import { serviceAvancado } from './criar-perfil/service.avancado';
 import { serviceProxy } from './criar-perfil/service.proxy';
+import { http } from './http';
 
 // Re-exporta cada service
 export { serviceGeral } from './criar-perfil/service.geral';
@@ -32,19 +33,61 @@ export { serviceProxy } from './criar-perfil/service.proxy';
 export { http, ApiError } from './http';
 
 /**
- * Objeto `api` — agrupa o que está disponível hoje (criar perfil).
+ * Objeto `api` — Ponto central de chamadas à API do backend local e serviços.
  */
 export const api = {
   profiles: {
+    list: (search?: string, group?: string) =>
+      http.get<any[]>('/api/profiles', {
+        params: {
+          search: search || undefined,
+          group: group !== 'Todos os grupos' ? group : undefined,
+        },
+      }),
     create: (data: any) => {
       const payload = impressaoDigitalService.montarPayloadPerfil(data);
       return serviceGeral.create(payload);
     },
+    get: (id: string | number) => http.get<any>(`/api/profiles/${id}`),
+    update: (id: string | number, data: any) =>
+      http.put<any>(`/api/profiles/${id}`, data),
+    delete: (id: string | number) =>
+      http.delete<any>(`/api/profiles/${id}`),
+    launch: (id: string | number) =>
+      http.post<any>(`/api/profiles/${id}/launch`),
+    listTrash: () => http.get<any[]>('/api/profiles/trash'),
+    restore: (id: string | number) =>
+      http.post<any>(`/api/profiles/${id}/restore`),
+    deletePermanent: (id: string | number) =>
+      http.delete<any>(`/api/profiles/${id}/permanent`),
+    emptyTrash: () => http.delete<any>('/api/profiles/trash/empty'),
   },
+
   proxies: {
     list: serviceProxy.listarSalvos,
     test: serviceProxy.testar,
+    create: (data: any) => http.post<any>('/api/proxies', data),
+    delete: (id: string | number) => http.delete<any>(`/api/proxies/${id}`),
   },
+
+  extensions: {
+    list: () => http.get<any[]>('/api/extensions'),
+    create: (data: any) => http.post<any>('/api/extensions', data),
+    update: (id: string | number, data: any) =>
+      http.put<any>(`/api/extensions/${id}`, data),
+    delete: (id: string | number) =>
+      http.delete<any>(`/api/extensions/${id}`),
+    getCatalog: (params?: any) =>
+      http.get<any[]>('/api/extensions/catalog', { params }),
+  },
+
+  auth: {
+    login: (login: string, pass: string) =>
+      http.post<any>('/api/auth/login', { login, password: pass }),
+    register: (data: any) => http.post<any>('/api/auth/register', data),
+    me: () => http.get<any>('/api/auth/me'),
+  },
+
   impressoes: impressaoDigitalService,
   plataforma: servicePlataforma,
   avancado: serviceAvancado,

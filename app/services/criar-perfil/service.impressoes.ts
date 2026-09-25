@@ -225,15 +225,23 @@ export const impressaoDigitalService = {
       tagsString = String(formData.tags);
     }
 
+    const profileId = (formData.id && String(formData.id).trim()) || crypto.randomUUID();
+    const nowSecs = Math.floor(Date.now() / 1000);
+
     return {
-      // 1. Dados cadastrais do Perfil
+      // 1. Identificador Universal Único (UUID v4) e Marcadores Temporais (LWW)
+      id: profileId,
+      created_at: nowSecs,
+      updated_at: nowSecs,
+
+      // 2. Dados cadastrais do Perfil
       name: (formData.name && formData.name.trim()) || 'NOVO PERFIL',
       group: formData.group || 'Desagrupado',
       tags: tagsString,
       notes: formData.notes || '',
       status: 'ready',
 
-      // 2. Atalhos diretos para a tabela de listagem
+      // 3. Atalhos diretos para a tabela de listagem
       kernel: impressao.kernel,
       browser_version: impressao.kernel_version,
       os: impressao.os,
@@ -243,7 +251,7 @@ export const impressaoDigitalService = {
       proxy_username: impressao.proxy_username,
       proxy_password: impressao.proxy_password,
 
-      // 3. Objeto de Impressão Digital estruturado (sem lixo duplicado)
+      // 4. Objeto de Impressão Digital estruturado (sem lixo duplicado)
       fingerprint_json: JSON.stringify(impressao),
     };
   },

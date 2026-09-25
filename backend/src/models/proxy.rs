@@ -1,0 +1,53 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProxyItem {
+    pub id: String,
+    pub name: String,
+    #[serde(rename = "type")]
+    pub proxy_type: String,
+    pub host: String,
+    pub port: String,
+    #[serde(default)]
+    pub user: String,
+    #[serde(default)]
+    pub pass: String,
+    #[serde(default)]
+    pub ip: String,
+    #[serde(default = "default_country")]
+    pub country: String,
+    #[serde(default = "default_status")]
+    pub status: String,
+    pub created_at: i64,
+}
+
+fn default_country() -> String {
+    "BR - Brasil".to_string()
+}
+fn default_status() -> String {
+    "active".to_string()
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct CreateProxyDto {
+    pub name: Option<String>,
+    #[serde(rename = "type")]
+    pub proxy_type: Option<String>,
+    pub host: String,
+    pub port: serde_json::Value,
+    pub username: Option<String>,
+    pub user: Option<String>,
+    pub password: Option<String>,
+    pub pass: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[allow(dead_code)]
+pub struct TestProxyDto {
+    #[serde(rename = "type")]
+    pub proxy_type: Option<String>,
+    pub host: String,
+    pub port: serde_json::Value,
+    pub username: Option<String>,
+    pub password: Option<String>,
+}

@@ -12,8 +12,25 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
+async function request<T>(
+  endpoint: string,
+  options: RequestInit = {},
+  params?: Record<string, any>
+): Promise<T> {
+  let url = `${API_BASE_URL}${endpoint}`;
+  if (params) {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') {
+        searchParams.append(k, String(v));
+      }
+    });
+    const qs = searchParams.toString();
+    if (qs) {
+      url += (url.includes('?') ? '&' : '?') + qs;
+    }
+  }
+
   const token = localStorage.getItem('fury_auth_token');
 
   const headers: Record<string, string> = {
@@ -57,7 +74,8 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
 /** Atalhos tipados para os verbos HTTP */
 export const http = {
-  get: <T>(endpoint: string) => request<T>(endpoint),
+  get: <T>(endpoint: string, config?: { params?: Record<string, any> }) =>
+    request<T>(endpoint, {}, config?.params),
 
   post: <T>(endpoint: string, body?: any) =>
     request<T>(endpoint, {

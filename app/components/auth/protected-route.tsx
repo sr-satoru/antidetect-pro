@@ -17,10 +17,7 @@ export const ProtectedRoute: React.FC = () => {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/auth/login" replace />;
-  }
-
+  // Acesso liberado por padrão (Modo Offline nativo estilo Donut Browser)
   return <Outlet />;
 };
 
