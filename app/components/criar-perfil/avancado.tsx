@@ -1,46 +1,35 @@
 import React, { useState } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, PlusCircle, AlertCircle, Check } from 'lucide-react';
+import { useRegisteredExtensions } from '@/utils/extensions';
 
 interface AvancadoTabProps {
   formData: any;
   onChange: (key: string, value: any) => void;
 }
 
-const EXTENSION_OPTIONS = [
-  {
-    id: 'team',
-    label: 'Usar extensões da equipe',
-    desc: (
-      <>
-        As extensões habilitadas de{' '}
-        <span className="text-[#9BA1B4]">
-          [Extensões - Extensões da equipe]
-        </span>{' '}
-        serão instaladas no perfil
-      </>
-    ),
-  },
-  {
-    id: 'none',
-    label: 'Não usar extensões',
-    desc: <>Nenhuma extensão será pré-instalada neste perfil</>,
-  },
-];
-
 export const AvancadoTab: React.FC<AvancadoTabProps> = ({
   formData,
   onChange,
 }) => {
   const [showExtensionDropdown, setShowExtensionDropdown] = useState(false);
+  const { extensions, loading } = useRegisteredExtensions({ onlyEnabled: true });
 
   const currentMode = formData.extensionMode || 'team';
-  const currentOption =
-    EXTENSION_OPTIONS.find((opt) => opt.id === currentMode) ||
-    EXTENSION_OPTIONS[0];
+  const selectedCategory = formData.extensionCategory || 'kit_basico';
 
-  const handleSelectMode = (modeId: string) => {
-    onChange('extensionMode', modeId);
+  const handleSelectMode = (mode: string, category?: string) => {
+    onChange('extensionMode', mode);
+    if (category) {
+      onChange('extensionCategory', category);
+    }
     setShowExtensionDropdown(false);
+  };
+
+  const getDisplayLabel = () => {
+    if (currentMode === 'none') return 'Não usar extensões';
+    if (currentMode === 'category' && selectedCategory === 'kit_basico') return 'kit basico';
+    if (currentMode === 'team') return 'Usar extensões da equipe';
+    return 'Select';
   };
 
   return (
@@ -57,45 +46,124 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
             <button
               type="button"
               onClick={() => setShowExtensionDropdown(!showExtensionDropdown)}
-              className="flex min-h-[38px] w-full cursor-pointer items-center justify-between rounded-md border border-[#3A3D4B] bg-[#1E1F27] px-3.5 py-2 text-[13px] text-[#E0E2EC] transition-colors hover:border-[#4B4E5E] focus:border-[#2F80ED] focus:outline-none"
+              className="flex min-h-[38px] w-full cursor-pointer items-center justify-between rounded-lg border border-[#3A3D4B] bg-[#22242B] px-3.5 py-2 text-[13px] text-[#A6ABB9] transition-colors hover:border-[#4B4E5E] focus:border-[#2F80ED] focus:outline-none"
             >
-              <span>{currentOption.label}</span>
-              <ChevronDown
-                size={14}
-                className={`text-[#7B7F91] transition-transform duration-150 ${
-                  showExtensionDropdown ? 'rotate-180' : ''
-                }`}
-              />
+              <span className={currentMode ? 'text-white' : 'text-[#7B7F91]'}>
+                {getDisplayLabel()}
+              </span>
+              {showExtensionDropdown ? (
+                <ChevronUp size={15} className="text-[#8E92A2]" />
+              ) : (
+                <ChevronDown size={15} className="text-[#8E92A2]" />
+              )}
             </button>
 
             {showExtensionDropdown && (
-              <div className="absolute top-full left-0 z-30 mt-1 w-full rounded-md border border-[#383A49] bg-[#22232C] py-1 shadow-2xl">
-                {EXTENSION_OPTIONS.map((opt) => {
-                  const isSelected = opt.id === currentMode;
-                  return (
-                    <div
-                      key={opt.id}
-                      onClick={() => handleSelectMode(opt.id)}
-                      className={`flex cursor-pointer items-center justify-between px-3.5 py-2.5 text-[12.5px] transition-colors ${
-                        isSelected
-                          ? 'bg-[#1D2536] font-medium text-white'
-                          : 'text-[#C5C8D6] hover:bg-[#2B2D38] hover:text-white'
-                      }`}
-                    >
-                      <span>{opt.label}</span>
-                      {isSelected && (
-                        <Check size={14} className="text-[#2F80ED]" />
-                      )}
+              <div className="absolute top-full left-0 z-30 mt-1 w-full rounded-xl border border-[#383A49] bg-[#22242B] py-1 shadow-2xl animate-in fade-in zoom-in-95 duration-100">
+                {/* 1. Botão Topo: + Nova categoria */}
+                <button
+                  type="button"
+                  onClick={() => alert('Funcionalidade de criar nova categoria em breve.')}
+                  className="flex w-full cursor-pointer items-center justify-center gap-2 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-[#2A2C35]"
+                >
+                  <PlusCircle size={15} className="text-white" />
+                  <span>Nova categoria</span>
+                </button>
+
+                <div className="mx-3 my-1 h-[1px] bg-[#2D2F3A]" />
+
+                {/* 2. Opção: Usar extensões da equipe */}
+                <div className="px-2 py-1">
+                  <div
+                    onClick={() => handleSelectMode('team')}
+                    className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 text-[13px] transition-colors ${
+                      currentMode === 'team'
+                        ? 'bg-[#2A2C35] font-medium text-white'
+                        : 'text-[#C5C8D6] hover:bg-[#2A2C35] hover:text-white'
+                    }`}
+                  >
+                    <span>Usar extensões da equipe</span>
+                    {currentMode === 'team' && (
+                      <Check size={14} className="text-[#2F80ED]" />
+                    )}
+                  </div>
+                </div>
+
+                {/* 3. Opção com ícones de extensões registradas: kit basico */}
+                <div className="px-2 py-0.5">
+                  <div
+                    onClick={() => handleSelectMode('category', 'kit_basico')}
+                    className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 transition-colors ${
+                      currentMode === 'category' && selectedCategory === 'kit_basico'
+                        ? 'bg-[#2A2C35]'
+                        : 'hover:bg-[#2A2C35]'
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-[13px] font-medium text-white">
+                        kit basico
+                      </span>
+
+                      {/* Miniaturas das extensões registradas com badge verde */}
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1.5">
+                        {loading ? (
+                          <span className="text-[11px] text-[#6E7385]">
+                            Carregando extensões...
+                          </span>
+                        ) : extensions.length > 0 ? (
+                          extensions.map((ext) => (
+                            <div
+                              key={ext.id}
+                              title={ext.name}
+                              className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] border border-[#383A4A] bg-[#1A1C24] p-0.5 shadow-2xs"
+                            >
+                              {ext.iconUrl ? (
+                                <img
+                                  src={ext.iconUrl}
+                                  alt={ext.name}
+                                  className="h-full w-full rounded-[3px] object-contain"
+                                />
+                              ) : (
+                                <span className="text-[10px] font-bold text-[#2F80ED]">
+                                  {ext.name.charAt(0).toUpperCase()}
+                                </span>
+                              )}
+                              {/* Bolinha verde indicador de ativa (igual screenshot) */}
+                              <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#52C41A] ring-1 ring-[#1A1C24]" />
+                            </div>
+                          ))
+                        ) : (
+                          <span className="text-[11px] text-[#6E7385]">
+                            Nenhuma extensão na equipe ainda
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  );
-                })}
+
+                    <div className="ml-3 shrink-0">
+                      <AlertCircle
+                        size={15}
+                        className="text-[#6E7385] hover:text-[#9BA1B4]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Footer: Não há mais conteúdo */}
+                <div className="pt-3 pb-2 text-center text-[11px] text-[#6E7385] select-none">
+                  Não há mais conteúdo
+                </div>
               </div>
             )}
           </div>
 
           {/* Subtítulo / Descrição */}
-          <p className="pt-1.5 text-[12px] text-[#6E7385] leading-relaxed">
-            {currentOption.desc}
+          <p className="pt-2 text-[12px] text-[#6E7385] leading-relaxed">
+            As extensões habilitadas de{' '}
+            <span className="text-[#9BA1B4]">
+              [Extensões - Extensões da equipe]
+            </span>{' '}
+            serão instaladas no perfil
           </p>
         </div>
       </div>
@@ -104,3 +172,4 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
 };
 
 export default AvancadoTab;
+
