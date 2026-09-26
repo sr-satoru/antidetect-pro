@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Search, Trash2, Tag as TagIcon, Pencil, Check } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 import { TagItem, serviceTags } from '../../services/tags/service.tags';
 import { ModalNovaEtiqueta } from './modal-nova-etiqueta';
 import { TagBadge } from './tag-badge';

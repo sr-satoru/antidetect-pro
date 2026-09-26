@@ -12,29 +12,9 @@ import { ProxyPage } from './(app)/proxy/page';
 import { ExtensoesPage } from './(app)/extensoes/page';
 import { LixeiraPage } from './(app)/lixeira/page';
 
-import { Toaster, toast } from './components/ui/notification';
+import { Toaster } from './components/ui/notification';
 
 export const App: React.FC = () => {
-  // Script de teste: dispara notificações rotativas a cada 5 segundos
-  React.useEffect(() => {
-    const toasts = [
-      () => toast.success('Perfil copiado com sucesso!'),
-      () => toast.success('Perfil excluído com sucesso!'),
-      () => toast.success('Perfil sincronizado com sucesso!'),
-    ];
-
-    let index = 0;
-    // Dispara a primeira imediatamente para você já visualizar
-    toasts[0]();
-
-    const interval = setInterval(() => {
-      index = (index + 1) % toasts.length;
-      toasts[index]();
-    }, 6000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <AuthProvider>
       <Toaster position="top-center" />

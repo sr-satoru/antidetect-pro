@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 import {
   AdicionarExtensaoArquivo,
   ExtensaoArquivoFormValues,

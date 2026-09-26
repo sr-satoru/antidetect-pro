@@ -9,7 +9,7 @@ import { AvancadoTab } from '@/components/criar-perfil/avancado';
 import { Previas } from '@/components/criar-perfil/previas';
 import { api } from '@/services/index.api';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 
 import {
   generateRandomSeed,

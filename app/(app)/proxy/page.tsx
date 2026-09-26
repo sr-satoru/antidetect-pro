@@ -9,7 +9,7 @@ import {
   ChevronDown,
   Loader2,
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 
 export const ProxyPage: React.FC = () => {
   const [proxies, setProxies] = useState<any[]>([]);

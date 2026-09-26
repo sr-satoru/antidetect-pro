@@ -7,7 +7,7 @@ import { TagBadge } from '@/components/tags/tag-badge';
 import { serviceTags } from '@/services/tags/service.tags';
 import { api } from '@/services/index.api';
 import { X, Check, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 
 export const PerfisPage: React.FC = () => {
   const navigate = useNavigate();

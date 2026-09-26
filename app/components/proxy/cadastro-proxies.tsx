@@ -12,7 +12,7 @@ import {
   FormularioCamposProxy,
   ProxyFormValues,
 } from './formulario-campos-proxy';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 
 interface CadastroProxiesProps {
   onClose: () => void;

@@ -5,7 +5,7 @@ import {
   ItemLixeira,
 } from '@/components/lixeira';
 import { Trash2, CheckCircle2, X, AlertTriangle, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 import { api } from '@/services/index.api';
 
 export const LixeiraPage: React.FC = () => {

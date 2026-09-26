@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Check } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 import { TAG_COLORS, DEFAULT_TAG_COLOR } from './tag-palette';
 import { TagItem } from '../../services/tags/service.tags';
 

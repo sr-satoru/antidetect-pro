@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, ChevronDown, ChevronUp, CornerDownLeft, Check } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 import { TAG_COLORS, DEFAULT_TAG_COLOR, getTagColorStyle } from './tag-palette';
 import { serviceTags, TagItem } from '../../services/tags/service.tags';
 

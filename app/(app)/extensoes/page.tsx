@@ -6,7 +6,7 @@ import {
 } from '@/components/extensoes/tabela-extensoes';
 import { ModalAdicionarExtensao } from '@/components/extensoes/modal-adicionar-extensao';
 import { api } from '@/services/index.api';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 
 export const ExtensoesPage: React.FC = () => {
   const [extensions, setExtensions] = useState<ExtensionItem[]>([]);

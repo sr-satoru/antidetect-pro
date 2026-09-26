@@ -11,7 +11,7 @@ import { PerfilFooter } from '@/components/perfis/perfil-footer';
 import { profileToFormData } from '@/services/perfis/service.mapper';
 import { api } from '@/services/index.api';
 import { Loader2, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 
 export const EditarPerfilPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

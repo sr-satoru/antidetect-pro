@@ -8,7 +8,7 @@ import {
   Bell,
   LogOut,
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/notification';
 
 interface HeaderProps {
   title?: string;
