@@ -78,10 +78,16 @@ async fn main() {
         .route("/catalog", get(routes::extensions::get_catalog))
         .with_state(extension_storage);
 
+    let auth_state = Arc::new(routes::auth::AuthState::new());
+
     let auth_routes = Router::new()
-        .route("/login", post(routes::auth::login))
-        .route("/register", post(routes::auth::register))
-        .route("/me", get(routes::auth::me));
+        .route("/start-login", post(routes::auth::start_login))
+        .route("/start-register", post(routes::auth::start_register))
+        .route("/callback", get(routes::auth::callback))
+        .route("/session/{session_id}", get(routes::auth::get_session_status))
+        .route("/me", get(routes::auth::me))
+        .route("/logout", post(routes::auth::logout))
+        .with_state(auth_state);
 
     let tag_routes = Router::new()
         .route("/", get(routes::tags::list_tags).post(routes::tags::create_tag))

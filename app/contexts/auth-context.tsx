@@ -32,6 +32,7 @@ interface AuthContextType {
   isOnline: boolean;
   isLoading: boolean;
   loginWithCode: (code: string) => Promise<void>;
+  setCloudSession: (user: any, token: string) => void;
   continueOffline: () => void;
   logout: () => void;
 }
@@ -104,6 +105,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   /**
+   * Define a sessão vinda diretamente do fluxo OAuth 2.0 Web
+   */
+  const setCloudSession = (cloudUser: any, sessionToken: string) => {
+    const sessionUser: UserSession = {
+      id: String(cloudUser.id),
+      username:
+        cloudUser.name ||
+        cloudUser.username ||
+        cloudUser.email?.split('@')[0] ||
+        'user',
+      email: cloudUser.email,
+      plan: cloudUser.plan || 'pro',
+      profileLimit: cloudUser.max_profiles ?? cloudUser.profileLimit ?? 10,
+      is_offline: false,
+    };
+
+    setToken(sessionToken);
+    setUser(sessionUser);
+    localStorage.setItem('fury_auth_token', sessionToken);
+    localStorage.setItem('fury_auth_user', JSON.stringify(sessionUser));
+  };
+
+  /**
    * Usar o aplicativo localmente em modo offline
    */
   const continueOffline = () => {
@@ -137,6 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isOnline,
         isLoading,
         loginWithCode,
+        setCloudSession,
         continueOffline,
         logout,
       }}

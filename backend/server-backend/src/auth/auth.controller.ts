@@ -1,53 +1,56 @@
-import { Body, Controller, HttpCode, Post } from "@nestjs/common";
-import { AuthService } from "./auth.service.js";
-
-class ChallengeExchangeDto {
-  code: string;
-  challengeId: string;
-  nonce: number;
-}
-
-class CreateDeviceCodeDto {
-  userId: string;
-  email: string;
-  plan?: string;
-}
+import { Body, Controller, Get, HttpCode, Post, Query } from "@nestjs/common";
+import {
+  AuthService,
+  WebRegisterDto,
+  WebLoginDto,
+  ExchangeCodeDto,
+} from "./auth.service.js";
 
 @Controller("api/auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   /**
-   * Endpoint chamado pelo Desktop para solicitar o desafio de Proof-of-Work
-   * POST /api/auth/device-code/challenge
+   * Valida se o token emitido pelo app desktop é autêntico e recupera a ação (login ou register)
+   * GET /api/auth/validate-token?token=...
    */
-  @Post("device-code/challenge")
-  @HttpCode(200)
-  getChallenge() {
-    return this.authService.createChallenge();
+  @Get("validate-token")
+  validateToken(@Query("token") token: string) {
+    const challenge = this.authService.validateChallengeToken(token);
+    return {
+      valid: true,
+      action: challenge.action,
+      state: challenge.state,
+    };
   }
 
   /**
-   * Endpoint chamado pelo painel Web / Dashboard para gerar o código que o usuário digita no app
-   * POST /api/auth/device-code/create
+   * Registro via portal Web (salva usuário no SQLite e emite AuthCode)
+   * POST /api/auth/web-register
    */
-  @Post("device-code/create")
+  @Post("web-register")
   @HttpCode(200)
-  createDeviceCode(@Body() dto: CreateDeviceCodeDto) {
-    return this.authService.createDeviceCode(
-      dto.userId || "user-1",
-      dto.email || "user@fury.local",
-      dto.plan || "pro",
-    );
+  webRegister(@Body() dto: WebRegisterDto) {
+    return this.authService.webRegister(dto);
   }
 
   /**
-   * Endpoint chamado pelo Desktop com o código digitado + solução do PoW para obter JWT
-   * POST /api/auth/device-code/exchange
+   * Login via portal Web (autentica contra SQLite e emite AuthCode)
+   * POST /api/auth/web-login
    */
-  @Post("device-code/exchange")
+  @Post("web-login")
   @HttpCode(200)
-  exchangeCode(@Body() dto: ChallengeExchangeDto) {
-    return this.authService.exchangeDeviceCode(dto.code, dto.challengeId, dto.nonce);
+  webLogin(@Body() dto: WebLoginDto) {
+    return this.authService.webLogin(dto);
+  }
+
+  /**
+   * Troca o AuthCode pelo JWT e perfil completo no loopback do Desktop
+   * POST /api/auth/exchange-code
+   */
+  @Post("exchange-code")
+  @HttpCode(200)
+  exchangeCode(@Body() dto: ExchangeCodeDto) {
+    return this.authService.exchangeCode(dto);
   }
 }

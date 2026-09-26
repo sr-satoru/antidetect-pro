@@ -1,141 +1,282 @@
-import { randomBytes, createHash } from "node:crypto";
-import { Injectable, BadRequestException, UnauthorizedException } from "@nestjs/common";
+import { randomBytes, createHmac, timingSafeEqual } from "node:crypto";
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+  ConflictException,
+  NotFoundException,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as jwt from "jsonwebtoken";
+import * as bcrypt from "bcrypt";
+import { PrismaService } from "../prisma/prisma.service.js";
 
-interface PendingChallenge {
-  challengeId: string;
-  prefix: string;
-  difficulty: number;
-  createdAt: number;
+export interface DecodedChallenge {
+  action: "login" | "register";
+  state: string;
+  exp: number;
 }
 
-interface PendingDeviceCode {
-  code: string;
-  userId: string;
+export interface WebRegisterDto {
+  name?: string;
   email: string;
-  plan: string;
-  createdAt: number;
-  consumed: boolean;
+  password: string;
+  token: string;
+  redirectUri?: string;
+}
+
+export interface WebLoginDto {
+  email: string;
+  password: string;
+  token: string;
+  redirectUri?: string;
+}
+
+export interface ExchangeCodeDto {
+  code: string;
+  state: string;
 }
 
 @Injectable()
 export class AuthService {
-  private challenges = new Map<string, PendingChallenge>();
-  private deviceCodes = new Map<string, PendingDeviceCode>();
+  constructor(
+    private configService: ConfigService,
+    private prisma: PrismaService,
+  ) {}
 
-  constructor(private configService: ConfigService) {}
+  private getOauthSecret(): string {
+    return this.configService.get<string>(
+      "OAUTH_SECRET",
+      "fury_oauth_secret_shared_with_rust_daemon",
+    );
+  }
 
-  /**
-   * 1. Gera um desafio de Proof-of-Work (PoW) para proteger contra ataques de força bruta
-   */
-  createChallenge(): { challengeId: string; prefix: string; difficulty: number } {
-    const challengeId = randomBytes(16).toString("hex");
-    const prefix = randomBytes(8).toString("hex");
-    const difficulty = 3; // 3 zeros no início do hash (rápido para desktop, custoso para bots)
-
-    this.challenges.set(challengeId, {
-      challengeId,
-      prefix,
-      difficulty,
-      createdAt: Date.now(),
-    });
-
-    // Limpa desafios antigos (> 5 minutos)
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    for (const [id, c] of this.challenges.entries()) {
-      if (c.createdAt < fiveMinutesAgo) {
-        this.challenges.delete(id);
-      }
-    }
-
-    return { challengeId, prefix, difficulty };
+  private getJwtSecret(): string {
+    return this.configService.get<string>(
+      "JWT_SECRET",
+      "fury_super_jwt_secret_dev_key_12345",
+    );
   }
 
   /**
-   * 2. Cria um código de dispositivo quando o usuário clica em "Vincular Dispositivo" no site web
+   * Valida o token assinado gerado pelo backend Rust (action, state, exp)
    */
-  createDeviceCode(userId: string, email: string, plan = "pro"): { code: string; expiresInSeconds: number } {
-    // Código de 8 caracteres legível (ex: FURY-9A2B)
-    const raw = randomBytes(4).toString("hex").toUpperCase();
-    const code = `FURY-${raw}`;
-
-    this.deviceCodes.set(code, {
-      code,
-      userId,
-      email,
-      plan,
-      createdAt: Date.now(),
-      consumed: false,
-    });
-
-    return { code, expiresInSeconds: 600 };
-  }
-
-  /**
-   * 3. Troca o código do dispositivo + solução do desafio PoW por tokens JWT reais
-   */
-  exchangeDeviceCode(
-    code: string,
-    challengeId: string,
-    nonce: number,
-  ): { accessToken: string; refreshToken: string; user: Record<string, unknown> } {
-    // Valida o desafio PoW
-    const challenge = this.challenges.get(challengeId);
-    if (!challenge) {
-      throw new BadRequestException("Desafio PoW expirado ou inválido");
+  validateChallengeToken(tokenString: string): DecodedChallenge {
+    if (!tokenString || !tokenString.includes(".")) {
+      throw new BadRequestException("Token de desafio com formato inválido");
     }
 
-    // Verifica a solução do PoW: SHA256(prefix + nonce) deve começar com '0' * difficulty
-    const hash = createHash("sha256")
-      .update(`${challenge.prefix}${nonce}`)
+    const [payloadB64, signature] = tokenString.split(".");
+    if (!payloadB64 || !signature) {
+      throw new BadRequestException("Partes do token ausentes");
+    }
+
+    const secret = this.getOauthSecret();
+    const expectedSignature = createHmac("sha256", secret)
+      .update(payloadB64)
       .digest("hex");
 
-    const targetPrefix = "0".repeat(challenge.difficulty);
-    if (!hash.startsWith(targetPrefix)) {
-      throw new BadRequestException("Solução de Proof-of-Work incorreta");
+    const expectedBuf = Buffer.from(expectedSignature, "utf8");
+    const sigBuf = Buffer.from(signature, "utf8");
+
+    if (
+      expectedBuf.length !== sigBuf.length ||
+      !timingSafeEqual(expectedBuf, sigBuf)
+    ) {
+      throw new UnauthorizedException("Assinatura do token de autenticação inválida");
     }
 
-    // Consome o desafio para não ser reutilizado
-    this.challenges.delete(challengeId);
-
-    // Valida o código do dispositivo
-    const deviceCode = this.deviceCodes.get(code);
-    if (!deviceCode || deviceCode.consumed) {
-      throw new UnauthorizedException("Código de vinculação inválido ou já utilizado");
+    let payload: DecodedChallenge;
+    try {
+      const jsonStr = Buffer.from(payloadB64, "base64url").toString("utf8");
+      payload = JSON.parse(jsonStr);
+    } catch {
+      throw new BadRequestException("Carga do token corrompida");
     }
 
-    // Expira em 10 minutos
-    if (Date.now() - deviceCode.createdAt > 10 * 60 * 1000) {
-      this.deviceCodes.delete(code);
-      throw new UnauthorizedException("Código de vinculação expirado");
+    if (!payload.action || !["login", "register"].includes(payload.action)) {
+      throw new BadRequestException("Ação de autenticação desconhecida");
     }
 
-    deviceCode.consumed = true;
+    if (!payload.state) {
+      throw new BadRequestException("Parâmetro de estado ausente no token");
+    }
 
-    // Gera os tokens JWT
-    const jwtSecret = this.configService.get<string>("JWT_SECRET", "fury_default_jwt_secret_dev_key");
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    if (payload.exp && payload.exp < nowSeconds) {
+      throw new UnauthorizedException("Token de autenticação expirado. Solicite novo link no aplicativo.");
+    }
+
+    return payload;
+  }
+
+  /**
+   * Registro Web com persistência no SQLite via Prisma
+   */
+  async webRegister(dto: WebRegisterDto) {
+    const challenge = this.validateChallengeToken(dto.token);
+    if (challenge.action !== "register") {
+      throw new BadRequestException(
+        "Este link de acesso foi gerado para Entrar (Login), não para Criar Conta.",
+      );
+    }
+
+    if (!dto.email || !dto.password) {
+      throw new BadRequestException("Email e senha são obrigatórios");
+    }
+
+    if (dto.password.length < 6) {
+      throw new BadRequestException("A senha deve ter no mínimo 6 caracteres");
+    }
+
+    const existing = await this.prisma.user.findUnique({
+      where: { email: dto.email.toLowerCase().trim() },
+    });
+
+    if (existing) {
+      throw new ConflictException("Já existe uma conta cadastrada com este email.");
+    }
+
+    const passwordHash = await bcrypt.hash(dto.password, 10);
+    const user = await this.prisma.user.create({
+      data: {
+        email: dto.email.toLowerCase().trim(),
+        passwordHash,
+        name: dto.name?.trim() || dto.email.split("@")[0],
+        plan: "free",
+        maxProfiles: 10,
+        profileCount: 0,
+      },
+    });
+
+    const code = randomBytes(24).toString("hex");
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutos
+
+    await this.prisma.authCode.create({
+      data: {
+        code,
+        action: "register",
+        state: challenge.state,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    return {
+      success: true,
+      code,
+      state: challenge.state,
+      redirectUri: dto.redirectUri || "http://127.0.0.1:8000/api/auth/callback",
+    };
+  }
+
+  /**
+   * Login Web com validação de senha no SQLite via Prisma
+   */
+  async webLogin(dto: WebLoginDto) {
+    const challenge = this.validateChallengeToken(dto.token);
+    if (challenge.action !== "login") {
+      throw new BadRequestException(
+        "Este link de acesso foi gerado para Criar Conta, não para Entrar.",
+      );
+    }
+
+    if (!dto.email || !dto.password) {
+      throw new BadRequestException("Email e senha são obrigatórios");
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email.toLowerCase().trim() },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException("Email ou senha incorretos");
+    }
+
+    const passwordMatches = await bcrypt.compare(dto.password, user.passwordHash);
+    if (!passwordMatches) {
+      throw new UnauthorizedException("Email ou senha incorretos");
+    }
+
+    const code = randomBytes(24).toString("hex");
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutos
+
+    await this.prisma.authCode.create({
+      data: {
+        code,
+        action: "login",
+        state: challenge.state,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
+    return {
+      success: true,
+      code,
+      state: challenge.state,
+      redirectUri: dto.redirectUri || "http://127.0.0.1:8000/api/auth/callback",
+    };
+  }
+
+  /**
+   * Troca o AuthCode pelo JWT definitivo no loopback (RFC 8252)
+   */
+  async exchangeCode(dto: ExchangeCodeDto) {
+    if (!dto.code || !dto.state) {
+      throw new BadRequestException("Código de autorização e estado são obrigatórios");
+    }
+
+    const authCode = await this.prisma.authCode.findUnique({
+      where: { code: dto.code },
+      include: { user: true },
+    });
+
+    if (!authCode || authCode.consumed) {
+      throw new UnauthorizedException("Código de autorização inválido ou já utilizado");
+    }
+
+    if (authCode.state !== dto.state) {
+      throw new UnauthorizedException("Parâmetro de estado não corresponde (possível ataque CSRF)");
+    }
+
+    if (authCode.expiresAt < new Date()) {
+      throw new UnauthorizedException("Código de autorização expirado");
+    }
+
+    // Marca como consumido
+    await this.prisma.authCode.update({
+      where: { id: authCode.id },
+      data: { consumed: true },
+    });
+
+    const user = authCode.user;
+    const jwtSecret = this.getJwtSecret();
 
     const payload = {
-      sub: deviceCode.userId,
-      email: deviceCode.email,
-      plan: deviceCode.plan,
-      profileLimit: 100, // Cota de perfis
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      plan: user.plan,
+      maxProfiles: user.maxProfiles,
     };
 
     const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: "7d" });
-    const refreshToken = jwt.sign({ sub: deviceCode.userId, tokenType: "refresh" }, jwtSecret, {
+    const refreshToken = jwt.sign({ sub: user.id, tokenType: "refresh" }, jwtSecret, {
       expiresIn: "30d",
     });
 
     return {
+      success: true,
       accessToken,
       refreshToken,
       user: {
-        id: deviceCode.userId,
-        email: deviceCode.email,
-        plan: deviceCode.plan,
-        profileLimit: 100,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        plan: user.plan,
+        maxProfiles: user.maxProfiles,
+        profileCount: user.profileCount,
       },
     };
   }
