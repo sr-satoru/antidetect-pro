@@ -4,6 +4,7 @@ import {
   WebRegisterDto,
   WebLoginDto,
   ExchangeCodeDto,
+  RefreshTokenDto,
 } from "./auth.service.js";
 
 @Controller("api/auth")
@@ -52,5 +53,15 @@ export class AuthController {
   @HttpCode(200)
   exchangeCode(@Body() dto: ExchangeCodeDto) {
     return this.authService.exchangeCode(dto);
+  }
+
+  /**
+   * Renova o accessToken de 5 minutos utilizando o refreshToken de 30 dias
+   * POST /api/auth/refresh
+   */
+  @Post("refresh")
+  @HttpCode(200)
+  refresh(@Body() dto: RefreshTokenDto) {
+    return this.authService.refreshAccessToken(dto);
   }
 }

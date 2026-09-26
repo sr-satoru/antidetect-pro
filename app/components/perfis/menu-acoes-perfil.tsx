@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Pencil, Copy, Trash2 } from 'lucide-react';
+import { Pencil, Copy, Trash2, CloudUpload, CloudDownload } from 'lucide-react';
 
 interface MenuAcoesPerfilProps {
   isOpen: boolean;
@@ -9,6 +9,8 @@ interface MenuAcoesPerfilProps {
   onEditFull: (tab?: string) => void;
   onDuplicate: () => void;
   onDelete: () => void;
+  onSyncCloud?: () => void;
+  onRestoreCloud?: () => void;
 }
 
 export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
@@ -18,6 +20,8 @@ export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
   onEditFull,
   onDuplicate,
   onDelete,
+  onSyncCloud,
+  onRestoreCloud,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -89,6 +93,34 @@ export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
           <Copy size={13} className="text-[#8E92A2]" />
           <span>Copiar</span>
         </button>
+
+        {onSyncCloud && (
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              onSyncCloud();
+            }}
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[12px] font-normal text-[#2F80ED] transition-colors hover:bg-[#2F80ED]/15 hover:text-[#569AFF]"
+          >
+            <CloudUpload size={13} className="text-[#2F80ED]" />
+            <span>Sincronizar Nuvem</span>
+          </button>
+        )}
+
+        {onRestoreCloud && (
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              onRestoreCloud();
+            }}
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[12px] font-normal text-[#C8CBD6] transition-colors hover:bg-[#2A2B38] hover:text-white"
+          >
+            <CloudDownload size={13} className="text-[#8E92A2]" />
+            <span>Restaurar da Nuvem</span>
+          </button>
+        )}
 
         <button
           type="button"

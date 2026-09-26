@@ -21,4 +21,6 @@ pub struct SessionRecord {
     pub created_at: i64,
     pub user: Option<CloudUser>,
     pub token: Option<String>,
+    #[serde(default)]
+    pub refresh_token: Option<String>,
 }

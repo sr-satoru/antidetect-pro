@@ -6,6 +6,7 @@ import { ModalEtiquetas } from '@/components/tags/modal-etiquetas';
 import { TagBadge } from '@/components/tags/tag-badge';
 import { serviceTags } from '@/services/tags/service.tags';
 import { api } from '@/services/index.api';
+import { servicePerfis } from '@/services/perfis/service.perfis';
 import { X, Check, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 
@@ -284,6 +285,30 @@ export const PerfisPage: React.FC = () => {
     }
   };
 
+  // Sincronizar perfis selecionados na nuvem E2EE
+  const handleSyncSelected = async () => {
+    if (selectedIds.length === 0) {
+      toast.warning('Selecione pelo menos um perfil para sincronizar');
+      return;
+    }
+    toast.loading(`Sincronizando ${selectedIds.length} perfil(s) na nuvem...`, { id: 'bulk-sync' });
+    let successCount = 0;
+    for (const id of selectedIds) {
+      try {
+        await servicePerfis.syncToCloud(id);
+        successCount++;
+      } catch (e) {
+        // continue
+      }
+    }
+    if (successCount > 0) {
+      toast.success(`${successCount} perfil(s) sincronizado(s) na nuvem com E2EE!`, { id: 'bulk-sync' });
+      fetchProfiles();
+    } else {
+      toast.error('Falha ao sincronizar. Verifique se você está conectado à conta.', { id: 'bulk-sync' });
+    }
+  };
+
   return (
     <div className="flex h-full flex-col gap-3 overflow-hidden">
       {/* Controles desenhados diretamente na página sem container */}
@@ -302,6 +327,7 @@ export const PerfisPage: React.FC = () => {
         onStartSelected={handleStartSelected}
         onStopSelected={handleStopSelected}
         onDeleteSelected={handleDeleteSelected}
+        onSyncSelected={handleSyncSelected}
       />
 
       {/* Indicador de Filtro por Etiqueta Ativo */}

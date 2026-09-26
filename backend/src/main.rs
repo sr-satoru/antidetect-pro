@@ -9,6 +9,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod cache;
 mod cloud_auth;
+mod cloud_sync;
 mod cookie_manager;
 pub mod id_generator;
 mod launcher;
@@ -81,6 +82,7 @@ async fn main() {
         .with_state(extension_storage);
 
     let auth_service = Arc::new(cloud_auth::CloudAuthService::new());
+    let cloud_sync_service = Arc::new(cloud_sync::CloudSyncService::new(&data_dir, auth_service.clone()));
 
     let auth_routes = Router::new()
         .route("/start-login", post(routes::auth::start_login))
@@ -90,6 +92,15 @@ async fn main() {
         .route("/me", get(routes::auth::me))
         .route("/logout", post(routes::auth::logout))
         .with_state(auth_service);
+
+    let cloud_sync_routes = Router::new()
+        .route("/{id}/sync", post(routes::cloud_sync::sync_to_cloud))
+        .route("/{id}/restore", post(routes::cloud_sync::restore_from_cloud))
+        .route("/{id}/stat", get(routes::cloud_sync::get_cloud_stat))
+        .route("/{id}/cloud-sync", post(routes::cloud_sync::sync_to_cloud))
+        .route("/{id}/cloud-restore", post(routes::cloud_sync::restore_from_cloud))
+        .route("/{id}/cloud-status", get(routes::cloud_sync::get_cloud_stat))
+        .with_state(cloud_sync_service);
 
     let tag_routes = Router::new()
         .route("/", get(routes::tags::list_tags).post(routes::tags::create_tag))
@@ -108,6 +119,7 @@ async fn main() {
 
     let app = Router::new()
         .nest("/api/profiles", profile_routes)
+        .nest("/api/cloud-sync", cloud_sync_routes)
         .nest("/api/proxies", proxy_routes)
         .nest("/api/extensions", extension_routes)
         .nest("/api/tags", tag_routes)

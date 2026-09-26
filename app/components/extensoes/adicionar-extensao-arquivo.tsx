@@ -70,16 +70,11 @@ export const AdicionarExtensaoArquivo: React.FC<
               )}
             </span>
           </button>
-          <div className="space-y-1 text-[11px] leading-relaxed text-[#7C8092]">
-            <p>
-              <span className="font-semibold text-[#FF7139]">Nativo Camoufox:</span> arquivos <span className="font-mono text-white">.xpi</span> do Firefox e pacotes <span className="font-mono text-white">.zip</span> (limite 60M).
-            </p>
-            <p>
-              Arquivos <span className="font-mono text-[#A6ABB9]">.crx</span> (Chrome) podem ser convertidos para <span className="font-mono text-[#A6ABB9]">.zip</span> ou <span className="font-mono text-[#A6ABB9]">.xpi</span>.
-            </p>
+            <div className="flex items-center gap-2 rounded-md border border-[#2F80ED]/30 bg-[#2F80ED]/10 p-2 text-[11px] text-[#A8C7FA]">
+              <span>🔒 <strong>Armazenamento Local Seguro:</strong> Arquivos carregados manualmente permanecem 100% no seu dispositivo físico e nunca são transmitidos para servidores externos, garantindo privacidade e proteção total.</span>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* 2. Ícone */}
       <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-12">

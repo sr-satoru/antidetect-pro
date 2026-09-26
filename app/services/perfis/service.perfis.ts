@@ -65,6 +65,14 @@ export const servicePerfis = {
   importCookies: serviceCookies.importCookies,
   clearCookies: serviceCookies.clearCookies,
   exportCookiesToFile: serviceCookies.exportCookiesToFile,
+
+  // Sincronização em Nuvem (E2EE < 1 MB)
+  syncToCloud: (id: string | number) =>
+    http.post<any>(`/api/cloud-sync/${id}/sync`),
+  restoreFromCloud: (id: string | number) =>
+    http.post<any>(`/api/cloud-sync/${id}/restore`),
+  getCloudStat: (id: string | number) =>
+    http.get<any>(`/api/cloud-sync/${id}/stat`),
 };
 
 export default servicePerfis;

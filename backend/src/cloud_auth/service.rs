@@ -15,6 +15,8 @@ pub struct CloudAuthService {
     sessions: Arc<RwLock<HashMap<String, SessionRecord>>>,
     current_user: Arc<RwLock<Option<CloudUser>>>,
     current_token: Arc<RwLock<Option<String>>>,
+    current_refresh_token: Arc<RwLock<Option<String>>>,
+    current_token_expires_at: Arc<RwLock<i64>>,
     cloud_api_url: String,
     web_site_url: String,
     oauth_secret: String,
@@ -34,6 +36,8 @@ impl CloudAuthService {
             sessions: Arc::new(RwLock::new(HashMap::new())),
             current_user: Arc::new(RwLock::new(None)),
             current_token: Arc::new(RwLock::new(None)),
+            current_refresh_token: Arc::new(RwLock::new(None)),
+            current_token_expires_at: Arc::new(RwLock::new(0)),
             cloud_api_url,
             web_site_url,
             oauth_secret,
@@ -82,6 +86,7 @@ impl CloudAuthService {
             created_at: chrono::Utc::now().timestamp(),
             user: None,
             token: None,
+            refresh_token: None,
         };
 
         self.sessions.write().await.insert(session_id.clone(), record);
@@ -134,6 +139,8 @@ impl CloudAuthService {
         struct ExchangeResponse {
             #[serde(rename = "accessToken")]
             access_token: String,
+            #[serde(rename = "refreshToken")]
+            refresh_token: Option<String>,
             user: CloudUser,
         }
 
@@ -142,12 +149,16 @@ impl CloudAuthService {
             .await
             .map_err(|e| format!("Erro ao processar dados retornados pela nuvem: {}", e))?;
 
+        let now = chrono::Utc::now().timestamp();
+        let expires_at = now + 300; // 5 minutos
+
         // Atualiza o registro da sessão
         {
             let mut sessions = self.sessions.write().await;
             if let Some(rec) = sessions.get_mut(&session_id) {
                 rec.status = "authenticated".to_string();
                 rec.token = Some(parsed.access_token.clone());
+                rec.refresh_token = parsed.refresh_token.clone();
                 rec.user = Some(parsed.user.clone());
             }
         }
@@ -155,6 +166,8 @@ impl CloudAuthService {
         // Salva a sessão ativa global do app
         *self.current_user.write().await = Some(parsed.user.clone());
         *self.current_token.write().await = Some(parsed.access_token);
+        *self.current_refresh_token.write().await = parsed.refresh_token;
+        *self.current_token_expires_at.write().await = expires_at;
 
         Ok(parsed.user)
     }
@@ -175,10 +188,66 @@ impl CloudAuthService {
         self.current_token.read().await.clone()
     }
 
+    /// Retorna um Access Token válido, renovando automaticamente com o Refresh Token se estiver prestes a expirar (< 30s)
+    pub async fn get_valid_access_token(&self) -> Result<String, String> {
+        let now = chrono::Utc::now().timestamp();
+        let expires_at = *self.current_token_expires_at.read().await;
+
+        if expires_at > now + 30 {
+            if let Some(token) = self.current_token.read().await.clone() {
+                return Ok(token);
+            }
+        }
+
+        let refresh_token = {
+            self.current_refresh_token.read().await.clone()
+        }.ok_or_else(|| "Nenhum refresh token disponível. Faça login novamente.".to_string())?;
+
+        let refresh_url = format!("{}/api/auth/refresh", self.cloud_api_url);
+        let payload = serde_json::json!({
+            "refreshToken": refresh_token,
+        });
+
+        let resp = self
+            .http_client
+            .post(&refresh_url)
+            .json(&payload)
+            .send()
+            .await
+            .map_err(|e| format!("Erro de conexão ao renovar token: {}", e))?;
+
+        if !resp.status().is_success() {
+            let err_text = resp.text().await.unwrap_or_default();
+            return Err(format!("Falha na renovação da sessão: {}", err_text));
+        }
+
+        #[derive(Deserialize)]
+        struct RefreshResponse {
+            #[serde(rename = "accessToken")]
+            access_token: String,
+            #[serde(rename = "expiresIn")]
+            expires_in: Option<i64>,
+        }
+
+        let parsed: RefreshResponse = resp
+            .json()
+            .await
+            .map_err(|e| format!("Erro ao decodificar resposta de renovação: {}", e))?;
+
+        let new_expires_at = now + parsed.expires_in.unwrap_or(300);
+        *self.current_token.write().await = Some(parsed.access_token.clone());
+        *self.current_token_expires_at.write().await = new_expires_at;
+
+        tracing::info!("🔑 Access token de 5m renovado automaticamente com sucesso!");
+        Ok(parsed.access_token)
+    }
+
     /// Desconecta o usuário ativo
     pub async fn logout(&self) {
         *self.current_user.write().await = None;
         *self.current_token.write().await = None;
+        *self.current_refresh_token.write().await = None;
+        *self.current_token_expires_at.write().await = 0;
     }
 
     /// Renderiza a página HTML oficial de sucesso exibida no navegador após autenticar

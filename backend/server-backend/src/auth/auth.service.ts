@@ -38,6 +38,10 @@ export interface ExchangeCodeDto {
   state: string;
 }
 
+export interface RefreshTokenDto {
+  refreshToken: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -266,7 +270,7 @@ export class AuthService {
       maxProfiles: user.maxProfiles,
     };
 
-    const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: "7d" });
+    const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: "5m" });
     const refreshToken = jwt.sign({ sub: user.id, tokenType: "refresh" }, jwtSecret, {
       expiresIn: "30d",
     });
@@ -283,6 +287,51 @@ export class AuthService {
         max_profiles: user.maxProfiles,
         profile_count: user.profileCount,
       },
+    };
+  }
+
+  /**
+   * Renova o Access Token (5 minutos) utilizando o Refresh Token (30 dias)
+   */
+  async refreshAccessToken(dto: RefreshTokenDto) {
+    if (!dto.refreshToken) {
+      throw new BadRequestException("Refresh token é obrigatório");
+    }
+
+    const jwtSecret = this.getJwtSecret();
+    let decoded: any;
+    try {
+      decoded = jwt.verify(dto.refreshToken, jwtSecret);
+    } catch {
+      throw new UnauthorizedException("Refresh token inválido ou expirado");
+    }
+
+    if (decoded.tokenType !== "refresh" || !decoded.sub) {
+      throw new UnauthorizedException("Tipo de token inválido para renovação");
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: decoded.sub },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException("Usuário não encontrado");
+    }
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+      plan: user.plan,
+      maxProfiles: user.maxProfiles,
+    };
+
+    const newAccessToken = jwt.sign(payload, jwtSecret, { expiresIn: "5m" });
+
+    return {
+      success: true,
+      accessToken: newAccessToken,
+      expiresIn: 300, // 5 minutos em segundos
     };
   }
 }

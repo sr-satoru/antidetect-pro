@@ -1,15 +1,20 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MenuAcoesPerfil } from './menu-acoes-perfil';
 import { OsIcon } from '../ui/os-icon';
 import { TagBadge } from '../tags/tag-badge';
 import { serviceTags } from '../../services/tags/service.tags';
+import { toast } from 'sonner';
+import { servicePerfis } from '../../services/perfis/service.perfis';
 import {
   ArrowLeftRight,
   Pencil,
   Play,
   Square,
   MoreVertical,
+  Cloud,
+  CloudCheck,
+  Loader2,
 } from 'lucide-react';
 export interface LinhaTabelaProps {
   profile: any;
@@ -130,6 +135,58 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isCloudSynced, setIsCloudSynced] = useState<boolean>(
+    Boolean(profile.cloud_synced || profile.synced_at)
+  );
+  const [cloudSizeKb, setCloudSizeKb] = useState<number | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    servicePerfis
+      .getCloudStat(profile.id)
+      .then((res: any) => {
+        if (isMounted && res?.data?.exists) {
+          setIsCloudSynced(true);
+          if (res.data.size) {
+            setCloudSizeKb(Math.round(res.data.size / 1024));
+          }
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, [profile.id]);
+
+  const handleSyncCloud = async () => {
+    try {
+      setIsSyncing(true);
+      toast.loading(`Sincronizando perfil ${profile.name}...`, { id: `sync-${profile.id}` });
+      const res = await servicePerfis.syncToCloud(profile.id);
+      setIsCloudSynced(true);
+      if (res.size_kb) setCloudSizeKb(res.size_kb);
+      toast.success(`Perfil ${profile.name} sincronizado na nuvem! (${res.size_kb} KB)`, { id: `sync-${profile.id}` });
+    } catch (err: any) {
+      toast.error(`Falha ao sincronizar: ${err?.message || 'Verifique se você está conectado'}`, { id: `sync-${profile.id}` });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleRestoreCloud = async () => {
+    try {
+      setIsSyncing(true);
+      toast.loading(`Restaurando perfil ${profile.name}...`, { id: `restore-${profile.id}` });
+      await servicePerfis.restoreFromCloud(profile.id);
+      setIsCloudSynced(true);
+      toast.success(`Perfil ${profile.name} restaurado da nuvem!`, { id: `restore-${profile.id}` });
+    } catch (err: any) {
+      toast.error(`Falha ao restaurar: ${err?.message || 'Cápsula não encontrada na nuvem'}`, { id: `restore-${profile.id}` });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const handleToggleMenu = () => {
     if (isMenuOpen) {
@@ -234,6 +291,32 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           <span className="text-xs font-semibold tracking-wide text-white uppercase">
             {(profile.name || 'Sem nome').toUpperCase()}
           </span>
+
+          {/* Indicador de Status de Sincronização em Nuvem (E2EE < 1 MB) */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSyncCloud();
+            }}
+            className="flex items-center justify-center p-0.5 rounded hover:bg-[#383A44] transition-colors cursor-pointer"
+            title={
+              isSyncing
+                ? '🔄 Sincronizando com a Nuvem Fury...'
+                : isCloudSynced
+                  ? `🟢 Sincronizado na Nuvem E2EE (${cloudSizeKb ? `${cloudSizeKb} KB` : '< 1 MB'}). Clique para sincronizar.`
+                  : '🟠 Modificações Locais Pendentes (Não sincronizado). Clique para enviar à nuvem.'
+            }
+          >
+            {isSyncing ? (
+              <Loader2 size={13} className="shrink-0 animate-spin text-[#3b82f6]" />
+            ) : isCloudSynced ? (
+              <CloudCheck size={14} className="shrink-0 text-[#10b981]" />
+            ) : (
+              <Cloud size={14} className="shrink-0 text-[#f59e0b] hover:text-[#fbbf24]" />
+            )}
+          </button>
+
           <button
             type="button"
             onClick={(e) => {
@@ -380,6 +463,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           }
           onDuplicate={() => onDuplicate && onDuplicate(profile)}
           onDelete={() => onDelete(profile.id)}
+          onSyncCloud={handleSyncCloud}
+          onRestoreCloud={handleRestoreCloud}
         />
       </td>
     </tr>

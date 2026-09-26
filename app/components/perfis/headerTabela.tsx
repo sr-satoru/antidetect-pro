@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   Tag,
   RotateCw,
+  Cloud,
 } from 'lucide-react';
 
 interface HeaderTabelaProps {
@@ -25,6 +26,7 @@ interface HeaderTabelaProps {
   onRefresh?: () => void;
   onOpenTagFilter?: () => void;
   onOpenMoreOptions?: () => void;
+  onSyncSelected?: () => void;
   [key: string]: any;
 }
 
@@ -39,6 +41,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
   onRefresh,
   onOpenTagFilter,
   onOpenMoreOptions,
+  onSyncSelected,
 }) => {
   return (
     <div className="flex flex-col gap-2.5 shrink-0 select-none pb-1">
@@ -142,6 +145,17 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           >
             <ExternalLink size={14} />
             <span>Partilhar</span>
+          </button>
+
+          {/* 6.5 Sincronizar Nuvem (E2EE) */}
+          <button
+            type="button"
+            onClick={onSyncSelected}
+            className="h-[34px] px-3 rounded-md bg-[#14151B] hover:bg-[#1A1C24] border border-[#262732] text-[#8E92A2] hover:text-[#569AFF] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer"
+            title="Sincronizar perfis selecionados na nuvem (E2EE)"
+          >
+            <Cloud size={14} className="text-[#3b82f6]" />
+            <span>Nuvem</span>
           </button>
 
           {/* 7. Lixeira */}
