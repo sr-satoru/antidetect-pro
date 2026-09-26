@@ -8,6 +8,7 @@ use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod cache;
+mod cloud_auth;
 mod cookie_manager;
 mod launcher;
 mod models;
@@ -78,7 +79,7 @@ async fn main() {
         .route("/catalog", get(routes::extensions::get_catalog))
         .with_state(extension_storage);
 
-    let auth_state = Arc::new(routes::auth::AuthState::new());
+    let auth_service = Arc::new(cloud_auth::CloudAuthService::new());
 
     let auth_routes = Router::new()
         .route("/start-login", post(routes::auth::start_login))
@@ -87,7 +88,7 @@ async fn main() {
         .route("/session/{session_id}", get(routes::auth::get_session_status))
         .route("/me", get(routes::auth::me))
         .route("/logout", post(routes::auth::logout))
-        .with_state(auth_state);
+        .with_state(auth_service);
 
     let tag_routes = Router::new()
         .route("/", get(routes::tags::list_tags).post(routes::tags::create_tag))

@@ -277,8 +277,8 @@ export class AuthService {
         email: user.email,
         name: user.name,
         plan: user.plan,
-        maxProfiles: user.maxProfiles,
-        profileCount: user.profileCount,
+        max_profiles: user.maxProfiles,
+        profile_count: user.profileCount,
       },
     };
   }
