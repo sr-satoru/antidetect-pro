@@ -232,8 +232,8 @@ export class AuthService {
       include: { user: true },
     });
 
-    if (!authCode || authCode.consumed) {
-      throw new UnauthorizedException("Código de autorização inválido ou já utilizado");
+    if (!authCode) {
+      throw new UnauthorizedException("Código de autorização inexistente ou inválido");
     }
 
     if (authCode.state !== dto.state) {
@@ -244,11 +244,13 @@ export class AuthService {
       throw new UnauthorizedException("Código de autorização expirado");
     }
 
-    // Marca como consumido
-    await this.prisma.authCode.update({
-      where: { id: authCode.id },
-      data: { consumed: true },
-    });
+    // Marca como consumido caso ainda não tenha sido
+    if (!authCode.consumed) {
+      await this.prisma.authCode.update({
+        where: { id: authCode.id },
+        data: { consumed: true },
+      });
+    }
 
     const user = authCode.user;
     const jwtSecret = this.getJwtSecret();

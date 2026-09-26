@@ -20,7 +20,9 @@ pub struct CloudUser {
     pub email: String,
     pub name: Option<String>,
     pub plan: String,
+    #[serde(alias = "maxProfiles", default)]
     pub max_profiles: i64,
+    #[serde(alias = "profileCount", default)]
     pub profile_count: i64,
 }
 
@@ -203,15 +205,22 @@ h1{{color:#ef4444;font-size:20px;margin-bottom:12px;}}p{{color:#94a3b8;font-size
     };
 
     // Encontra a sessão pendente correspondente pelo state
-    let session_id_opt = {
+    let (session_id, already_authenticated, auth_email) = {
         let sessions = state.sessions.read().await;
-        sessions
-            .iter()
-            .find(|(_, rec)| rec.state == oauth_state)
-            .map(|(id, _)| id.clone())
+        if let Some((id, rec)) = sessions.iter().find(|(_, rec)| rec.state == oauth_state) {
+            let email = rec.user.as_ref().map(|u| u.email.clone());
+            (Some(id.clone()), rec.status == "authenticated", email)
+        } else {
+            (None, false, None)
+        }
     };
 
-    let session_id = match session_id_opt {
+    if already_authenticated {
+        let success_html = render_success_html(auth_email.as_deref().unwrap_or("usuário"));
+        return (StatusCode::OK, headers, Html(success_html));
+    }
+
+    let session_id = match session_id {
         Some(id) => id,
         None => {
             return (
@@ -288,7 +297,12 @@ h1{{color:#ef4444;font-size:20px;margin-bottom:12px;}}p{{color:#94a3b8;font-size
     *state.current_user.write().await = Some(parsed.user.clone());
     *state.current_token.write().await = Some(parsed.access_token);
 
-    let success_html = format!(
+    let success_html = render_success_html(&parsed.user.email);
+    (StatusCode::OK, headers, Html(success_html))
+}
+
+fn render_success_html(email: &str) -> String {
+    format!(
         r#"<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -378,10 +392,8 @@ h1{{color:#ef4444;font-size:20px;margin-bottom:12px;}}p{{color:#94a3b8;font-size
   </div>
 </body>
 </html>"#,
-        parsed.user.email
-    );
-
-    (StatusCode::OK, headers, Html(success_html))
+        email
+    )
 }
 
 /// 4. Consulta status de uma sessão ativa pelo App Desktop

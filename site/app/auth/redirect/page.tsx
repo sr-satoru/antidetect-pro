@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Loader2, ExternalLink, ArrowRight } from "lucide-react";
+import { CheckCircle2, Loader2, ExternalLink } from "lucide-react";
 
 function RedirectContent() {
   const searchParams = useSearchParams();
@@ -12,18 +12,31 @@ function RedirectContent() {
 
   const targetUrl = `${redirectUri}?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`;
   const [redirected, setRedirected] = useState(false);
+  const redirectedRef = useRef(false);
 
   useEffect(() => {
-    if (!code || !state) return;
+    if (!code || !state || redirectedRef.current) return;
 
-    // Redirecionamento automático suave estilo Google OAuth 2.0
+    // Redirecionamento automático suave estilo Google OAuth 2.0 (uma única vez)
     const timer = setTimeout(() => {
-      setRedirected(true);
-      window.location.href = targetUrl;
-    }, 1200);
+      if (!redirectedRef.current) {
+        redirectedRef.current = true;
+        setRedirected(true);
+        window.location.replace(targetUrl);
+      }
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [code, state, targetUrl]);
+
+  const handleManualRedirect = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!redirectedRef.current) {
+      redirectedRef.current = true;
+      setRedirected(true);
+      window.location.replace(targetUrl);
+    }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -47,18 +60,19 @@ function RedirectContent() {
 
         <div className="flex items-center justify-center gap-2 text-xs text-slate-400 mb-8">
           <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
-          <span>Redirecionando automaticamente...</span>
+          <span>{redirected ? "Conectando ao app..." : "Redirecionando automaticamente..."}</span>
         </div>
 
         {/* Botão de fallback manual caso o navegador bloqueie o redirecionamento */}
         <div className="pt-4 border-t border-slate-800/80">
-          <a
-            href={targetUrl}
+          <button
+            type="button"
+            onClick={handleManualRedirect}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-800 hover:bg-slate-700 px-4 py-3 text-xs font-semibold text-white transition-all shadow-md"
           >
             <span>Retornar Manualmente ao Fury App</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-          </a>
+          </button>
           <p className="mt-3 text-[11px] text-slate-500">
             Se a janela do aplicativo não atualizar em alguns segundos, clique no botão acima.
           </p>
