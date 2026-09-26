@@ -11,6 +11,7 @@ import { PerfilFooter } from '@/components/perfis/perfil-footer';
 import { profileToFormData } from '@/services/perfis/service.mapper';
 import { api } from '@/services/index.api';
 import { Loader2, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const EditarPerfilPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -62,9 +63,10 @@ export const EditarPerfilPage: React.FC = () => {
     try {
       setIsSaving(true);
       await api.profiles.update(id, formData);
+      toast.success('Perfil atualizado com sucesso');
       navigate('/perfis');
     } catch (err: any) {
-      alert(`Erro ao salvar alterações: ${err.message || 'Falha de comunicação.'}`);
+      toast.error(`Erro ao salvar alterações: ${err.message || 'Falha de comunicação.'}`);
     } finally {
       setIsSaving(false);
     }

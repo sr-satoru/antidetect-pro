@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Search, Trash2, Tag as TagIcon, Pencil, Check } from 'lucide-react';
+import { toast } from 'sonner';
 import { TagItem, serviceTags } from '../../services/tags/service.tags';
 import { ModalNovaEtiqueta } from './modal-nova-etiqueta';
 import { TagBadge } from './tag-badge';
@@ -103,8 +104,9 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
       setSelectedIds([]);
       await fetchTags();
       onTagsUpdated?.();
+      toast.success('Etiquetas excluídas com sucesso');
     } catch (err: any) {
-      alert(`Erro ao excluir etiquetas: ${err.message || 'Falha na exclusão'}`);
+      toast.error(`Erro ao excluir etiquetas: ${err.message || 'Falha na exclusão'}`);
     } finally {
       setIsLoading(false);
     }
@@ -119,8 +121,9 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
       setSelectedIds((prev) => prev.filter((id) => id !== tag.id));
       await fetchTags();
       onTagsUpdated?.();
+      toast.success('Etiqueta excluída');
     } catch (err: any) {
-      alert(`Erro ao excluir etiqueta: ${err.message || 'Falha na exclusão'}`);
+      toast.error(`Erro ao excluir etiqueta: ${err.message || 'Falha na exclusão'}`);
     } finally {
       setIsLoading(false);
     }

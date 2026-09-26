@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, ChevronDown, ChevronUp, CornerDownLeft, Check } from 'lucide-react';
+import { toast } from 'sonner';
 import { TAG_COLORS, DEFAULT_TAG_COLOR, getTagColorStyle } from './tag-palette';
 import { serviceTags, TagItem } from '../../services/tags/service.tags';
 
@@ -104,8 +105,9 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
 
       setSearchTerm('');
       setShowColorPicker(false);
+      toast.success('Etiqueta criada com sucesso');
     } catch (err: any) {
-      alert(`Erro ao criar etiqueta: ${err.message || 'Falha ao salvar'}`);
+      toast.error(`Erro ao criar etiqueta: ${err.message || 'Falha ao salvar'}`);
     } finally {
       setIsCreating(false);
     }

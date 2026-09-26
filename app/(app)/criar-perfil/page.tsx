@@ -9,6 +9,7 @@ import { AvancadoTab } from '@/components/criar-perfil/avancado';
 import { Previas } from '@/components/criar-perfil/previas';
 import { api } from '@/services/index.api';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   generateRandomSeed,
@@ -153,9 +154,10 @@ export const CriarPerfilPage: React.FC = () => {
     try {
       setIsSaving(true);
       await api.profiles.create(formData);
+      toast.success('Perfil criado com sucesso');
       navigate('/perfis');
     } catch (err: any) {
-      alert(`Erro ao criar perfil: ${err.message || 'Falha na comunicação com o backend local.'}`);
+      toast.error(`Erro ao criar perfil: ${err.message || 'Falha na comunicação com o backend local.'}`);
     } finally {
       setIsSaving(false);
     }

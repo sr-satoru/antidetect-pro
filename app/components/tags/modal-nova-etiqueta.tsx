@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Check } from 'lucide-react';
+import { toast } from 'sonner';
 import { TAG_COLORS, DEFAULT_TAG_COLOR } from './tag-palette';
 import { TagItem } from '../../services/tags/service.tags';
 
@@ -52,9 +53,10 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
         name: trimmed,
         color: selectedColor,
       });
+      toast.success(tagParaEditar ? 'Etiqueta atualizada com sucesso' : 'Etiqueta criada com sucesso');
       onClose();
     } catch (err: any) {
-      alert(`Erro ao salvar etiqueta: ${err.message || 'Falha na requisição'}`);
+      toast.error(`Erro ao salvar etiqueta: ${err.message || 'Falha na requisição'}`);
     } finally {
       setIsSubmitting(false);
     }

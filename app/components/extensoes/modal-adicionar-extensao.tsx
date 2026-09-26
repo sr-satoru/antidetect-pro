@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   AdicionarExtensaoArquivo,
   ExtensaoArquivoFormValues,
@@ -52,7 +53,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
   const handleConfirm = () => {
     if (activeTab === 'file') {
       if (!fileValues.name.trim()) {
-        alert('Por favor, informe o nome da extensão.');
+        toast.warning('Por favor, informe o nome da extensão.');
         return;
       }
       const isXpi = fileValues.fileName?.toLowerCase().endsWith('.xpi');
@@ -73,7 +74,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
       });
     } else {
       if (!webValues.url.trim()) {
-        alert('Por favor, informe a URL da extensão (Firefox AMO ou Chrome Web Store).');
+        toast.warning('Por favor, informe a URL da extensão (Firefox AMO ou Chrome Web Store).');
         return;
       }
 

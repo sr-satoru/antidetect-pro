@@ -5,6 +5,7 @@ import {
   ItemLixeira,
 } from '@/components/lixeira';
 import { Trash2, CheckCircle2, X, AlertTriangle, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { api } from '@/services/index.api';
 
 export const LixeiraPage: React.FC = () => {
@@ -14,14 +15,6 @@ export const LixeiraPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('Todos os grupos');
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
-  const [notification, setNotification] = useState<string | null>(null);
-
-  const showNotification = (msg: string) => {
-    setNotification(msg);
-    setTimeout(() => {
-      setNotification((curr) => (curr === msg ? null : curr));
-    }, 4000);
-  };
 
   const fetchTrash = useCallback(async () => {
     setLoading(true);
@@ -90,9 +83,9 @@ export const LixeiraPage: React.FC = () => {
       await api.profiles.restore(String(id));
       setItems((prev) => prev.filter((item) => item.id !== id));
       setSelectedIds((prev) => prev.filter((item) => item !== id));
-      showNotification(`Perfil "${target?.name || id}" restaurado com sucesso!`);
+      toast.success(`Perfil "${target?.name || id}" restaurado com sucesso!`);
     } catch (err: any) {
-      alert(`Falha ao restaurar perfil: ${err.message}`);
+      toast.error(`Falha ao restaurar perfil: ${err.message}`);
     }
   };
 
@@ -103,9 +96,9 @@ export const LixeiraPage: React.FC = () => {
       await Promise.all(selectedIds.map((id) => api.profiles.restore(String(id))));
       setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
       setSelectedIds([]);
-      showNotification(`${count} perfil(is) restaurado(s) com sucesso!`);
+      toast.success(`${count} perfil(is) restaurado(s) com sucesso!`);
     } catch (err: any) {
-      alert(`Falha ao restaurar selecionados: ${err.message}`);
+      toast.error(`Falha ao restaurar selecionados: ${err.message}`);
       fetchTrash();
     }
   };
@@ -121,9 +114,9 @@ export const LixeiraPage: React.FC = () => {
         await api.profiles.deletePermanent(String(id));
         setItems((prev) => prev.filter((item) => item.id !== id));
         setSelectedIds((prev) => prev.filter((item) => item !== id));
-        showNotification('Perfil excluído permanentemente do banco de dados.');
+        toast.success('Perfil excluído permanentemente do banco de dados.');
       } catch (err: any) {
-        alert(`Falha ao excluir permanentemente: ${err.message}`);
+        toast.error(`Falha ao excluir permanentemente: ${err.message}`);
       }
     }
   };
@@ -141,9 +134,9 @@ export const LixeiraPage: React.FC = () => {
         );
         setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
         setSelectedIds([]);
-        showNotification('Perfis selecionados excluídos permanentemente.');
+        toast.success('Perfis selecionados excluídos permanentemente.');
       } catch (err: any) {
-        alert(`Falha ao excluir selecionados: ${err.message}`);
+        toast.error(`Falha ao excluir selecionados: ${err.message}`);
         fetchTrash();
       }
     }
@@ -160,9 +153,9 @@ export const LixeiraPage: React.FC = () => {
         await api.profiles.emptyTrash();
         setItems([]);
         setSelectedIds([]);
-        showNotification('A lixeira foi completamente esvaziada.');
+        toast.success('A lixeira foi completamente esvaziada.');
       } catch (err: any) {
-        alert(`Falha ao esvaziar lixeira: ${err.message}`);
+        toast.error(`Falha ao esvaziar lixeira: ${err.message}`);
       }
     }
   };
@@ -170,7 +163,7 @@ export const LixeiraPage: React.FC = () => {
   const handleRefresh = () => {
     fetchTrash();
     setSelectedIds([]);
-    showNotification('Lixeira sincronizada com o banco de dados.');
+    toast.info('Lixeira sincronizada com o banco de dados.');
   };
 
   return (
@@ -195,20 +188,6 @@ export const LixeiraPage: React.FC = () => {
             </p>
           </div>
         </div>
-
-        {/* Notificação Temporária de Ação */}
-        {notification && (
-          <div className="flex items-center gap-2 rounded-lg border border-[#DFE104]/30 bg-[#24252B] px-3.5 py-1.5 text-xs text-white shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
-            <CheckCircle2 size={15} className="text-[#DFE104] shrink-0" />
-            <span>{notification}</span>
-            <button
-              onClick={() => setNotification(null)}
-              className="ml-2 text-[#8E92A2] hover:text-white"
-            >
-              <X size={13} />
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Erro de conexão se houver */}

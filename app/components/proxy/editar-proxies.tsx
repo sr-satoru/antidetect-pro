@@ -12,6 +12,7 @@ import {
   FormularioCamposProxy,
   ProxyFormValues,
 } from './formulario-campos-proxy';
+import { toast } from 'sonner';
 
 interface EditarProxiesProps {
   proxy: any;
@@ -56,7 +57,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
     e.preventDefault();
 
     if (!formValues.host.trim() || !formValues.port.trim()) {
-      alert('Por favor, informe ao menos o Host e a Porta.');
+      toast.warning('Por favor, informe ao menos o Host e a Porta.');
       return;
     }
 

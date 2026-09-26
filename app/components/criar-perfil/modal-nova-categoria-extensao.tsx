@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Search, Check, Plus, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   ExtensionCategory,
   ExtensionItemSummary,
@@ -124,7 +125,7 @@ export const ModalNovaCategoriaExtensao: React.FC<
 
   const handleConfirm = () => {
     if (!nome.trim()) {
-      alert('Por favor, informe o nome da categoria.');
+      toast.warning('Por favor, informe o nome da categoria.');
       return;
     }
 
@@ -134,6 +135,7 @@ export const ModalNovaCategoriaExtensao: React.FC<
       extensions: selectedExtensions,
     });
 
+    toast.success('Categoria criada com sucesso');
     if (onSuccess) {
       onSuccess(created);
     }

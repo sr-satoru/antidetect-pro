@@ -6,6 +6,7 @@ import {
 } from '@/components/extensoes/tabela-extensoes';
 import { ModalAdicionarExtensao } from '@/components/extensoes/modal-adicionar-extensao';
 import { api } from '@/services/index.api';
+import { toast } from 'sonner';
 
 export const ExtensoesPage: React.FC = () => {
   const [extensions, setExtensions] = useState<ExtensionItem[]>([]);
@@ -39,8 +40,9 @@ export const ExtensoesPage: React.FC = () => {
 
     try {
       await api.extensions.update(id, { enabled: newEnabled });
+      toast.success(newEnabled ? 'Extensão ativada' : 'Extensão desativada');
     } catch (err: any) {
-      alert(`Erro ao alterar status da extensão: ${err.message}`);
+      toast.error(`Erro ao alterar status da extensão: ${err.message}`);
       setExtensions((prev) =>
         prev.map((ext) =>
           ext.id === id ? { ...ext, enabled: !newEnabled } : ext,
@@ -55,8 +57,9 @@ export const ExtensoesPage: React.FC = () => {
       try {
         await api.extensions.delete(id);
         setExtensions((prev) => prev.filter((ext) => ext.id !== id));
+        toast.success(`Extensão "${target?.name}" removida com sucesso`);
       } catch (err: any) {
-        alert(`Erro ao remover extensão: ${err.message}`);
+        toast.error(`Erro ao remover extensão: ${err.message}`);
       }
     }
   };
@@ -79,8 +82,9 @@ export const ExtensoesPage: React.FC = () => {
       await api.extensions.create(payload);
       setIsModalOpen(false);
       await fetchExtensions();
+      toast.success('Extensão cadastrada com sucesso');
     } catch (err: any) {
-      alert(`Erro ao cadastrar extensão: ${err.message}`);
+      toast.error(`Erro ao cadastrar extensão: ${err.message}`);
     }
   };
 

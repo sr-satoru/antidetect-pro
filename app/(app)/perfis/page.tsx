@@ -7,6 +7,7 @@ import { TagBadge } from '@/components/tags/tag-badge';
 import { serviceTags } from '@/services/tags/service.tags';
 import { api } from '@/services/index.api';
 import { X, Check, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const PerfisPage: React.FC = () => {
   const navigate = useNavigate();
@@ -166,7 +167,7 @@ export const PerfisPage: React.FC = () => {
           );
         }
       } catch (err: any) {
-        alert(`Falha ao iniciar o perfil: ${err.message}`);
+        toast.error(`Falha ao iniciar o perfil: ${err.message}`);
         setProfiles((prev) =>
           prev.map((p) => (p.id === id ? { ...p, isRunning: false, status: 'ready' } : p)),
         );
@@ -218,8 +219,9 @@ export const PerfisPage: React.FC = () => {
         await Promise.all(selectedIds.map((id) => api.profiles.delete(String(id))));
         setProfiles((prev) => prev.filter((p) => !selectedIds.includes(p.id)));
         setSelectedIds([]);
+        toast.success(`${selectedIds.length} perfil(is) movido(s) para a lixeira`);
       } catch (err: any) {
-        alert(`Erro ao mover perfis para a lixeira: ${err.message}`);
+        toast.error(`Erro ao mover perfis para a lixeira: ${err.message}`);
       }
     }
   };
@@ -232,8 +234,9 @@ export const PerfisPage: React.FC = () => {
         await api.profiles.delete(String(id));
         setProfiles((prev) => prev.filter((p) => p.id !== id));
         setSelectedIds((prev) => prev.filter((item) => item !== id));
+        toast.success(`Perfil "${target?.name}" movido para a lixeira`);
       } catch (err: any) {
-        alert(`Erro ao mover perfil para a lixeira: ${err.message}`);
+        toast.error(`Erro ao mover perfil para a lixeira: ${err.message}`);
       }
     }
   };
@@ -250,8 +253,9 @@ export const PerfisPage: React.FC = () => {
       setIsLoading(true);
       await api.profiles.clone(profile.id);
       await fetchProfiles();
+      toast.success(`Perfil "${profile.name}" duplicado com sucesso`);
     } catch (err: any) {
-      alert(`Erro ao duplicar perfil: ${err.message || 'Falha ao duplicar'}`);
+      toast.error(`Erro ao duplicar perfil: ${err.message || 'Falha ao duplicar'}`);
     } finally {
       setIsLoading(false);
     }
@@ -273,9 +277,10 @@ export const PerfisPage: React.FC = () => {
             : p,
         ),
       );
+      toast.success('Perfil renomeado com sucesso');
       setEditingProfile(null);
     } catch (err: any) {
-      alert(`Erro ao renomear perfil: ${err.message}`);
+      toast.error(`Erro ao renomear perfil: ${err.message}`);
     }
   };
 

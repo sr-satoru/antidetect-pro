@@ -12,6 +12,7 @@ import {
   FormularioCamposProxy,
   ProxyFormValues,
 } from './formulario-campos-proxy';
+import { toast } from 'sonner';
 
 interface CadastroProxiesProps {
   onClose: () => void;
@@ -43,7 +44,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
 
   const handleSaveIndividual = () => {
     if (!formValues.host.trim() || !formValues.port.trim()) {
-      alert('Por favor, informe ao menos o Host e a Porta.');
+      toast.warning('Por favor, informe ao menos o Host e a Porta.');
       return false;
     }
 
@@ -80,7 +81,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
       .filter(Boolean);
 
     if (lines.length === 0) {
-      alert('Cole ao menos um proxy na caixa de texto.');
+      toast.warning('Cole ao menos um proxy na caixa de texto.');
       return false;
     }
 

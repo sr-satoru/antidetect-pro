@@ -12,9 +12,24 @@ import { ProxyPage } from './(app)/proxy/page';
 import { ExtensoesPage } from './(app)/extensoes/page';
 import { LixeiraPage } from './(app)/lixeira/page';
 
+import { Toaster } from 'sonner';
+
 export const App: React.FC = () => {
   return (
     <AuthProvider>
+      <Toaster
+        theme="dark"
+        position="top-right"
+        richColors
+        closeButton
+        toastOptions={{
+          style: {
+            background: '#1E2028',
+            borderColor: '#303241',
+            color: '#E1E4EE',
+          },
+        }}
+      />
       <BrowserRouter>
         <Routes>
           {/* Rotas Públicas de Acesso */}

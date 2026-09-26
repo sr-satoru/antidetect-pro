@@ -8,6 +8,7 @@ import {
   Bell,
   LogOut,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface HeaderProps {
   title?: string;
@@ -44,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         {/* Baixar Cliente */}
         <button
           type="button"
-          onClick={() => alert('Download do Cliente Desktop')}
+          onClick={() => toast.info('Download do Cliente Desktop em breve!')}
           className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#15161D] hover:bg-[#1E2028] text-[#C8CBD4] hover:text-white text-xs font-medium border border-[#2B2D38] hover:border-[#3E404D] transition-colors cursor-pointer"
         >
           <Download size={13} />
@@ -54,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         {/* Central de Tarefas */}
         <button
           type="button"
-          onClick={() => alert('Central de Tarefas')}
+          onClick={() => toast.info('Central de Tarefas: nenhuma tarefa pendente')}
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#15161D] hover:bg-[#1E2028] text-[#C8CBD4] hover:text-white text-xs font-medium border border-[#2B2D38] hover:border-[#3E404D] transition-colors cursor-pointer"
           title="Central de Tarefas"
         >
