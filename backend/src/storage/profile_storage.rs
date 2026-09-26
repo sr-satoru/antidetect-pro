@@ -1,5 +1,6 @@
 use crate::launcher::ProcessManager;
 use crate::models::{CreateProfileDto, Profile, ProfileProxyConfig, UpdateProfileDto};
+use crate::ws::WsState;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -11,12 +12,12 @@ pub struct ProfileStorage {
 }
 
 impl ProfileStorage {
-    pub fn new<P: AsRef<Path>>(data_dir: P) -> Self {
+    pub fn new<P: AsRef<Path>>(data_dir: P, ws: WsState) -> Self {
         let dir = data_dir.as_ref().join("profiles");
         let _ = fs::create_dir_all(&dir);
         Self {
             data_dir: dir,
-            process_manager: Arc::new(ProcessManager::new()),
+            process_manager: Arc::new(ProcessManager::new(ws)),
         }
     }
 

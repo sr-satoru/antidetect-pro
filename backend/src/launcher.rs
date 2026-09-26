@@ -7,6 +7,7 @@ use std::sync::{Arc, Mutex};
 use tracing::{info, warn};
 
 use crate::models::{ExtensionItem, Profile};
+use crate::ws::{WsEvent, WsState};
 
 /// Extrai o slug de uma URL do catálogo Mozilla Add-ons (AMO)
 fn extract_amo_slug(url: &str) -> Option<String> {
@@ -57,10 +58,11 @@ pub struct ProcessManager {
     running: Arc<Mutex<HashMap<String, u32>>>,
     ports: Arc<Mutex<HashMap<String, u16>>>,
     client: reqwest::Client,
+    ws: WsState,
 }
 
 impl ProcessManager {
-    pub fn new() -> Self {
+    pub fn new(ws: WsState) -> Self {
         let client = reqwest::Client::builder()
             .user_agent("Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0 FuryBrowser/1.0")
             .timeout(std::time::Duration::from_secs(15))
@@ -71,6 +73,7 @@ impl ProcessManager {
             running: Arc::new(Mutex::new(HashMap::new())),
             ports: Arc::new(Mutex::new(HashMap::new())),
             client,
+            ws,
         }
     }
 
@@ -451,21 +454,65 @@ impl ProcessManager {
             profile.name, profile.id, binary_path
         );
 
-        let mut cmd = Command::new(&binary_path);
+        let mut cmd = tokio::process::Command::new(&binary_path);
         cmd.arg("--profile").arg(&profile_dir);
         cmd.arg("--new-instance");
 
-        let child = cmd.spawn().map_err(|e| {
+        let mut child = cmd.spawn().map_err(|e| {
             format!("Falha ao executar {:?}: {}", binary_path, e)
         })?;
 
-        let pid = child.id();
+        let pid = child.id().unwrap_or(0);
         info!("✅ Camoufox iniciado com PID {} para o perfil {}", pid, profile.id);
 
         {
             let mut map = self.running.lock().unwrap();
             map.insert(profile.id.clone(), pid);
         }
+
+        // Notifica o frontend via WebSocket imediatamente
+        self.ws.emit(WsEvent::ProfileStatus {
+            profile_id: profile.id.clone(),
+            status: "running".to_string(),
+        });
+
+        // Monitoramento nativo em tempo real: o OS notifica o momento exato em que a janela do Camoufox fechar
+        let profile_id_clone = profile.id.clone();
+        let running_map = self.running.clone();
+        let ws_clone = self.ws.clone();
+        let meta_file = if data_dir.ends_with("profiles") {
+            data_dir.join(&profile.id).join("metadata.json")
+        } else {
+            data_dir.join("profiles").join(&profile.id).join("metadata.json")
+        };
+
+        tokio::spawn(async move {
+            let exit_status = child.wait().await;
+            info!(
+                "🛑 Processo Camoufox (PID {}) do perfil {} encerrou ({:?}).",
+                pid, profile_id_clone, exit_status
+            );
+
+            {
+                let mut map = running_map.lock().unwrap();
+                map.remove(&profile_id_clone);
+            }
+
+            // Atualiza metadata.json no disco
+            if let Ok(content) = fs::read_to_string(&meta_file) {
+                if let Ok(mut prof) = serde_json::from_str::<Profile>(&content) {
+                    prof.status = "ready".to_string();
+                    let _ = fs::write(&meta_file, serde_json::to_string_pretty(&prof).unwrap_or_default());
+                }
+            }
+
+            // Emite o evento instantaneamente para o frontend via WebSocket!
+            info!("📢 Notificando frontend via WebSocket: perfil {} agora é 'ready'", profile_id_clone);
+            ws_clone.emit(WsEvent::ProfileStatus {
+                profile_id: profile_id_clone,
+                status: "ready".to_string(),
+            });
+        });
 
         Ok(pid)
     }
@@ -497,6 +544,13 @@ impl ProcessManager {
                 }
             }
         }
+
+        // Emite status "ready" via WebSocket
+        self.ws.emit(WsEvent::ProfileStatus {
+            profile_id: profile_id.to_string(),
+            status: "ready".to_string(),
+        });
+
         Ok(())
     }
 
@@ -514,7 +568,20 @@ impl ProcessManager {
     }
 
     fn is_pid_alive(pid: u32) -> bool {
-        #[cfg(unix)]
+        #[cfg(target_os = "linux")]
+        {
+            if let Ok(status) = std::fs::read_to_string(format!("/proc/{}/status", pid)) {
+                for line in status.lines() {
+                    if line.starts_with("State:") {
+                        let is_dead = line.contains('Z') || line.contains('X');
+                        return !is_dead;
+                    }
+                }
+                return true;
+            }
+            false
+        }
+        #[cfg(all(unix, not(target_os = "linux")))]
         {
             match Command::new("kill").arg("-0").arg(pid.to_string()).output() {
                 Ok(output) => output.status.success(),
@@ -523,7 +590,17 @@ impl ProcessManager {
         }
         #[cfg(windows)]
         {
-            false
+            match Command::new("tasklist")
+                .arg("/FI")
+                .arg(format!("PID eq {}", pid))
+                .output()
+            {
+                Ok(output) => {
+                    let text = String::from_utf8_lossy(&output.stdout);
+                    text.contains(&pid.to_string())
+                }
+                Err(_) => false,
+            }
         }
     }
 }

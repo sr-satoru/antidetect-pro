@@ -38,6 +38,68 @@ export const PerfisPage: React.FC = () => {
     fetchProfiles();
   }, [fetchProfiles]);
 
+  // WebSocket em tempo real: zero polling, atualização instantânea quando o Camoufox for fechado pelo 'X'
+  useEffect(() => {
+    let ws: WebSocket | null = null;
+    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+    let isDisposed = false;
+
+    const connect = () => {
+      if (isDisposed) return;
+      try {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.hostname || '127.0.0.1';
+        ws = new WebSocket(`${protocol}//${host}:8000/api/ws`);
+
+        ws.onopen = () => {
+          console.log('⚡ Conectado ao WebSocket do Fury Backend:', ws?.url);
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const msg = JSON.parse(event.data);
+            if (msg.event === 'profile_status' && msg.data) {
+              const { profile_id, status } = msg.data;
+              console.log('⚡ WebSocket profile_status recebido:', { profile_id, status });
+              const isRunning = status === 'running';
+              setProfiles((prev) =>
+                prev.map((curr) =>
+                  String(curr.id) === String(profile_id)
+                    ? { ...curr, status, isRunning }
+                    : curr,
+                ),
+              );
+            }
+          } catch (err) {
+            console.error('Erro ao processar mensagem do WebSocket:', err);
+          }
+        };
+
+        ws.onclose = () => {
+          if (!isDisposed) {
+            reconnectTimeout = setTimeout(connect, 2000);
+          }
+        };
+
+        ws.onerror = () => {
+          ws?.close();
+        };
+      } catch (e) {
+        if (!isDisposed) {
+          reconnectTimeout = setTimeout(connect, 3000);
+        }
+      }
+    };
+
+    connect();
+
+    return () => {
+      isDisposed = true;
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      if (ws) ws.close();
+    };
+  }, []);
+
   // Filter logic
   const filteredProfiles = useMemo(() => {
     return profiles.filter((p) => {
@@ -85,26 +147,33 @@ export const PerfisPage: React.FC = () => {
     const target = profiles.find((p) => p.id === id);
     if (!target) return;
 
-    if (!target.isRunning) {
+    const isCurrentlyRunning = target.status === 'running' || target.isRunning;
+
+    if (!isCurrentlyRunning) {
       // Iniciar navegador
       try {
         setProfiles((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, isRunning: true } : p)),
+          prev.map((p) => (p.id === id ? { ...p, isRunning: true, status: 'running' } : p)),
         );
-        await api.profiles.launch(String(id));
+        const res = await api.profiles.launch(String(id));
+        if (res && res.profile) {
+          setProfiles((prev) =>
+            prev.map((p) => (p.id === id ? { ...p, ...res.profile, isRunning: true, status: 'running' } : p)),
+          );
+        }
       } catch (err: any) {
         alert(`Falha ao iniciar o perfil: ${err.message}`);
         setProfiles((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, isRunning: false } : p)),
+          prev.map((p) => (p.id === id ? { ...p, isRunning: false, status: 'ready' } : p)),
         );
       }
     } else {
       // Parar perfil
       try {
-        await api.profiles.stop(String(id));
         setProfiles((prev) =>
           prev.map((p) => (p.id === id ? { ...p, isRunning: false, status: 'ready' } : p)),
         );
+        await api.profiles.stop(String(id));
       } catch (err: any) {
         console.error('Erro ao parar perfil:', err);
       }

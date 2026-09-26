@@ -13,6 +13,7 @@ mod models;
 mod routes;
 mod storage;
 mod tab_manager;
+mod ws;
 
 use storage::{ExtensionStorage, ProfileStorage, ProxyStorage};
 
@@ -25,7 +26,8 @@ async fn main() {
 
     // Diretório de dados local (estilo Donut Browser)
     let data_dir = std::env::var("FURY_DATA_DIR").unwrap_or_else(|_| "./data".to_string());
-    let profile_storage = Arc::new(ProfileStorage::new(&data_dir));
+    let ws_state = ws::WsState::new();
+    let profile_storage = Arc::new(ProfileStorage::new(&data_dir, ws_state.clone()));
     let proxy_storage = Arc::new(ProxyStorage::new(&data_dir));
     let extension_storage = Arc::new(ExtensionStorage::new(&data_dir));
 
@@ -78,11 +80,16 @@ async fn main() {
         .route("/register", post(routes::auth::register))
         .route("/me", get(routes::auth::me));
 
+    let ws_routes = Router::new()
+        .route("/", get(ws::ws_handler))
+        .with_state(ws_state);
+
     let app = Router::new()
         .nest("/api/profiles", profile_routes)
         .nest("/api/proxies", proxy_routes)
         .nest("/api/extensions", extension_routes)
         .nest("/api/auth", auth_routes)
+        .nest("/api/ws", ws_routes)
         .layer(cors);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
