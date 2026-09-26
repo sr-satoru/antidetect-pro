@@ -23,7 +23,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { api } from '@/services/index.api';
-import { ModalNovaCategoriaExtensao } from '@/components/ui/modal-nova-categoria-extensao';
+import { ModalGerenciarCategorias } from '@/components/ui/modal-gerenciar-categorias';
 
 
 const LoadingSpinner: React.FC<{ message?: string; subMessage?: string }> = ({
@@ -619,7 +619,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
         </div>
       )}
 
-      <ModalNovaCategoriaExtensao
+      <ModalGerenciarCategorias
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
       />

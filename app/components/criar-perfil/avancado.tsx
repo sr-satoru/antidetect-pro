@@ -11,7 +11,7 @@ import {
   useExtensionCategories,
   ExtensionCategory,
 } from '@/utils/extension-categories';
-import { ModalNovaCategoriaExtensao } from '@/components/ui/modal-nova-categoria-extensao';
+import { ModalCriarCategoria } from '@/components/ui/modal-criar-categoria';
 
 interface AvancadoTabProps {
   formData: any;
@@ -229,7 +229,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
       </div>
 
       {/* Modal para criar Nova Categoria */}
-      <ModalNovaCategoriaExtensao
+      <ModalCriarCategoria
         isOpen={showCreateCategoryModal}
         onClose={() => setShowCreateCategoryModal(false)}
         onSuccess={(newCat) => {

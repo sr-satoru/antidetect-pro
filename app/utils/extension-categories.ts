@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { api } from '@/services/index.api';
-import { RegisteredExtension } from './extensions';
 
 export interface ExtensionItemSummary {
   id: string | number;
@@ -15,231 +14,148 @@ export interface ExtensionItemSummary {
 export interface ExtensionCategory {
   id: string;
   name: string;
-  description?: string; // Observação
+  description?: string;
   extensionIds: (string | number)[];
   extensions: ExtensionItemSummary[];
   isDefault?: boolean;
-  createdAt: string;
 }
 
 const STORAGE_KEY = 'fury_extension_categories';
-const CATEGORY_CHANGE_EVENT = 'fury_extension_categories_changed';
 
-/**
- * Categoria padrão inicial (Kit Básico)
- */
-export const DEFAULT_KIT_BASICO: ExtensionCategory = {
-  id: 'kit_basico',
-  name: 'kit basico',
-  description: 'Extensões padrão essenciais para o perfil',
-  extensionIds: [],
-  extensions: [],
-  isDefault: true,
-  createdAt: new Date().toISOString(),
-};
+const DEFAULT_CATEGORIES: ExtensionCategory[] = [
+  {
+    id: 'kit_basico',
+    name: 'kit basico',
+    description: 'Extensões padrão essenciais para o perfil',
+    extensionIds: [],
+    extensions: [],
+    isDefault: true,
+  },
+];
 
-/**
- * Retorna todas as categorias de extensões salvas
- */
-export function getExtensionCategories(): ExtensionCategory[] {
-  if (typeof window === 'undefined') {
-    return [DEFAULT_KIT_BASICO];
-  }
-
+function loadCategories(): ExtensionCategory[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return [DEFAULT_KIT_BASICO];
-    }
-    const parsed: ExtensionCategory[] = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
-      return [DEFAULT_KIT_BASICO];
-    }
-
-    // Garante que o kit_basico sempre exista
-    const hasDefault = parsed.some((c) => c.id === 'kit_basico');
-    if (!hasDefault) {
-      return [DEFAULT_KIT_BASICO, ...parsed];
-    }
-
-    return parsed;
-  } catch (error) {
-    console.error('Erro ao ler categorias de extensões:', error);
-    return [DEFAULT_KIT_BASICO];
+    if (!raw) return DEFAULT_CATEGORIES;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) return DEFAULT_CATEGORIES;
+    return parsed.some((c) => c.id === 'kit_basico')
+      ? parsed
+      : [...DEFAULT_CATEGORIES, ...parsed];
+  } catch {
+    return DEFAULT_CATEGORIES;
   }
 }
 
 /**
- * Salva ou cria uma nova categoria de extensões
- */
-export function saveExtensionCategory(data: {
-  name: string;
-  description?: string;
-  extensions: ExtensionItemSummary[];
-}): ExtensionCategory {
-  const current = getExtensionCategories();
-  const id = `cat_${Date.now()}`;
-
-  const newCategory: ExtensionCategory = {
-    id,
-    name: data.name.trim(),
-    description: data.description?.trim() || '',
-    extensionIds: data.extensions.map((ext) => ext.id),
-    extensions: data.extensions,
-    isDefault: false,
-    createdAt: new Date().toISOString(),
-  };
-
-  const updated = [...current, newCategory];
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new Event(CATEGORY_CHANGE_EVENT));
-  } catch (error) {
-    console.error('Erro ao salvar categoria de extensão:', error);
-  }
-
-  return newCategory;
-}
-
-/**
- * Exclui uma categoria personalizada (não remove a padrão kit_basico)
- */
-export function deleteExtensionCategory(id: string): void {
-  if (id === 'kit_basico') return;
-
-  const current = getExtensionCategories();
-  const updated = current.filter((c) => c.id !== id);
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new Event(CATEGORY_CHANGE_EVENT));
-  } catch (error) {
-    console.error('Erro ao deletar categoria:', error);
-  }
-}
-
-/**
- * Hook React para manter as categorias sincronizadas e reativas
+ * Hook simples de estado frontend para categorias de extensões
  */
 export function useExtensionCategories() {
-  const [categories, setCategories] = useState<ExtensionCategory[]>(() =>
-    getExtensionCategories(),
-  );
+  const [categories, setCategories] = useState<ExtensionCategory[]>(loadCategories);
 
-  const reload = useCallback(() => {
-    setCategories(getExtensionCategories());
-  }, []);
+  const save = (updated: ExtensionCategory[]) => {
+    setCategories(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  };
 
-  useEffect(() => {
-    reload();
-
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY) reload();
+  const addCategory = (data: {
+    name: string;
+    description?: string;
+    extensions: ExtensionItemSummary[];
+  }) => {
+    const newCat: ExtensionCategory = {
+      id: `cat_${Date.now()}`,
+      name: data.name.trim(),
+      description: data.description?.trim() || '',
+      extensionIds: data.extensions.map((e) => e.id),
+      extensions: data.extensions,
     };
+    save([...categories, newCat]);
+    return newCat;
+  };
 
-    const handleCustomChange = () => reload();
-
-    window.addEventListener('storage', handleStorage);
-    window.addEventListener(CATEGORY_CHANGE_EVENT, handleCustomChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-      window.removeEventListener(CATEGORY_CHANGE_EVENT, handleCustomChange);
-    };
-  }, [reload]);
-
-  const addCategory = useCallback(
-    (data: {
+  const updateCategory = (
+    id: string,
+    data: {
       name: string;
       description?: string;
       extensions: ExtensionItemSummary[];
-    }) => {
-      const created = saveExtensionCategory(data);
-      reload();
-      return created;
     },
-    [reload],
-  );
+  ) => {
+    const updated = categories.map((c) =>
+      c.id === id
+        ? {
+            ...c,
+            name: data.name.trim(),
+            description: data.description?.trim() || '',
+            extensionIds: data.extensions.map((e) => e.id),
+            extensions: data.extensions,
+          }
+        : c,
+    );
+    save(updated);
+    return updated.find((c) => c.id === id) || null;
+  };
 
-  const removeCategory = useCallback(
-    (id: string) => {
-      deleteExtensionCategory(id);
-      reload();
-    },
-    [reload],
-  );
+  const removeCategory = (id: string) => {
+    if (id === 'kit_basico') return;
+    save(categories.filter((c) => c.id !== id));
+  };
 
   return {
     categories,
     addCategory,
+    updateCategory,
     removeCategory,
-    reload,
   };
 }
 
 /**
- * Busca extensões para seleção: combina extensões da equipe locais e
- * busca em tempo real via API do backend (Mozilla Add-ons)
+ * Busca de extensões simplificada para a seleção de categorias
  */
 export async function searchExtensionsForCategory(
   query: string,
-  teamExtensions: RegisteredExtension[] = [],
+  teamExtensions: any[] = [],
 ): Promise<ExtensionItemSummary[]> {
-  const cleanQuery = query.trim().toLowerCase();
-
-  // 1. Converte extensões da equipe para o formato resumido
+  const q = query.trim().toLowerCase();
   const teamItems: ExtensionItemSummary[] = teamExtensions.map((ext) => ({
     id: ext.id,
     name: ext.name,
     iconUrl: ext.iconUrl,
-    iconType: ext.iconType,
     iconBg: ext.iconBg || '#2F80ED',
     description: ext.description,
     provider: ext.provider || 'Equipe',
   }));
 
-  // Se busca vazia, retorna os itens da equipe
-  if (!cleanQuery) {
-    return teamItems;
-  }
+  if (!q) return teamItems;
 
-  // Filtra itens da equipe correspondentes
-  const matchingTeamItems = teamItems.filter((item) =>
-    item.name.toLowerCase().includes(cleanQuery),
+  const filteredTeam = teamItems.filter((item) =>
+    item.name.toLowerCase().includes(q),
   );
 
-  // 2. Chama a API do catálogo (Mozilla Add-ons via backend Rust)
-  let catalogItems: ExtensionItemSummary[] = [];
   try {
-    const catalogResp = await api.extensions.getCatalog({ q: cleanQuery });
-    if (Array.isArray(catalogResp)) {
-      catalogItems = catalogResp.map((cat) => ({
-        id: cat.id,
-        name: cat.name,
-        iconUrl: cat.iconUrl,
-        iconType: cat.iconType,
-        iconBg: cat.iconBg || '#2F80ED',
-        description: cat.description,
-        provider: cat.provider || 'Firefox Add-ons',
+    const catalog = await api.extensions.getCatalog({ q });
+    if (Array.isArray(catalog)) {
+      const external: ExtensionItemSummary[] = catalog.map((c) => ({
+        id: c.id,
+        name: c.name,
+        iconUrl: c.iconUrl,
+        iconBg: c.iconBg || '#2F80ED',
+        description: c.description,
+        provider: c.provider || 'Firefox Add-ons',
       }));
+
+      return [
+        ...filteredTeam,
+        ...external.filter(
+          (ext) =>
+            !filteredTeam.some(
+              (t) => t.name.toLowerCase() === ext.name.toLowerCase(),
+            ),
+        ),
+      ];
     }
-  } catch (error) {
-    console.warn('Busca de extensões via API encontrou erro ou backend offline:', error);
-  }
+  } catch {}
 
-  // 3. Combina e deduplica por id e nome
-  const combined: ExtensionItemSummary[] = [...matchingTeamItems];
-  const seenKeys = new Set(
-    matchingTeamItems.map((i) => `${String(i.id)}_${i.name.toLowerCase()}`),
-  );
-
-  for (const item of catalogItems) {
-    const key = `${String(item.id)}_${item.name.toLowerCase()}`;
-    if (!seenKeys.has(key)) {
-      seenKeys.add(key);
-      combined.push(item);
-    }
-  }
-
-  return combined;
+  return filteredTeam;
 }
