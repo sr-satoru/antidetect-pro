@@ -239,17 +239,11 @@ export const PerfisPage: React.FC = () => {
     setEditNameInput(profile.name);
   };
 
-  // Duplicar perfil (Copiar)
+  // Duplicar perfil (Copiar atômico no backend / disco)
   const handleDuplicate = async (profile: any) => {
     try {
       setIsLoading(true);
-      const full = await api.profiles.get(profile.id);
-      const copyPayload = {
-        ...full,
-        id: undefined,
-        name: `${profile.name || 'Perfil'} (Cópia)`,
-      };
-      await api.profiles.create(copyPayload);
+      await api.profiles.clone(profile.id);
       await fetchProfiles();
     } catch (err: any) {
       alert(`Erro ao duplicar perfil: ${err.message || 'Falha ao duplicar'}`);

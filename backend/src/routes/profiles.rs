@@ -55,6 +55,16 @@ pub async fn update_profile(
     }
 }
 
+pub async fn clone_profile(
+    State(storage): State<Arc<ProfileStorage>>,
+    Path(id): Path<String>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    match storage.clone_profile(&id) {
+        Ok(profile) => Ok((StatusCode::CREATED, Json(profile))),
+        Err(err) => Err((StatusCode::NOT_FOUND, err)),
+    }
+}
+
 pub async fn delete_profile(
     State(storage): State<Arc<ProfileStorage>>,
     Path(id): Path<String>,

@@ -22,6 +22,7 @@ import { servicePlataforma } from './criar-perfil/service.plataforma';
 import { impressaoDigitalService } from './criar-perfil/service.impressoes';
 import { serviceAvancado } from './criar-perfil/service.avancado';
 import { serviceProxy } from './criar-perfil/service.proxy';
+import { servicePerfis } from './perfis/service.perfis';
 import { serviceTabs } from './perfis/service.tabs';
 import { serviceCookies } from './perfis/service.cookies';
 import { http } from './http';
@@ -32,6 +33,7 @@ export { servicePlataforma } from './criar-perfil/service.plataforma';
 export { impressaoDigitalService } from './criar-perfil/service.impressoes';
 export { serviceAvancado } from './criar-perfil/service.avancado';
 export { serviceProxy } from './criar-perfil/service.proxy';
+export { servicePerfis } from './perfis/service.perfis';
 export { serviceTabs } from './perfis/service.tabs';
 export { serviceCookies } from './perfis/service.cookies';
 export { http, ApiError } from './http';
@@ -40,49 +42,7 @@ export { http, ApiError } from './http';
  * Objeto `api` — Ponto central de chamadas à API do backend local e serviços.
  */
 export const api = {
-  profiles: {
-    list: (search?: string, group?: string) =>
-      http.get<any[]>('/api/profiles', {
-        params: {
-          search: search || undefined,
-          group: group !== 'Todos os grupos' ? group : undefined,
-        },
-      }),
-    create: (data: any) => {
-      const payload = impressaoDigitalService.montarPayloadPerfil(data);
-      return serviceGeral.create(payload);
-    },
-    get: (id: string | number) => http.get<any>(`/api/profiles/${id}`),
-    update: (id: string | number, data: any) => {
-      const payload = data.fingerprint_json || data.name && Object.keys(data).length <= 4
-        ? data
-        : impressaoDigitalService.montarPayloadPerfil(data);
-      return http.put<any>(`/api/profiles/${id}`, payload);
-    },
-    delete: (id: string | number) =>
-      http.delete<any>(`/api/profiles/${id}`),
-    launch: (id: string | number) =>
-      http.post<any>(`/api/profiles/${id}/launch`),
-    stop: (id: string | number) =>
-      http.post<any>(`/api/profiles/${id}/stop`),
-    listTrash: () => http.get<any[]>('/api/profiles/trash'),
-    restore: (id: string | number) =>
-      http.post<any>(`/api/profiles/${id}/restore`),
-    deletePermanent: (id: string | number) =>
-      http.delete<any>(`/api/profiles/${id}/permanent`),
-    emptyTrash: () => http.delete<any>('/api/profiles/trash/empty'),
-
-    // Abas e URLs abertas em tempo real (delegado ao módulo serviceTabs)
-    getTabs: serviceTabs.getTabs,
-    openTab: serviceTabs.openTab,
-    closeTab: serviceTabs.closeTab,
-
-    // Gerenciador e Importador de Cookies (delegado ao módulo serviceCookies)
-    getCookies: serviceCookies.getCookies,
-    importCookies: serviceCookies.importCookies,
-    clearCookies: serviceCookies.clearCookies,
-    exportCookiesToFile: serviceCookies.exportCookiesToFile,
-  },
+  profiles: servicePerfis,
 
   proxies: {
     list: serviceProxy.listarSalvos,

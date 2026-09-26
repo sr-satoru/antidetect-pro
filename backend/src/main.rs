@@ -48,6 +48,7 @@ async fn main() {
         )
         .route("/{id}/launch", post(routes::profiles::launch_profile))
         .route("/{id}/stop", post(routes::profiles::stop_profile))
+        .route("/{id}/clone", post(routes::profiles::clone_profile))
         .route("/{id}/restore", post(routes::profiles::restore_profile))
         .route("/{id}/permanent", delete(routes::profiles::delete_permanent))
         .route(

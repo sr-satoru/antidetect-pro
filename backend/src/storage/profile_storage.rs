@@ -301,6 +301,48 @@ impl ProfileStorage {
         Ok(profile)
     }
 
+    /// Clona atomicamente um perfil existente no disco com um novo UUID
+    pub fn clone_profile(&self, id: &str) -> Result<Profile, String> {
+        let original = self.get(id).ok_or_else(|| "Perfil original não encontrado".to_string())?;
+
+        let new_id = uuid::Uuid::new_v4().to_string();
+        let now = Self::now_secs();
+
+        let mut cloned = original.clone();
+        cloned.id = new_id.clone();
+        cloned.name = format!("{} (Cópia)", original.name);
+        cloned.status = "ready".to_string();
+        cloned.created_at = now;
+        cloned.updated_at = now;
+        cloned.last_launch = None;
+        cloned.is_deleted = false;
+        cloned.deleted_at = None;
+
+        // Cria o diretório para o clone no disco
+        let new_profile_dir = self.data_dir.join(&new_id);
+        fs::create_dir_all(&new_profile_dir).map_err(|e| format!("Erro ao criar pasta do clone: {e}"))?;
+
+        // Clona diretório de dados do navegador se existir
+        let orig_browser_dir = self.data_dir.join(id).join("profile");
+        let new_browser_dir = new_profile_dir.join("profile");
+        if orig_browser_dir.exists() {
+            let _ = fs::create_dir_all(&new_browser_dir);
+            let orig_user_js = orig_browser_dir.join("user.js");
+            if orig_user_js.exists() {
+                let _ = fs::copy(&orig_user_js, new_browser_dir.join("user.js"));
+            }
+        }
+
+        // Salva o metadata.json no disco
+        let meta_file = new_profile_dir.join("metadata.json");
+        let json_str = serde_json::to_string_pretty(&cloned).map_err(|e| e.to_string())?;
+        fs::write(meta_file, json_str).map_err(|e| format!("Erro ao salvar metadata do clone: {e}"))?;
+
+        tracing::info!("📋 Perfil '{}' ({}) clonado com sucesso para novo ID {}", original.name, id, new_id);
+
+        Ok(cloned)
+    }
+
     pub fn soft_delete(&self, id: &str) -> Result<(), String> {
         let _ = self.process_manager.stop(id);
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
