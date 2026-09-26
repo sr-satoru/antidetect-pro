@@ -129,23 +129,28 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
   if (!isOpen) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/65 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-      <div className="w-full max-w-[680px] rounded-xl border border-[#303241] bg-[#1E2028] shadow-2xl shadow-black/80 overflow-hidden flex flex-col max-h-[85vh]">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-[680px] rounded-2xl border border-[#303241]/90 bg-[#1A1C24] shadow-2xl shadow-black/90 overflow-hidden flex flex-col max-h-[85vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2C2E3B] px-5 py-3.5 shrink-0">
-          <h2 className="text-[16px] font-semibold text-[#E1E4EE]">Etiqueta</h2>
+        <div className="flex items-center justify-between border-b border-[#2C2E3B]/80 px-6 py-4 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#1677FF]/15 text-[#1677FF]">
+              <TagIcon size={15} />
+            </div>
+            <h2 className="text-[16px] font-semibold text-[#E1E4EE] tracking-tight">Gerenciar Etiquetas</h2>
+          </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:bg-[#2A2C38] hover:text-white transition-colors"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-[#8E92A2] hover:bg-[#2A2C38] hover:text-white transition-colors"
           >
             <X size={16} />
           </button>
         </div>
 
         {/* Toolbar de Ações */}
-        <div className="flex items-center justify-between gap-3 p-4 border-b border-[#2C2E3B] shrink-0">
-          <div className="flex items-center gap-3 flex-1">
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-[#2C2E3B]/70 bg-[#16171E]/60 shrink-0">
+          <div className="flex items-center gap-3 w-full">
             {/* Botão Nova Etiqueta */}
             <button
               type="button"
@@ -153,65 +158,66 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                 setTagEmEdicao(null);
                 setIsSubmodalOpen(true);
               }}
-              className="flex h-8.5 cursor-pointer items-center gap-2 rounded-md bg-[#1677FF] px-3.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#0E63D8] active:scale-[0.98] shrink-0"
+              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-gradient-to-r from-[#1677FF] to-[#0E63D8] px-4 text-xs font-medium text-white shadow-md shadow-blue-500/15 transition-all hover:brightness-110 active:scale-[0.98] shrink-0"
             >
-              <TagIcon size={13} />
+              <TagIcon size={13} className="text-white/90" />
               <span>Nova Etiqueta</span>
             </button>
 
             {/* Input de Busca */}
-            <div className="relative w-64 max-w-full">
+            <div className="relative flex-1 max-w-sm">
               <Search
-                size={13}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6C7082]"
+                size={14}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6C7082] pointer-events-none"
               />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search"
-                className="h-8.5 w-full rounded-md border border-[#303241] bg-[#14151B] pl-8 pr-3 text-xs text-[#E1E4EE] placeholder-[#585B6A] focus:border-[#1677FF] focus:outline-hidden transition-colors"
+                placeholder="Buscar etiqueta..."
+                className="h-9 w-full rounded-lg border border-[#303241]/80 bg-[#14151B] pl-9 pr-3 text-xs text-[#E1E4EE] placeholder-[#585B6A] focus:border-[#1677FF] focus:ring-1 focus:ring-[#1677FF]/40 focus:outline-hidden transition-all"
               />
             </div>
-          </div>
 
-          {/* Botão de Excluir em Massa */}
-          <button
-            type="button"
-            onClick={handleDeleteSelected}
-            disabled={selectedIds.length === 0}
-            className="flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-md border border-[#303241] bg-[#14151B] text-[#8E92A2] transition-colors hover:border-[#FF4D4F] hover:text-[#FF4D4F] disabled:opacity-40 disabled:pointer-events-none"
-            title="Excluir selecionados"
-          >
-            <Trash2 size={14} />
-          </button>
+            {selectedIds.length > 0 && (
+              <button
+                type="button"
+                onClick={handleDeleteSelected}
+                className="flex h-9 items-center gap-1.5 px-3 rounded-lg border border-[#FF4D4F]/30 bg-[#FF4D4F]/10 text-xs font-medium text-[#FF4D4F] hover:bg-[#FF4D4F]/20 transition-all cursor-pointer ml-auto"
+              >
+                <Trash2 size={13} />
+                <span>Excluir ({selectedIds.length})</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Tabela de Etiquetas */}
         <div className="flex-1 overflow-y-auto">
           {/* Cabeçalho da Tabela */}
-          <div className="flex items-center border-b border-[#2C2E3B] bg-[#17181F] px-4 py-2.5 text-xs font-medium text-[#8E92A2] select-none sticky top-0 z-10">
-            <div className="w-8 flex items-center">
+          <div className="flex items-center border-b border-[#2C2E3B]/70 bg-[#171821]/80 px-6 py-2.5 text-xs font-semibold text-[#8E92A2] select-none sticky top-0 z-10 backdrop-blur-xs">
+            <div className="w-9 flex items-center">
               <input
                 type="checkbox"
                 checked={isAllSelected}
                 onChange={handleToggleSelectAll}
-                className="h-3.5 w-3.5 rounded border-[#3A3D4D] bg-[#14151B] text-[#1677FF] focus:ring-0 cursor-pointer"
+                className="h-4 w-4 rounded border-[#3A3D4D] bg-[#14151B] text-[#1677FF] focus:ring-0 cursor-pointer accent-[#1677FF]"
               />
             </div>
-            <div className="flex-1">Etiqueta</div>
-            <div className="w-24 text-right pr-2">Ações</div>
+            <div className="flex-1 tracking-wider uppercase text-[11px] text-[#717585]">Etiqueta</div>
+            <div className="w-24 text-right pr-2 tracking-wider uppercase text-[11px] text-[#717585]">Ações</div>
           </div>
 
           {/* Linhas ou Estado Vazio */}
           {filteredTags.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-[#6C7082] select-none">
+              <TagIcon size={28} className="text-[#363847] mb-2" />
               <p className="text-xs">
-                {isLoading ? 'Carregando etiquetas...' : 'Sem dados'}
+                {isLoading ? 'Carregando etiquetas...' : 'Nenhuma etiqueta encontrada'}
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-[#2C2E3B]/60">
+            <div className="divide-y divide-[#2C2E3B]/40">
               {filteredTags.map((tag) => {
                 const isSelected = selectedIds.includes(tag.id);
                 const isFilteringThis = selectedTagFilter === tag.name;
@@ -219,27 +225,27 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                 return (
                   <div
                     key={tag.id}
-                    className={`flex items-center px-4 py-2.5 text-xs transition-colors group ${
+                    className={`flex items-center px-6 py-3 text-xs transition-colors group ${
                       isSelected
                         ? 'bg-[#1677FF]/10'
                         : isFilteringThis
-                        ? 'bg-[#2A2D3C]'
-                        : 'hover:bg-[#252733]'
+                        ? 'bg-[#1D2436]'
+                        : 'hover:bg-[#232532]/70'
                     }`}
                   >
                     {/* Checkbox */}
-                    <div className="w-8 flex items-center">
+                    <div className="w-9 flex items-center">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleToggleSelectOne(tag.id)}
-                        className="h-3.5 w-3.5 rounded border-[#3A3D4D] bg-[#14151B] text-[#1677FF] focus:ring-0 cursor-pointer"
+                        className="h-4 w-4 rounded border-[#3A3D4D] bg-[#14151B] text-[#1677FF] focus:ring-0 cursor-pointer accent-[#1677FF]"
                       />
                     </div>
 
                     {/* Badge / Nome */}
                     <div
-                      className="flex-1 flex items-center gap-2 cursor-pointer"
+                      className="flex-1 flex items-center gap-2.5 cursor-pointer"
                       onClick={() => {
                         if (onSelectTagFilter) {
                           onSelectTagFilter(isFilteringThis ? null : tag.name);
@@ -249,32 +255,32 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                     >
                       <TagBadge name={tag.name} color={tag.color} />
                       {isFilteringThis && (
-                        <span className="flex items-center gap-1 rounded bg-[#1677FF]/20 px-1.5 py-0.2 text-[10px] text-[#64B5F6] font-semibold">
+                        <span className="flex items-center gap-1 rounded-md bg-[#1677FF]/20 px-2 py-0.5 text-[10px] text-[#64B5F6] font-medium border border-[#1677FF]/30">
                           <Check size={10} /> Filtro Ativo
                         </span>
                       )}
                     </div>
 
                     {/* Ações */}
-                    <div className="w-24 flex items-center justify-end gap-1.5 opacity-80 group-hover:opacity-100">
+                    <div className="w-24 flex items-center justify-end gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
                         onClick={() => {
                           setTagEmEdicao(tag);
                           setIsSubmodalOpen(true);
                         }}
-                        className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#8E92A2] hover:bg-[#303342] hover:text-white transition-colors"
+                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:bg-[#2C2E3B] hover:text-[#1677FF] transition-colors"
                         title="Editar"
                       >
-                        <Pencil size={12} />
+                        <Pencil size={13} />
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteSingle(tag)}
-                        className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#8E92A2] hover:bg-[#FF4D4F]/15 hover:text-[#FF4D4F] transition-colors"
+                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:bg-[#FF4D4F]/15 hover:text-[#FF4D4F] transition-colors"
                         title="Excluir"
                       >
-                        <Trash2 size={12} />
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </div>

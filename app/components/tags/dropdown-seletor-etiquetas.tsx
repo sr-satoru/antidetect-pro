@@ -266,11 +266,6 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
           })
         )}
       </div>
-
-      {/* 4. Rodapé */}
-      <div className="border-t border-[#2C2E3B] py-2 text-center text-[11px] text-[#6C7082] select-none">
-        {filteredTags.length > 0 ? 'Não há mais conteúdo' : 'Sem dados'}
-      </div>
     </div>
   );
 };
