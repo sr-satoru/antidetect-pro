@@ -12,3 +12,4 @@ npm run dev
 # Frontend: http://localhost:5174
 # Backend:  http://127.0.0.1:8000
 
+fuser 8000/tcp || echo "Porta 8000 livre"

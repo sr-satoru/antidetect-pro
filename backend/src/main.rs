@@ -50,14 +50,14 @@ async fn main() {
         .route("/{id}/permanent", delete(routes::profiles::delete_permanent))
         .route(
             "/{id}/tabs",
-            get(routes::profiles::get_profile_tabs).post(routes::profiles::open_profile_tab),
+            get(routes::tabs::get_profile_tabs).post(routes::tabs::open_profile_tab),
         )
-        .route("/{id}/tabs/{tab_id}", delete(routes::profiles::close_profile_tab))
+        .route("/{id}/tabs/{tab_id}", delete(routes::tabs::close_profile_tab))
         .route(
             "/{id}/cookies",
-            get(routes::profiles::get_profile_cookies)
-                .post(routes::profiles::import_profile_cookies)
-                .delete(routes::profiles::clear_profile_cookies),
+            get(routes::cookies::get_profile_cookies)
+                .post(routes::cookies::import_profile_cookies)
+                .delete(routes::cookies::clear_profile_cookies),
         )
         .with_state(profile_storage);
 

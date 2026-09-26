@@ -10,7 +10,6 @@ import {
   Play,
   Square,
   MoreVertical,
-  Globe,
 } from 'lucide-react';
 export interface LinhaTabelaProps {
   profile: any;
@@ -20,7 +19,6 @@ export interface LinhaTabelaProps {
   onToggleRunning: (id: any) => void;
   onEdit: (profile: any) => void;
   onDelete: (id: any) => void;
-  onOpenManager?: (profile: any) => void;
 }
 
 const OS_ICONS: Record<string, React.ReactNode> = {
@@ -133,7 +131,6 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   onToggleRunning,
   onEdit,
   onDelete,
-  onOpenManager,
 }) => {
   const isStriped = index % 2 === 1;
 
@@ -324,43 +321,26 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
         </div>
       </td>
 
-      {/* 11. Ação (Iniciar / Parar / Abas & Cookies) - Sticky */}
+      {/* 11. Ação (Iniciar / Parar) - Sticky */}
       <td
-        className={`sticky right-[48px] z-10 w-[156px] max-w-[156px] min-w-[156px] px-2 py-2.5 transition-colors ${stickyBg}`}
+        className={`sticky right-[48px] z-10 w-[124px] max-w-[124px] min-w-[124px] px-3 py-2.5 transition-colors ${stickyBg}`}
       >
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => onToggleRunning(profile.id)}
-            className={`inline-flex h-8 flex-1 cursor-pointer items-center justify-center gap-1 rounded-md px-2 text-xs font-bold transition-all active:scale-[0.98] ${
-              isRunning
-                ? 'border border-[#ff334b]/35 bg-[#ff334b]/12 text-[#ff334b] hover:bg-[#ff334b] hover:text-black'
-                : 'border border-[#DFE104]/35 bg-[#DFE104]/12 text-[#DFE104] hover:bg-[#DFE104] hover:text-black'
-            }`}
-          >
-            {isRunning ? (
-              <Square size={11} fill="currentColor" />
-            ) : (
-              <Play size={11} fill="currentColor" />
-            )}
-            <span>{isRunning ? 'Parar' : 'Iniciar'}</span>
-          </button>
-
-          {onOpenManager && (
-            <button
-              type="button"
-              onClick={() => onOpenManager(profile)}
-              className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md border transition-all ${
-                isRunning
-                  ? 'border-[#22c55e]/40 bg-[#22c55e]/15 text-[#4ade80] hover:bg-[#22c55e] hover:text-black'
-                  : 'border-[#3E404D] bg-[#282930] text-[#9EA2AE] hover:border-[#DFE104] hover:text-[#DFE104]'
-              }`}
-              title="Inspecionar Abas, URLs ao vivo e Cookies"
-            >
-              <Globe size={13} className={isRunning ? 'animate-pulse' : ''} />
-            </button>
+        <button
+          type="button"
+          onClick={() => onToggleRunning(profile.id)}
+          className={`inline-flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 rounded-md px-3.5 text-xs font-bold transition-all active:scale-[0.98] ${
+            isRunning
+              ? 'border border-[#ff334b]/35 bg-[#ff334b]/12 text-[#ff334b] hover:bg-[#ff334b] hover:text-black'
+              : 'border border-[#DFE104]/35 bg-[#DFE104]/12 text-[#DFE104] hover:bg-[#DFE104] hover:text-black'
+          }`}
+        >
+          {isRunning ? (
+            <Square size={11} fill="currentColor" />
+          ) : (
+            <Play size={11} fill="currentColor" />
           )}
-        </div>
+          <span>{isRunning ? 'Parar' : 'Iniciar'}</span>
+        </button>
       </td>
 
       {/* 12. Menu / Mais Opções - Sticky */}
