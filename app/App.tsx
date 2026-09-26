@@ -12,9 +12,38 @@ import { ProxyPage } from './(app)/proxy/page';
 import { ExtensoesPage } from './(app)/extensoes/page';
 import { LixeiraPage } from './(app)/lixeira/page';
 
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 
 export const App: React.FC = () => {
+  // Script de teste: dispara notificações rotativas a cada 5 segundos
+  React.useEffect(() => {
+    const toasts = [
+      () => toast.success('Sucesso: Perfil sincronizado com sucesso!'),
+      () => toast.info('Informativo: Central de Tarefas em execução em segundo plano.'),
+      () => toast.warning('Aviso: Proxy com latência elevada (450ms).'),
+      () => toast.error('Erro: Falha na conexão com o servidor local.'),
+      () =>
+        toast('Ação requerida', {
+          description: 'Deseja restaurar as configurações padrão?',
+          action: {
+            label: 'Confirmar',
+            onClick: () => toast.success('Confirmado!'),
+          },
+        }),
+    ];
+
+    let index = 0;
+    // Dispara a primeira imediatamente para você já visualizar
+    toasts[0]();
+
+    const interval = setInterval(() => {
+      index = (index + 1) % toasts.length;
+      toasts[index]();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <AuthProvider>
       <Toaster
