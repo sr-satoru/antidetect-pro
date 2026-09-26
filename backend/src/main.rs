@@ -10,6 +10,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod cache;
 mod cloud_auth;
 mod cookie_manager;
+pub mod id_generator;
 mod launcher;
 mod models;
 mod routes;

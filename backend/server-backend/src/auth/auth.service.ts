@@ -10,6 +10,7 @@ import { ConfigService } from "@nestjs/config";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt";
 import { PrismaService } from "../prisma/prisma.service.js";
+import { generateUserId } from "../common/id-generator.js";
 
 export interface DecodedChallenge {
   action: "login" | "register";
@@ -138,8 +139,10 @@ export class AuthService {
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
+    const userId = generateUserId();
     const user = await this.prisma.user.create({
       data: {
+        id: userId,
         email: dto.email.toLowerCase().trim(),
         passwordHash,
         name: dto.name?.trim() || dto.email.split("@")[0],

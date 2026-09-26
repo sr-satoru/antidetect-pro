@@ -130,7 +130,7 @@ impl ProfileStorage {
         let id = dto
             .id
             .filter(|s| !s.trim().is_empty())
-            .unwrap_or_else(|| uuid::Uuid::new_v4().to_string());
+            .unwrap_or_else(|| crate::id_generator::generate_profile_id());
 
         let now = Self::now_secs();
 
@@ -305,7 +305,7 @@ impl ProfileStorage {
     pub fn clone_profile(&self, id: &str) -> Result<Profile, String> {
         let original = self.get(id).ok_or_else(|| "Perfil original não encontrado".to_string())?;
 
-        let new_id = uuid::Uuid::new_v4().to_string();
+        let new_id = crate::id_generator::generate_profile_id();
         let now = Self::now_secs();
 
         let mut cloned = original.clone();
