@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/notification';
 
 export const ExtensoesPage: React.FC = () => {
   const [extensions, setExtensions] = useState<ExtensionItem[]>([]);
+  const [isLoadingTeam, setIsLoadingTeam] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Carrega extensões do backend SQLite local
@@ -19,6 +20,8 @@ export const ExtensoesPage: React.FC = () => {
       setExtensions(data);
     } catch (err) {
       console.error('Erro ao carregar extensões:', err);
+    } finally {
+      setIsLoadingTeam(false);
     }
   }, []);
 
@@ -122,6 +125,7 @@ export const ExtensoesPage: React.FC = () => {
     <div className="flex h-full w-full flex-1 flex-col overflow-hidden rounded-2xl border border-[#272935] bg-[#14151B]">
       <TabelaExtensoes
         extensions={extensions}
+        isLoadingTeam={isLoadingTeam}
         onAddClick={() => setIsModalOpen(true)}
         onToggleEnabled={handleToggleEnabled}
         onDelete={handleDeleteExtension}

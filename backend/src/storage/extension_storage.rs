@@ -1,13 +1,15 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
-use tracing::{info, warn};
+use tracing::info;
 
+use crate::cache::ExtensionCache;
 use crate::models::{CreateExtensionDto, ExtensionItem, RecommendedExtension, UpdateExtensionDto};
 
 pub struct ExtensionStorage {
     data_dir: PathBuf,
     client: reqwest::Client,
+    cache: ExtensionCache,
 }
 
 impl ExtensionStorage {
@@ -24,6 +26,7 @@ impl ExtensionStorage {
         Self {
             data_dir: dir,
             client,
+            cache: ExtensionCache::default(),
         }
     }
 
@@ -132,7 +135,7 @@ impl ExtensionStorage {
         Ok(())
     }
 
-    /// Busca extensões diretamente da API oficial do Mozilla Add-ons (AMO) em tempo real
+    /// Busca extensões com cache em memória no backend e integração com AMO
     pub async fn search_catalog(
         &self,
         query: Option<&str>,
@@ -140,75 +143,109 @@ impl ExtensionStorage {
         store: Option<&str>,
     ) -> Vec<RecommendedExtension> {
         let q = query.unwrap_or("").trim();
-        // Se a busca estiver vazia, busca as mais populares
-        let search_term = if q.is_empty() { "privacy" } else { q };
+        let cat = category.unwrap_or("All");
+        let st = store.unwrap_or("all");
 
-        let url = format!(
-            "https://addons.mozilla.org/api/v5/addons/search/?q={}&type=extension&page_size=20",
-            urlencoding(search_term)
-        );
+        // 1. Verifica cache desacoplado do backend
+        if let Some(cached) = self.cache.get(query, category, store) {
+            return cached;
+        }
 
-        match self.client.get(&url).send().await {
-            Ok(resp) => {
-                if let Ok(json) = resp.json::<serde_json::Value>().await {
-                    if let Some(results) = json.get("results").and_then(|r| r.as_array()) {
-                        let items: Vec<RecommendedExtension> = results
-                            .iter()
-                            .filter_map(|item| {
-                                let name = extract_localized_string(item.get("name"))?;
-                                let desc = extract_localized_string(item.get("summary"))
-                                    .unwrap_or_else(|| "Extensão oficial do Firefox Add-ons.".to_string());
-                                let icon_url = item.get("icon_url").and_then(|i| i.as_str()).map(|s| s.to_string());
-                                let addon_url = item.get("url").and_then(|u| u.as_str()).map(|s| s.to_string());
-                                let id = item.get("guid")
-                                    .and_then(|g| g.as_str())
-                                    .or_else(|| item.get("slug").and_then(|s| s.as_str()))
-                                    .unwrap_or_else(|| &name)
-                                    .to_string();
+        // 2. Mapeamento de categorias para slugs oficiais da API Mozilla AMO
+        let (amo_cat_slug, is_all_cat) = match cat {
+            "Privacy and security" => (Some("privacy-security"), false),
+            "Developer tools" => (Some("web-development"), false),
+            "Shopping" => (Some("shopping"), false),
+            "Workflow and planning" => (Some("tabs"), false),
+            "Accessibility" => (Some("appearance"), false),
+            "Education" => (Some("language-support"), false),
+            "Tools" => (Some("search-tools"), false),
+            _ => (None, true),
+        };
 
-                                let raw_categories = item.get("categories").and_then(|c| c.as_array());
-                                let mapped_cat = map_amo_category(raw_categories);
-
-                                Some(RecommendedExtension {
-                                    id,
-                                    name,
-                                    category: mapped_cat,
-                                    description: desc,
-                                    provider: "Firefox Add-ons".to_string(),
-                                    provider_url: addon_url,
-                                    icon_type: "puzzle".to_string(),
-                                    icon_bg: "#2F80ED".to_string(), // Cor padrão do app
-                                    icon_url,
-                                    featured: Some(false),
-                                })
-                            })
-                            .filter(|ext| {
-                                // Filtro de categoria se informado
-                                if let Some(cat) = category {
-                                    if cat != "All" && !ext.category.eq_ignore_ascii_case(cat) {
-                                        return false;
-                                    }
-                                }
-                                // Filtro de loja (Firefox Add-ons vs Chrome)
-                                if let Some(st) = store {
-                                    if st.eq_ignore_ascii_case("chrome") {
-                                        return false;
-                                    }
-                                }
-                                true
-                            })
-                            .collect();
-
-                        return items;
-                    }
-                }
+        // 3. Monta a URL de busca direta no Mozilla AMO
+        let url = if !q.is_empty() {
+            if let Some(slug) = amo_cat_slug {
+                format!(
+                    "https://addons.mozilla.org/api/v5/addons/search/?q={}&category={}&type=extension&page_size=30",
+                    urlencoding(q),
+                    slug
+                )
+            } else {
+                format!(
+                    "https://addons.mozilla.org/api/v5/addons/search/?q={}&type=extension&page_size=30",
+                    urlencoding(q)
+                )
             }
-            Err(err) => {
-                warn!("Erro ao consultar API do Mozilla Add-ons (AMO): {}", err);
+        } else if let Some(slug) = amo_cat_slug {
+            format!(
+                "https://addons.mozilla.org/api/v5/addons/search/?category={}&type=extension&sort=users&page_size=30",
+                slug
+            )
+        } else {
+            "https://addons.mozilla.org/api/v5/addons/search/?type=extension&sort=users&page_size=30".to_string()
+        };
+
+        let mut fetched_items: Vec<RecommendedExtension> = Vec::new();
+
+        if let Ok(resp) = self.client.get(&url).send().await {
+            if let Ok(json) = resp.json::<serde_json::Value>().await {
+                if let Some(results) = json.get("results").and_then(|r| r.as_array()) {
+                    fetched_items = results
+                        .iter()
+                        .filter_map(|item| {
+                            let name = extract_localized_string(item.get("name"))?;
+                            let desc = extract_localized_string(item.get("summary"))
+                                .unwrap_or_else(|| "Extensão oficial do catálogo.".to_string());
+                            let icon_url = item.get("icon_url").and_then(|i| i.as_str()).map(|s| s.to_string());
+                            let addon_url = item.get("url").and_then(|u| u.as_str()).map(|s| s.to_string());
+                            let id = item.get("guid")
+                                .and_then(|g| g.as_str())
+                                .or_else(|| item.get("slug").and_then(|s| s.as_str()))
+                                .unwrap_or_else(|| &name)
+                                .to_string();
+
+                            let raw_categories = item.get("categories").and_then(|c| c.as_array());
+                            let mapped_cat = if !is_all_cat {
+                                cat.to_string()
+                            } else {
+                                map_amo_category(raw_categories)
+                            };
+
+                            let provider = if st.eq_ignore_ascii_case("chrome") {
+                                "Chrome Web Store".to_string()
+                            } else {
+                                "Firefox Add-ons".to_string()
+                            };
+
+                            let provider_url = if st.eq_ignore_ascii_case("chrome") {
+                                Some(format!("https://chromewebstore.google.com/search?q={}", urlencoding(&name)))
+                            } else {
+                                addon_url
+                            };
+
+                            Some(RecommendedExtension {
+                                id,
+                                name,
+                                category: mapped_cat,
+                                description: desc,
+                                provider,
+                                provider_url,
+                                icon_type: "puzzle".to_string(),
+                                icon_bg: String::new(),
+                                icon_url,
+                                featured: Some(false),
+                            })
+                        })
+                        .collect();
+                }
             }
         }
 
-        Vec::new()
+        // 4. Salva no módulo desacoplado de cache
+        self.cache.set(query, category, store, fetched_items.clone());
+
+        fetched_items
     }
 }
 
@@ -251,10 +288,12 @@ fn map_amo_category(cats: Option<&Vec<serde_json::Value>>) -> String {
             if let Some(slug) = c.as_str() {
                 match slug {
                     "privacy-security" => return "Privacy and security".to_string(),
-                    "developer-tools" => return "Developer tools".to_string(),
+                    "web-development" | "developer-tools" => return "Developer tools".to_string(),
                     "appearance" | "accessibility" => return "Accessibility".to_string(),
-                    "feeds-news-blogging" | "social-communication" | "tabs" => return "Workflow and planning".to_string(),
+                    "feeds-news-blogging" | "social-communication" | "tabs" | "bookmarks" => return "Workflow and planning".to_string(),
                     "shopping" => return "Shopping".to_string(),
+                    "language-support" => return "Education".to_string(),
+                    "download-management" | "search-tools" | "alerts-updates" => return "Tools".to_string(),
                     _ => {}
                 }
             }

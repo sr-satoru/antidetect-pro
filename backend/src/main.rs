@@ -7,6 +7,7 @@ use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+mod cache;
 mod cookie_manager;
 mod launcher;
 mod models;

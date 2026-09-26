@@ -24,6 +24,22 @@ import {
 } from 'lucide-react';
 import { api } from '@/services/index.api';
 
+const LoadingSpinner: React.FC<{ message?: string; subMessage?: string }> = ({
+  message = 'Carregando extensões...',
+  subMessage,
+}) => (
+  <div className="flex h-72 flex-col items-center justify-center gap-3.5 text-center select-none animate-in fade-in duration-200">
+    <div className="relative flex items-center justify-center">
+      <div className="absolute h-10 w-10 rounded-full bg-[#2F80ED]/15 blur-sm" />
+      <Loader2 size={32} className="animate-spin text-[#2F80ED]" />
+    </div>
+    <div className="flex flex-col items-center gap-1">
+      <p className="text-sm font-medium text-white">{message}</p>
+      {subMessage && <p className="text-xs text-[#717586]">{subMessage}</p>}
+    </div>
+  </div>
+);
+
 const CATALOG_CATEGORIES = [
   'All',
   'Workflow and planning',
@@ -66,6 +82,7 @@ export interface ExtensionItem {
 
 interface TabelaExtensoesProps {
   extensions: ExtensionItem[];
+  isLoadingTeam?: boolean;
   onAddClick: () => void;
   onToggleEnabled: (id: number) => void;
   onDelete: (id: number) => void;
@@ -114,29 +131,23 @@ const renderRecommendedIcon = (ext: RecommendedExtension) => {
 
 export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
   extensions,
+  isLoadingTeam = false,
   onAddClick,
   onToggleEnabled,
   onDelete,
   onAddRecommended,
 }) => {
-  const [activeTab, setActiveTab] = useState<'team' | 'recommended'>(
-    'recommended',
-  );
+  const [activeTab, setActiveTab] = useState<'team' | 'recommended'>('recommended');
   const [searchQuery, setSearchQuery] = useState('');
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   // Estados específicos para a aba "Recomendado para você"
-  const [selectedCategory, setSelectedCategory] =
-    useState<CatalogCategory>('All');
-  const [storeFilter, setStoreFilter] = useState<'all' | 'firefox' | 'chrome'>(
-    'all',
-  );
-  const [recommendedList, setRecommendedList] = useState<
-    RecommendedExtension[]
-  >([]);
+  const [selectedCategory, setSelectedCategory] = useState<CatalogCategory>('All');
+  const [storeFilter, setStoreFilter] = useState<'all' | 'firefox' | 'chrome'>('all');
+  const [recommendedList, setRecommendedList] = useState<RecommendedExtension[]>([]);
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
-  // Efeito de busca do catálogo chamando o backend Python
+  // Efeito de busca do catálogo chamando o backend (cache desacoplado no backend)
   useEffect(() => {
     if (activeTab !== 'recommended') return;
 
@@ -151,7 +162,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           store: storeFilter,
         });
         if (isMounted) {
-          setRecommendedList(results as RecommendedExtension[]);
+          setRecommendedList((results as RecommendedExtension[]) || []);
         }
       } catch (err) {
         console.error('Erro ao buscar catálogo de extensões:', err);
@@ -160,7 +171,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           setIsLoadingSearch(false);
         }
       }
-    }, 250);
+    }, 150);
 
     return () => {
       isMounted = false;
@@ -380,6 +391,11 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   </div>
                 ))}
               </div>
+            ) : isLoadingTeam ? (
+              <LoadingSpinner
+                message="Carregando extensões da equipe..."
+                subMessage="Sincronizando com o banco local"
+              />
             ) : (
               <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-[#8E92A2]">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#2D303E] bg-[#1A1C24] text-[#717586]">
@@ -580,6 +596,11 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   );
                 })}
               </div>
+            ) : isLoadingSearch ? (
+              <LoadingSpinner
+                message="Carregando extensões..."
+                subMessage="Buscando catálogo recomendado"
+              />
             ) : (
               <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-[#8E92A2]">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#2D303E] bg-[#1A1C24] text-[#717586]">
