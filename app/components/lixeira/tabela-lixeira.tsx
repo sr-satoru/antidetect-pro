@@ -10,8 +10,8 @@ interface TabelaLixeiraProps {
   selectedIds: (string | number)[];
   onSelectAll: () => void;
   onSelectItem: (id: string | number) => void;
-  onRestore: (id: string | number) => void;
-  onDeletePermanent: (id: string | number) => void;
+  onRestore?: (id: string | number) => void;
+  onDeletePermanent?: (id: string | number) => void;
 }
 
 export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
@@ -45,12 +45,8 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
               <th className="w-[230px] min-w-[230px] px-3.5 py-2.5">Perfil</th>
               <th className="w-[150px] min-w-[150px] px-3.5 py-2.5">Grupo</th>
               <th className="w-[180px] min-w-[180px] px-3.5 py-2.5">IP & Proxy</th>
-              <th className="w-[160px] min-w-[160px] px-3.5 py-2.5">Data de Exclusão</th>
-              <th className="w-[140px] min-w-[140px] px-3.5 py-2.5">Tempo Restante</th>
-              <th className="w-[130px] min-w-[130px] px-3.5 py-2.5">Excluído por</th>
-              <th className="sticky right-0 z-20 w-[110px] max-w-[110px] min-w-[110px] bg-[#24252B] px-3 py-2.5 text-center">
-                Ações
-              </th>
+              <th className="w-[180px] min-w-[180px] px-3.5 py-2.5">Data e Hora de Exclusão</th>
+              <th className="w-[190px] min-w-[190px] px-3.5 py-2.5">Exclusão Definitiva (30 dias)</th>
             </tr>
           </thead>
 
@@ -64,13 +60,11 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
                   index={index}
                   isSelected={selectedIds.includes(item.id)}
                   onSelect={onSelectItem}
-                  onRestore={onRestore}
-                  onDeletePermanent={onDeletePermanent}
                 />
               ))
             ) : (
               <tr>
-                <td colSpan={9} className="py-20 text-center text-[#8E92A2]">
+                <td colSpan={7} className="py-20 text-center text-[#8E92A2]">
                   <div className="flex flex-col items-center justify-center gap-3">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#333541] bg-[#1C1D24] text-[#7E8294]">
                       <Trash2 size={24} />
@@ -99,7 +93,7 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
           </span>
           <span className="hidden items-center gap-1.5 sm:inline-flex text-[11px] text-[#7E8294]">
             <AlertCircle size={13} className="text-[#DFE104]" />
-            <span>Itens excluídos são removidos automaticamente após 7 dias de retenção.</span>
+            <span>Itens excluídos são removidos automaticamente após 30 dias de retenção.</span>
           </span>
         </div>
 

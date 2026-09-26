@@ -1,12 +1,6 @@
 import React from 'react';
 import { OsIcon } from '../ui/os-icon';
-import {
-  RotateCcw,
-  Trash2,
-  Clock,
-  Globe,
-  Folder,
-} from 'lucide-react';
+import { Folder } from 'lucide-react';
 
 export interface ItemLixeira {
   id: string | number;
@@ -16,9 +10,12 @@ export interface ItemLixeira {
   os: 'windows' | 'macos' | 'linux' | 'android' | 'ios' | string;
   ip?: string;
   country?: string;
-  deletedAt: string;
-  daysRemaining: number;
-  deletedBy: string;
+  deletedAt?: string | number;
+  deleted_at?: number;
+  created_at?: number;
+  updated_at?: number;
+  daysRemaining?: number;
+  deletedBy?: string;
   raw?: any;
 }
 
@@ -27,12 +24,48 @@ interface LinhaTabelaLixeiraProps {
   isSelected: boolean;
   index?: number;
   onSelect: (id: string | number) => void;
-  onRestore: (id: string | number) => void;
-  onDeletePermanent: (id: string | number) => void;
+  onRestore?: (id: string | number) => void;
+  onDeletePermanent?: (id: string | number) => void;
 }
 
 const renderOsIcon = (os: string) => {
   return <OsIcon os={os} size={14} className="shrink-0 text-[#9EA2AE]" />;
+};
+
+const getDeletedDate = (item: ItemLixeira): Date => {
+  const ts = item.deleted_at ?? item.deletedAt ?? item.updated_at;
+  if (!ts) return new Date();
+  const num = Number(ts);
+  if (!isNaN(num)) {
+    return new Date(num < 10000000000 ? num * 1000 : num);
+  }
+  const parsed = new Date(ts);
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
+};
+
+const formatDateTime = (date: Date): string => {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${day}/${month}/${year} às ${hours}:${minutes}`;
+};
+
+const getExpirationDetails = (deletedDate: Date) => {
+  const RETENTION_DAYS = 30;
+  const expirationDate = new Date(
+    deletedDate.getTime() + RETENTION_DAYS * 24 * 60 * 60 * 1000,
+  );
+  const now = new Date();
+  const diffMs = expirationDate.getTime() - now.getTime();
+  const daysRemaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+
+  return {
+    expirationDate,
+    formattedExpiration: formatDateTime(expirationDate),
+    daysRemaining,
+  };
 };
 
 export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
@@ -40,8 +73,6 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
   isSelected,
   index = 0,
   onSelect,
-  onRestore,
-  onDeletePermanent,
 }) => {
   const isStriped = index % 2 === 1;
 
@@ -51,36 +82,8 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
       ? 'bg-[#24252B] hover:bg-[#32343D]'
       : 'bg-[#1E1F26] hover:bg-[#32343D]';
 
-  const stickyBg = isSelected
-    ? 'bg-[#181a20]'
-    : isStriped
-      ? 'bg-[#24252B] group-hover:bg-[#32343D]'
-      : 'bg-[#1E1F26] group-hover:bg-[#32343D]';
-
-  const getDaysBadge = (days: number) => {
-    if (days <= 1) {
-      return (
-        <span className="inline-flex items-center gap-1 rounded-md border border-[#EF4444]/40 bg-[#EF4444]/15 px-2 py-0.5 text-[11px] font-bold text-[#FF6B6B]">
-          <Clock size={11} />
-          <span>{days} dia restante</span>
-        </span>
-      );
-    }
-    if (days <= 3) {
-      return (
-        <span className="inline-flex items-center gap-1 rounded-md border border-[#DFE104]/40 bg-[#DFE104]/15 px-2 py-0.5 text-[11px] font-semibold text-[#DFE104]">
-          <Clock size={11} />
-          <span>{days} dias restantes</span>
-        </span>
-      );
-    }
-    return (
-      <span className="inline-flex items-center gap-1 rounded-md border border-[#10B981]/30 bg-[#10B981]/10 px-2 py-0.5 text-[11px] font-medium text-[#10B981]">
-        <Clock size={11} />
-        <span>{days} dias restantes</span>
-      </span>
-    );
-  };
+  const deletedDate = getDeletedDate(item);
+  const expiration = getExpirationDetails(deletedDate);
 
   return (
     <tr
@@ -131,45 +134,32 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
         </div>
       </td>
 
-      {/* 6. Data de Exclusão */}
-      <td className="w-[160px] min-w-[160px] px-3.5 py-2.5 font-mono text-xs whitespace-nowrap text-[#C8CBD4]">
-        {item.deletedAt}
+      {/* 6. Data e Hora de Exclusão */}
+      <td className="w-[180px] min-w-[180px] px-3.5 py-2.5 font-mono text-xs whitespace-nowrap text-[#C8CBD4]">
+        {formatDateTime(deletedDate)}
       </td>
 
-      {/* 7. Tempo Restante */}
-      <td className="w-[140px] min-w-[140px] px-3.5 py-2.5 whitespace-nowrap">
-        {getDaysBadge(item.daysRemaining)}
-      </td>
-
-      {/* 8. Responsável */}
-      <td className="w-[130px] min-w-[130px] px-3.5 py-2.5 text-xs whitespace-nowrap text-[#8E92A2]">
-        {item.deletedBy}
-      </td>
-
-      {/* 9. Ações (Restaurar, Excluir Permanente) - Sticky */}
-      <td
-        className={`sticky right-0 z-10 w-[110px] max-w-[110px] min-w-[110px] px-3 py-2.5 transition-colors ${stickyBg}`}
-      >
-        <div className="flex items-center justify-center gap-2">
-          {/* Botão Restaurar */}
-          <button
-            type="button"
-            onClick={() => onRestore(item.id)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#10B981] transition-all hover:bg-[#10B981]/15 hover:text-white"
-            title="Restaurar perfil"
+      {/* 7. Exclusão Definitiva (30 dias) */}
+      <td className="w-[190px] min-w-[190px] px-3.5 py-2.5 whitespace-nowrap">
+        <div className="flex flex-col leading-tight">
+          <span className="font-mono text-xs font-semibold text-white">
+            {expiration.formattedExpiration}
+          </span>
+          <span
+            className={`text-[10.5px] font-medium mt-0.5 ${
+              expiration.daysRemaining <= 3
+                ? 'text-[#FF6B6B]'
+                : expiration.daysRemaining <= 7
+                  ? 'text-[#DFE104]'
+                  : 'text-[#10B981]'
+            }`}
           >
-            <RotateCcw size={14} />
-          </button>
-
-          {/* Botão Excluir Permanente */}
-          <button
-            type="button"
-            onClick={() => onDeletePermanent(item.id)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] transition-all hover:bg-[#EF4444]/15 hover:text-[#FF6B6B]"
-            title="Excluir permanentemente"
-          >
-            <Trash2 size={14} />
-          </button>
+            {expiration.daysRemaining === 0
+              ? 'Expira hoje'
+              : expiration.daysRemaining === 1
+                ? 'Expira amanhã'
+                : `${expiration.daysRemaining} dias restantes`}
+          </span>
         </div>
       </td>
     </tr>
