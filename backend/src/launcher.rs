@@ -81,6 +81,7 @@ impl ProcessManager {
     }
 
     /// Escolhe uma porta TCP local disponível
+    #[allow(dead_code)]
     pub fn pick_available_port() -> u16 {
         std::net::TcpListener::bind("127.0.0.1:0")
             .and_then(|l| l.local_addr())
@@ -321,10 +322,10 @@ impl ProcessManager {
         user_js.push_str("user_pref(\"browser.sessionstore.resume_from_crash\", true);\n");
         user_js.push_str("user_pref(\"browser.sessionstore.max_resumed_crashes\", -1);\n");
         user_js.push_str("user_pref(\"browser.tabs.warnOnClose\", false);\n");
-
-        // Permissões de depuração remota e WebDriver BiDi
-        user_js.push_str("// Permissões de depuração remota e WebDriver BiDi\n");
-        user_js.push_str("user_pref(\"remote.active-protocols\", 2);\n");
+        user_js.push_str("user_pref(\"privacy.clearOnShutdown.cookies\", false);\n");
+        user_js.push_str("user_pref(\"privacy.clearOnShutdown.sessions\", false);\n");
+        user_js.push_str("user_pref(\"privacy.clearOnShutdown.history\", false);\n");
+        user_js.push_str("user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n");
 
         // Preferências nativas do Firefox para auto-ativação e sideload de extensões
         user_js.push_str("// Carregamento automático de extensões no perfil Camoufox\n");
@@ -386,6 +387,12 @@ impl ProcessManager {
         fs::write(user_js_path, user_js)
             .map_err(|e| format!("Erro ao gravar user.js do perfil: {e}"))?;
 
+        // Garante ocultação de qualquer banner de automação/depuração no Camoufox
+        let chrome_dir = profile_dir.join("chrome");
+        let _ = fs::create_dir_all(&chrome_dir);
+        let user_chrome_css = "#remote-control-box { display: none !important; }\n#urlbar-background { background-image: none !important; }\n";
+        let _ = fs::write(chrome_dir.join("userChrome.css"), user_chrome_css);
+
         // 2. Injeta e copia os pacotes .xpi das extensões
         Self::prepare_extensions(profile_dir, profile, data_dir, client).await?;
 
@@ -411,26 +418,14 @@ impl ProcessManager {
         let profile_dir = data_dir.join("profiles").join(&profile.id).join("profile");
         Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
 
-        let port = {
-            let mut ports_map = self.ports.lock().unwrap();
-            if let Some(&p) = ports_map.get(&profile.id) {
-                p
-            } else {
-                let p = Self::pick_available_port();
-                ports_map.insert(profile.id.clone(), p);
-                p
-            }
-        };
-
         info!(
-            "🚀 Disparando Camoufox para o perfil '{}' ({}) via {:?} (Porta BiDi/CDP: {})",
-            profile.name, profile.id, binary_path, port
+            "🚀 Disparando Camoufox para o perfil '{}' ({}) via {:?}",
+            profile.name, profile.id, binary_path
         );
 
         let mut cmd = Command::new(&binary_path);
         cmd.arg("--profile").arg(&profile_dir);
         cmd.arg("--new-instance");
-        cmd.arg("--remote-debugging-port").arg(port.to_string());
 
         let child = cmd.spawn().map_err(|e| {
             format!("Falha ao executar {:?}: {}", binary_path, e)
