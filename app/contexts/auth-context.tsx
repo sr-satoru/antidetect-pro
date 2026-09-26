@@ -1,10 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { api } from '@/services/index.api';
+import {
+  fetchChallenge,
+  solveProofOfWork,
+  exchangeDeviceCode,
+  DEFAULT_CLOUD_URL,
+} from '@/services/cloud-auth';
 
 export interface UserSession {
-  id: number | string;
+  id: string;
   username: string;
   email?: string;
+  plan?: string;
+  profileLimit?: number;
   is_offline: boolean;
 }
 
@@ -12,6 +19,8 @@ const DEFAULT_OFFLINE_USER: UserSession = {
   id: 'local_user',
   username: 'offline_user',
   email: undefined,
+  plan: 'free',
+  profileLimit: 0,
   is_offline: true,
 };
 
@@ -22,8 +31,8 @@ interface AuthContextType {
   isOffline: boolean;
   isOnline: boolean;
   isLoading: boolean;
-  login: (login: string, password: string) => Promise<void>;
-  register: (data: { username?: string; email?: string; password: string }) => Promise<void>;
+  loginWithCode: (code: string) => Promise<void>;
+  continueOffline: () => void;
   logout: () => void;
 }
 
@@ -36,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Inicializa a sessão a partir do localStorage ou define Modo Offline por padrão
+  // Carrega a sessão salva no localStorage
   useEffect(() => {
     const savedToken = localStorage.getItem('fury_auth_token');
     const savedUser = localStorage.getItem('fury_auth_user');
@@ -56,28 +65,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoading(false);
   }, []);
 
-  const login = async (loginInput: string, password: string) => {
-    const res = await (api as any).auth?.login?.(loginInput, password) || {
-      token: 'offline_demo_token',
-      user: { id: 1, username: loginInput, is_offline: false },
+  /**
+   * Login intuitivo por Código de Vinculação com a Nuvem (Device-Code Flow estilo Donut)
+   */
+  const loginWithCode = async (code: string) => {
+    // 1. Obter desafio de Proof-of-Work do servidor de nuvem
+    const challenge = await fetchChallenge(DEFAULT_CLOUD_URL);
+
+    // 2. Resolver o Proof-of-Work no navegador
+    const nonce = await solveProofOfWork(
+      challenge.prefix,
+      challenge.difficulty,
+    );
+
+    // 3. Trocar o código pelo JWT real
+    const response = await exchangeDeviceCode(
+      code,
+      challenge.challengeId,
+      nonce,
+      DEFAULT_CLOUD_URL,
+    );
+
+    const sessionUser: UserSession = {
+      id: response.user.id,
+      username:
+        response.user.email?.split('@')[0] ||
+        `user_${response.user.id.slice(0, 5)}`,
+      email: response.user.email,
+      plan: response.user.plan || 'pro',
+      profileLimit: response.user.profileLimit,
+      is_offline: false,
     };
-    setToken(res.token);
-    setUser(res.user);
-    localStorage.setItem('fury_auth_token', res.token);
-    localStorage.setItem('fury_auth_user', JSON.stringify(res.user));
+
+    setToken(response.accessToken);
+    setUser(sessionUser);
+    localStorage.setItem('fury_auth_token', response.accessToken);
+    localStorage.setItem('fury_auth_user', JSON.stringify(sessionUser));
   };
 
-  const register = async (data: { username?: string; email?: string; password: string }) => {
-    const res = await (api as any).auth?.register?.(data) || {
-      token: 'offline_demo_token',
-      user: { id: 1, username: data.username || 'usuario', is_offline: false },
-    };
-    setToken(res.token);
-    setUser(res.user);
-    localStorage.setItem('fury_auth_token', res.token);
-    localStorage.setItem('fury_auth_user', JSON.stringify(res.user));
+  /**
+   * Usar o aplicativo localmente em modo offline
+   */
+  const continueOffline = () => {
+    setToken(null);
+    setUser(DEFAULT_OFFLINE_USER);
+    localStorage.removeItem('fury_auth_token');
+    localStorage.removeItem('fury_auth_user');
   };
 
+  /**
+   * Desconectar da nuvem
+   */
   const logout = () => {
     setToken(null);
     setUser(DEFAULT_OFFLINE_USER);
@@ -87,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const isOnline = !!token && !user.is_offline;
   const isOffline = !isOnline;
-  const isAuthenticated = true; // O usuário sempre pode navegar no app
+  const isAuthenticated = true;
 
   return (
     <AuthContext.Provider
@@ -98,8 +136,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isOffline,
         isOnline,
         isLoading,
-        login,
-        register,
+        loginWithCode,
+        continueOffline,
         logout,
       }}
     >
