@@ -2,6 +2,9 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeaderTabela } from '@/components/perfis/headerTabela';
 import { Tabela } from '@/components/perfis/tabela';
+import { ModalEtiquetas } from '@/components/tags/modal-etiquetas';
+import { TagBadge } from '@/components/tags/tag-badge';
+import { serviceTags } from '@/services/tags/service.tags';
 import { api } from '@/services/index.api';
 import { X, Check, Loader2 } from 'lucide-react';
 
@@ -16,6 +19,7 @@ export const PerfisPage: React.FC = () => {
   const [selectedGroup, setSelectedGroup] = useState('Todos os grupos');
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<any | null>(null);
   const [editNameInput, setEditNameInput] = useState('');
 
@@ -24,6 +28,7 @@ export const PerfisPage: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
+      serviceTags.list().catch(() => {});
       const data = await api.profiles.list(searchQuery, selectedGroup);
       const list = Array.isArray(data) ? data : [];
       setProfiles(list);
@@ -288,10 +293,23 @@ export const PerfisPage: React.FC = () => {
         onSelectTag={setSelectedTag}
         onNewProfile={() => navigate('/criar-perfil')}
         onRefresh={fetchProfiles}
+        onOpenTagFilter={() => setIsTagModalOpen(true)}
         onStartSelected={handleStartSelected}
         onStopSelected={handleStopSelected}
         onDeleteSelected={handleDeleteSelected}
       />
+
+      {/* Indicador de Filtro por Etiqueta Ativo */}
+      {selectedTag && (
+        <div className="flex items-center gap-2 rounded-md border border-[#303241] bg-[#1A1C24] px-3 py-1.5 text-xs shrink-0 select-none">
+          <span className="text-[#8E92A2]">Filtro ativo por etiqueta:</span>
+          <TagBadge
+            name={selectedTag}
+            color={serviceTags.getColorByName(selectedTag)}
+            onRemove={() => setSelectedTag(null)}
+          />
+        </div>
+      )}
 
       {/* Alerta de erro de comunicação */}
       {error && (
@@ -379,6 +397,15 @@ export const PerfisPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Modal Principal de Gestão e Filtro de Etiquetas */}
+      <ModalEtiquetas
+        isOpen={isTagModalOpen}
+        onClose={() => setIsTagModalOpen(false)}
+        selectedTagFilter={selectedTag}
+        onSelectTagFilter={setSelectedTag}
+        onTagsUpdated={fetchProfiles}
+      />
     </div>
   );
 };

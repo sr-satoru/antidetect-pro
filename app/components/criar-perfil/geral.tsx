@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
 import config from '@/config/perfil.json';
 
@@ -9,6 +9,8 @@ interface GeralTabProps {
 
 import { generateRandomDeviceName, generateRandomSeed } from '@/utils';
 import { OsIcon } from '../ui/os-icon';
+import { TagBadge } from '../tags/tag-badge';
+import { serviceTags, TagItem } from '../../services/tags/service.tags';
 
 const renderOSIcon = (os: string): React.ReactNode => {
   return <OsIcon os={os} size={14} className="h-3.5 w-3.5 shrink-0" />;
@@ -19,6 +21,11 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
   const [showUaDropdown, setShowUaDropdown] = useState(false);
   const [showTagInput, setShowTagInput] = useState(false);
   const [newTagText, setNewTagText] = useState('');
+  const [availableTags, setAvailableTags] = useState<TagItem[]>([]);
+
+  useEffect(() => {
+    serviceTags.list().then(setAvailableTags).catch(() => {});
+  }, []);
 
   const currentTags: string[] = Array.isArray(formData.tags)
     ? formData.tags
@@ -346,23 +353,43 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
                 {currentTags.length > 0 ? (
                   <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto pt-1">
                     {currentTags.map((tag) => (
-                      <span
+                      <TagBadge
                         key={tag}
-                        className="flex items-center gap-1 rounded bg-[#2A3142] px-2 py-0.5 text-[11px] text-[#A8C7FA]"
-                      >
-                        {tag}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTag(tag)}
-                          className="cursor-pointer text-[#8C93A8] hover:text-red-400"
-                        >
-                          ×
-                        </button>
-                      </span>
+                        name={tag}
+                        color={serviceTags.getColorByName(tag)}
+                        onRemove={() => handleRemoveTag(tag)}
+                      />
                     ))}
                   </div>
                 ) : (
                   <p className="text-[11px] text-[#717688]">Nenhuma tag adicionada.</p>
+                )}
+
+                {/* Sugestões de Etiquetas Globais Cadastradas */}
+                {availableTags.length > 0 && (
+                  <div className="space-y-1.5 pt-2 border-t border-[#2C2E3B]/80">
+                    <p className="text-[10px] text-[#717688] font-medium">Etiquetas existentes:</p>
+                    <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+                      {availableTags.map((tag) => {
+                        const isAdded = currentTags.includes(tag.name);
+                        return (
+                          <TagBadge
+                            key={tag.id}
+                            name={tag.name}
+                            color={tag.color}
+                            onClick={() => {
+                              if (isAdded) {
+                                handleRemoveTag(tag.name);
+                              } else {
+                                handleAddTag(tag.name);
+                              }
+                            }}
+                            className={`opacity-90 ${isAdded ? 'ring-1 ring-white/60 brightness-110' : 'hover:opacity-100'}`}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
             )}
@@ -374,19 +401,12 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
       {currentTags.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5 sm:pl-[146px]">
           {currentTags.map((tag) => (
-            <span
+            <TagBadge
               key={tag}
-              className="flex items-center gap-1.5 rounded-full border border-[#2F80ED]/30 bg-[#1D2536] px-2.5 py-0.5 text-[11.5px] font-medium text-[#99C5FF]"
-            >
-              #{tag}
-              <button
-                type="button"
-                onClick={() => handleRemoveTag(tag)}
-                className="cursor-pointer text-[#6B7898] transition-colors hover:text-red-400"
-              >
-                ×
-              </button>
-            </span>
+              name={tag}
+              color={serviceTags.getColorByName(tag)}
+              onRemove={() => handleRemoveTag(tag)}
+            />
           ))}
         </div>
       )}

@@ -4,3 +4,4 @@ pub mod extensions;
 pub mod profiles;
 pub mod proxies;
 pub mod tabs;
+pub mod tags;

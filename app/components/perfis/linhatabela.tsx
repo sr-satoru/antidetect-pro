@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MenuAcoesPerfil } from './menu-acoes-perfil';
 import { OsIcon } from '../ui/os-icon';
+import { TagBadge } from '../tags/tag-badge';
+import { serviceTags } from '../../services/tags/service.tags';
 import {
   ArrowLeftRight,
   Pencil,
@@ -301,14 +303,13 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       {/* 8. Tags */}
       <td className="w-[190px] min-w-[190px] px-3.5 py-2.5 whitespace-nowrap">
         {tagsList.length > 0 ? (
-          <div className="flex items-center gap-1 overflow-hidden">
+          <div className="flex items-center gap-1.5 overflow-hidden">
             {tagsList.map((t: string) => (
-              <span
+              <TagBadge
                 key={t}
-                className="inline-block shrink-0 rounded border border-[#44444C] bg-[#282930] px-1.5 py-0.5 text-[10px] font-medium text-[#C8CBD4] uppercase transition-colors hover:border-[#DFE104] hover:text-[#DFE104]"
-              >
-                {t.toUpperCase()}
-              </span>
+                name={t}
+                color={serviceTags.getColorByName(t)}
+              />
             ))}
           </div>
         ) : (

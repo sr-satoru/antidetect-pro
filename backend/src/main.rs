@@ -15,7 +15,7 @@ mod storage;
 mod tab_manager;
 mod ws;
 
-use storage::{ExtensionStorage, ProfileStorage, ProxyStorage};
+use storage::{ExtensionStorage, ProfileStorage, ProxyStorage, TagStorage};
 
 #[tokio::main]
 async fn main() {
@@ -30,6 +30,7 @@ async fn main() {
     let profile_storage = Arc::new(ProfileStorage::new(&data_dir, ws_state.clone()));
     let proxy_storage = Arc::new(ProxyStorage::new(&data_dir));
     let extension_storage = Arc::new(ExtensionStorage::new(&data_dir));
+    let tag_storage = Arc::new(TagStorage::new(&data_dir));
 
     let cors = CorsLayer::new()
         .allow_origin(Any)
@@ -81,6 +82,17 @@ async fn main() {
         .route("/register", post(routes::auth::register))
         .route("/me", get(routes::auth::me));
 
+    let tag_routes = Router::new()
+        .route("/", get(routes::tags::list_tags).post(routes::tags::create_tag))
+        .route(
+            "/{id}",
+            get(routes::tags::get_tag)
+                .put(routes::tags::update_tag)
+                .delete(routes::tags::delete_tag),
+        )
+        .route("/batch-delete", post(routes::tags::batch_delete_tags))
+        .with_state(tag_storage);
+
     let ws_routes = Router::new()
         .route("/", get(ws::ws_handler))
         .with_state(ws_state);
@@ -89,6 +101,7 @@ async fn main() {
         .nest("/api/profiles", profile_routes)
         .nest("/api/proxies", proxy_routes)
         .nest("/api/extensions", extension_routes)
+        .nest("/api/tags", tag_routes)
         .nest("/api/auth", auth_routes)
         .nest("/api/ws", ws_routes)
         .layer(cors);

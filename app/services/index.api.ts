@@ -25,6 +25,7 @@ import { serviceProxy } from './criar-perfil/service.proxy';
 import { servicePerfis } from './perfis/service.perfis';
 import { serviceTabs } from './perfis/service.tabs';
 import { serviceCookies } from './perfis/service.cookies';
+import { serviceTags } from './tags/service.tags';
 import { http } from './http';
 
 // Re-exporta cada service
@@ -36,6 +37,7 @@ export { serviceProxy } from './criar-perfil/service.proxy';
 export { servicePerfis } from './perfis/service.perfis';
 export { serviceTabs } from './perfis/service.tabs';
 export { serviceCookies } from './perfis/service.cookies';
+export { serviceTags } from './tags/service.tags';
 export { http, ApiError } from './http';
 
 /**
@@ -43,6 +45,7 @@ export { http, ApiError } from './http';
  */
 export const api = {
   profiles: servicePerfis,
+  tags: serviceTags,
 
   proxies: {
     list: serviceProxy.listarSalvos,
