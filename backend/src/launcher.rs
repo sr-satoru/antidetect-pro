@@ -128,7 +128,12 @@ impl ProcessManager {
 
         let extensions_dir = profile_dir.join("extensions");
         let _ = fs::create_dir_all(&extensions_dir);
-        let cache_dir = data_dir.join("cache").join("extensions");
+        let root_dir = if data_dir.ends_with("profiles") {
+            data_dir.parent().unwrap_or(data_dir)
+        } else {
+            data_dir
+        };
+        let cache_dir = root_dir.join("cache").join("extensions");
         let _ = fs::create_dir_all(&cache_dir);
 
         // 1. Obtém lista de extensões que devem ser instaladas
@@ -160,7 +165,7 @@ impl ProcessManager {
 
         // Se nenhuma extensão foi encontrada no array do perfil e o modo é "team" ou "category"
         if extensions_to_install.is_empty() && (mode == "team" || mode == "category") {
-            let team_dir = data_dir.join("extensions");
+            let team_dir = root_dir.join("extensions");
             if let Ok(entries) = fs::read_dir(team_dir) {
                 for entry in entries.flatten() {
                     let path = entry.path();
@@ -318,13 +323,32 @@ impl ProcessManager {
         // Restauração de Sessão e Abas anteriores (estilo Donut Browser)
         user_js.push_str("// Restauração automática de abas e sessão\n");
         user_js.push_str("user_pref(\"browser.startup.page\", 3);\n");
-        user_js.push_str("user_pref(\"browser.sessionstore.resume_session_once\", true);\n");
+        user_js.push_str("user_pref(\"browser.startup.homepage\", \"about:blank\");\n");
         user_js.push_str("user_pref(\"browser.sessionstore.resume_from_crash\", true);\n");
         user_js.push_str("user_pref(\"browser.sessionstore.max_resumed_crashes\", -1);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.resuming_after_os_restart\", true);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.privacy_level\", 0);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.privacy_level_deferred\", 0);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.interval\", 1000);\n"); // Salva estado da sessão a cada 1 segundo no disco
+        user_js.push_str("user_pref(\"browser.sessionstore.max_tabs_undo\", 100);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.max_windows_undo\", 25);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.restore_on_demand\", false);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.restore_tabs_lazily\", false);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.restore_hidden_tabs\", true);\n");
         user_js.push_str("user_pref(\"browser.tabs.warnOnClose\", false);\n");
+
+        // Preserva o que o usuário digita (formulários, pesquisas, logins e histórico de digitação)
+        user_js.push_str("user_pref(\"browser.formfill.enable\", true);\n");
+        user_js.push_str("user_pref(\"signon.autofillForms\", true);\n");
+        user_js.push_str("user_pref(\"signon.rememberSignons\", true);\n");
+        user_js.push_str("user_pref(\"privacy.clearOnShutdown.formdata\", false);\n");
+        user_js.push_str("user_pref(\"privacy.sanitize.sanitizeOnShutdown\", false);\n");
+
         user_js.push_str("user_pref(\"privacy.clearOnShutdown.cookies\", false);\n");
         user_js.push_str("user_pref(\"privacy.clearOnShutdown.sessions\", false);\n");
         user_js.push_str("user_pref(\"privacy.clearOnShutdown.history\", false);\n");
+        user_js.push_str("user_pref(\"privacy.clearOnShutdown.openWindows\", false);\n");
+        user_js.push_str("user_pref(\"privacy.clearOnShutdown.cache\", false);\n");
         user_js.push_str("user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n");
 
         // Preferências nativas do Firefox para auto-ativação e sideload de extensões
@@ -415,7 +439,11 @@ impl ProcessManager {
         }
 
         let binary_path = Self::resolve_browser_binary()?;
-        let profile_dir = data_dir.join("profiles").join(&profile.id).join("profile");
+        let profile_dir = if data_dir.ends_with("profiles") {
+            data_dir.join(&profile.id).join("profile")
+        } else {
+            data_dir.join("profiles").join(&profile.id).join("profile")
+        };
         Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
 
         info!(
@@ -455,10 +483,17 @@ impl ProcessManager {
                 #[cfg(windows)]
                 {
                     let _ = Command::new("taskkill")
-                        .arg("/F")
                         .arg("/PID")
                         .arg(pid.to_string())
                         .status();
+                }
+
+                // Aguarda o processo salvar e descarregar no disco (cookies e sessionstore)
+                for _ in 0..30 {
+                    if !Self::is_pid_alive(pid) {
+                        break;
+                    }
+                    std::thread::sleep(std::time::Duration::from_millis(100));
                 }
             }
         }
