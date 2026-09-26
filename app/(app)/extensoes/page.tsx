@@ -57,9 +57,9 @@ export const ExtensoesPage: React.FC = () => {
       try {
         await api.extensions.delete(id);
         setExtensions((prev) => prev.filter((ext) => ext.id !== id));
-        toast.success(`Extensão "${target?.name}" removida com sucesso`);
+        toast.success('Extensão removida com sucesso');
       } catch (err: any) {
-        toast.error(`Erro ao remover extensão: ${err.message}`);
+        toast.error('Erro ao remover extensão');
       }
     }
   };

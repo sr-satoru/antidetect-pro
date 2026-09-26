@@ -105,22 +105,22 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
   return (
     <div
       role="alert"
-      className={`flex items-center gap-3 w-auto min-w-[280px] max-w-[420px] rounded-full ${typeConfig.cardBg} px-4 py-2.5 select-none transition-all duration-200 group`}
+      className={`flex items-center gap-2.5 w-auto min-w-[200px] max-w-[360px] rounded-full ${typeConfig.cardBg} px-3.5 py-2 select-none transition-all duration-200 group`}
     >
       {/* Ícone Redondo com fundo translúcido */}
       <div
-        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${typeConfig.iconBg}`}
+        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${typeConfig.iconBg}`}
       >
         {icon || typeConfig.defaultIcon}
       </div>
 
       {/* Conteúdo textual: todo branco */}
-      <div className="flex-1 min-w-0 pr-1">
-        <div className="text-[13px] font-semibold text-white tracking-tight leading-snug break-words">
+      <div className="flex-1 min-w-0 pr-0.5">
+        <div className="text-[13px] font-medium text-white tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis">
           {title}
         </div>
         {description && (
-          <div className="text-xs text-white/90 mt-0.5 leading-snug break-words font-normal">
+          <div className="text-xs text-white/90 mt-0.5 leading-tight whitespace-nowrap overflow-hidden text-ellipsis font-normal">
             {description}
           </div>
         )}

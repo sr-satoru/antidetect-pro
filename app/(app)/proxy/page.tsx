@@ -134,9 +134,9 @@ export const ProxyPage: React.FC = () => {
         await api.proxies.delete(id);
         setProxies((prev) => prev.filter((p) => p.id !== id));
         setSelectedIds((prev) => prev.filter((item) => item !== id));
-        toast.success(`Proxy "${target?.name || target?.host}" excluído`);
+        toast.success('Proxy excluído com sucesso');
       } catch (err: any) {
-        toast.error(`Erro ao excluir proxy: ${err.message}`);
+        toast.error('Erro ao excluir proxy');
       }
     }
   };

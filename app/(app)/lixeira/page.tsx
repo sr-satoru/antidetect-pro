@@ -83,9 +83,9 @@ export const LixeiraPage: React.FC = () => {
       await api.profiles.restore(String(id));
       setItems((prev) => prev.filter((item) => item.id !== id));
       setSelectedIds((prev) => prev.filter((item) => item !== id));
-      toast.success(`Perfil "${target?.name || id}" restaurado com sucesso!`);
+      toast.success('Perfil restaurado com sucesso');
     } catch (err: any) {
-      toast.error(`Falha ao restaurar perfil: ${err.message}`);
+      toast.error('Falha ao restaurar perfil');
     }
   };
 
@@ -96,9 +96,9 @@ export const LixeiraPage: React.FC = () => {
       await Promise.all(selectedIds.map((id) => api.profiles.restore(String(id))));
       setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
       setSelectedIds([]);
-      toast.success(`${count} perfil(is) restaurado(s) com sucesso!`);
+      toast.success('Perfis restaurados com sucesso');
     } catch (err: any) {
-      toast.error(`Falha ao restaurar selecionados: ${err.message}`);
+      toast.error('Falha ao restaurar perfis');
       fetchTrash();
     }
   };
@@ -114,9 +114,9 @@ export const LixeiraPage: React.FC = () => {
         await api.profiles.deletePermanent(String(id));
         setItems((prev) => prev.filter((item) => item.id !== id));
         setSelectedIds((prev) => prev.filter((item) => item !== id));
-        toast.success('Perfil excluído permanentemente do banco de dados.');
+        toast.success('Perfil excluído permanentemente');
       } catch (err: any) {
-        toast.error(`Falha ao excluir permanentemente: ${err.message}`);
+        toast.error('Falha ao excluir permanentemente');
       }
     }
   };
@@ -134,9 +134,9 @@ export const LixeiraPage: React.FC = () => {
         );
         setItems((prev) => prev.filter((item) => !selectedIds.includes(item.id)));
         setSelectedIds([]);
-        toast.success('Perfis selecionados excluídos permanentemente.');
+        toast.success('Perfis excluídos permanentemente');
       } catch (err: any) {
-        toast.error(`Falha ao excluir selecionados: ${err.message}`);
+        toast.error('Falha ao excluir perfis');
         fetchTrash();
       }
     }
@@ -153,9 +153,9 @@ export const LixeiraPage: React.FC = () => {
         await api.profiles.emptyTrash();
         setItems([]);
         setSelectedIds([]);
-        toast.success('A lixeira foi completamente esvaziada.');
+        toast.success('Lixeira esvaziada com sucesso');
       } catch (err: any) {
-        toast.error(`Falha ao esvaziar lixeira: ${err.message}`);
+        toast.error('Falha ao esvaziar lixeira');
       }
     }
   };

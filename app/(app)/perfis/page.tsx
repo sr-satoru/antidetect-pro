@@ -219,9 +219,9 @@ export const PerfisPage: React.FC = () => {
         await Promise.all(selectedIds.map((id) => api.profiles.delete(String(id))));
         setProfiles((prev) => prev.filter((p) => !selectedIds.includes(p.id)));
         setSelectedIds([]);
-        toast.success(`${selectedIds.length} perfil(is) movido(s) para a lixeira`);
+        toast.success('Perfis movidos para a lixeira');
       } catch (err: any) {
-        toast.error(`Erro ao mover perfis para a lixeira: ${err.message}`);
+        toast.error('Erro ao mover perfis para a lixeira');
       }
     }
   };
@@ -234,9 +234,9 @@ export const PerfisPage: React.FC = () => {
         await api.profiles.delete(String(id));
         setProfiles((prev) => prev.filter((p) => p.id !== id));
         setSelectedIds((prev) => prev.filter((item) => item !== id));
-        toast.success(`Perfil "${target?.name}" movido para a lixeira`);
+        toast.success('Perfil movido para a lixeira');
       } catch (err: any) {
-        toast.error(`Erro ao mover perfil para a lixeira: ${err.message}`);
+        toast.error('Erro ao mover perfil para a lixeira');
       }
     }
   };
@@ -253,9 +253,9 @@ export const PerfisPage: React.FC = () => {
       setIsLoading(true);
       await api.profiles.clone(profile.id);
       await fetchProfiles();
-      toast.success(`Perfil "${profile.name}" duplicado com sucesso`);
+      toast.success('Perfil duplicado com sucesso');
     } catch (err: any) {
-      toast.error(`Erro ao duplicar perfil: ${err.message || 'Falha ao duplicar'}`);
+      toast.error('Erro ao duplicar perfil');
     } finally {
       setIsLoading(false);
     }
@@ -280,7 +280,7 @@ export const PerfisPage: React.FC = () => {
       toast.success('Perfil renomeado com sucesso');
       setEditingProfile(null);
     } catch (err: any) {
-      toast.error(`Erro ao renomear perfil: ${err.message}`);
+      toast.error('Erro ao renomear perfil');
     }
   };
 
