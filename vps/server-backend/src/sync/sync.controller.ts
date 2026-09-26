@@ -1,12 +1,17 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   Post,
+  Put,
+  Query,
   Req,
+  Res,
   UseGuards,
 } from "@nestjs/common";
-import type { Request } from "express";
+import type { Request, Response } from "express";
 import { AuthGuard } from "../auth/auth.guard.js";
 import type { UserContext } from "../auth/user-context.interface.js";
 import type {
@@ -108,5 +113,38 @@ export class SyncController {
     @Req() req: Request,
   ): Promise<DeletePrefixResponseDto> {
     return this.syncService.deletePrefix(dto, this.getUserContext(req));
+  }
+
+  // ROTA DE UPLOAD DIRETO PARA PERFIS (SEM S3/DOCKER)
+  @Put("raw")
+  @HttpCode(200)
+  async uploadRaw(
+    @Query("key") key: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const rawKey = key || (req.query?.key as string);
+    if (!rawKey) {
+      throw new BadRequestException("Missing 'key' parameter");
+    }
+    await this.syncService.saveStream(rawKey, this.getUserContext(req), req);
+    return res.status(200).json({ ok: true });
+  }
+
+  // ROTA DE DOWNLOAD DIRETO PARA PERFIS (SEM S3/DOCKER)
+  @Get("raw")
+  async downloadRaw(
+    @Query("key") key: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const rawKey = key || (req.query?.key as string);
+    if (!rawKey) {
+      throw new BadRequestException("Missing 'key' parameter");
+    }
+    const { stream, size } = await this.syncService.getFileStream(rawKey, this.getUserContext(req));
+    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("Content-Length", size);
+    stream.pipe(res);
   }
 }

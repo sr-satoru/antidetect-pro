@@ -1,24 +1,15 @@
 import {
-  CreateBucketCommand,
-  DeleteObjectCommand,
-  DeleteObjectsCommand,
-  HeadBucketCommand,
-  HeadObjectCommand,
-  ListObjectsV2Command,
-  PutObjectCommand,
-  GetObjectCommand,
-  S3Client,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
   Logger,
-  type OnModuleInit,
 } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import type { UserContext } from "../auth/user-context.interface.js";
+import {
+  STORAGE_DRIVER,
+  type StorageDriver,
+} from "../storage/storage.interface.js";
 import type {
   DeletePrefixRequestDto,
   DeletePrefixResponseDto,
@@ -59,79 +50,25 @@ function clampExpiresIn(requested: number | undefined): number {
 }
 
 @Injectable()
-export class SyncService implements OnModuleInit {
+export class SyncService {
   private readonly logger = new Logger(SyncService.name);
-  private s3Client: S3Client;
-  private presignClient: S3Client;
-  private publicEndpoint: string;
-  private bucket: string;
 
-  constructor(private configService: ConfigService) {
-    const endpoint = this.configService.get<string>("S3_ENDPOINT", "http://minio:9000");
-    const publicEndpoint = this.configService.get<string>(
-      "S3_PUBLIC_ENDPOINT",
-      endpoint,
-    );
-    const region = this.configService.get<string>("S3_REGION", "us-east-1");
-    const accessKeyId = this.configService.get<string>(
-      "S3_ACCESS_KEY_ID",
-      "furyadmin",
-    );
-    const secretAccessKey = this.configService.get<string>(
-      "S3_SECRET_ACCESS_KEY",
-      "furypassword123",
-    );
-    this.bucket = this.configService.get<string>("S3_BUCKET", "fury-sync");
-    this.publicEndpoint = publicEndpoint;
+  constructor(
+    @Inject(STORAGE_DRIVER) private readonly storage: StorageDriver,
+  ) {}
 
-    const credentials = { accessKeyId, secretAccessKey };
-
-    // S3 client for server-side direct calls
-    this.s3Client = new S3Client({
-      endpoint,
-      region,
-      credentials,
-      forcePathStyle: true,
-    });
-
-    // S3 client for signing URLs handed to desktop clients
-    this.presignClient = new S3Client({
-      endpoint: publicEndpoint,
-      region,
-      credentials,
-      forcePathStyle: true,
-    });
+  /** Verifica se o armazenamento ativo está saudável */
+  async checkStorage(): Promise<boolean> {
+    return this.storage.checkHealth();
   }
 
-  async onModuleInit() {
-    await this.ensureBucketExists();
-  }
-
-  private async ensureBucketExists(): Promise<void> {
-    try {
-      await this.s3Client.send(new HeadBucketCommand({ Bucket: this.bucket }));
-      this.logger.log(`Bucket S3 '${this.bucket}' pronto.`);
-    } catch {
-      try {
-        await this.s3Client.send(new CreateBucketCommand({ Bucket: this.bucket }));
-        this.logger.log(`Bucket S3 '${this.bucket}' criado com sucesso.`);
-      } catch (err: unknown) {
-        this.logger.warn(`Aviso de criação de bucket: ${err}`);
-      }
-    }
-  }
-
+  /** Alias para manter compatibilidade com verificadores de saúde */
   async checkS3(): Promise<boolean> {
-    try {
-      await this.s3Client.send(new HeadBucketCommand({ Bucket: this.bucket }));
-      return true;
-    } catch {
-      return false;
-    }
+    return this.storage.checkHealth();
   }
 
   getPublicEndpoint(): string {
-    return this.publicEndpoint;
+    return "active_storage_driver";
   }
 
   /** Scope key according to user prefix (cloud mode) or leave as is (self-hosted) */
@@ -141,7 +78,7 @@ export class SyncService implements OnModuleInit {
   }
 
   /** Path traversal and key isolation security check */
-  private validateKeyAccess(ctx: UserContext, scopedKey: string): void {
+  validateKeyAccess(ctx: UserContext, scopedKey: string): void {
     if (scopedKey.includes("..")) {
       throw new BadRequestException("Key contains invalid traversal components");
     }
@@ -155,20 +92,7 @@ export class SyncService implements OnModuleInit {
   async stat(dto: StatRequestDto, ctx: UserContext): Promise<StatResponseDto> {
     const key = this.scopeKey(ctx, dto.key);
     this.validateKeyAccess(ctx, key);
-
-    try {
-      const res = await this.s3Client.send(
-        new HeadObjectCommand({ Bucket: this.bucket, Key: key }),
-      );
-      return {
-        exists: true,
-        lastModified: res.LastModified?.toISOString(),
-        size: res.ContentLength,
-        metadata: res.Metadata,
-      };
-    } catch {
-      return { exists: false };
-    }
+    return this.storage.stat(key);
   }
 
   // 2. PRESIGN UPLOAD SINGLE
@@ -183,18 +107,17 @@ export class SyncService implements OnModuleInit {
     const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
     const cleanMeta = sanitizeMetadata(dto.metadata);
 
-    const command = new PutObjectCommand({
-      Bucket: this.bucket,
-      Key: key,
-      ContentType: dto.contentType,
-      Metadata: cleanMeta,
-    });
+    const url = await this.storage.getUploadUrl(
+      key,
+      expiresIn,
+      dto.contentType,
+      cleanMeta,
+    );
 
-    const url = await getSignedUrl(this.presignClient, command, { expiresIn });
     return { url, expiresAt, metadata: cleanMeta };
   }
 
-  // 3. PRESIGN UPLOAD BATCH (Upload em lote de arquivos do perfil)
+  // 3. PRESIGN UPLOAD BATCH
   async presignUploadBatch(
     dto: PresignUploadBatchRequestDto,
     ctx: UserContext,
@@ -210,14 +133,11 @@ export class SyncService implements OnModuleInit {
       dto.items.map(async (item) => {
         const key = this.scopeKey(ctx, item.key);
         this.validateKeyAccess(ctx, key);
-
-        const command = new PutObjectCommand({
-          Bucket: this.bucket,
-          Key: key,
-          ContentType: item.contentType,
-        });
-
-        const url = await getSignedUrl(this.presignClient, command, { expiresIn });
+        const url = await this.storage.getUploadUrl(
+          key,
+          expiresIn,
+          item.contentType,
+        );
         return { key: item.key, url, expiresAt };
       }),
     );
@@ -236,16 +156,11 @@ export class SyncService implements OnModuleInit {
     const expiresIn = clampExpiresIn(dto.expiresIn);
     const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
-    const command = new GetObjectCommand({
-      Bucket: this.bucket,
-      Key: key,
-    });
-
-    const url = await getSignedUrl(this.presignClient, command, { expiresIn });
+    const url = await this.storage.getDownloadUrl(key, expiresIn);
     return { url, expiresAt };
   }
 
-  // 5. PRESIGN DOWNLOAD BATCH (Download em lote)
+  // 5. PRESIGN DOWNLOAD BATCH
   async presignDownloadBatch(
     dto: PresignDownloadBatchRequestDto,
     ctx: UserContext,
@@ -261,13 +176,7 @@ export class SyncService implements OnModuleInit {
       dto.keys.map(async (rawKey) => {
         const key = this.scopeKey(ctx, rawKey);
         this.validateKeyAccess(ctx, key);
-
-        const command = new GetObjectCommand({
-          Bucket: this.bucket,
-          Key: key,
-        });
-
-        const url = await getSignedUrl(this.presignClient, command, { expiresIn });
+        const url = await this.storage.getDownloadUrl(key, expiresIn);
         return { key: rawKey, url, expiresAt };
       }),
     );
@@ -280,31 +189,28 @@ export class SyncService implements OnModuleInit {
     const prefix = this.scopeKey(ctx, dto.prefix);
     this.validateKeyAccess(ctx, prefix);
 
-    const res = await this.s3Client.send(
-      new ListObjectsV2Command({
-        Bucket: this.bucket,
-        Prefix: prefix,
-        MaxKeys: dto.maxKeys ?? 1000,
-        ContinuationToken: dto.continuationToken,
-      }),
+    const res = await this.storage.list(
+      prefix,
+      dto.maxKeys ?? 1000,
+      dto.continuationToken,
     );
 
-    const objects = (res.Contents ?? []).map((o) => {
-      let key = o.Key ?? "";
+    const objects = res.objects.map((o) => {
+      let key = o.key;
       if (ctx.mode === "cloud" && key.startsWith(ctx.prefix)) {
         key = key.substring(ctx.prefix.length);
       }
       return {
         key,
-        lastModified: o.LastModified?.toISOString() ?? "",
-        size: o.Size ?? 0,
+        lastModified: o.lastModified,
+        size: o.size,
       };
     });
 
     return {
       objects,
-      isTruncated: res.IsTruncated ?? false,
-      nextContinuationToken: res.NextContinuationToken,
+      isTruncated: res.isTruncated,
+      nextContinuationToken: res.nextContinuationToken,
     };
   }
 
@@ -312,50 +218,30 @@ export class SyncService implements OnModuleInit {
   async delete(dto: DeleteRequestDto, ctx: UserContext): Promise<DeleteResponseDto> {
     const key = this.scopeKey(ctx, dto.key);
     this.validateKeyAccess(ctx, key);
-
-    await this.s3Client.send(
-      new DeleteObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-      }),
-    );
-    return { deleted: true };
+    const deleted = await this.storage.delete(key);
+    return { deleted };
   }
 
-  // 8. DELETE PREFIX (Ex: Deletar todo o diretório de um perfil)
+  // 8. DELETE PREFIX
   async deletePrefix(
     dto: DeletePrefixRequestDto,
     ctx: UserContext,
   ): Promise<DeletePrefixResponseDto> {
     const prefix = this.scopeKey(ctx, dto.prefix);
     this.validateKeyAccess(ctx, prefix);
-
-    let deletedCount = 0;
-    let continuationToken: string | undefined;
-
-    do {
-      const list = await this.s3Client.send(
-        new ListObjectsV2Command({
-          Bucket: this.bucket,
-          Prefix: prefix,
-          ContinuationToken: continuationToken,
-        }),
-      );
-
-      const toDelete = (list.Contents ?? []).map((c) => ({ Key: c.Key }));
-      if (toDelete.length > 0) {
-        await this.s3Client.send(
-          new DeleteObjectsCommand({
-            Bucket: this.bucket,
-            Delete: { Objects: toDelete, Quiet: true },
-          }),
-        );
-        deletedCount += toDelete.length;
-      }
-
-      continuationToken = list.NextContinuationToken;
-    } while (continuationToken);
-
+    const deletedCount = await this.storage.deletePrefix(prefix);
     return { deletedCount };
+  }
+
+  // 9. SALVAR STREAM DIRETO
+  async saveStream(rawKey: string, ctx: UserContext, stream: NodeJS.ReadableStream): Promise<void> {
+    this.validateKeyAccess(ctx, rawKey);
+    await this.storage.saveStream(rawKey, stream);
+  }
+
+  // 10. LER STREAM DIRETO
+  async getFileStream(rawKey: string, ctx: UserContext): Promise<{ stream: NodeJS.ReadableStream; size: number }> {
+    this.validateKeyAccess(ctx, rawKey);
+    return this.storage.getStream(rawKey);
   }
 }

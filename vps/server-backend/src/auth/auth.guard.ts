@@ -28,11 +28,16 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.headers.authorization;
 
-    if (!authHeader?.startsWith("Bearer ")) {
-      throw new UnauthorizedException("Missing or invalid authorization header");
+    let token = "";
+    if (authHeader?.startsWith("Bearer ")) {
+      token = authHeader.substring(7);
+    } else if (typeof request.query?.token === "string") {
+      token = request.query.token;
     }
 
-    const token = authHeader.substring(7);
+    if (!token) {
+      throw new UnauthorizedException("Missing or invalid authorization token");
+    }
 
     // 1. Try SYNC_TOKEN (Self-hosted or Master Secret Mode)
     const expectedToken = this.configService.get<string>("SYNC_TOKEN");
@@ -59,13 +64,13 @@ export class AuthGuard implements CanActivate {
           throw new Error("Missing 'sub' claim in JWT token");
         }
 
-        // Validate prefix format: must be strictly `users/<subId>/`
-        const userPrefix = `users/${sub}/`;
+        const mode = decoded.mode === "self-hosted" ? "self-hosted" : "cloud";
+        const userPrefix = mode === "self-hosted" ? "" : `users/${sub}/`;
         const profileLimit =
           typeof decoded.profileLimit === "number" ? decoded.profileLimit : 0;
 
         (request as unknown as Record<string, unknown>).user = {
-          mode: "cloud",
+          mode,
           prefix: userPrefix,
           profileLimit,
           sub,

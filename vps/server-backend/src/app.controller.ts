@@ -17,16 +17,16 @@ export class AppController {
 
   @Get("readyz")
   async readyz() {
-    const s3Ready = await this.syncService.checkS3();
+    const storageReady = await this.syncService.checkStorage();
     const storageEndpoint = this.syncService.getPublicEndpoint();
 
-    if (!s3Ready) {
+    if (!storageReady) {
       throw new HttpException(
         {
           status: "not ready",
-          s3: false,
+          storage: false,
           storageEndpoint,
-          error: "Não foi possível conectar ao bucket S3",
+          error: "Não foi possível acessar o diretório de armazenamento",
         },
         HttpStatus.SERVICE_UNAVAILABLE,
       );
@@ -34,7 +34,7 @@ export class AppController {
 
     return {
       status: "ready",
-      s3: true,
+      storage: true,
       storageEndpoint,
     };
   }
