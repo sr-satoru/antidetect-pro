@@ -78,10 +78,6 @@ impl TagStorage {
         }
 
         let mut cache = self.cache.write().unwrap();
-        if cache.iter().any(|t| t.name.eq_ignore_ascii_case(&name)) {
-            return Err(format!("Já existe uma etiqueta com o nome '{}'", name));
-        }
-
         let now = Self::now_secs();
         let tag = Tag {
             id: uuid::Uuid::new_v4().to_string(),
