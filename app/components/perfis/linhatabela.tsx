@@ -1,12 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MenuAcoesPerfil } from './menu-acoes-perfil';
+import { OsIcon } from '../ui/os-icon';
 import {
-  Monitor,
-  Apple,
-  Bot,
-  Smartphone,
-  Tablet,
   ArrowLeftRight,
   Pencil,
   Play,
@@ -23,14 +19,6 @@ export interface LinhaTabelaProps {
   onDelete: (id: any) => void;
   onDuplicate?: (profile: any) => void;
 }
-
-const OS_ICONS: Record<string, React.ReactNode> = {
-  macos: <Apple size={14} className="shrink-0 text-[#71717a]" />,
-  linux: <Bot size={14} className="shrink-0 text-[#71717a]" />,
-  android: <Smartphone size={14} className="shrink-0 text-[#71717a]" />,
-  ios: <Tablet size={14} className="shrink-0 text-[#71717a]" />,
-  windows: <Monitor size={14} className="shrink-0 text-[#71717a]" />,
-};
 
 const renderPlatformBadge = (platformName: string): React.ReactNode => {
   const norm = (platformName || '').toLowerCase();
@@ -240,7 +228,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
         title="Editar perfil"
       >
         <div className="flex items-center gap-2">
-          {OS_ICONS[osKey] || OS_ICONS.windows}
+          <OsIcon os={osKey} size={14} className="shrink-0 text-[#9EA2AE]" />
           <span className="text-xs font-semibold tracking-wide text-white uppercase">
             {(profile.name || 'Sem nome').toUpperCase()}
           </span>

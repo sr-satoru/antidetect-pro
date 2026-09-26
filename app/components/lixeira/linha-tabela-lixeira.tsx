@@ -1,12 +1,8 @@
 import React from 'react';
+import { OsIcon } from '../ui/os-icon';
 import {
   RotateCcw,
   Trash2,
-  Apple,
-  Bot,
-  Smartphone,
-  Tablet,
-  Monitor,
   Clock,
   Globe,
   Folder,
@@ -36,20 +32,7 @@ interface LinhaTabelaLixeiraProps {
 }
 
 const renderOsIcon = (os: string) => {
-  const norm = os.toLowerCase();
-  switch (norm) {
-    case 'macos':
-      return <Apple size={14} className="shrink-0 text-[#9EA2AE]" />;
-    case 'linux':
-      return <Bot size={14} className="shrink-0 text-[#9EA2AE]" />;
-    case 'android':
-      return <Smartphone size={14} className="shrink-0 text-[#9EA2AE]" />;
-    case 'ios':
-      return <Tablet size={14} className="shrink-0 text-[#9EA2AE]" />;
-    case 'windows':
-    default:
-      return <Monitor size={14} className="shrink-0 text-[#9EA2AE]" />;
-  }
+  return <OsIcon os={os} size={14} className="shrink-0 text-[#9EA2AE]" />;
 };
 
 export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
