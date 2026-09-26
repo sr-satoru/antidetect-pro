@@ -23,6 +23,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { api } from '@/services/index.api';
+import { ModalNovaCategoriaExtensao } from '@/components/ui/modal-nova-categoria-extensao';
+
 
 const LoadingSpinner: React.FC<{ message?: string; subMessage?: string }> = ({
   message = 'Carregando extensões...',
@@ -81,6 +83,7 @@ export interface ExtensionItem {
 }
 
 interface TabelaExtensoesProps {
+  initialTab?: 'team' | 'recommended';
   extensions: ExtensionItem[];
   isLoadingTeam?: boolean;
   onAddClick: () => void;
@@ -130,6 +133,7 @@ const renderRecommendedIcon = (ext: RecommendedExtension) => {
 };
 
 export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
+  initialTab = 'team',
   extensions,
   isLoadingTeam = false,
   onAddClick,
@@ -137,9 +141,10 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
   onDelete,
   onAddRecommended,
 }) => {
-  const [activeTab, setActiveTab] = useState<'team' | 'recommended'>('recommended');
+  const [activeTab, setActiveTab] = useState<'team' | 'recommended'>(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   // Estados específicos para a aba "Recomendado para você"
   const [selectedCategory, setSelectedCategory] = useState<CatalogCategory>('All');
@@ -198,11 +203,10 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('team')}
-            className={`relative cursor-pointer pb-3 text-sm font-semibold transition-colors ${
-              activeTab === 'team'
-                ? 'text-white'
-                : 'text-[#8E92A2] hover:text-white'
-            }`}
+            className={`relative cursor-pointer pb-3 text-sm font-semibold transition-colors ${activeTab === 'team'
+              ? 'text-white'
+              : 'text-[#8E92A2] hover:text-white'
+              }`}
           >
             <span>Extensões da equipe</span>
             {activeTab === 'team' && (
@@ -213,11 +217,10 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('recommended')}
-            className={`relative cursor-pointer pb-3 text-sm font-semibold transition-colors ${
-              activeTab === 'recommended'
-                ? 'text-white'
-                : 'text-[#8E92A2] hover:text-white'
-            }`}
+            className={`relative cursor-pointer pb-3 text-sm font-semibold transition-colors ${activeTab === 'recommended'
+              ? 'text-white'
+              : 'text-[#8E92A2] hover:text-white'
+              }`}
           >
             <span>Recomendado para você</span>
             {activeTab === 'recommended' && (
@@ -260,6 +263,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
 
             <button
               type="button"
+              onClick={() => setIsCategoryModalOpen(true)}
               className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#2D303E] bg-[#1A1C24] px-3.5 py-2 text-xs font-medium text-[#C8CBD4] transition-colors hover:border-[#3E4256] hover:text-white"
             >
               <LayoutGrid size={15} />
@@ -295,16 +299,14 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           <button
                             type="button"
                             onClick={() => onToggleEnabled(ext.id)}
-                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${
-                              ext.enabled ? 'bg-[#2F80ED]' : 'bg-[#3A3D4D]'
-                            }`}
+                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled ? 'bg-[#2F80ED]' : 'bg-[#3A3D4D]'
+                              }`}
                           >
                             <span
-                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition duration-200 ${
-                                ext.enabled
-                                  ? 'translate-x-4.5'
-                                  : 'translate-x-1'
-                              }`}
+                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition duration-200 ${ext.enabled
+                                ? 'translate-x-4.5'
+                                : 'translate-x-1'
+                                }`}
                             />
                           </button>
                           <span className="flex items-center gap-1 text-[11px] font-medium text-[#52C41A]">
@@ -415,7 +417,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           </div>
         </>
       ) : (
-        /* ================= ABA RECOMENDADO PARA VOCÊ (ADSPOWER STYLE) ================= */
+        /* ================= ABA RECOMENDADO PARA VOCÊ ================= */
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Topo: Busca e Links Externos das Lojas */}
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-4 px-6 pt-5 pb-3">
@@ -470,11 +472,10 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   key={cat}
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
-                    selectedCategory === cat
-                      ? 'bg-[#2F80ED] text-white shadow-xs'
-                      : 'text-[#8E92A2] hover:bg-[#1E202B] hover:text-white'
-                  }`}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${selectedCategory === cat
+                    ? 'bg-[#2F80ED] text-white shadow-xs'
+                    : 'text-[#8E92A2] hover:bg-[#1E202B] hover:text-white'
+                    }`}
                 >
                   {cat}
                 </button>
@@ -486,33 +487,30 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
               <button
                 type="button"
                 onClick={() => setStoreFilter('all')}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${
-                  storeFilter === 'all'
-                    ? 'bg-[#2F80ED] text-white'
-                    : 'text-[#7C8092] hover:text-white'
-                }`}
+                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'all'
+                  ? 'bg-[#2F80ED] text-white'
+                  : 'text-[#7C8092] hover:text-white'
+                  }`}
               >
                 Todas
               </button>
               <button
                 type="button"
                 onClick={() => setStoreFilter('firefox')}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${
-                  storeFilter === 'firefox'
-                    ? 'bg-[#2F80ED] text-white'
-                    : 'text-[#7C8092] hover:text-white'
-                }`}
+                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'firefox'
+                  ? 'bg-[#2F80ED] text-white'
+                  : 'text-[#7C8092] hover:text-white'
+                  }`}
               >
                 Firefox AMO
               </button>
               <button
                 type="button"
                 onClick={() => setStoreFilter('chrome')}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${
-                  storeFilter === 'chrome'
-                    ? 'bg-[#2F80ED] text-white'
-                    : 'text-[#7C8092] hover:text-white'
-                }`}
+                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'chrome'
+                  ? 'bg-[#2F80ED] text-white'
+                  : 'text-[#7C8092] hover:text-white'
+                  }`}
               >
                 Chrome Store
               </button>
@@ -529,7 +527,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                     (item) =>
                       item.tab === 'team' &&
                       item.name.toLowerCase().trim() ===
-                        recExt.name.toLowerCase().trim(),
+                      recExt.name.toLowerCase().trim(),
                   );
 
                   return (
@@ -620,6 +618,11 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           </div>
         </div>
       )}
+
+      <ModalNovaCategoriaExtensao
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+      />
     </div>
   );
 };

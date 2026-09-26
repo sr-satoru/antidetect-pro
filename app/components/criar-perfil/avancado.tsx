@@ -11,7 +11,7 @@ import {
   useExtensionCategories,
   ExtensionCategory,
 } from '@/utils/extension-categories';
-import { ModalNovaCategoriaExtensao } from './modal-nova-categoria-extensao';
+import { ModalNovaCategoriaExtensao } from '@/components/ui/modal-nova-categoria-extensao';
 
 interface AvancadoTabProps {
   formData: any;
@@ -51,7 +51,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
       if (found) {
         const exts =
           categoryId === 'kit_basico' &&
-          (!found.extensions || found.extensions.length === 0)
+            (!found.extensions || found.extensions.length === 0)
             ? teamExtensions
             : found.extensions || [];
         onChange('extensions', exts);
@@ -121,11 +121,10 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                 <div className="px-2 py-1">
                   <div
                     onClick={() => handleSelectMode('team')}
-                    className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 text-[13px] transition-colors ${
-                      currentMode === 'team'
+                    className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 text-[13px] transition-colors ${currentMode === 'team'
                         ? 'bg-[#2A2C35] font-medium text-white'
                         : 'text-[#C5C8D6] hover:bg-[#2A2C35] hover:text-white'
-                    }`}
+                      }`}
                   >
                     <span>Usar extensões da equipe</span>
                     {currentMode === 'team' && (
@@ -149,9 +148,8 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                     <div key={cat.id} className="px-2 py-0.5">
                       <div
                         onClick={() => handleSelectMode('category', cat.id)}
-                        className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 transition-colors ${
-                          isSelected ? 'bg-[#2A2C35]' : 'hover:bg-[#2A2C35]'
-                        }`}
+                        className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 transition-colors ${isSelected ? 'bg-[#2A2C35]' : 'hover:bg-[#2A2C35]'
+                          }`}
                       >
                         <div className="min-w-0 flex-1">
                           <span className="block text-[13px] font-medium text-white">
