@@ -135,7 +135,7 @@ pub struct CreateProfileDto {
     pub extensions: Option<serde_json::Value>,
 }
 
-/// DTO para atualização parcial de perfil
+/// DTO para atualização de perfil
 #[derive(Debug, Clone, Deserialize)]
 pub struct UpdateProfileDto {
     pub name: Option<String>,
@@ -143,4 +143,19 @@ pub struct UpdateProfileDto {
     pub tags: Option<serde_json::Value>,
     pub notes: Option<String>,
     pub status: Option<String>,
+    pub kernel: Option<String>,
+    pub browser_version: Option<String>,
+    pub os: Option<String>,
+
+    pub proxy_type: Option<String>,
+    pub proxy_host: Option<String>,
+    pub proxy_port: Option<serde_json::Value>,
+    pub proxy_username: Option<String>,
+    pub proxy_password: Option<String>,
+
+    pub fingerprint_json: Option<serde_json::Value>,
+
+    pub extension_mode: Option<String>,
+    pub extension_category: Option<String>,
+    pub extensions: Option<serde_json::Value>,
 }

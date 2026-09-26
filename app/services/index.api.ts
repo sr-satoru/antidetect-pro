@@ -53,8 +53,12 @@ export const api = {
       return serviceGeral.create(payload);
     },
     get: (id: string | number) => http.get<any>(`/api/profiles/${id}`),
-    update: (id: string | number, data: any) =>
-      http.put<any>(`/api/profiles/${id}`, data),
+    update: (id: string | number, data: any) => {
+      const payload = data.fingerprint_json || data.name && Object.keys(data).length <= 4
+        ? data
+        : impressaoDigitalService.montarPayloadPerfil(data);
+      return http.put<any>(`/api/profiles/${id}`, payload);
+    },
     delete: (id: string | number) =>
       http.delete<any>(`/api/profiles/${id}`),
     launch: (id: string | number) =>

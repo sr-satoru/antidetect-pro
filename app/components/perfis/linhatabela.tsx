@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { MenuAcoesPerfil } from './menu-acoes-perfil';
 import {
   Monitor,
   Apple,
@@ -19,6 +21,7 @@ export interface LinhaTabelaProps {
   onToggleRunning: (id: any) => void;
   onEdit: (profile: any) => void;
   onDelete: (id: any) => void;
+  onDuplicate?: (profile: any) => void;
 }
 
 const OS_ICONS: Record<string, React.ReactNode> = {
@@ -131,7 +134,24 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   onToggleRunning,
   onEdit,
   onDelete,
+  onDuplicate,
 }) => {
+  const navigate = useNavigate();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleToggleMenu = () => {
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    } else {
+      if (buttonRef.current) {
+        setAnchorRect(buttonRef.current.getBoundingClientRect());
+      }
+      setIsMenuOpen(true);
+    }
+  };
+
   const isStriped = index % 2 === 1;
 
   // Cores do Zebrado e Seleção
@@ -348,13 +368,30 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
         className={`sticky right-0 z-10 w-[48px] max-w-[48px] min-w-[48px] px-2 py-2.5 text-center transition-colors ${stickyBg}`}
       >
         <button
+          ref={buttonRef}
           type="button"
-          onClick={() => onEdit(profile)}
-          className="mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-[#9EA2AE] transition-all hover:bg-[#383A44] hover:text-white"
-          title="Editar perfil"
+          onClick={handleToggleMenu}
+          className={`mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-all ${
+            isMenuOpen
+              ? 'bg-[#383A44] text-white shadow-md'
+              : 'text-[#9EA2AE] hover:bg-[#383A44] hover:text-white'
+          }`}
+          title="Opções do perfil"
         >
           <MoreVertical size={14} />
         </button>
+
+        {/* Mini Modal de Ações Estilo AdsPower */}
+        <MenuAcoesPerfil
+          isOpen={isMenuOpen}
+          anchorRect={anchorRect}
+          onClose={() => setIsMenuOpen(false)}
+          onEditFull={(tab) =>
+            navigate(`/perfis/editar/${profile.id}${tab ? `?tab=${tab}` : ''}`)
+          }
+          onDuplicate={() => onDuplicate && onDuplicate(profile)}
+          onDelete={() => onDelete(profile.id)}
+        />
       </td>
     </tr>
   );

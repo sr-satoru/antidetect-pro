@@ -21,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   const getAutoTitle = () => {
     if (title) return title;
     const path = location.pathname;
+    if (path.startsWith('/perfis/editar')) return 'Editar Perfil';
     if (path.startsWith('/perfis')) return 'Perfis de Navegação';
     if (path.startsWith('/criar-perfil')) return 'Criar Novo Perfil';
     if (path.startsWith('/proxy')) return 'Gerenciador de Proxies';

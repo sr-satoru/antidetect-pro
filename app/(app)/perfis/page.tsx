@@ -233,10 +233,29 @@ export const PerfisPage: React.FC = () => {
     }
   };
 
-  // Start edit modal
+  // Start edit modal (renomear rápido)
   const handleOpenEdit = (profile: any) => {
     setEditingProfile(profile);
     setEditNameInput(profile.name);
+  };
+
+  // Duplicar perfil (Copiar)
+  const handleDuplicate = async (profile: any) => {
+    try {
+      setIsLoading(true);
+      const full = await api.profiles.get(profile.id);
+      const copyPayload = {
+        ...full,
+        id: undefined,
+        name: `${profile.name || 'Perfil'} (Cópia)`,
+      };
+      await api.profiles.create(copyPayload);
+      await fetchProfiles();
+    } catch (err: any) {
+      alert(`Erro ao duplicar perfil: ${err.message || 'Falha ao duplicar'}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Save edit modal
@@ -311,6 +330,7 @@ export const PerfisPage: React.FC = () => {
           onToggleRunning={handleToggleRunning}
           onEdit={handleOpenEdit}
           onDelete={handleDelete}
+          onDuplicate={handleDuplicate}
         />
       )}
 

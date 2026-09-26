@@ -7,6 +7,7 @@ import { RegisterPage } from './(app)/auth/register/page';
 import { AppLayout } from './(app)/layout';
 import { PerfisPage } from './(app)/perfis/page';
 import { CriarPerfilPage } from './(app)/criar-perfil/page';
+import { EditarPerfilPage } from './(app)/perfis/editar/page';
 import { ProxyPage } from './(app)/proxy/page';
 import { ExtensoesPage } from './(app)/extensoes/page';
 import { LixeiraPage } from './(app)/lixeira/page';
@@ -25,6 +26,7 @@ export const App: React.FC = () => {
             <Route element={<AppLayout />}>
               <Route path="/" element={<Navigate to="/perfis" replace />} />
               <Route path="/perfis" element={<PerfisPage />} />
+              <Route path="/perfis/editar/:id" element={<EditarPerfilPage />} />
               <Route path="/criar-perfil" element={<CriarPerfilPage />} />
               <Route path="/proxy" element={<ProxyPage />} />
               <Route path="/extensoes" element={<ExtensoesPage />} />

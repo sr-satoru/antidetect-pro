@@ -245,6 +245,53 @@ impl ProfileStorage {
             };
         }
 
+        if let Some(os) = dto.os {
+            profile.os = os;
+        }
+        if let Some(kernel) = dto.kernel {
+            profile.kernel = kernel;
+        }
+        if let Some(bv) = dto.browser_version {
+            profile.browser_version = bv;
+        }
+
+        if let Some(proxy_type) = dto.proxy_type {
+            profile.proxy.proxy_type = proxy_type;
+        }
+        if let Some(proxy_host) = dto.proxy_host {
+            profile.proxy.host = Some(proxy_host);
+        }
+        if let Some(ref p_val) = dto.proxy_port {
+            let port_u16 = if let Some(n) = p_val.as_u64() {
+                Some(n as u16)
+            } else if let Some(s) = p_val.as_str() {
+                s.parse::<u16>().ok()
+            } else {
+                None
+            };
+            profile.proxy.port = port_u16;
+        }
+        if let Some(proxy_user) = dto.proxy_username {
+            profile.proxy.username = Some(proxy_user);
+        }
+        if let Some(proxy_pass) = dto.proxy_password {
+            profile.proxy.password = Some(proxy_pass);
+        }
+
+        if let Some(fp) = dto.fingerprint_json {
+            profile.fingerprint_json = fp;
+        }
+
+        if let Some(mode) = dto.extension_mode {
+            profile.extension_mode = Some(mode);
+        }
+        if let Some(cat) = dto.extension_category {
+            profile.extension_category = Some(cat);
+        }
+        if let Some(exts) = dto.extensions {
+            profile.extensions = Some(exts);
+        }
+
         profile.updated_at = Self::now_secs();
 
         let meta_file = self.get_profile_path(id);

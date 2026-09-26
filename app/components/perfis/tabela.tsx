@@ -15,6 +15,7 @@ interface TabelaProps {
   onToggleRunning: (id: any) => void;
   onEdit: (profile: any) => void;
   onDelete: (id: any) => void;
+  onDuplicate?: (profile: any) => void;
 }
 
 export const Tabela: React.FC<TabelaProps> = ({
@@ -25,6 +26,7 @@ export const Tabela: React.FC<TabelaProps> = ({
   onToggleRunning,
   onEdit,
   onDelete,
+  onDuplicate,
 }) => {
   const isAllSelected =
     profiles.length > 0 && selectedIds.length === profiles.length;
@@ -91,6 +93,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                   onToggleRunning={onToggleRunning}
                   onEdit={onEdit}
                   onDelete={onDelete}
+                  onDuplicate={onDuplicate}
                 />
               ))
             ) : (
