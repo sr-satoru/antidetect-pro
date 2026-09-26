@@ -92,26 +92,50 @@ impl ProcessManager {
             .unwrap_or(18922)
     }
 
-    /// Resolve o executável do Camoufox na máquina.
+    /// Resolve o executável do Camoufox na máquina (compatível com Linux, Windows e macOS).
     pub fn resolve_browser_binary() -> Result<PathBuf, String> {
-        // Caminho prioritário específico do PC do desenvolvedor (já com chmod configurado)
+        // 1. Caminho prioritário específico do PC do desenvolvedor
         let dev_pc_camoufox = PathBuf::from("/home/vanir/.local/bin/camoufox");
         if dev_pc_camoufox.exists() {
             return Ok(dev_pc_camoufox);
         }
 
-        // Fallback secundário: verificar se o comando 'camoufox' está no PATH
-        if let Ok(output) = Command::new("which").arg("camoufox").output() {
+        // 2. Busca no diretório home do usuário (.local/bin ou .camoufox)
+        if let Ok(home) = std::env::var("HOME").or_else(|_| std::env::var("USERPROFILE")) {
+            let home_path = PathBuf::from(home);
+            let candidates = [
+                home_path.join(".local").join("bin").join("camoufox"),
+                home_path.join(".local").join("bin").join("camoufox.exe"),
+                home_path.join(".camoufox").join("camoufox"),
+                home_path.join(".camoufox").join("camoufox.exe"),
+            ];
+            for cand in candidates {
+                if cand.exists() {
+                    return Ok(cand);
+                }
+            }
+        }
+
+        // 3. Fallback no PATH do sistema: 'which' (Linux/macOS) ou 'where' (Windows)
+        #[cfg(unix)]
+        let finder = "which";
+        #[cfg(windows)]
+        let finder = "where";
+
+        if let Ok(output) = Command::new(finder).arg("camoufox").output() {
             if output.status.success() {
-                let path_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
-                if !path_str.is_empty() {
-                    return Ok(PathBuf::from(path_str));
+                let stdout = String::from_utf8_lossy(&output.stdout);
+                if let Some(first_line) = stdout.lines().next() {
+                    let trimmed = first_line.trim();
+                    if !trimmed.is_empty() {
+                        return Ok(PathBuf::from(trimmed));
+                    }
                 }
             }
         }
 
         Err(
-            "Executável do Camoufox não foi encontrado em '/home/vanir/.local/bin/camoufox' nem no PATH do sistema."
+            "Executável do Camoufox não foi encontrado no PATH nem nos diretórios padrão do sistema."
                 .to_string(),
         )
     }

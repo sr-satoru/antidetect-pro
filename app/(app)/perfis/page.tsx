@@ -47,9 +47,8 @@ export const PerfisPage: React.FC = () => {
     const connect = () => {
       if (isDisposed) return;
       try {
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const host = window.location.hostname || '127.0.0.1';
-        ws = new WebSocket(`${protocol}//${host}:8000/api/ws`);
+        const wsUrl = 'ws://127.0.0.1:8000/api/ws';
+        ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
           console.log('⚡ Conectado ao WebSocket do Fury Backend:', ws?.url);
