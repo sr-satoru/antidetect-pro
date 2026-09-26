@@ -63,6 +63,40 @@ export const api = {
     deletePermanent: (id: string | number) =>
       http.delete<any>(`/api/profiles/${id}/permanent`),
     emptyTrash: () => http.delete<any>('/api/profiles/trash/empty'),
+
+    // Abas e URLs abertas em tempo real
+    getTabs: (id: string | number) =>
+      http.get<{
+        is_running: boolean;
+        port: number | null;
+        tabs: Array<{ id: string; url: string; title: string; is_active: boolean }>;
+      }>(`/api/profiles/${id}/tabs`),
+    openTab: (id: string | number, url: string) =>
+      http.post<{ status: string; context_id: string; url: string }>(
+        `/api/profiles/${id}/tabs`,
+        { url },
+      ),
+    closeTab: (id: string | number, tabId: string) =>
+      http.delete<{ status: string; tab_id: string }>(
+        `/api/profiles/${id}/tabs/${tabId}`,
+      ),
+
+    // Gerenciador e Importador de Cookies (SQLite moz_cookies)
+    getCookies: (id: string | number) =>
+      http.get<{
+        total_count: number;
+        domains: Array<{ domain: string; count: number }>;
+        cookies: any[];
+      }>(`/api/profiles/${id}/cookies`),
+    importCookies: (id: string | number, cookiesRaw: string) =>
+      http.post<{ imported: number; skipped: number; errors: string[] }>(
+        `/api/profiles/${id}/cookies`,
+        { cookies_raw: cookiesRaw },
+      ),
+    clearCookies: (id: string | number) =>
+      http.delete<{ status: string; deleted_count: number }>(
+        `/api/profiles/${id}/cookies`,
+      ),
   },
 
   proxies: {

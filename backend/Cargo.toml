@@ -15,3 +15,6 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 uuid = { version = "1.26.1", features = ["v4", "serde"] }
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 zip = { version = "2.2", default-features = false, features = ["deflate"] }
+rusqlite = { version = "0.31", features = ["bundled"] }
+tokio-tungstenite = "0.26"
+futures-util = "0.3"

@@ -7,10 +7,12 @@ use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+mod cookie_manager;
 mod launcher;
 mod models;
 mod routes;
 mod storage;
+mod tab_manager;
 
 use storage::{ExtensionStorage, ProfileStorage, ProxyStorage};
 
@@ -46,6 +48,17 @@ async fn main() {
         .route("/{id}/stop", post(routes::profiles::stop_profile))
         .route("/{id}/restore", post(routes::profiles::restore_profile))
         .route("/{id}/permanent", delete(routes::profiles::delete_permanent))
+        .route(
+            "/{id}/tabs",
+            get(routes::profiles::get_profile_tabs).post(routes::profiles::open_profile_tab),
+        )
+        .route("/{id}/tabs/{tab_id}", delete(routes::profiles::close_profile_tab))
+        .route(
+            "/{id}/cookies",
+            get(routes::profiles::get_profile_cookies)
+                .post(routes::profiles::import_profile_cookies)
+                .delete(routes::profiles::clear_profile_cookies),
+        )
         .with_state(profile_storage);
 
     let proxy_routes = Router::new()

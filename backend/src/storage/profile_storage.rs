@@ -322,4 +322,12 @@ impl ProfileStorage {
         fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
         Ok(profile)
     }
+
+    pub fn get_process_manager(&self) -> Arc<ProcessManager> {
+        self.process_manager.clone()
+    }
+
+    pub fn get_profile_dir(&self, id: &str) -> PathBuf {
+        self.data_dir.join(id).join("profile")
+    }
 }

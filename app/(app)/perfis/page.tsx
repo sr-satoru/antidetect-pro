@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeaderTabela } from '@/components/perfis/headerTabela';
 import { Tabela } from '@/components/perfis/tabela';
+import { ModalGerenciadorPerfil } from '@/components/perfis/modal-gerenciador-perfil';
 import { api } from '@/services/index.api';
 import { X, Check, Loader2 } from 'lucide-react';
 
@@ -18,6 +19,7 @@ export const PerfisPage: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [editingProfile, setEditingProfile] = useState<any | null>(null);
   const [editNameInput, setEditNameInput] = useState('');
+  const [managerProfile, setManagerProfile] = useState<any | null>(null);
 
   // Carrega perfis reais do backend local
   const fetchProfiles = useCallback(async () => {
@@ -243,8 +245,17 @@ export const PerfisPage: React.FC = () => {
           onToggleRunning={handleToggleRunning}
           onEdit={handleOpenEdit}
           onDelete={handleDelete}
+          onOpenManager={(p) => setManagerProfile(p)}
         />
       )}
+
+      {/* Modal de Gestão de Abas, URLs em Tempo Real e Cookies */}
+      <ModalGerenciadorPerfil
+        isOpen={!!managerProfile}
+        profile={managerProfile}
+        onClose={() => setManagerProfile(null)}
+        onToggleRunning={handleToggleRunning}
+      />
 
       {/* Modal de Edição Rápida */}
       {editingProfile && (

@@ -15,6 +15,7 @@ interface TabelaProps {
   onToggleRunning: (id: any) => void;
   onEdit: (profile: any) => void;
   onDelete: (id: any) => void;
+  onOpenManager?: (profile: any) => void;
 }
 
 export const Tabela: React.FC<TabelaProps> = ({
@@ -25,6 +26,7 @@ export const Tabela: React.FC<TabelaProps> = ({
   onToggleRunning,
   onEdit,
   onDelete,
+  onOpenManager,
 }) => {
   const isAllSelected =
     profiles.length > 0 && selectedIds.length === profiles.length;
@@ -66,7 +68,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                 Observação
               </th>
               <th className="w-[120px] min-w-[120px] px-3.5 py-2.5">Criação</th>
-              <th className="sticky right-[48px] z-20 w-[124px] max-w-[124px] min-w-[124px] bg-[#24252B] px-3 py-2.5 text-center">
+              <th className="sticky right-[48px] z-20 w-[156px] max-w-[156px] min-w-[156px] bg-[#24252B] px-3 py-2.5 text-center">
                 Ação
               </th>
               <th className="sticky right-0 z-20 w-[48px] max-w-[48px] min-w-[48px] bg-[#24252B] px-2 py-2.5 text-center">
@@ -91,6 +93,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                   onToggleRunning={onToggleRunning}
                   onEdit={onEdit}
                   onDelete={onDelete}
+                  onOpenManager={onOpenManager}
                 />
               ))
             ) : (

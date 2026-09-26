@@ -55,6 +55,7 @@ fn extract_addon_id_from_xpi<P: AsRef<Path>>(xpi_path: P) -> Option<String> {
 /// Gerenciador de processos do navegador Camoufox.
 pub struct ProcessManager {
     running: Arc<Mutex<HashMap<String, u32>>>,
+    ports: Arc<Mutex<HashMap<String, u16>>>,
     client: reqwest::Client,
 }
 
@@ -68,8 +69,23 @@ impl ProcessManager {
 
         Self {
             running: Arc::new(Mutex::new(HashMap::new())),
+            ports: Arc::new(Mutex::new(HashMap::new())),
             client,
         }
+    }
+
+    /// Retorna a porta de depuração do perfil caso esteja ativa
+    pub fn get_debug_port(&self, profile_id: &str) -> Option<u16> {
+        let map = self.ports.lock().unwrap();
+        map.get(profile_id).copied()
+    }
+
+    /// Escolhe uma porta TCP local disponível
+    pub fn pick_available_port() -> u16 {
+        std::net::TcpListener::bind("127.0.0.1:0")
+            .and_then(|l| l.local_addr())
+            .map(|a| a.port())
+            .unwrap_or(18922)
     }
 
     /// Resolve o executável do Camoufox na máquina.
@@ -295,9 +311,20 @@ impl ProcessManager {
         let mut user_js = String::new();
         user_js.push_str("// Configurações geradas automaticamente pelo Fury Browser\n");
         user_js.push_str("user_pref(\"browser.shell.checkDefaultBrowser\", false);\n");
-        user_js.push_str("user_pref(\"browser.sessionstore.resume_from_crash\", false);\n");
         user_js.push_str("user_pref(\"browser.warnOnQuit\", false);\n");
         user_js.push_str("user_pref(\"browser.aboutwelcome.enabled\", false);\n");
+
+        // Restauração de Sessão e Abas anteriores (estilo Donut Browser)
+        user_js.push_str("// Restauração automática de abas e sessão\n");
+        user_js.push_str("user_pref(\"browser.startup.page\", 3);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.resume_session_once\", true);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.resume_from_crash\", true);\n");
+        user_js.push_str("user_pref(\"browser.sessionstore.max_resumed_crashes\", -1);\n");
+        user_js.push_str("user_pref(\"browser.tabs.warnOnClose\", false);\n");
+
+        // Permissões de depuração remota e WebDriver BiDi
+        user_js.push_str("// Permissões de depuração remota e WebDriver BiDi\n");
+        user_js.push_str("user_pref(\"remote.active-protocols\", 2);\n");
 
         // Preferências nativas do Firefox para auto-ativação e sideload de extensões
         user_js.push_str("// Carregamento automático de extensões no perfil Camoufox\n");
@@ -384,14 +411,26 @@ impl ProcessManager {
         let profile_dir = data_dir.join("profiles").join(&profile.id).join("profile");
         Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
 
+        let port = {
+            let mut ports_map = self.ports.lock().unwrap();
+            if let Some(&p) = ports_map.get(&profile.id) {
+                p
+            } else {
+                let p = Self::pick_available_port();
+                ports_map.insert(profile.id.clone(), p);
+                p
+            }
+        };
+
         info!(
-            "🚀 Disparando Camoufox para o perfil '{}' ({}) via {:?}",
-            profile.name, profile.id, binary_path
+            "🚀 Disparando Camoufox para o perfil '{}' ({}) via {:?} (Porta BiDi/CDP: {})",
+            profile.name, profile.id, binary_path, port
         );
 
         let mut cmd = Command::new(&binary_path);
         cmd.arg("--profile").arg(&profile_dir);
         cmd.arg("--new-instance");
+        cmd.arg("--remote-debugging-port").arg(port.to_string());
 
         let child = cmd.spawn().map_err(|e| {
             format!("Falha ao executar {:?}: {}", binary_path, e)
