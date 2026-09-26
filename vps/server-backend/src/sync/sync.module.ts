@@ -10,4 +10,4 @@ import { SyncService } from "./sync.service.js";
   providers: [SyncService],
   exports: [SyncService],
 })
-export class SyncModule {}
+export class SyncModule { }

@@ -28,6 +28,8 @@ function AuthContent() {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
 
+  const CLOUD_API_URL = process.env.NEXT_PUBLIC_CLOUD_API_URL || "http://localhost:12342";
+
   // Validação do Token no NestJS Backend
   useEffect(() => {
     if (!token) {
@@ -37,7 +39,7 @@ function AuthContent() {
 
     const checkToken = async () => {
       try {
-        const res = await fetch(`http://localhost:12342/api/auth/validate-token?token=${encodeURIComponent(token)}`);
+        const res = await fetch(`${CLOUD_API_URL}/api/auth/validate-token?token=${encodeURIComponent(token)}`);
         const data = await res.json();
 
         if (res.ok && data.valid) {
@@ -71,8 +73,8 @@ function AuthContent() {
     try {
       const endpoint =
         activeTab === "register"
-          ? "http://localhost:12342/api/auth/web-register"
-          : "http://localhost:12342/api/auth/web-login";
+          ? `${CLOUD_API_URL}/api/auth/web-register`
+          : `${CLOUD_API_URL}/api/auth/web-login`;
 
       const payload = {
         email,
