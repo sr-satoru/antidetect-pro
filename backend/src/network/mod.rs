@@ -1,7 +1,6 @@
 pub mod auth_extension;
 pub mod prefs;
 pub mod tunnel;
-pub mod webrtc;
 
 use crate::models::ProfileProxyConfig;
 use std::collections::HashMap;
@@ -83,14 +82,7 @@ pub async fn prepare_network(
         Some(effective_port),
     );
 
-    // 5. Constrói o CAMOU_CONFIG com spoofing de IP no WebRTC e extensões
-    let mut env_vars = HashMap::new();
-    let camou_json = webrtc::build_camou_config(Some(host), &addon_paths);
-    if !camou_json.is_empty() {
-        if let Ok(serialized) = serde_json::to_string(&camou_json) {
-            env_vars.insert("CAMOU_CONFIG".to_string(), serialized);
-        }
-    }
+    let env_vars = HashMap::new();
 
     Ok(NetworkSetupResult {
         user_js_snippet,
@@ -163,8 +155,8 @@ mod tests {
             .join("manifest.json");
         assert!(ext_manifest.exists());
 
-        // Verifica que o CAMOU_CONFIG contém o IP para WebRTC
-        let camou_env = res.env_vars.get("CAMOU_CONFIG").unwrap();
-        assert!(camou_env.contains("192.168.1.100"));
+        // Verifica que a extensão de auto-autenticação foi registrada em addon_paths
+        assert_eq!(res.addon_paths.len(), 1);
+        assert!(res.addon_paths[0].contains("fury-proxy-auth@antidetect.fury"));
     }
 }
