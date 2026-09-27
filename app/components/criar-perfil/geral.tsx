@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
 import config from '@/config/perfil.json';
 
@@ -15,6 +15,28 @@ import { serviceTags } from '../../services/tags/service.tags';
 
 const renderOSIcon = (os: string): React.ReactNode => {
   return <OsIcon os={os} size={14} className="h-3.5 w-3.5 shrink-0" />;
+};
+
+/**
+ * Filtra a lista de User-Agents de config/perfil.json conforme o SO e a Categoria
+ */
+const getFilteredUas = (os: string, category: string = 'Todo'): string[] => {
+  const pool =
+    (config.userAgents as Record<string, string[]>)[os] ||
+    config.userAgents.linux;
+
+  if (!category || category === 'Todo') return pool;
+  const catLower = category.toLowerCase();
+
+  const filtered = pool.filter((ua) => {
+    if (catLower === 'firefox') return ua.includes('Firefox/');
+    if (catLower === 'chrome') return ua.includes('Chrome/') && !ua.includes('Edg/');
+    if (catLower === 'safari') return ua.includes('Safari/') && !ua.includes('Chrome/');
+    if (catLower === 'edge') return ua.includes('Edg/');
+    return true;
+  });
+
+  return filtered.length > 0 ? filtered : pool;
 };
 
 export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
@@ -45,9 +67,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
 
   const handleSelectOS = (selectedOS: string) => {
     onChange('os', selectedOS);
-    const uas =
-      (config.userAgents as Record<string, string[]>)[selectedOS] ||
-      config.userAgents.linux;
+    const uas = getFilteredUas(selectedOS, formData.userAgentCategory || 'Todo');
     onChange('userAgent', uas[0]);
     onChange('deviceName', generateRandomDeviceName(selectedOS));
 
@@ -69,15 +89,22 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
     onChange('osVersion', osVersion);
   };
 
+  const handleSelectCategory = (cat: string) => {
+    onChange('userAgentCategory', cat);
+    setShowUaDropdown(false);
+    const uas = getFilteredUas(formData.os, cat);
+    onChange('userAgent', uas[0]);
+  };
+
   const handleShuffleUserAgent = () => {
-    const uas =
-      (config.userAgents as Record<string, string[]>)[formData.os] ||
-      config.userAgents.linux;
+    const uas = getFilteredUas(formData.os, formData.userAgentCategory || 'Todo');
     const currentIdx = uas.indexOf(formData.userAgent);
     const nextIdx = (currentIdx + 1) % uas.length;
     onChange('userAgent', uas[nextIdx]);
     onChange('clientRectsSeed', generateRandomSeed());
   };
+
+  const activeCategoryUas = getFilteredUas(formData.os, formData.userAgentCategory || 'Todo');
 
   return (
     <div className="flex-1 space-y-4 pr-1 text-[#D2D5DF]">
@@ -197,7 +224,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
             <button
               type="button"
               onClick={() => setShowUaDropdown(!showUaDropdown)}
-              className="flex min-w-[84px] cursor-pointer items-center justify-between gap-2 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] hover:border-[#444756]"
+              className="flex min-w-[88px] cursor-pointer items-center justify-between gap-2 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] hover:border-[#444756]"
             >
               <span>{formData.userAgentCategory || 'Todo'}</span>
               <svg
@@ -215,13 +242,14 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
                 {config.userAgentCategories.map((item) => (
                   <div
                     key={item}
-                    onClick={() => {
-                      onChange('userAgentCategory', item);
-                      setShowUaDropdown(false);
-                    }}
-                    className="cursor-pointer px-3 py-1.5 text-[12px] text-[#C4C7D5] hover:bg-[#2C2E38] hover:text-white"
+                    onClick={() => handleSelectCategory(item)}
+                    className={`cursor-pointer px-3 py-1.5 text-[12px] transition-colors ${
+                      (formData.userAgentCategory || 'Todo') === item
+                        ? 'bg-[#1D2B44] text-[#2F80ED] font-semibold'
+                        : 'text-[#C4C7D5] hover:bg-[#2C2E38] hover:text-white'
+                    }`}
                   >
-                    {item}
+                    {item === 'Todo' ? 'Todos' : item}
                   </div>
                 ))}
               </div>
@@ -235,11 +263,14 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
               onChange={(e) => onChange('userAgent', e.target.value)}
               className="mr-2 flex-1 truncate bg-transparent font-mono text-[12px] text-[#D8DAE5] focus:outline-none"
             />
+            <span className="hidden select-none rounded bg-[#2F80ED]/15 px-2 py-0.5 text-[10.5px] font-semibold text-[#64B5F6] md:inline mr-2">
+              {activeCategoryUas.length} opções
+            </span>
             <button
               type="button"
               onClick={handleShuffleUserAgent}
               className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-[#2F80ED] transition-colors hover:bg-[#263145] hover:text-[#4F96FF]"
-              title="Sortear outro User-Agent"
+              title={`Sortear outro User-Agent (${activeCategoryUas.length} disponíveis)`}
             >
               <svg
                 className="h-4 w-4"
