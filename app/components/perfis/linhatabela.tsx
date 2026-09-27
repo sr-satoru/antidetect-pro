@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { servicePerfis } from '../../services/perfis/service.perfis';
 import {
   ArrowLeftRight,
-  Pencil,
   Play,
   Square,
   MoreVertical,
@@ -21,6 +20,8 @@ export interface LinhaTabelaProps {
   onSelect: (id: any) => void;
   onToggleRunning: (id: any) => void;
   onEdit: (profile: any) => void;
+  onEditTags?: (profile: any) => void;
+  onEditNotes?: (profile: any) => void;
   onDelete: (id: any) => void;
   onDuplicate?: (profile: any) => void;
 }
@@ -119,6 +120,20 @@ const formatDateDisplay = (
   };
 };
 
+const EditIcon: React.FC<{ size?: number; className?: string }> = ({ size = 11, className = '' }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 494.936 494.936"
+    fill="currentColor"
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M389.844,182.85c-6.743,0-12.21,5.467-12.21,12.21v222.968c0,23.562-19.174,42.735-42.736,42.735H67.157 c-23.562,0-42.736-19.174-42.736-42.735V150.285c0-23.562,19.174-42.735,42.736-42.735h267.741c6.743,0,12.21-5.467,12.21-12.21 s-5.467-12.21-12.21-12.21H67.157C30.126,83.13,0,113.255,0,150.285v267.743c0,37.029,30.126,67.155,67.157,67.155h267.741 c37.03,0,67.156-30.126,67.156-67.155V195.061C402.054,188.318,396.587,182.85,389.844,182.85z" />
+    <path d="M483.876,20.791c-14.72-14.72-38.669-14.714-53.377,0L221.352,229.944c-0.28,0.28-3.434,3.559-4.251,5.396l-28.963,65.069 c-2.057,4.619-1.056,10.027,2.521,13.6c2.337,2.336,5.461,3.576,8.639,3.576c1.675,0,3.362-0.346,4.96-1.057l65.07-28.963 c1.83-0.815,5.114-3.97,5.396-4.25L483.876,74.169c7.131-7.131,11.06-16.61,11.06-26.692 C494.936,37.396,491.007,27.915,483.876,20.791z M466.61,56.897L257.457,266.05c-0.035,0.036-0.055,0.078-0.089,0.107 l-33.989,15.131L238.51,247.3c0.03-0.036,0.071-0.055,0.107-0.09L447.765,38.058c5.038-5.039,13.819-5.033,18.846,0.005 c2.518,2.51,3.905,5.855,3.905,9.414C470.516,51.036,469.127,54.38,466.61,56.897z" />
+  </svg>
+);
+
 export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   profile,
   isSelected,
@@ -126,6 +141,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   onSelect,
   onToggleRunning,
   onEdit,
+  onEditTags,
+  onEditNotes,
   onDelete,
   onDuplicate,
 }) => {
@@ -242,11 +259,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       </td>
 
       {/* 4. Nome + OS */}
-      <td
-        className="w-[220px] min-w-[220px] cursor-pointer px-3.5 py-2.5 whitespace-nowrap"
-        onClick={() => onEdit(profile)}
-        title="Editar perfil"
-      >
+      <td className="w-[220px] min-w-[220px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex items-center gap-2">
           <OsIcon os={osKey} size={14} className="shrink-0 text-[#9EA2AE]" />
           <span className="text-xs font-semibold tracking-wide text-white uppercase">
@@ -259,9 +272,10 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEdit(profile);
             }}
-            className="ml-auto flex h-[22px] w-[22px] cursor-pointer items-center justify-center rounded text-[#71717a] opacity-0 transition-all group-hover:opacity-100 hover:bg-[#383A44] hover:text-white"
+            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#DFE104] hover:bg-[#DFE104]/15 hover:scale-110 active:scale-95 transition-all"
+            title="Editar nome"
           >
-            <Pencil size={11} />
+            <EditIcon size={13} />
           </button>
         </div>
       </td>
@@ -321,24 +335,54 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
       {/* 8. Tags */}
       <td className="w-[190px] min-w-[190px] px-3.5 py-2.5 whitespace-nowrap">
-        {tagsList.length > 0 ? (
-          <div className="flex items-center gap-1.5 overflow-hidden">
-            {tagsList.map((t: string) => (
-              <TagBadge
-                key={t}
-                name={t}
-                color={serviceTags.getColorByName(t)}
-              />
-            ))}
-          </div>
-        ) : (
-          <span className="text-[#9EA2AE]">-</span>
-        )}
+        <div className="flex items-center justify-between gap-1.5 overflow-hidden">
+          {tagsList.length > 0 ? (
+            <div className="flex items-center gap-1.5 overflow-hidden max-w-[145px]">
+              {tagsList.map((t: string) => (
+                <TagBadge
+                  key={t}
+                  name={t}
+                  color={serviceTags.getColorByName(t)}
+                />
+              ))}
+            </div>
+          ) : (
+            <span className="text-[#9EA2AE]">-</span>
+          )}
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditTags && onEditTags(profile);
+            }}
+            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#DFE104] hover:bg-[#DFE104]/15 hover:scale-110 active:scale-95 transition-all"
+            title="Editar etiquetas"
+          >
+            <EditIcon size={13} />
+          </button>
+        </div>
       </td>
 
       {/* 9. Observação */}
-      <td className="w-[170px] min-w-[170px] truncate px-3.5 py-2.5 text-xs whitespace-nowrap text-[#C8CBD4]">
-        {profile.notes || '-'}
+      <td className="w-[170px] min-w-[170px] px-3.5 py-2.5 whitespace-nowrap">
+        <div className="flex items-center justify-between gap-2 overflow-hidden">
+          <span className="truncate text-xs text-[#C8CBD4] max-w-[125px]">
+            {profile.notes || '-'}
+          </span>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditNotes && onEditNotes(profile);
+            }}
+            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#DFE104] hover:bg-[#DFE104]/15 hover:scale-110 active:scale-95 transition-all"
+            title="Editar observação"
+          >
+            <EditIcon size={13} />
+          </button>
+        </div>
       </td>
 
       {/* 10. Criação */}

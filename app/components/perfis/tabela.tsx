@@ -14,6 +14,8 @@ interface TabelaProps {
   onSelectAll: () => void;
   onToggleRunning: (id: any) => void;
   onEdit: (profile: any) => void;
+  onEditTags?: (profile: any) => void;
+  onEditNotes?: (profile: any) => void;
   onDelete: (id: any) => void;
   onDuplicate?: (profile: any) => void;
 }
@@ -25,6 +27,8 @@ export const Tabela: React.FC<TabelaProps> = ({
   onSelectAll,
   onToggleRunning,
   onEdit,
+  onEditTags,
+  onEditNotes,
   onDelete,
   onDuplicate,
 }) => {
@@ -92,6 +96,8 @@ export const Tabela: React.FC<TabelaProps> = ({
                   onSelect={onSelectProfile}
                   onToggleRunning={onToggleRunning}
                   onEdit={onEdit}
+                  onEditTags={onEditTags}
+                  onEditNotes={onEditNotes}
                   onDelete={onDelete}
                   onDuplicate={onDuplicate}
                 />

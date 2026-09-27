@@ -30,10 +30,16 @@ export const servicePerfis = {
 
   // Atualização de perfil
   update: (id: string | number, data: UpdateProfileDto | any) => {
-    const payload =
-      data.fingerprint_json || (data.name && Object.keys(data).length <= 4)
-        ? data
-        : impressaoDigitalService.montarPayloadPerfil(data);
+    const isFullForm =
+      data &&
+      (data.canvasSeed !== undefined ||
+        data.hardwareNoise !== undefined ||
+        data.userAgent !== undefined ||
+        data.kernelVersion !== undefined);
+
+    const payload = isFullForm
+      ? impressaoDigitalService.montarPayloadPerfil(data)
+      : data;
     return http.put<Profile>(`/api/profiles/${id}`, payload);
   },
 
