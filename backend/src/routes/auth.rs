@@ -89,14 +89,16 @@ pub async fn get_session_status(
             "status": rec.status,
             "session_id": rec.session_id,
             "user": rec.user,
-            "token": rec.token
+            "token": rec.token,
+            "refresh_token": rec.refresh_token
         }))
     } else {
         Json(serde_json::json!({
             "status": "not_found",
             "session_id": session_id,
             "user": null,
-            "token": null
+            "token": null,
+            "refresh_token": null
         }))
     }
 }
@@ -105,6 +107,7 @@ pub async fn get_session_status(
 pub async fn me(State(auth): State<Arc<CloudAuthService>>) -> impl IntoResponse {
     if let Some(u) = auth.get_current_user().await {
         let token = auth.get_current_token().await;
+        let refresh_token = auth.get_current_refresh_token().await;
         Json(serde_json::json!({
             "id": u.id,
             "email": u.email,
@@ -113,7 +116,8 @@ pub async fn me(State(auth): State<Arc<CloudAuthService>>) -> impl IntoResponse 
             "max_profiles": u.max_profiles,
             "profile_count": u.profile_count,
             "is_offline": false,
-            "token": token
+            "token": token,
+            "refresh_token": refresh_token
         }))
     } else {
         Json(serde_json::json!({

@@ -15,6 +15,7 @@ model User {
   plan         String      @default("free") // free, pro, enterprise
   maxProfiles  Int         @default(10)
   profileCount Int         @default(0)
+  vaultSalt    String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   authCodes    AuthCode[]

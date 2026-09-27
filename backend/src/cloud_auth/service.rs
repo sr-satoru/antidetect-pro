@@ -1,14 +1,23 @@
 use crate::models::{CloudUser, SessionRecord};
 use base64::Engine;
 use hmac::{Hmac, Mac};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 use std::collections::HashMap;
+use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
 type HmacSha256 = Hmac<Sha256>;
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PersistedAuthSession {
+    pub user: CloudUser,
+    pub access_token: String,
+    pub refresh_token: String,
+    pub expires_at: i64,
+}
 
 #[derive(Clone)]
 pub struct CloudAuthService {
@@ -21,6 +30,7 @@ pub struct CloudAuthService {
     web_site_url: String,
     oauth_secret: String,
     http_client: reqwest::Client,
+    session_file: PathBuf,
 }
 
 impl CloudAuthService {
@@ -31,17 +41,37 @@ impl CloudAuthService {
             .unwrap_or_else(|_| "http://localhost:3001".to_string());
         let oauth_secret = std::env::var("OAUTH_SECRET")
             .unwrap_or_else(|_| "fury_oauth_secret_shared_with_rust_daemon".to_string());
+        let data_dir = std::env::var("FURY_DATA_DIR").unwrap_or_else(|_| "./data".to_string());
+        let session_file = PathBuf::from(data_dir).join("auth_session.json");
+
+        let mut initial_user = None;
+        let mut initial_token = None;
+        let mut initial_refresh_token = None;
+        let mut initial_expires_at = 0;
+
+        if session_file.exists() {
+            if let Ok(content) = std::fs::read_to_string(&session_file) {
+                if let Ok(saved) = serde_json::from_str::<PersistedAuthSession>(&content) {
+                    tracing::info!("🔄 Sessão de autenticação carregada do disco para: {}", saved.user.email);
+                    initial_user = Some(saved.user);
+                    initial_token = Some(saved.access_token);
+                    initial_refresh_token = Some(saved.refresh_token);
+                    initial_expires_at = saved.expires_at;
+                }
+            }
+        }
 
         Self {
             sessions: Arc::new(RwLock::new(HashMap::new())),
-            current_user: Arc::new(RwLock::new(None)),
-            current_token: Arc::new(RwLock::new(None)),
-            current_refresh_token: Arc::new(RwLock::new(None)),
-            current_token_expires_at: Arc::new(RwLock::new(0)),
+            current_user: Arc::new(RwLock::new(initial_user)),
+            current_token: Arc::new(RwLock::new(initial_token)),
+            current_refresh_token: Arc::new(RwLock::new(initial_refresh_token)),
+            current_token_expires_at: Arc::new(RwLock::new(initial_expires_at)),
             cloud_api_url,
             web_site_url,
             oauth_secret,
             http_client: reqwest::Client::new(),
+            session_file,
         }
     }
 
@@ -165,11 +195,27 @@ impl CloudAuthService {
 
         // Salva a sessão ativa global do app
         *self.current_user.write().await = Some(parsed.user.clone());
-        *self.current_token.write().await = Some(parsed.access_token);
-        *self.current_refresh_token.write().await = parsed.refresh_token;
+        *self.current_token.write().await = Some(parsed.access_token.clone());
+        *self.current_refresh_token.write().await = parsed.refresh_token.clone();
         *self.current_token_expires_at.write().await = expires_at;
 
+        if let Some(ref r_token) = parsed.refresh_token {
+            self.save_session_to_disk(&parsed.user, &parsed.access_token, r_token, expires_at);
+        }
+
         Ok(parsed.user)
+    }
+
+    fn save_session_to_disk(&self, user: &CloudUser, access_token: &str, refresh_token: &str, expires_at: i64) {
+        let session = PersistedAuthSession {
+            user: user.clone(),
+            access_token: access_token.to_string(),
+            refresh_token: refresh_token.to_string(),
+            expires_at,
+        };
+        if let Ok(json) = serde_json::to_string_pretty(&session) {
+            let _ = std::fs::write(&self.session_file, json);
+        }
     }
 
     /// Consulta o status de uma sessão específica (usado pelo polling do desktop)
@@ -186,6 +232,11 @@ impl CloudAuthService {
     /// Retorna o token JWT atual
     pub async fn get_current_token(&self) -> Option<String> {
         self.current_token.read().await.clone()
+    }
+
+    /// Retorna o refresh token atual
+    pub async fn get_current_refresh_token(&self) -> Option<String> {
+        self.current_refresh_token.read().await.clone()
     }
 
     /// Retorna um Access Token válido, renovando automaticamente com o Refresh Token se estiver prestes a expirar (< 30s)
@@ -238,6 +289,10 @@ impl CloudAuthService {
         *self.current_token.write().await = Some(parsed.access_token.clone());
         *self.current_token_expires_at.write().await = new_expires_at;
 
+        if let Some(user) = self.current_user.read().await.clone() {
+            self.save_session_to_disk(&user, &parsed.access_token, &refresh_token, new_expires_at);
+        }
+
         tracing::info!("🔑 Access token de 5m renovado automaticamente com sucesso!");
         Ok(parsed.access_token)
     }
@@ -248,6 +303,7 @@ impl CloudAuthService {
         *self.current_token.write().await = None;
         *self.current_refresh_token.write().await = None;
         *self.current_token_expires_at.write().await = 0;
+        let _ = std::fs::remove_file(&self.session_file);
     }
 
     /// Renderiza a página HTML oficial de sucesso exibida no navegador após autenticar

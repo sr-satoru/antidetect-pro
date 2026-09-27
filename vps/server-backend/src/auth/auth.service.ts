@@ -11,6 +11,7 @@ import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcrypt";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { generateUserId } from "../common/id-generator.js";
+import { generateVaultSalt } from "../common/vault-hash.js";
 
 export interface DecodedChallenge {
   action: "login" | "register";
@@ -144,6 +145,7 @@ export class AuthService {
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const userId = generateUserId();
+    const vaultSalt = generateVaultSalt();
     const user = await this.prisma.user.create({
       data: {
         id: userId,
@@ -153,6 +155,7 @@ export class AuthService {
         plan: "free",
         maxProfiles: 10,
         profileCount: 0,
+        vaultSalt,
       },
     });
 
@@ -260,6 +263,15 @@ export class AuthService {
     }
 
     const user = authCode.user;
+    let vaultSalt = user.vaultSalt;
+    if (!vaultSalt) {
+      vaultSalt = generateVaultSalt();
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { vaultSalt },
+      });
+    }
+
     const jwtSecret = this.getJwtSecret();
 
     const payload = {
@@ -268,6 +280,7 @@ export class AuthService {
       name: user.name,
       plan: user.plan,
       maxProfiles: user.maxProfiles,
+      vaultSalt,
     };
 
     const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: "5m" });
@@ -318,12 +331,22 @@ export class AuthService {
       throw new UnauthorizedException("Usuário não encontrado");
     }
 
+    let vaultSalt = user.vaultSalt;
+    if (!vaultSalt) {
+      vaultSalt = generateVaultSalt();
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { vaultSalt },
+      });
+    }
+
     const payload = {
       sub: user.id,
       email: user.email,
       name: user.name,
       plan: user.plan,
       maxProfiles: user.maxProfiles,
+      vaultSalt,
     };
 
     const newAccessToken = jwt.sign(payload, jwtSecret, { expiresIn: "5m" });

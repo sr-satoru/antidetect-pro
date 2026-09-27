@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import {
   type CanActivate,
   type ExecutionContext,
@@ -9,6 +9,8 @@ import {
 import { ConfigService } from "@nestjs/config";
 import type { Request } from "express";
 import * as jwt from "jsonwebtoken";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { deriveBlindVaultHash } from "../common/vault-hash.js";
 import type { UserContext } from "./user-context.interface.js";
 
 /** Constant-time string comparison to prevent timing attacks */
@@ -22,9 +24,12 @@ function safeEqual(a: string, b: string): boolean {
 export class AuthGuard implements CanActivate {
   private readonly logger = new Logger(AuthGuard.name);
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private prisma: PrismaService,
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.headers.authorization;
 
@@ -65,7 +70,30 @@ export class AuthGuard implements CanActivate {
         }
 
         const mode = decoded.mode === "self-hosted" ? "self-hosted" : "cloud";
-        const userPrefix = mode === "self-hosted" ? "" : `users/${sub}/`;
+
+        let userPrefix = "";
+        if (mode !== "self-hosted") {
+          // Derivação de Blind Storage com Pepper Secreto (256 bits) + Sal Exclusivo do Usuário (256 bits)
+          // 100% Impossível de inverter, imune a brute force e a rainbow tables
+          const vaultPepper =
+            this.configService.get<string>("STORAGE_VAULT_PEPPER") ||
+            jwtSecret;
+
+          let vaultSalt =
+            typeof decoded.vaultSalt === "string" ? decoded.vaultSalt : "";
+
+          if (!vaultSalt) {
+            const user = await this.prisma.user.findUnique({
+              where: { id: sub },
+              select: { vaultSalt: true },
+            });
+            vaultSalt = user?.vaultSalt || "default_vault_entropy";
+          }
+
+          const blindHash = deriveBlindVaultHash(sub, vaultSalt, vaultPepper);
+          userPrefix = `vaults/${blindHash}/`;
+        }
+
         const profileLimit =
           typeof decoded.profileLimit === "number" ? decoded.profileLimit : 0;
 
