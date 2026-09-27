@@ -12,8 +12,6 @@ import {
   Play,
   Square,
   MoreVertical,
-  Cloud,
-  CloudCheck,
   Loader2,
 } from 'lucide-react';
 export interface LinhaTabelaProps {
@@ -135,49 +133,15 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isCloudSynced, setIsCloudSynced] = useState<boolean>(
-    Boolean(profile.cloud_synced || profile.synced_at)
-  );
-  const [cloudSizeKb, setCloudSizeKb] = useState<number | null>(
-    profile.cloudSizeKb || null
-  );
   const [isLocalSyncing, setIsLocalSyncing] = useState(false);
   const isRunning = profile.status === 'running' || profile.isRunning;
   const isSyncing = Boolean(profile.isSyncing || isLocalSyncing);
-
-  useEffect(() => {
-    if (profile.cloud_synced !== undefined) {
-      setIsCloudSynced(Boolean(profile.cloud_synced));
-    }
-    if (profile.cloudSizeKb !== undefined) {
-      setCloudSizeKb(profile.cloudSizeKb);
-    }
-  }, [profile.cloud_synced, profile.cloudSizeKb]);
-
-  useEffect(() => {
-    let isMounted = true;
-    servicePerfis
-      .getCloudStat(profile.id)
-      .then((res: any) => {
-        if (isMounted && res?.data?.exists) {
-          setIsCloudSynced(true);
-          if (res.data.size) {
-            setCloudSizeKb(Math.round(res.data.size / 1024));
-          }
-        }
-      })
-      .catch(() => {});
-    return () => {
-      isMounted = false;
-    };
-  }, [profile.id]);
 
   const handleRestoreCloud = async () => {
     try {
       setIsLocalSyncing(true);
       toast.loading(`Restaurando perfil ${profile.name}...`, { id: `restore-${profile.id}` });
       await servicePerfis.restoreFromCloud(profile.id);
-      setIsCloudSynced(true);
       toast.success(`Perfil ${profile.name} restaurado da nuvem!`, { id: `restore-${profile.id}` });
     } catch (err: any) {
       toast.error(`Falha ao restaurar: ${err?.message || 'Cápsula não encontrada na nuvem'}`, { id: `restore-${profile.id}` });
@@ -287,26 +251,6 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           <OsIcon os={osKey} size={14} className="shrink-0 text-[#9EA2AE]" />
           <span className="text-xs font-semibold tracking-wide text-white uppercase">
             {(profile.name || 'Sem nome').toUpperCase()}
-          </span>
-
-          {/* Indicador de Status de Sincronização em Nuvem (Automático com E2EE) */}
-          <span
-            className="flex items-center justify-center p-0.5 rounded select-none"
-            title={
-              isSyncing
-                ? '🔄 Sincronizando automaticamente com a Nuvem Fury...'
-                : isCloudSynced
-                  ? `🟢 Sincronizado na Nuvem E2EE (${cloudSizeKb ? `${cloudSizeKb} KB` : '< 1 MB'})`
-                  : '🟠 Modificações Locais Pendentes'
-            }
-          >
-            {isSyncing ? (
-              <Loader2 size={13} className="shrink-0 animate-spin text-[#3b82f6]" />
-            ) : isCloudSynced ? (
-              <CloudCheck size={14} className="shrink-0 text-[#10b981]" />
-            ) : (
-              <Cloud size={14} className="shrink-0 text-[#f59e0b]" />
-            )}
           </span>
 
           <button

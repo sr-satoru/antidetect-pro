@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   };
 
   return (
-    <header className="h-14 bg-transparent px-4 sm:px-6 flex items-center justify-between shrink-0 z-20">
+    <header className="relative h-14 bg-transparent px-4 sm:px-6 flex items-center justify-between shrink-0 z-40">
       {/* Title desenhado diretamente na página */}
       <div className="flex items-center gap-3">
         <h1 className="text-base font-semibold text-[#F4F4F6] tracking-tight">

@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Layers,
-  Folder,
   Globe,
   Puzzle,
   Trash2,
-  Bot,
   Repeat,
   Code,
   Users,
@@ -96,11 +94,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {!isCollapsed && <span className="truncate">Perfis</span>}
           </NavLink>
 
-          <NavLink to="/grupos" className={navItemClass} title="Grupos">
-            <Folder size={17} className="shrink-0" />
-            {!isCollapsed && <span className="truncate">Grupos</span>}
-          </NavLink>
-
           <NavLink to="/proxy" className={navItemClass} title="Proxies">
             <Globe size={17} className="shrink-0" />
             {!isCollapsed && <span className="truncate">Proxies</span>}
@@ -124,18 +117,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
               Automação
             </div>
           )}
-
-          <NavLink to="/ai-agent" className={navItemClass} title="AI Agent">
-            <Bot size={17} className="shrink-0" />
-            {!isCollapsed && (
-              <div className="flex items-center justify-between flex-1 min-w-0">
-                <span className="truncate">AI Agent</span>
-                <span className="bg-[#DFE104]/15 text-[#DFE104] text-[10px] font-bold px-1.5 py-0.2 rounded">
-                  Novo
-                </span>
-              </div>
-            )}
-          </NavLink>
 
           <NavLink to="/sincronizador" className={navItemClass} title="Sincronizador">
             <Repeat size={17} className="shrink-0" />
