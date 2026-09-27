@@ -68,7 +68,7 @@ async function request<T>(
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(0, 'Não foi possível conectar ao backend local em http://127.0.0.1:8000. Certifique-se de que o backend Python está rodando.');
+    throw new ApiError(0, 'Não foi possível conectar ao backend local em http://127.0.0.1:8000. Certifique-se de que o backend Rust está rodando.');
   }
 }
 

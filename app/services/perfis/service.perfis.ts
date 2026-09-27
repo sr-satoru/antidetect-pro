@@ -3,6 +3,7 @@ import { impressaoDigitalService } from '../criar-perfil/service.impressoes';
 import { serviceGeral } from '../criar-perfil/service.geral';
 import { serviceTabs } from './service.tabs';
 import { serviceCookies } from './service.cookies';
+import type { Profile, CreateProfileDto, UpdateProfileDto } from '@/types';
 
 /**
  * Service dedicado e desacoplado para todas as operações de Perfis.
@@ -11,7 +12,7 @@ import { serviceCookies } from './service.cookies';
 export const servicePerfis = {
   // Listagem com filtros
   list: (search?: string, group?: string) =>
-    http.get<any[]>('/api/profiles', {
+    http.get<Profile[]>('/api/profiles', {
       params: {
         search: search || undefined,
         group: group !== 'Todos os grupos' ? group : undefined,
@@ -19,21 +20,21 @@ export const servicePerfis = {
     }),
 
   // Obter perfil completo por ID
-  get: (id: string | number) => http.get<any>(`/api/profiles/${id}`),
+  get: (id: string | number) => http.get<Profile>(`/api/profiles/${id}`),
 
   // Criação de perfil estruturado
-  create: (data: any) => {
+  create: (data: CreateProfileDto | any) => {
     const payload = impressaoDigitalService.montarPayloadPerfil(data);
-    return serviceGeral.create(payload);
+    return serviceGeral.create<Profile>(payload);
   },
 
   // Atualização de perfil
-  update: (id: string | number, data: any) => {
+  update: (id: string | number, data: UpdateProfileDto | any) => {
     const payload =
       data.fingerprint_json || (data.name && Object.keys(data).length <= 4)
         ? data
         : impressaoDigitalService.montarPayloadPerfil(data);
-    return http.put<any>(`/api/profiles/${id}`, payload);
+    return http.put<Profile>(`/api/profiles/${id}`, payload);
   },
 
   // Clonagem / Duplicação atômica no backend (cria novo UUID, copia metadados e disco)

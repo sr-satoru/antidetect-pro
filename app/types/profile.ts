@@ -1,161 +1,176 @@
 /**
- * Definição canônica da estrutura de dados do Perfil no Fury Antidetect.
- * 
- * Inspirada na arquitetura do Donut Browser:
- * - Cada perfil possui identificador universal UUID v4 (impossível colidir na nuvem).
- * - Marcadores temporais (created_at, updated_at) para sincronização sem conflito (LWW - Last-Write-Wins).
- * - Separação limpa entre metadados cadastrais, configuração de proxy e fingerprint do Camoufox.
+ * Definições de Tipos Canônicos do Fury Antidetect.
+ * Sincronizados 1:1 com os modelos do Backend Rust (`backend/src/models/`).
  */
 
 export type OsType = 'windows' | 'macos' | 'linux';
 export type KernelType = 'Camoufox' | 'FlowerBrowser' | 'SunBrowser';
 export type ProfileStatus = 'ready' | 'running' | 'error';
-export type SyncStatus = 'local' | 'synced' | 'pending_upload' | 'pending_download';
+export type ProxyType = 'none' | 'http' | 'https' | 'socks5' | 'mobile';
+
+// ==========================================
+// 1. MODELOS DE PROXY
+// ==========================================
 
 export interface ProfileProxyConfig {
   mode: 'custom' | 'saved' | 'none';
-  type: 'none' | 'http' | 'https' | 'socks5';
+  proxy_type: ProxyType | string;
   host?: string;
-  port?: number;
+  port?: number | string;
   username?: string;
   password?: string;
-  rotationUrl?: string;
-  ipChecker?: string;
-  socksRemoteDns: boolean;
+  rotation_url?: string;
+  ip_checker?: string;
+  socks_remote_dns?: boolean;
 }
 
-export interface ProfileScreenConfig {
-  resolutionMode: string;
-  width: number;
-  height: number;
-  availWidth?: number;
-  availHeight?: number;
-  colorDepth: number;
-  devicePixelRatio: number;
-  maxTouchPoints: number;
-}
-
-export interface ProfileHardwareConfig {
-  cpuCores: number;
-  ramGb?: number; // Relevante para SunBrowser (Chromium)
-  audioSampleRate: number;
-}
-
-export interface ProfileGpuConfig {
-  vendor?: string;
-  renderer?: string;
-  webgpuMode?: string;
-}
-
-export interface ProfileNoiseConfig {
-  canvas: boolean;
-  webglImage: boolean;
-  audioContext: boolean;
-  mediaDevices: boolean;
-  clientRects: boolean;
-  speechVoices: boolean;
-  fontMetrics: boolean;
-  canvasSeed?: string;
-  audioSeed?: string;
-  webglSeed?: string;
-  clientRectsSeed?: string;
-}
-
-export interface ProfileLocaleConfig {
-  timezoneMode: string;
-  customTimezone: string;
-  locationMode: string;
-  locationPermission: string;
-  latitude?: number;
-  longitude?: number;
-  accuracy?: number;
-  languageMode: string;
-  customLanguage: string;
-}
-
-export interface ProfileNetworkConfig {
-  webrtcMode: 'disabled' | 'proxy' | 'real' | 'custom';
-  doNotTrack: boolean;
-  portScanProtection: string;
-  portScanAllowedPorts?: string;
-  hardwareAcceleration: string;
-  disableTlsFeatures: string;
-}
-
-export interface ProfileMediaDevicesConfig {
-  micros: number;
-  webcams: number;
-  speakers: number;
-}
-
-export interface ProfileFingerprintConfig {
-  kernel: KernelType;
-  kernelVersion: string;
-  os: OsType;
-  osVersion?: string;
-  userAgent?: string;
-  userAgentCategory?: string;
-
-  screen: ProfileScreenConfig;
-  hardware: ProfileHardwareConfig;
-  gpu: ProfileGpuConfig;
-  noise: ProfileNoiseConfig;
-  locale: ProfileLocaleConfig;
-  network: ProfileNetworkConfig;
-  mediaDevices: ProfileMediaDevicesConfig;
-
-  fontsMode?: string;
-  deviceName?: string;
-  macAddress?: string;
-  launchHook?: string;
-}
-
-export interface ProfileContaPlataforma {
+export interface ProxyItem {
   id: string;
-  platform: string;
-  customDomain?: string;
-  username: string;
+  name: string;
+  type?: string;
+  proxy_type?: string;
+  host: string;
+  port: string;
+  user?: string;
+  username?: string;
+  pass?: string;
   password?: string;
-  twoFactorKey?: string;
+  ip?: string;
+  country?: string;
+  status?: string;
+  created_at?: number;
 }
 
-export interface ProfileSyncMetadata {
-  status: SyncStatus;
-  lastSync?: number;
-  serverVersion?: number;
+export interface CreateProxyDto {
+  name?: string;
+  type?: string;
+  proxy_type?: string;
+  host: string;
+  port: string | number;
+  user?: string;
+  username?: string;
+  pass?: string;
+  password?: string;
 }
 
-/**
- * Estrutura canônica completa de um Perfil (salva localmente e sincronizada com a nuvem)
- */
-export interface ProfileData {
-  // Identificador Universal Único gerado localmente (UUID v4)
-  id: string;
+export interface TestProxyDto {
+  type?: string;
+  proxy_type?: string;
+  host: string;
+  port: string | number;
+  user?: string;
+  username?: string;
+  pass?: string;
+  password?: string;
+}
 
-  // Informações Cadastrais
+export interface ProxyTestResult {
+  status: 'online' | 'offline' | string;
+  latency_ms: number | null;
+  exit_ip: string | null;
+  message: string;
+}
+
+// ==========================================
+// 2. MODELOS DE PERFIL
+// ==========================================
+
+export interface Profile {
+  id: string; // UUID v4
   name: string;
   group: string;
   tags: string[];
   notes: string;
-  status: ProfileStatus;
+  status: ProfileStatus | string;
+  kernel: KernelType | string;
+  browser_version: string;
+  os: OsType | string;
 
-  // Rastreamento Temporal (Last-Write-Wins)
-  createdAt: number; // Unix seconds
-  updatedAt: number; // Unix seconds
-  lastLaunch?: number; // Unix seconds
+  created_at: number; // Unix seconds
+  updated_at: number; // Unix seconds
+  last_launch?: number | null;
 
-  // Rede & Proxy
+  is_deleted?: boolean;
+  deleted_at?: number | null;
+
   proxy: ProfileProxyConfig;
+  fingerprint_json: any;
 
-  // Impressão Digital Completa (Camoufox / Wayfern)
-  fingerprint: ProfileFingerprintConfig;
+  extension_mode?: string;
+  extension_category?: string;
+  extensions?: any;
+}
 
-  // Plataformas, Cookies e Abas Iniciais
-  platformUrl?: string;
-  platformAccounts?: ProfileContaPlataforma[];
-  openTabsUrls?: string;
-  cookies?: string;
+export interface CreateProfileDto {
+  id?: string;
+  name?: string;
+  group?: string;
+  tags?: string | string[];
+  notes?: string;
+  status?: string;
+  kernel?: string;
+  browser_version?: string;
+  os?: string;
 
-  // Metadados de Sincronização
-  sync: ProfileSyncMetadata;
+  proxy_type?: string;
+  proxy_host?: string;
+  proxy_port?: string | number;
+  proxy_username?: string;
+  proxy_password?: string;
+
+  fingerprint_json?: any;
+
+  extension_mode?: string;
+  extension_category?: string;
+  extensions?: any;
+}
+
+export interface UpdateProfileDto {
+  name?: string;
+  group?: string;
+  tags?: string | string[];
+  notes?: string;
+  status?: string;
+  kernel?: string;
+  browser_version?: string;
+  os?: string;
+
+  proxy_type?: string;
+  proxy_host?: string;
+  proxy_port?: string | number;
+  proxy_username?: string;
+  proxy_password?: string;
+
+  fingerprint_json?: any;
+
+  extension_mode?: string;
+  extension_category?: string;
+  extensions?: any;
+}
+
+// ==========================================
+// 3. MODELOS DE TAGS
+// ==========================================
+
+export interface TagItem {
+  id: string;
+  name: string;
+  color: string;
+  created_at?: number;
+  updated_at?: number;
+  profile_count?: number;
+}
+
+export interface CreateTagDto {
+  name: string;
+  color?: string;
+}
+
+export interface UpdateTagDto {
+  name?: string;
+  color?: string;
+}
+
+export interface BatchDeleteTagsDto {
+  ids: string[];
 }

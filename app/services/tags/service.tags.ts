@@ -1,13 +1,7 @@
 import { http } from '../http';
+import type { TagItem } from '@/types';
 
-export interface TagItem {
-  id: string;
-  name: string;
-  color: string;
-  created_at?: number;
-  updated_at?: number;
-  profile_count?: number;
-}
+export type { TagItem };
 
 let tagColorCache: Record<string, string> = {};
 

@@ -1,26 +1,9 @@
 /**
- * Barrel de Services — ponto central de importação.
- *
- * Cada service em /services/criar-perfil/ corresponde 1:1 a um
- * componente em /components/criar-perfil/:
- *
- *   service.geral.ts       ↔  geral.tsx
- *   service.proxy.ts       ↔  proxy.tsx
- *   service.impressoes.ts  ↔  impressoes.tsx
- *   service.plataforma.ts  ↔  plataforma.tsx
- *   service.avancado.ts    ↔  avancado.tsx
- *
- * TODO: Criar módulos futuros para:
- *   - Perfis (list, get, update, delete, trash, launch)
- *   - Extensões (CRUD, catálogo)
- *   - Proxies (CRUD)
- *   - Auth (login, register, me)
+ * Barrel de Services — Ponto central de importação e facade para o backend Rust local.
  */
 
 import { serviceGeral } from './criar-perfil/service.geral';
-import { servicePlataforma } from './criar-perfil/service.plataforma';
 import { impressaoDigitalService } from './criar-perfil/service.impressoes';
-import { serviceAvancado } from './criar-perfil/service.avancado';
 import { serviceProxy } from './criar-perfil/service.proxy';
 import { servicePerfis } from './perfis/service.perfis';
 import { serviceTabs } from './perfis/service.tabs';
@@ -28,11 +11,9 @@ import { serviceCookies } from './perfis/service.cookies';
 import { serviceTags } from './tags/service.tags';
 import { http } from './http';
 
-// Re-exporta cada service
+// Re-exporta serviços ativos
 export { serviceGeral } from './criar-perfil/service.geral';
-export { servicePlataforma } from './criar-perfil/service.plataforma';
 export { impressaoDigitalService } from './criar-perfil/service.impressoes';
-export { serviceAvancado } from './criar-perfil/service.avancado';
 export { serviceProxy } from './criar-perfil/service.proxy';
 export { servicePerfis } from './perfis/service.perfis';
 export { serviceTabs } from './perfis/service.tabs';
@@ -41,7 +22,7 @@ export { serviceTags } from './tags/service.tags';
 export { http, ApiError } from './http';
 
 /**
- * Objeto `api` — Ponto central de chamadas à API do backend local e serviços.
+ * Objeto `api` — Facade central de chamadas à API do backend Rust local e serviços.
  */
 export const api = {
   profiles: servicePerfis,
@@ -66,15 +47,18 @@ export const api = {
   },
 
   auth: {
-    login: (login: string, pass: string) =>
-      http.post<any>('/api/auth/login', { login, password: pass }),
-    register: (data: any) => http.post<any>('/api/auth/register', data),
+    startLogin: () =>
+      http.post<{ session_id: string; token: string; auth_url: string }>('/api/auth/start-login'),
+    startRegister: () =>
+      http.post<{ session_id: string; token: string; auth_url: string }>('/api/auth/start-register'),
+    getSession: (sessionId: string) =>
+      http.get<any>(`/api/auth/session/${sessionId}`),
     me: () => http.get<any>('/api/auth/me'),
+    logout: () => http.post<any>('/api/auth/logout'),
   },
 
   impressoes: impressaoDigitalService,
-  plataforma: servicePlataforma,
-  avancado: serviceAvancado,
 };
 
 export default api;
+

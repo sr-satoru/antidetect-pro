@@ -1,10 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import {
-  fetchChallenge,
-  solveProofOfWork,
-  exchangeDeviceCode,
-  DEFAULT_CLOUD_URL,
-} from '@/services/cloud-auth';
 
 export interface UserSession {
   id: string;
@@ -31,7 +25,6 @@ interface AuthContextType {
   isOffline: boolean;
   isOnline: boolean;
   isLoading: boolean;
-  loginWithCode: (code: string) => Promise<void>;
   setCloudSession: (user: any, token: string) => void;
   continueOffline: () => void;
   logout: () => void;
@@ -66,43 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoading(false);
   }, []);
 
-  /**
-   * Login intuitivo por Código de Vinculação com a Nuvem (Device-Code Flow estilo Donut)
-   */
-  const loginWithCode = async (code: string) => {
-    // 1. Obter desafio de Proof-of-Work do servidor de nuvem
-    const challenge = await fetchChallenge(DEFAULT_CLOUD_URL);
 
-    // 2. Resolver o Proof-of-Work no navegador
-    const nonce = await solveProofOfWork(
-      challenge.prefix,
-      challenge.difficulty,
-    );
-
-    // 3. Trocar o código pelo JWT real
-    const response = await exchangeDeviceCode(
-      code,
-      challenge.challengeId,
-      nonce,
-      DEFAULT_CLOUD_URL,
-    );
-
-    const sessionUser: UserSession = {
-      id: response.user.id,
-      username:
-        response.user.email?.split('@')[0] ||
-        `user_${response.user.id.slice(0, 5)}`,
-      email: response.user.email,
-      plan: response.user.plan || 'pro',
-      profileLimit: response.user.profileLimit,
-      is_offline: false,
-    };
-
-    setToken(response.accessToken);
-    setUser(sessionUser);
-    localStorage.setItem('fury_auth_token', response.accessToken);
-    localStorage.setItem('fury_auth_user', JSON.stringify(sessionUser));
-  };
 
   /**
    * Define a sessão vinda diretamente do fluxo OAuth 2.0 Web
@@ -160,7 +117,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isOffline,
         isOnline,
         isLoading,
-        loginWithCode,
         setCloudSession,
         continueOffline,
         logout,
