@@ -291,10 +291,15 @@ impl ProcessManager {
                 tunnels.remove(&profile_id_clone);
             }
 
-            // Atualiza metadata.json no disco
+            // Atualiza metadata.json no disco com status ready e timestamp atualizado
             if let Ok(content) = fs::read_to_string(&meta_file) {
                 if let Ok(mut prof) = serde_json::from_str::<Profile>(&content) {
+                    let now = std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap_or_default()
+                        .as_secs() as i64;
                     prof.status = "ready".to_string();
+                    prof.updated_at = now;
                     let _ = fs::write(&meta_file, serde_json::to_string_pretty(&prof).unwrap_or_default());
                 }
             }

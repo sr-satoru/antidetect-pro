@@ -12,6 +12,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
+import servicePerfis from '@/services/perfis/service.perfis';
 
 interface PendingAuthSession {
   sessionId: string;
@@ -54,6 +55,10 @@ export const LoginPage: React.FC = () => {
           setCloudSession(data.user, data.token);
           toast.success(`Conectado com sucesso como ${data.user.email || 'usuário'}!`);
           setWaitingSession(null);
+          // Dispara a Dupla Troca em segundo plano ao confirmar o login
+          servicePerfis.twoWaySync().catch((err) => {
+            console.warn('Sync em segundo plano no login:', err);
+          });
           navigate('/perfis');
         }
       } catch (err) {

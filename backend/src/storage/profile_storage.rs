@@ -451,7 +451,24 @@ impl ProfileStorage {
         self.process_manager.clone()
     }
 
+    #[allow(dead_code)]
+    pub fn is_running(&self, profile_id: &str) -> bool {
+        self.process_manager.is_running(profile_id)
+    }
+
+    #[allow(dead_code)]
+    pub fn get_profile_updated_at(&self, profile_id: &str) -> Option<i64> {
+        let path = self.get_profile_path(profile_id);
+        if let Ok(content) = fs::read_to_string(path) {
+            if let Ok(profile) = serde_json::from_str::<Profile>(&content) {
+                return Some(profile.updated_at);
+            }
+        }
+        None
+    }
+
     pub fn get_profile_dir(&self, id: &str) -> PathBuf {
         self.data_dir.join(id).join("profile")
     }
 }
+

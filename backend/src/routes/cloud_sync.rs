@@ -115,3 +115,32 @@ pub async fn get_cloud_stat(
         )),
     }
 }
+
+#[derive(Debug, Deserialize)]
+pub struct TwoWayQuery {
+    pub force: Option<bool>,
+}
+
+pub async fn two_way_sync(
+    State(sync_service): State<Arc<CloudSyncService>>,
+    headers: HeaderMap,
+    Query(query): Query<TwoWayQuery>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let header_token = extract_bearer_token(&headers);
+    let force = query.force.unwrap_or(false);
+
+    match sync_service.two_way_sync(header_token, force).await {
+        Ok(summary) => Ok(Json(serde_json::to_value(summary).unwrap_or_default())),
+        Err(err) => {
+            tracing::error!("❌ Erro na dupla troca de perfis: {}", err);
+            Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({
+                    "detail": err,
+                    "error": err
+                })),
+            ))
+        }
+    }
+}
+

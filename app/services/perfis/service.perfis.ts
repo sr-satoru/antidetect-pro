@@ -76,6 +76,9 @@ export const servicePerfis = {
     http.get<any>(`/api/cloud-sync/${id}/stat`),
   pullFromCloud: (force = false) =>
     http.post<any>(`/api/cloud-sync/pull${force ? '?force=true' : ''}`),
+  twoWaySync: (force = false) =>
+    http.post<any>(`/api/cloud-sync/two-way${force ? '?force=true' : ''}`),
 };
+
 
 export default servicePerfis;

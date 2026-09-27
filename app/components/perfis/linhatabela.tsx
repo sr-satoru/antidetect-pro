@@ -411,19 +411,25 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       >
         <button
           type="button"
-          onClick={() => onToggleRunning(profile.id)}
-          className={`inline-flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 rounded-md px-3.5 text-xs font-bold transition-all active:scale-[0.98] ${
-            isRunning
-              ? 'border border-[#ff334b]/35 bg-[#ff334b]/12 text-[#ff334b] hover:bg-[#ff334b] hover:text-black'
-              : 'border border-[#DFE104]/35 bg-[#DFE104]/12 text-[#DFE104] hover:bg-[#DFE104] hover:text-black'
+          disabled={isSyncing}
+          onClick={() => !isSyncing && onToggleRunning(profile.id)}
+          title={isSyncing ? 'Sincronizando perfil com a nuvem...' : undefined}
+          className={`inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-md px-3.5 text-xs font-bold transition-all active:scale-[0.98] ${
+            isSyncing
+              ? 'cursor-not-allowed opacity-60 border border-zinc-700 bg-zinc-800/50 text-zinc-400'
+              : isRunning
+                ? 'cursor-pointer border border-[#ff334b]/35 bg-[#ff334b]/12 text-[#ff334b] hover:bg-[#ff334b] hover:text-black'
+                : 'cursor-pointer border border-[#DFE104]/35 bg-[#DFE104]/12 text-[#DFE104] hover:bg-[#DFE104] hover:text-black'
           }`}
         >
-          {isRunning ? (
+          {isSyncing ? (
+            <Loader2 size={11} className="animate-spin text-zinc-400" />
+          ) : isRunning ? (
             <Square size={11} fill="currentColor" />
           ) : (
             <Play size={11} fill="currentColor" />
           )}
-          <span>{isRunning ? 'Parar' : 'Iniciar'}</span>
+          <span>{isSyncing ? 'Sincronizando' : isRunning ? 'Parar' : 'Iniciar'}</span>
         </button>
       </td>
 

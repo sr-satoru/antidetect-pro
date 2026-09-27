@@ -86,7 +86,13 @@ async fn main() {
         .with_state(extension_storage);
 
     let auth_service = Arc::new(cloud_auth::CloudAuthService::new());
-    let cloud_sync_service = Arc::new(cloud_sync::CloudSyncService::new(&data_dir, auth_service.clone()));
+    let cloud_sync_service = Arc::new(
+        cloud_sync::CloudSyncService::new(&data_dir, auth_service.clone())
+            .with_ws(ws_state.clone()),
+    );
+    let pm = profile_storage.get_process_manager();
+    cloud_sync_service.set_running_checker(Arc::new(move |pid: &str| pm.is_running(pid)));
+
     let auto_sync_engine = Arc::new(cloud_sync::AutoSyncEngine::new(
         cloud_sync_service.clone(),
         auth_service.clone(),
@@ -105,6 +111,8 @@ async fn main() {
 
     let cloud_sync_routes = Router::new()
         .route("/pull", post(routes::cloud_sync::pull_all_cloud_profiles))
+        .route("/two-way", post(routes::cloud_sync::two_way_sync))
+        .route("/sync-all", post(routes::cloud_sync::two_way_sync))
         .route("/{id}/sync", post(routes::cloud_sync::sync_to_cloud))
         .route("/{id}/restore", post(routes::cloud_sync::restore_from_cloud))
         .route("/{id}/stat", get(routes::cloud_sync::get_cloud_stat))

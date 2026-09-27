@@ -45,27 +45,50 @@ export const PerfisPage: React.FC = () => {
     fetchProfiles();
   }, [fetchProfiles]);
 
-  // Sincronização automática com a nuvem em segundo plano ao abrir a página
-  const hasAutoPulled = useRef(false);
+  // Dupla Troca automática com a nuvem (Download de ausentes + Upload/LWW de locais) ao abrir a página
+  const hasAutoSynced = useRef(false);
   useEffect(() => {
     const token = localStorage.getItem('fury_auth_token');
-    if (!token || hasAutoPulled.current) return;
-    hasAutoPulled.current = true;
+    if (!token || hasAutoSynced.current) return;
+    hasAutoSynced.current = true;
 
     servicePerfis
-      .pullFromCloud()
+      .twoWaySync()
       .then((res: any) => {
-        if (res && res.downloaded_count > 0) {
+        if (!res) return;
+        const downloaded = res.downloaded_count || 0;
+        const uploaded = res.uploaded_count || 0;
+        const skipped = res.skipped_running || 0;
+
+        if (downloaded > 0 && uploaded > 0) {
           toast.success(
-            `☁️ ${res.downloaded_count} perfil(is) restaurado(s) da nuvem com E2EE!`,
+            `☁️ Dupla Troca: ${downloaded} baixado(s) da nuvem e ${uploaded} enviado(s)!`,
           );
+        } else if (downloaded > 0) {
+          toast.success(
+            `☁️ ${downloaded} perfil(is) baixado(s) e restaurado(s) da nuvem!`,
+          );
+        } else if (uploaded > 0) {
+          toast.success(
+            `☁️ ${uploaded} perfil(is) novo(s) enviado(s) para a nuvem!`,
+          );
+        }
+
+        if (skipped > 0) {
+          toast.info(
+            `ℹ️ ${skipped} perfil(is) em execução localmente serão sincronizados ao fechar.`,
+          );
+        }
+
+        if (downloaded > 0 || uploaded > 0) {
           fetchProfiles();
         }
       })
       .catch((err) => {
-        console.warn('Falha na sincronização automática em segundo plano:', err);
+        console.warn('Falha na Dupla Troca automática em segundo plano:', err);
       });
   }, [fetchProfiles]);
+
 
   // WebSocket em tempo real: zero polling, atualização instantânea quando o Camoufox for fechado pelo 'X'
   useEffect(() => {
@@ -110,8 +133,13 @@ export const PerfisPage: React.FC = () => {
             } else if (msg.event === 'profile_synced' && msg.data) {
               const { profile_id, size_kb } = msg.data;
               console.log('✅ WebSocket profile_synced recebido:', { profile_id, size_kb });
-              setProfiles((prev) =>
-                prev.map((curr) =>
+              setProfiles((prev) => {
+                const exists = prev.some((curr) => String(curr.id) === String(profile_id));
+                if (!exists) {
+                  fetchProfiles();
+                  return prev;
+                }
+                return prev.map((curr) =>
                   String(curr.id) === String(profile_id)
                     ? {
                         ...curr,
@@ -120,8 +148,8 @@ export const PerfisPage: React.FC = () => {
                         cloudSizeKb: size_kb,
                       }
                     : curr,
-                ),
-              );
+                );
+              });
             }
           } catch (err) {
             console.error('Erro ao processar mensagem do WebSocket:', err);
