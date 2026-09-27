@@ -244,16 +244,18 @@ export const ProxyPage: React.FC = () => {
           </div>
 
           {/* Botão Principal: Novo Proxy */}
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleOpenAdd}
-              className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-[#DFE104] px-3.5 text-xs font-semibold text-black shadow-[0_2px_10px_rgba(223,225,4,0.15)] transition-all hover:bg-[#C5C702] active:scale-[0.98]"
-            >
-              <Plus size={15} strokeWidth={2.5} />
-              <span>Cadastrar Proxy</span>
-            </button>
-          </div>
+          {!isModalOpen && !editingProxy && (
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleOpenAdd}
+                className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-[#DFE104] px-3.5 text-xs font-semibold text-black shadow-[0_2px_10px_rgba(223,225,4,0.15)] transition-all hover:bg-[#C5C702] active:scale-[0.98]"
+              >
+                <Plus size={15} strokeWidth={2.5} />
+                <span>Cadastrar Proxy</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Linha 2: Ações em Lote */}
