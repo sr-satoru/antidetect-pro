@@ -57,6 +57,7 @@ fn extract_addon_id_from_xpi<P: AsRef<Path>>(xpi_path: P) -> Option<String> {
 pub struct ProcessManager {
     running: Arc<Mutex<HashMap<String, u32>>>,
     ports: Arc<Mutex<HashMap<String, u16>>>,
+    tunnels: Arc<Mutex<HashMap<String, crate::network::tunnel::Socks5LoopbackTunnel>>>,
     client: reqwest::Client,
     ws: WsState,
 }
@@ -72,6 +73,7 @@ impl ProcessManager {
         Self {
             running: Arc::new(Mutex::new(HashMap::new())),
             ports: Arc::new(Mutex::new(HashMap::new())),
+            tunnels: Arc::new(Mutex::new(HashMap::new())),
             client,
             ws,
         }
@@ -336,7 +338,7 @@ impl ProcessManager {
         profile: &Profile,
         data_dir: &Path,
         client: &reqwest::Client,
-    ) -> Result<(), String> {
+    ) -> Result<crate::network::NetworkSetupResult, String> {
         fs::create_dir_all(profile_dir)
             .map_err(|e| format!("Erro ao criar diretório do perfil: {e}"))?;
 
@@ -386,53 +388,9 @@ impl ProcessManager {
         user_js.push_str("user_pref(\"xpinstall.signatures.required\", false);\n");
         user_js.push_str("user_pref(\"extensions.experiments.enabled\", true);\n");
 
-        let proxy = &profile.proxy;
-        if proxy.proxy_type != "none" && proxy.host.is_some() && proxy.port.is_some() {
-            let host = proxy.host.as_deref().unwrap();
-            let port = proxy.port.unwrap();
-
-            match proxy.proxy_type.to_lowercase().as_str() {
-                "socks5" | "socks4" => {
-                    let version = if proxy.proxy_type.to_lowercase() == "socks4" {
-                        4
-                    } else {
-                        5
-                    };
-                    user_js.push_str("user_pref(\"network.proxy.type\", 1);\n");
-                    user_js.push_str(&format!(
-                        "user_pref(\"network.proxy.socks\", \"{host}\");\n"
-                    ));
-                    user_js.push_str(&format!(
-                        "user_pref(\"network.proxy.socks_port\", {port});\n"
-                    ));
-                    user_js.push_str(&format!(
-                        "user_pref(\"network.proxy.socks_version\", {version});\n"
-                    ));
-                    user_js.push_str("user_pref(\"network.proxy.socks_remote_dns\", true);\n");
-                    // Hardening WebRTC contra vazamento do IP real fora do túnel proxy
-                    user_js.push_str("user_pref(\"media.peerconnection.ice.proxy_only_if_behind_proxy\", true);\n");
-                    user_js.push_str("user_pref(\"media.peerconnection.ice.default_address_only\", true);\n");
-                }
-                "http" | "https" => {
-                    user_js.push_str("user_pref(\"network.proxy.type\", 1);\n");
-                    user_js.push_str(&format!(
-                        "user_pref(\"network.proxy.http\", \"{host}\");\n"
-                    ));
-                    user_js.push_str(&format!(
-                        "user_pref(\"network.proxy.http_port\", {port});\n"
-                    ));
-                    user_js.push_str(&format!(
-                        "user_pref(\"network.proxy.ssl\", \"{host}\");\n"
-                    ));
-                    user_js.push_str(&format!(
-                        "user_pref(\"network.proxy.ssl_port\", {port});\n"
-                    ));
-                }
-                _ => {}
-            }
-        } else {
-            user_js.push_str("user_pref(\"network.proxy.type\", 0);\n");
-        }
+        // Delegação de Proxy, Auto-Auth e WebRTC via módulo desacoplado network
+        let net_setup = crate::network::prepare_network(&profile.proxy, profile_dir).await?;
+        user_js.push_str(&net_setup.user_js_snippet);
 
         let user_js_path = profile_dir.join("user.js");
         fs::write(user_js_path, user_js)
@@ -447,7 +405,7 @@ impl ProcessManager {
         // 2. Injeta e copia os pacotes .xpi das extensões
         Self::prepare_extensions(profile_dir, profile, data_dir, client).await?;
 
-        Ok(())
+        Ok(net_setup)
     }
 
     /// Dispara o navegador Camoufox para o perfil especificado
@@ -471,7 +429,7 @@ impl ProcessManager {
         } else {
             data_dir.join("profiles").join(&profile.id).join("profile")
         };
-        Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
+        let net_setup = Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
 
         info!(
             "🚀 Disparando Camoufox para o perfil '{}' ({}) via {:?}",
@@ -481,6 +439,7 @@ impl ProcessManager {
         let mut cmd = tokio::process::Command::new(&binary_path);
         cmd.arg("--profile").arg(&profile_dir);
         cmd.arg("--new-instance");
+        net_setup.apply_to_command(&mut cmd);
 
         let mut child = cmd.spawn().map_err(|e| {
             format!("Falha ao executar {:?}: {}", binary_path, e)
@@ -494,6 +453,11 @@ impl ProcessManager {
             map.insert(profile.id.clone(), pid);
         }
 
+        if let Some(tunnel) = net_setup.tunnel {
+            let mut tunnels = self.tunnels.lock().unwrap();
+            tunnels.insert(profile.id.clone(), tunnel);
+        }
+
         // Notifica o frontend via WebSocket imediatamente
         self.ws.emit(WsEvent::ProfileStatus {
             profile_id: profile.id.clone(),
@@ -503,6 +467,7 @@ impl ProcessManager {
         // Monitoramento nativo em tempo real: o OS notifica o momento exato em que a janela do Camoufox fechar
         let profile_id_clone = profile.id.clone();
         let running_map = self.running.clone();
+        let tunnels_map = self.tunnels.clone();
         let ws_clone = self.ws.clone();
         let meta_file = if data_dir.ends_with("profiles") {
             data_dir.join(&profile.id).join("metadata.json")
@@ -520,6 +485,11 @@ impl ProcessManager {
             {
                 let mut map = running_map.lock().unwrap();
                 map.remove(&profile_id_clone);
+            }
+
+            {
+                let mut tunnels = tunnels_map.lock().unwrap();
+                tunnels.remove(&profile_id_clone);
             }
 
             // Atualiza metadata.json no disco
@@ -567,6 +537,11 @@ impl ProcessManager {
                     std::thread::sleep(std::time::Duration::from_millis(100));
                 }
             }
+        }
+
+        {
+            let mut tunnels = self.tunnels.lock().unwrap();
+            tunnels.remove(profile_id);
         }
 
         // Emite status "ready" via WebSocket

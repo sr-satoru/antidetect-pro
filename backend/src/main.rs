@@ -14,6 +14,7 @@ mod cookie_manager;
 pub mod id_generator;
 mod launcher;
 mod models;
+pub mod network;
 mod routes;
 mod storage;
 mod tab_manager;
