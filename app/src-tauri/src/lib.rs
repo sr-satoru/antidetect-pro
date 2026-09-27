@@ -10,9 +10,11 @@ pub fn run() {
         )?;
       }
 
-      // Inicia o daemon local Fury (Axum na porta 12540) em segundo plano
+      // Inicia o daemon local Fury (Axum na porta 12540) em segundo plano usando o diretório canônico padrão
       tauri::async_runtime::spawn(async move {
-        if let Err(e) = fury_backend::start_fury_server(None, 12540).await {
+        let canonical_dir = fury_backend::browser_downloader::platform::get_canonical_app_dir();
+        let data_dir_str = canonical_dir.to_string_lossy().to_string();
+        if let Err(e) = fury_backend::start_fury_server(Some(data_dir_str), 12540).await {
           eprintln!("Erro no servidor interno Fury: {}", e);
         }
       });

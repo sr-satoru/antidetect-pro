@@ -5,7 +5,7 @@ pub mod service;
 
 use std::path::{Path, PathBuf};
 
-pub use detector::{check_engine_health, clean_broken_engine, get_engine_dir, EngineHealthStatus};
+pub use detector::{check_engine_health, clean_broken_engine, clean_temp_downloads, get_engine_dir, EngineHealthStatus};
 pub use manifest::BrowserManifest;
 pub use platform::{get_current_platform_key, get_os_display_name};
 pub use service::{BrowserDownloadService, DownloadStatus};
@@ -20,7 +20,7 @@ pub fn resolve_engine_binary(data_dir: &Path) -> Result<PathBuf, String> {
             reason
         )),
         EngineHealthStatus::Missing { .. } => Err(
-            "O motor de navegação Fury ainda não está instalado na máquina. Clique em 'Baixar Cliente' para instalar.".to_string(),
+            "O motor de navegação Fury ainda não está instalado na máquina. Abra a Central de Atualizações para baixar.".to_string(),
         ),
     }
 }

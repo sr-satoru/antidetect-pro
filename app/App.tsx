@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/auth-context';
 import { BrowserProvider } from './contexts/browser-context';
-import { BrowserDownloadModal } from './components/browser/browser-download-modal';
 import { ProtectedRoute } from './components/auth/protected-route';
 import { LoginPage } from './(app)/auth/login/page';
 import { RegisterPage } from './(app)/auth/register/page';
@@ -21,7 +20,6 @@ export const App: React.FC = () => {
     <AuthProvider>
       <BrowserProvider>
         <Toaster position="top-center" />
-        <BrowserDownloadModal />
         <BrowserRouter>
         <Routes>
           {/* Rotas Públicas de Acesso */}

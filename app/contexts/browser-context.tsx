@@ -69,7 +69,6 @@ export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setIsDownloading(true);
     setStage('connecting');
     setProgress(0);
-    setIsModalOpen(true);
 
     try {
       const res = await browserService.triggerDownload();
@@ -155,27 +154,24 @@ export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
   }, [checkStatus]);
 
-  // Checagem inicial na inicialização da aplicação: se ausente ou quebrado, dispara automaticamente
+  // Checagem inicial na inicialização da aplicação de forma discreta (sem pop-up intrusivo)
   useEffect(() => {
     const initCheck = async () => {
       const data = await checkStatus();
       if (!data) return;
 
+      // Se ausente, sincroniza estado sem disparar pop-up
       if (
         !hasAutoStartedRef.current &&
         (data.health.status === 'missing' || data.health.status === 'broken')
       ) {
         hasAutoStartedRef.current = true;
-        console.log(
-          '🔍 Motor Fury ausente ou corrompido detectado. Iniciando download automático...'
-        );
-        setIsModalOpen(true);
-        startDownload();
+        console.log('🔍 Motor Fury ausente detectado. Disponível para download na Central de Atualizações.');
       }
     };
 
     initCheck();
-  }, [checkStatus, startDownload]);
+  }, [checkStatus]);
 
   return (
     <BrowserContext.Provider

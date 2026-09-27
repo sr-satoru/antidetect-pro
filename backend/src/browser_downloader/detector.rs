@@ -181,7 +181,23 @@ pub fn check_engine_health(data_dir: &Path) -> EngineHealthStatus {
     }
 }
 
-/// Remove resíduos de instalações quebradas ou temporárias para permitir um download limpo
+/// Remove apenas os arquivos temporários de download e extração (.download.tmp e .tmp_extract)
+pub fn clean_temp_downloads(data_dir: &Path) -> Result<(), String> {
+    let binaries_dir = data_dir.join("binaries");
+    let tmp_extract = binaries_dir.join(".tmp_extract");
+    if tmp_extract.exists() {
+        let _ = fs::remove_dir_all(&tmp_extract);
+    }
+
+    let tmp_download = binaries_dir.join(".download.tmp");
+    if tmp_download.exists() {
+        let _ = fs::remove_file(&tmp_download);
+    }
+
+    Ok(())
+}
+
+/// Remove resíduos de instalações quebradas e temporárias para permitir um download/reparo limpo
 pub fn clean_broken_engine(data_dir: &Path) -> Result<(), String> {
     let engine_dir = get_engine_dir(data_dir);
     if engine_dir.exists() {
@@ -189,15 +205,6 @@ pub fn clean_broken_engine(data_dir: &Path) -> Result<(), String> {
         let _ = fs::remove_dir_all(&engine_dir);
     }
 
-    let tmp_extract = data_dir.join("binaries").join(".tmp_extract");
-    if tmp_extract.exists() {
-        let _ = fs::remove_dir_all(&tmp_extract);
-    }
-
-    let tmp_download = data_dir.join("binaries").join(".download.tmp");
-    if tmp_download.exists() {
-        let _ = fs::remove_file(&tmp_download);
-    }
-
-    Ok(())
+    clean_temp_downloads(data_dir)
 }
+

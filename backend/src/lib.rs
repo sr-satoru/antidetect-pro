@@ -32,7 +32,20 @@ pub async fn start_fury_server(
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let data_dir = data_dir_override
         .or_else(|| std::env::var("FURY_DATA_DIR").ok())
-        .unwrap_or_else(|| "./data".to_string());
+        .unwrap_or_else(|| {
+            let local_data = std::path::Path::new("./data");
+            if local_data.exists() && local_data.is_dir() {
+                "./data".to_string()
+            } else {
+                browser_downloader::platform::get_canonical_app_dir()
+                    .to_string_lossy()
+                    .to_string()
+            }
+        });
+
+    let _ = std::fs::create_dir_all(&data_dir);
+    let _ = std::fs::create_dir_all(std::path::Path::new(&data_dir).join("profiles"));
+    let _ = std::fs::create_dir_all(std::path::Path::new(&data_dir).join("binaries"));
 
     let ws_state = ws::WsState::new();
     let profile_storage = Arc::new(ProfileStorage::new(&data_dir, ws_state.clone()));

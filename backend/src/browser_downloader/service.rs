@@ -130,8 +130,9 @@ impl BrowserDownloadService {
         let tmp_extract = binaries_dir.join(".tmp_extract");
         let final_engine_dir = detector::get_engine_dir(data_dir);
 
-        // Limpa resíduos anteriores
-        let _ = detector::clean_broken_engine(data_dir);
+        // Limpa apenas resíduos temporários de downloads anteriores (.download.tmp e .tmp_extract)
+        // O motor instalado atual permanece intacto até que a nova versão seja validada
+        let _ = detector::clean_temp_downloads(data_dir);
 
         // Atualiza status: Conectando
         {
@@ -155,10 +156,13 @@ impl BrowserDownloadService {
             });
         }
 
-        // 2. Conecta via reqwest com User-Agent adequado
+        // 2. Conecta via reqwest com timeouts robustos e User-Agent adequado
         let client = reqwest::Client::builder()
             .user_agent("FuryBrowser/1.0 (Downloader; +https://github.com/sr-satoru/antidetect-pro)")
             .redirect(reqwest::redirect::Policy::limited(10))
+            .connect_timeout(Duration::from_secs(25))
+            .timeout(Duration::from_secs(1200))
+            .tcp_keepalive(Duration::from_secs(60))
             .build()
             .map_err(|e| format!("Erro ao criar cliente HTTP: {}", e))?;
 
@@ -179,10 +183,11 @@ impl BrowserDownloadService {
             .content_length()
             .unwrap_or(expected_size_bytes);
 
-        // Abre arquivo temporário para escrita assíncrona
-        let mut file = tokio::fs::File::create(&tmp_download)
+        // Abre arquivo temporário para escrita assíncrona com buffer de 1MB para máxima velocidade
+        let file = tokio::fs::File::create(&tmp_download)
             .await
             .map_err(|e| format!("Falha ao criar arquivo de download temporário: {}", e))?;
+        let mut buf_writer = tokio::io::BufWriter::with_capacity(1024 * 1024, file);
 
         let mut stream = response.bytes_stream();
         let mut downloaded_bytes: u64 = 0;
@@ -197,10 +202,10 @@ impl BrowserDownloadService {
             st.total_bytes = total_bytes;
         }
 
-        // Loop de streaming
+        // Loop de streaming com bufferização eficiente
         while let Some(chunk_res) = stream.next().await {
             let chunk = chunk_res.map_err(|e| format!("Erro durante o download do pacote: {}", e))?;
-            file.write_all(&chunk)
+            buf_writer.write_all(&chunk)
                 .await
                 .map_err(|e| format!("Erro ao gravar pacote no disco: {}", e))?;
 
@@ -251,10 +256,10 @@ impl BrowserDownloadService {
             }
         }
 
-        file.flush()
+        buf_writer.flush()
             .await
             .map_err(|e| format!("Falha ao sincronizar arquivo com disco: {}", e))?;
-        drop(file);
+        drop(buf_writer);
 
         let total_download_time = start_time.elapsed().as_secs();
         info!(

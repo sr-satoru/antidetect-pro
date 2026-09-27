@@ -12,6 +12,8 @@ import {
 import { toast } from '@/components/ui/notification';
 import { useBrowser } from '@/contexts/browser-context';
 
+import { UpdateCenterDropdown } from '@/components/browser/update-center-dropdown';
+
 interface HeaderProps {
   title?: string;
 }
@@ -20,12 +22,8 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { status, isDownloading, progress, openModal } = useBrowser();
-
-  const isInstalled = status?.health.status === 'installed';
 
   const getAutoTitle = () => {
-    if (title) return title;
     const path = location.pathname;
     if (path.startsWith('/perfis/editar')) return 'Editar Perfil';
     if (path.startsWith('/perfis')) return 'Perfis de Navegação';
@@ -41,48 +39,14 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
       {/* Title desenhado diretamente na página */}
       <div className="flex items-center gap-3">
         <h1 className="text-base font-semibold text-[#F4F4F6] tracking-tight">
-          {getAutoTitle()}
+          {title || getAutoTitle()}
         </h1>
       </div>
 
       {/* Right Controls integrados diretamente no canvas */}
       <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* Baixar Cliente / Gerenciador do Motor */}
-        <button
-          type="button"
-          onClick={openModal}
-          className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
-            isDownloading
-              ? 'bg-[#DFE104]/10 text-[#DFE104] border-[#DFE104]/40 animate-pulse'
-              : isInstalled
-              ? 'bg-[#15161D] hover:bg-[#1E2028] text-[#C8CBD4] hover:text-white border-[#2B2D38] hover:border-[#3E404D]'
-              : 'bg-[#DFE104]/15 hover:bg-[#DFE104]/25 text-[#DFE104] border-[#DFE104]/40'
-          }`}
-          title={
-            isDownloading
-              ? `Baixando motor Fury: ${Math.round(progress)}%`
-              : isInstalled
-              ? 'Motor Fury Instalado e Protegido'
-              : 'Clique para baixar o motor Fury Camoufox'
-          }
-        >
-          {isDownloading ? (
-            <>
-              <div className="w-3 h-3 rounded-full border-2 border-[#DFE104] border-t-transparent animate-spin" />
-              <span>Baixando ({Math.round(progress)}%)</span>
-            </>
-          ) : isInstalled ? (
-            <>
-              <ShieldCheck size={13} className="text-emerald-400" />
-              <span>Motor Fury</span>
-            </>
-          ) : (
-            <>
-              <Download size={13} className="text-[#DFE104]" />
-              <span>Baixar Cliente</span>
-            </>
-          )}
-        </button>
+        {/* Central de Atualizações / Gerenciador de Download do Motor Fury */}
+        <UpdateCenterDropdown />
 
         {/* Central de Tarefas */}
         <button
