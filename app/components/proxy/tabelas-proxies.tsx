@@ -1,7 +1,7 @@
 import React from 'react';
 import { LinhaTabelaProxies } from './linha-tabela-proxies';
-import { CadastroProxies } from './cadastro-proxies';
-import { EditarProxies } from './editar-proxies';
+import { CadastroProxies } from './criar';
+import { EditarProxies } from './editar';
 import {
   SlidersHorizontal,
   Globe,
