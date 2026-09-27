@@ -140,6 +140,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
     Boolean(profile.cloud_synced || profile.synced_at)
   );
   const [cloudSizeKb, setCloudSizeKb] = useState<number | null>(null);
+  const isRunning = profile.status === 'running' || profile.isRunning;
 
   useEffect(() => {
     let isMounted = true;
@@ -158,6 +159,26 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       isMounted = false;
     };
   }, [profile.id]);
+
+  // Auto-Sync Instantâneo ao Fechar o Navegador (quando passa de running para parado)
+  const prevRunningRef = useRef(isRunning);
+  useEffect(() => {
+    if (prevRunningRef.current && !isRunning) {
+      // Navegador acabou de ser fechado: envia novos cookies imediatamente para a nuvem
+      servicePerfis
+        .syncToCloud(profile.id)
+        .then((res) => {
+          setIsCloudSynced(true);
+          if (res?.size_kb) setCloudSizeKb(res.size_kb);
+          toast.success(
+            `Navegador fechado: sessão de ${profile.name || 'perfil'} sincronizada! (${res?.size_kb || 1} KB)`,
+            { id: `auto-sync-${profile.id}`, duration: 3000 }
+          );
+        })
+        .catch(() => {});
+    }
+    prevRunningRef.current = isRunning;
+  }, [isRunning, profile.id, profile.name]);
 
   const handleSyncCloud = async () => {
     try {
@@ -214,7 +235,6 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       ? 'bg-[#2C2D33] group-hover:bg-[#484848]'
       : 'bg-[#383838] group-hover:bg-[#484848]';
 
-  const isRunning = profile.status === 'running' || profile.isRunning;
   const osKey = (profile.os || 'linux').toLowerCase();
 
   const idStr = String(profile.id || '');

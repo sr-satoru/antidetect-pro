@@ -106,6 +106,7 @@ pub fn pack_profile_capsule(profile_root: &Path) -> Result<Vec<u8>, String> {
 }
 
 /// Desempacota uma cápsula ZIP no diretório de destino de um perfil.
+#[allow(dead_code)]
 pub fn unpack_profile_capsule(capsule_bytes: &[u8], target_root: &Path) -> Result<(), String> {
     let reader = Cursor::new(capsule_bytes);
     let mut archive = ZipArchive::new(reader)

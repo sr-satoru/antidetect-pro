@@ -153,8 +153,14 @@ export const CriarPerfilPage: React.FC = () => {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      await api.profiles.create(formData);
+      const created = await api.profiles.create(formData);
       toast.success('Perfil criado com sucesso');
+
+      // Sincronização instantânea na nuvem (0 delay para criação)
+      if (created?.id) {
+        api.profiles.syncToCloud(created.id).catch(() => {});
+      }
+
       navigate('/perfis');
     } catch (err: any) {
       toast.error(`Erro ao criar perfil: ${err.message || 'Falha na comunicação com o backend local.'}`);

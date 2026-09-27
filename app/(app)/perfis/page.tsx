@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HeaderTabela } from '@/components/perfis/headerTabela';
 import { Tabela } from '@/components/perfis/tabela';
@@ -43,6 +43,28 @@ export const PerfisPage: React.FC = () => {
 
   useEffect(() => {
     fetchProfiles();
+  }, [fetchProfiles]);
+
+  // Sincronização automática com a nuvem em segundo plano ao abrir a página
+  const hasAutoPulled = useRef(false);
+  useEffect(() => {
+    const token = localStorage.getItem('fury_auth_token');
+    if (!token || hasAutoPulled.current) return;
+    hasAutoPulled.current = true;
+
+    servicePerfis
+      .pullFromCloud()
+      .then((res: any) => {
+        if (res && res.downloaded_count > 0) {
+          toast.success(
+            `☁️ ${res.downloaded_count} perfil(is) restaurado(s) da nuvem com E2EE!`,
+          );
+          fetchProfiles();
+        }
+      })
+      .catch((err) => {
+        console.warn('Falha na sincronização automática em segundo plano:', err);
+      });
   }, [fetchProfiles]);
 
   // WebSocket em tempo real: zero polling, atualização instantânea quando o Camoufox for fechado pelo 'X'
@@ -285,12 +307,41 @@ export const PerfisPage: React.FC = () => {
     }
   };
 
-  // Sincronizar perfis selecionados na nuvem E2EE
+  // Sincronizar perfis (Upload dos selecionados ou Download completo da nuvem)
   const handleSyncSelected = async () => {
-    if (selectedIds.length === 0) {
-      toast.warning('Selecione pelo menos um perfil para sincronizar');
+    const token = localStorage.getItem('fury_auth_token');
+    if (!token) {
+      toast.warning('Faça login na sua conta para sincronizar com a nuvem');
+      navigate('/auth/login');
       return;
     }
+
+    // Caso 1: Nenhum perfil selecionado -> Puxa e restaura todos os perfis da nuvem
+    if (selectedIds.length === 0) {
+      toast.loading('Consultando e sincronizando perfis da nuvem...', { id: 'cloud-pull' });
+      try {
+        const res: any = await servicePerfis.pullFromCloud();
+        if (res.downloaded_count > 0) {
+          toast.success(
+            `☁️ ${res.downloaded_count} perfil(is) restaurado(s) e decifrado(s) da nuvem com E2EE!`,
+            { id: 'cloud-pull' },
+          );
+          fetchProfiles();
+        } else if (res.total_remote > 0) {
+          toast.info(
+            `Todos os ${res.total_remote} perfis da nuvem já estão sincronizados localmente.`,
+            { id: 'cloud-pull' },
+          );
+        } else {
+          toast.info('Nenhum perfil encontrado no seu cofre na nuvem.', { id: 'cloud-pull' });
+        }
+      } catch (err: any) {
+        toast.error(err.message || 'Falha ao sincronizar perfis da nuvem.', { id: 'cloud-pull' });
+      }
+      return;
+    }
+
+    // Caso 2: Perfis selecionados -> Envia os selecionados para a nuvem
     toast.loading(`Sincronizando ${selectedIds.length} perfil(s) na nuvem...`, { id: 'bulk-sync' });
     let successCount = 0;
     for (const id of selectedIds) {

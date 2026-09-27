@@ -73,6 +73,8 @@ export const servicePerfis = {
     http.post<any>(`/api/cloud-sync/${id}/restore`),
   getCloudStat: (id: string | number) =>
     http.get<any>(`/api/cloud-sync/${id}/stat`),
+  pullFromCloud: (force = false) =>
+    http.post<any>(`/api/cloud-sync/pull${force ? '?force=true' : ''}`),
 };
 
 export default servicePerfis;

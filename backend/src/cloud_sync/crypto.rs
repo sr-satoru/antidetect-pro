@@ -10,6 +10,7 @@ type HmacSha256 = Hmac<Sha256>;
 pub const MAGIC_HEADER: &[u8; 8] = b"FURYENC1";
 pub const SALT_LEN: usize = 16;
 pub const NONCE_LEN: usize = 12; // 96 bits para AES-GCM
+#[allow(dead_code)]
 pub const MIN_PAYLOAD_LEN: usize = 8 + SALT_LEN + NONCE_LEN + 16; // Cabeçalho + tag de autenticação GCM
 
 /// Deriva uma chave criptográfica de 256 bits a partir da chave do usuário e do salt
@@ -51,6 +52,7 @@ pub fn encrypt_capsule(plaintext: &[u8], user_key: &str) -> Result<Vec<u8>, Stri
 }
 
 /// Descriptografa uma cápsula binária .enc validando o cabeçalho e a tag de integridade GCM
+#[allow(dead_code)]
 pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>, String> {
     if encrypted_data.len() < MIN_PAYLOAD_LEN {
         return Err(format!(

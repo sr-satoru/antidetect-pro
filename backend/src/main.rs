@@ -94,6 +94,7 @@ async fn main() {
         .with_state(auth_service);
 
     let cloud_sync_routes = Router::new()
+        .route("/pull", post(routes::cloud_sync::pull_all_cloud_profiles))
         .route("/{id}/sync", post(routes::cloud_sync::sync_to_cloud))
         .route("/{id}/restore", post(routes::cloud_sync::restore_from_cloud))
         .route("/{id}/stat", get(routes::cloud_sync::get_cloud_stat))

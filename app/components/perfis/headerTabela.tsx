@@ -20,6 +20,7 @@ interface HeaderTabelaProps {
   onSearchChange?: (q: string) => void;
   selectedGroup?: string;
   onGroupChange?: (g: string) => void;
+  selectedIds?: (string | number)[];
   onStartSelected?: () => void;
   onStopSelected?: () => void;
   onDeleteSelected?: () => void;
@@ -35,6 +36,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
   onSearchChange,
   selectedGroup = 'Todos os grupos',
   onGroupChange,
+  selectedIds = [],
   onStartSelected,
   onStopSelected,
   onDeleteSelected,
@@ -152,10 +154,14 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
             type="button"
             onClick={onSyncSelected}
             className="h-[34px] px-3 rounded-md bg-[#14151B] hover:bg-[#1A1C24] border border-[#262732] text-[#8E92A2] hover:text-[#569AFF] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer"
-            title="Sincronizar perfis selecionados na nuvem (E2EE)"
+            title={
+              selectedIds.length > 0
+                ? `Enviar ${selectedIds.length} perfil(is) selecionado(s) para a nuvem (E2EE)`
+                : 'Sincronizar e baixar perfis da nuvem (E2EE)'
+            }
           >
             <Cloud size={14} className="text-[#3b82f6]" />
-            <span>Nuvem</span>
+            <span>{selectedIds.length > 0 ? `Subir (${selectedIds.length})` : 'Sincronizar Nuvem'}</span>
           </button>
 
           {/* 7. Lixeira */}
