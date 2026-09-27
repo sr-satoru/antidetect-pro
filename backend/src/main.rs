@@ -164,12 +164,17 @@ async fn main() {
         .nest("/api/ws", ws_routes)
         .layer(cors);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
+    let port: u16 = std::env::var("FURY_BACKEND_PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(12540);
+
+    let addr = SocketAddr::from(([127, 0, 0, 1], port));
     tracing::info!("🚀 Fury Backend Rust iniciado com sucesso em http://{}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr)
         .await
-        .expect("Falha ao abrir porta 8000");
+        .unwrap_or_else(|e| panic!("Falha ao abrir porta {}: {}", port, e));
 
     axum::serve(listener, app)
         .await

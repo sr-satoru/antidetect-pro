@@ -12,7 +12,7 @@ function AuthContent() {
   const codeChallenge = searchParams.get("code_challenge") || "";
   const codeChallengeMethod = searchParams.get("code_challenge_method") || "S256";
   const state = searchParams.get("state") || "";
-  const redirectUri = searchParams.get("redirect_uri") || "http://127.0.0.1:8000/api/auth/callback";
+  const redirectUri = searchParams.get("redirect_uri") || "http://127.0.0.1:12540/api/auth/callback";
 
   const isDesktopSession = Boolean(codeChallenge && state);
 

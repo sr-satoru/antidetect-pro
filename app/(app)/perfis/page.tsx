@@ -10,6 +10,7 @@ import { servicePerfis } from '@/services/perfis/service.perfis';
 import { X, Check, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import { useBrowser } from '@/contexts/browser-context';
+import { WS_BASE_URL } from '@/services/http';
 
 export const PerfisPage: React.FC = () => {
   const navigate = useNavigate();
@@ -101,7 +102,7 @@ export const PerfisPage: React.FC = () => {
     const connect = () => {
       if (isDisposed) return;
       try {
-        const wsUrl = 'ws://127.0.0.1:8000/api/ws';
+        const wsUrl = WS_BASE_URL;
         ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {

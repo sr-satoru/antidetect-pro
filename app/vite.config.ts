@@ -8,6 +8,10 @@ export default defineConfig({
     tailwindcss(),
     react(),
   ],
+  server: {
+    port: 1254,
+    strictPort: true,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./', import.meta.url)),

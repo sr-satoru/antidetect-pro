@@ -4,6 +4,7 @@ import {
   BrowserStatusResponse,
 } from '../services/browser/service.browser';
 import { toast } from '../components/ui/notification';
+import { WS_BASE_URL } from '../services/http';
 
 interface BrowserContextType {
   status: BrowserStatusResponse | null;
@@ -97,7 +98,7 @@ export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const connectWs = () => {
       if (isDisposed) return;
       try {
-        const wsUrl = 'ws://127.0.0.1:8000/api/ws';
+        const wsUrl = WS_BASE_URL;
         ws = new WebSocket(wsUrl);
 
         ws.onmessage = (event) => {

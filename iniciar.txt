@@ -9,13 +9,13 @@
 # 1. Iniciar o Daemon Local (Rust + Axum)
 cd /home/vanir/fury/frontend/backend
 cargo run
-# Endpoint: http://127.0.0.1:8000
-# WebSocket: ws://127.0.0.1:8000/api/ws
+# Endpoint: http://127.0.0.1:12540
+# WebSocket: ws://127.0.0.1:12540/api/ws
 
 # 2. Iniciar a Interface Desktop (Vite + React)
 cd /home/vanir/fury/frontend/app
 npm run dev
-# URL: http://localhost:5174
+# URL: http://localhost:1254
 
 # --------------------------------------------------------------
 # PARTE 2: SERVIÇOS EM NUVEM / VPS (/vps)

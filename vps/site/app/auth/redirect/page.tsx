@@ -8,7 +8,7 @@ function RedirectContent() {
   const searchParams = useSearchParams();
   const code = searchParams.get("code") || "";
   const state = searchParams.get("state") || "";
-  const redirectUri = searchParams.get("redirect_uri") || "http://127.0.0.1:8000/api/auth/callback";
+  const redirectUri = searchParams.get("redirect_uri") || "http://127.0.0.1:12540/api/auth/callback";
 
   const targetUrl = `${redirectUri}?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`;
   const [redirected, setRedirected] = useState(false);

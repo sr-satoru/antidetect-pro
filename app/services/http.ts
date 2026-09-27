@@ -3,7 +3,9 @@
  * Centraliza URL base, headers, tratamento de erro e token.
  */
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
+export const BACKEND_PORT = 12540;
+export const API_BASE_URL = `http://127.0.0.1:${BACKEND_PORT}`;
+export const WS_BASE_URL = `ws://127.0.0.1:${BACKEND_PORT}/api/ws`;
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -68,7 +70,7 @@ async function request<T>(
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(0, 'Não foi possível conectar ao backend local em http://127.0.0.1:8000. Certifique-se de que o backend Rust está rodando.');
+    throw new ApiError(0, `Não foi possível conectar ao backend local em ${API_BASE_URL}. Certifique-se de que o backend Rust está rodando.`);
   }
 }
 

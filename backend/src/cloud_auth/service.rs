@@ -86,7 +86,8 @@ impl CloudAuthService {
         let session_id = Uuid::new_v4().to_string();
         let auth_state = Uuid::new_v4().to_string();
         let (code_verifier, code_challenge) = Self::generate_pkce_pair();
-        let redirect_uri = "http://127.0.0.1:8000/api/auth/callback";
+        let backend_port = std::env::var("FURY_BACKEND_PORT").unwrap_or_else(|_| "12540".to_string());
+        let redirect_uri = format!("http://127.0.0.1:{}/api/auth/callback", backend_port);
 
         let auth_url = format!(
             "{}/auth?action={}&code_challenge={}&code_challenge_method=S256&state={}&redirect_uri={}",

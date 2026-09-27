@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import servicePerfis from '@/services/perfis/service.perfis';
+import { API_BASE_URL } from '@/services/http';
 
 interface PendingAuthSession {
   sessionId: string;
@@ -41,7 +42,7 @@ export const LoginPage: React.FC = () => {
     const checkSession = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/auth/session/${waitingSession.sessionId}`
+          `${API_BASE_URL}/api/auth/session/${waitingSession.sessionId}`
         );
         if (!res.ok) return;
 
@@ -80,7 +81,7 @@ export const LoginPage: React.FC = () => {
   const handleConnect = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch('http://127.0.0.1:8000/api/auth/start-login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/start-login`, {
         method: 'POST',
       });
 
