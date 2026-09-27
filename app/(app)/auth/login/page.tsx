@@ -180,7 +180,7 @@ export const LoginPage: React.FC = () => {
                 Aguardando autorização no navegador...
               </h2>
               <p className="text-xs text-[#8E92A2] leading-relaxed">
-                Conclua {waitingSession.action === 'register' ? 'o cadastro' : 'o login'} na aba aberta para vincular automaticamente o aplicativo.
+                Conclua o login ou cadastro na aba aberta do navegador para vincular automaticamente o aplicativo.
               </p>
             </div>
 
