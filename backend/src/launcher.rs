@@ -15,6 +15,7 @@ pub struct ProcessManager {
     tunnels: Arc<Mutex<HashMap<String, crate::network::tunnel::Socks5LoopbackTunnel>>>,
     client: reqwest::Client,
     ws: WsState,
+    auto_sync: Arc<Mutex<Option<Arc<crate::cloud_sync::AutoSyncEngine>>>>,
 }
 
 impl ProcessManager {
@@ -31,7 +32,13 @@ impl ProcessManager {
             tunnels: Arc::new(Mutex::new(HashMap::new())),
             client,
             ws,
+            auto_sync: Arc::new(Mutex::new(None)),
         }
+    }
+
+    pub fn set_auto_sync(&self, auto_sync: Arc<crate::cloud_sync::AutoSyncEngine>) {
+        let mut lock = self.auto_sync.lock().unwrap();
+        *lock = Some(auto_sync);
     }
 
     /// Retorna a porta de depuração do perfil caso esteja ativa
@@ -260,6 +267,7 @@ impl ProcessManager {
         let running_map = self.running.clone();
         let tunnels_map = self.tunnels.clone();
         let ws_clone = self.ws.clone();
+        let auto_sync_clone = self.auto_sync.clone();
         let meta_file = if data_dir.ends_with("profiles") {
             data_dir.join(&profile.id).join("metadata.json")
         } else {
@@ -294,9 +302,14 @@ impl ProcessManager {
             // Emite o evento instantaneamente para o frontend via WebSocket!
             info!("📢 Notificando frontend via WebSocket: perfil {} agora é 'ready'", profile_id_clone);
             ws_clone.emit(WsEvent::ProfileStatus {
-                profile_id: profile_id_clone,
+                profile_id: profile_id_clone.clone(),
                 status: "ready".to_string(),
             });
+
+            // Trigger 2: Fechamento de Navegador. Aguarda 3 segundos para flushing completo de cookies e sessão antes do upload
+            if let Some(engine) = auto_sync_clone.lock().unwrap().as_ref() {
+                engine.schedule_browser_closed(profile_id_clone);
+            }
         });
 
         Ok(pid)

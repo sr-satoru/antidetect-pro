@@ -3,12 +3,13 @@ use crate::models::{CreateProfileDto, Profile, ProfileProxyConfig, UpdateProfile
 use crate::ws::WsState;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 pub struct ProfileStorage {
     data_dir: PathBuf,
     process_manager: Arc<ProcessManager>,
+    auto_sync: Arc<Mutex<Option<Arc<crate::cloud_sync::AutoSyncEngine>>>>,
 }
 
 impl ProfileStorage {
@@ -18,6 +19,22 @@ impl ProfileStorage {
         Self {
             data_dir: dir,
             process_manager: Arc::new(ProcessManager::new(ws)),
+            auto_sync: Arc::new(Mutex::new(None)),
+        }
+    }
+
+    pub fn set_auto_sync(&self, auto_sync: Arc<crate::cloud_sync::AutoSyncEngine>) {
+        let mut lock = self.auto_sync.lock().unwrap();
+        *lock = Some(auto_sync.clone());
+        self.process_manager.set_auto_sync(auto_sync.clone());
+
+        let pm = self.process_manager.clone();
+        auto_sync.set_running_checker(Arc::new(move |pid: &str| pm.is_running(pid)));
+    }
+
+    fn trigger_auto_sync(&self, profile_id: &str) {
+        if let Some(engine) = self.auto_sync.lock().unwrap().as_ref() {
+            engine.schedule_profile_change(profile_id.to_string());
         }
     }
 
@@ -209,6 +226,9 @@ impl ProfileStorage {
         let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
         fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
 
+        // Agenda sincronização automática com debounce de 5 segundos
+        self.trigger_auto_sync(&id);
+
         Ok(profile)
     }
 
@@ -298,6 +318,9 @@ impl ProfileStorage {
         let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
         fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
 
+        // Agenda sincronização automática com debounce de 5 segundos
+        self.trigger_auto_sync(id);
+
         Ok(profile)
     }
 
@@ -340,6 +363,9 @@ impl ProfileStorage {
 
         tracing::info!("📋 Perfil '{}' ({}) clonado com sucesso para novo ID {}", original.name, id, new_id);
 
+        // Agenda sincronização automática para o novo perfil clonado
+        self.trigger_auto_sync(&new_id);
+
         Ok(cloned)
     }
 
@@ -353,6 +379,10 @@ impl ProfileStorage {
         let meta_file = self.get_profile_path(id);
         let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
         fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
+
+        // Agenda sincronização automática da exclusão
+        self.trigger_auto_sync(id);
+
         Ok(())
     }
 
@@ -365,6 +395,10 @@ impl ProfileStorage {
         let meta_file = self.get_profile_path(id);
         let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
         fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
+
+        // Agenda sincronização automática da restauração
+        self.trigger_auto_sync(id);
+
         Ok(profile)
     }
 

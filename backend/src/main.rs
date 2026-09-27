@@ -71,7 +71,7 @@ async fn main() {
                 .post(routes::cookies::import_profile_cookies)
                 .delete(routes::cookies::clear_profile_cookies),
         )
-        .with_state(profile_storage);
+        .with_state(profile_storage.clone());
 
     let proxy_routes = Router::new()
         .route("/", get(routes::proxies::list_proxies).post(routes::proxies::create_proxy))
@@ -87,6 +87,12 @@ async fn main() {
 
     let auth_service = Arc::new(cloud_auth::CloudAuthService::new());
     let cloud_sync_service = Arc::new(cloud_sync::CloudSyncService::new(&data_dir, auth_service.clone()));
+    let auto_sync_engine = Arc::new(cloud_sync::AutoSyncEngine::new(
+        cloud_sync_service.clone(),
+        auth_service.clone(),
+        ws_state.clone(),
+    ));
+    profile_storage.set_auto_sync(auto_sync_engine.clone());
 
     let auth_routes = Router::new()
         .route("/start-login", post(routes::auth::start_login))

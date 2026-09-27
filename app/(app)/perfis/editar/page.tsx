@@ -65,9 +65,6 @@ export const EditarPerfilPage: React.FC = () => {
       await api.profiles.update(id, formData);
       toast.success('Perfil atualizado com sucesso');
 
-      // Sincronização automática na nuvem ao salvar edições
-      api.profiles.syncToCloud(id).catch(() => {});
-
       navigate('/perfis');
     } catch (err: any) {
       toast.error(`Erro ao salvar alterações: ${err.message || 'Falha de comunicação.'}`);

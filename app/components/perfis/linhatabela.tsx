@@ -135,12 +135,24 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
   const [isCloudSynced, setIsCloudSynced] = useState<boolean>(
     Boolean(profile.cloud_synced || profile.synced_at)
   );
-  const [cloudSizeKb, setCloudSizeKb] = useState<number | null>(null);
+  const [cloudSizeKb, setCloudSizeKb] = useState<number | null>(
+    profile.cloudSizeKb || null
+  );
+  const [isLocalSyncing, setIsLocalSyncing] = useState(false);
   const isRunning = profile.status === 'running' || profile.isRunning;
+  const isSyncing = Boolean(profile.isSyncing || isLocalSyncing);
+
+  useEffect(() => {
+    if (profile.cloud_synced !== undefined) {
+      setIsCloudSynced(Boolean(profile.cloud_synced));
+    }
+    if (profile.cloudSizeKb !== undefined) {
+      setCloudSizeKb(profile.cloudSizeKb);
+    }
+  }, [profile.cloud_synced, profile.cloudSizeKb]);
 
   useEffect(() => {
     let isMounted = true;
@@ -160,44 +172,9 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
     };
   }, [profile.id]);
 
-  // Auto-Sync Instantâneo ao Fechar o Navegador (quando passa de running para parado)
-  const prevRunningRef = useRef(isRunning);
-  useEffect(() => {
-    if (prevRunningRef.current && !isRunning) {
-      // Navegador acabou de ser fechado: envia novos cookies imediatamente para a nuvem
-      servicePerfis
-        .syncToCloud(profile.id)
-        .then((res) => {
-          setIsCloudSynced(true);
-          if (res?.size_kb) setCloudSizeKb(res.size_kb);
-          toast.success(
-            `Navegador fechado: sessão de ${profile.name || 'perfil'} sincronizada! (${res?.size_kb || 1} KB)`,
-            { id: `auto-sync-${profile.id}`, duration: 3000 }
-          );
-        })
-        .catch(() => {});
-    }
-    prevRunningRef.current = isRunning;
-  }, [isRunning, profile.id, profile.name]);
-
-  const handleSyncCloud = async () => {
-    try {
-      setIsSyncing(true);
-      toast.loading(`Sincronizando perfil ${profile.name}...`, { id: `sync-${profile.id}` });
-      const res = await servicePerfis.syncToCloud(profile.id);
-      setIsCloudSynced(true);
-      if (res.size_kb) setCloudSizeKb(res.size_kb);
-      toast.success(`Perfil ${profile.name} sincronizado na nuvem! (${res.size_kb} KB)`, { id: `sync-${profile.id}` });
-    } catch (err: any) {
-      toast.error(`Falha ao sincronizar: ${err?.message || 'Verifique se você está conectado'}`, { id: `sync-${profile.id}` });
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
   const handleRestoreCloud = async () => {
     try {
-      setIsSyncing(true);
+      setIsLocalSyncing(true);
       toast.loading(`Restaurando perfil ${profile.name}...`, { id: `restore-${profile.id}` });
       await servicePerfis.restoreFromCloud(profile.id);
       setIsCloudSynced(true);
@@ -205,7 +182,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
     } catch (err: any) {
       toast.error(`Falha ao restaurar: ${err?.message || 'Cápsula não encontrada na nuvem'}`, { id: `restore-${profile.id}` });
     } finally {
-      setIsSyncing(false);
+      setIsLocalSyncing(false);
     }
   };
 
@@ -312,20 +289,15 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
             {(profile.name || 'Sem nome').toUpperCase()}
           </span>
 
-          {/* Indicador de Status de Sincronização em Nuvem (E2EE < 1 MB) */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSyncCloud();
-            }}
-            className="flex items-center justify-center p-0.5 rounded hover:bg-[#383A44] transition-colors cursor-pointer"
+          {/* Indicador de Status de Sincronização em Nuvem (Automático com E2EE) */}
+          <span
+            className="flex items-center justify-center p-0.5 rounded select-none"
             title={
               isSyncing
-                ? '🔄 Sincronizando com a Nuvem Fury...'
+                ? '🔄 Sincronizando automaticamente com a Nuvem Fury...'
                 : isCloudSynced
-                  ? `🟢 Sincronizado na Nuvem E2EE (${cloudSizeKb ? `${cloudSizeKb} KB` : '< 1 MB'}). Clique para sincronizar.`
-                  : '🟠 Modificações Locais Pendentes (Não sincronizado). Clique para enviar à nuvem.'
+                  ? `🟢 Sincronizado na Nuvem E2EE (${cloudSizeKb ? `${cloudSizeKb} KB` : '< 1 MB'})`
+                  : '🟠 Modificações Locais Pendentes'
             }
           >
             {isSyncing ? (
@@ -333,9 +305,9 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
             ) : isCloudSynced ? (
               <CloudCheck size={14} className="shrink-0 text-[#10b981]" />
             ) : (
-              <Cloud size={14} className="shrink-0 text-[#f59e0b] hover:text-[#fbbf24]" />
+              <Cloud size={14} className="shrink-0 text-[#f59e0b]" />
             )}
-          </button>
+          </span>
 
           <button
             type="button"
@@ -483,7 +455,6 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           }
           onDuplicate={() => onDuplicate && onDuplicate(profile)}
           onDelete={() => onDelete(profile.id)}
-          onSyncCloud={handleSyncCloud}
           onRestoreCloud={handleRestoreCloud}
         />
       </td>

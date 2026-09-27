@@ -17,6 +17,15 @@ pub enum WsEvent {
         profile_id: String,
         status: String, // "running" ou "ready"
     },
+    #[serde(rename = "profile_syncing")]
+    ProfileSyncing {
+        profile_id: String,
+    },
+    #[serde(rename = "profile_synced")]
+    ProfileSynced {
+        profile_id: String,
+        size_kb: usize,
+    },
 }
 
 #[derive(Clone)]
