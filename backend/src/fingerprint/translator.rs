@@ -46,7 +46,7 @@ pub fn parse_seed(val: Option<&Value>) -> u32 {
     if s == 0 { 429496729 } else { s }
 }
 
-/// Extrai e normaliza o SO alvo ("windows", "macos" ou "linux")
+/// Extrai e normaliza o SO alvo ("windows", "macos", "linux", "android" ou "ios")
 pub fn resolve_os(profile: &Profile, fp_map: &serde_json::Map<String, Value>) -> String {
     let raw = fp_map
         .get("os")
@@ -58,6 +58,10 @@ pub fn resolve_os(profile: &Profile, fp_map: &serde_json::Map<String, Value>) ->
         "windows".to_string()
     } else if raw.contains("mac") || raw.contains("darwin") || raw.contains("apple") {
         "macos".to_string()
+    } else if raw.contains("android") {
+        "android".to_string()
+    } else if raw.contains("ios") || raw.contains("iphone") || raw.contains("ipad") {
+        "ios".to_string()
     } else {
         "linux".to_string()
     }
@@ -75,6 +79,8 @@ pub fn resolve_user_agent(os: &str, fp_map: &serde_json::Map<String, Value>) -> 
     match os {
         "windows" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0".to_string(),
         "macos" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:150.0) Gecko/20100101 Firefox/150.0".to_string(),
+        "android" => "Mozilla/5.0 (Android 14; Mobile; rv:150.0) Gecko/150.0 Firefox/150.0".to_string(),
+        "ios" => "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/150.0 Mobile/15E148 Safari/605.1.15".to_string(),
         _ => "Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0".to_string(),
     }
 }
@@ -96,21 +102,36 @@ pub fn build_camou_config(
     config.insert("navigator.userAgent".to_string(), Value::String(ua.clone()));
     config.insert("headers.User-Agent".to_string(), Value::String(ua.clone()));
 
-    let (platform, oscpu, app_version) = match os.as_str() {
+    let (platform, oscpu, app_version, default_touch_points) = match os.as_str() {
         "windows" => (
             "Win32",
             "Windows NT 10.0; Win64; x64",
             "5.0 (Windows)",
+            0,
         ),
         "macos" => (
             "MacIntel",
             "Intel Mac OS X 10.15",
             "5.0 (Macintosh)",
+            0,
+        ),
+        "android" => (
+            "Linux armv8l",
+            "Linux armv8l",
+            "5.0 (Linux; Android 14)",
+            5,
+        ),
+        "ios" => (
+            "iPhone",
+            "",
+            "5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X)",
+            5,
         ),
         _ => (
             "Linux x86_64",
             "Linux x86_64",
             "5.0 (X11)",
+            0,
         ),
     };
 
@@ -118,14 +139,20 @@ pub fn build_camou_config(
     config.insert("navigator.oscpu".to_string(), Value::String(oscpu.to_string()));
     config.insert("navigator.appVersion".to_string(), Value::String(app_version.to_string()));
 
-    // 2. Hardware: CPU Cores (hardwareConcurrency)
+    // 2. Hardware: CPU Cores (hardwareConcurrency) e Touch Points
     let cpu_cores = fp
         .get("cpu_cores")
         .and_then(|v| v.as_u64())
         .map(|n| n as u32)
         .unwrap_or(8);
     config.insert("navigator.hardwareConcurrency".to_string(), Value::Number(cpu_cores.into()));
-    config.insert("navigator.maxTouchPoints".to_string(), Value::Number(0.into()));
+
+    let touch_points = fp
+        .get("max_touch_points")
+        .and_then(|v| v.as_u64())
+        .map(|n| n as u32)
+        .unwrap_or(default_touch_points);
+    config.insert("navigator.maxTouchPoints".to_string(), Value::Number(touch_points.into()));
 
     // 3. Resolução de Tela (Screen & Window)
     let screen_w = fp
@@ -156,6 +183,8 @@ pub fn build_camou_config(
 
     config.insert("screen.width".to_string(), Value::Number(screen_w.into()));
     config.insert("screen.height".to_string(), Value::Number(screen_h.into()));
+    config.insert("screen.availLeft".to_string(), Value::Number(0.into()));
+    config.insert("screen.availTop".to_string(), Value::Number(0.into()));
     config.insert("screen.availWidth".to_string(), Value::Number(screen_w.into()));
     config.insert("screen.availHeight".to_string(), Value::Number(avail_h.into()));
     config.insert("screen.colorDepth".to_string(), Value::Number(color_depth.into()));
@@ -171,6 +200,8 @@ pub fn build_camou_config(
             "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)",
         ),
         "macos" => ("Apple", "Apple M2"),
+        "android" => ("Qualcomm", "Adreno (TM) 750"),
+        "ios" => ("Apple", "Apple GPU"),
         _ => (
             "Google Inc. (Intel)",
             "ANGLE (Intel, Mesa Intel(R) Xe Graphics (TGL GT2), OpenGL 4.6)",

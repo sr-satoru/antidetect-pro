@@ -33,6 +33,8 @@ pub fn prepare_fingerprint(
     let (platform, oscpu) = match os.as_str() {
         "windows" => ("Win32", "Windows NT 10.0; Win64; x64"),
         "macos" => ("MacIntel", "Intel Mac OS X 10.15"),
+        "android" => ("Linux armv8l", "Linux armv8l"),
+        "ios" => ("iPhone", ""),
         _ => ("Linux x86_64", "Linux x86_64"),
     };
 
@@ -156,5 +158,81 @@ mod tests {
         assert_eq!(cfg.get("webGl:vendor").unwrap(), "Apple");
         assert_eq!(cfg.get("webGl:renderer").unwrap(), "Apple M2");
         assert!(res.user_js_snippet.contains("general.platform.override\", \"MacIntel\""));
+    }
+
+    #[test]
+    fn test_android_fingerprint_translation() {
+        let profile = Profile {
+            id: "test-prof-android".to_string(),
+            name: "Test Android".to_string(),
+            group: "Default".to_string(),
+            tags: vec![],
+            notes: "".to_string(),
+            status: "ready".to_string(),
+            kernel: "Camoufox".to_string(),
+            browser_version: "150".to_string(),
+            os: "android".to_string(),
+            created_at: 100,
+            updated_at: 100,
+            last_launch: None,
+            is_deleted: false,
+            deleted_at: None,
+            proxy: ProfileProxyConfig::default(),
+            fingerprint_json: serde_json::json!({
+                "os": "android",
+                "user_agent": "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36",
+                "cpu_cores": 8
+            }),
+            extension_mode: None,
+            extension_category: None,
+            extensions: None,
+        };
+
+        let res = prepare_fingerprint(&profile, None, &[]);
+        let cfg = res.camou_config;
+
+        assert_eq!(cfg.get("navigator.platform").unwrap(), "Linux armv8l");
+        assert_eq!(cfg.get("navigator.oscpu").unwrap(), "Linux armv8l");
+        assert_eq!(cfg.get("navigator.maxTouchPoints").unwrap(), 5);
+        assert_eq!(cfg.get("webGl:vendor").unwrap(), "Qualcomm");
+        assert!(res.user_js_snippet.contains("general.platform.override\", \"Linux armv8l\""));
+    }
+
+    #[test]
+    fn test_ios_fingerprint_translation() {
+        let profile = Profile {
+            id: "test-prof-ios".to_string(),
+            name: "Test iOS".to_string(),
+            group: "Default".to_string(),
+            tags: vec![],
+            notes: "".to_string(),
+            status: "ready".to_string(),
+            kernel: "Camoufox".to_string(),
+            browser_version: "150".to_string(),
+            os: "ios".to_string(),
+            created_at: 100,
+            updated_at: 100,
+            last_launch: None,
+            is_deleted: false,
+            deleted_at: None,
+            proxy: ProfileProxyConfig::default(),
+            fingerprint_json: serde_json::json!({
+                "os": "ios",
+                "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+                "cpu_cores": 6
+            }),
+            extension_mode: None,
+            extension_category: None,
+            extensions: None,
+        };
+
+        let res = prepare_fingerprint(&profile, None, &[]);
+        let cfg = res.camou_config;
+
+        assert_eq!(cfg.get("navigator.platform").unwrap(), "iPhone");
+        assert_eq!(cfg.get("navigator.oscpu").unwrap(), "");
+        assert_eq!(cfg.get("navigator.maxTouchPoints").unwrap(), 5);
+        assert_eq!(cfg.get("webGl:vendor").unwrap(), "Apple");
+        assert!(res.user_js_snippet.contains("general.platform.override\", \"iPhone\""));
     }
 }

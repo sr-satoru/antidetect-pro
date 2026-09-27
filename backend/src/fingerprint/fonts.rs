@@ -37,6 +37,22 @@ pub fn get_os_fonts(os: &str) -> Vec<String> {
             "PingFang SC".to_string(),
             "PingFang TC".to_string(),
         ],
+        "android" => vec![
+            "Roboto".to_string(),
+            "Noto Sans".to_string(),
+            "Droid Sans".to_string(),
+            "sans-serif".to_string(),
+        ],
+        "ios" => vec![
+            "-apple-system".to_string(),
+            "San Francisco".to_string(),
+            "Helvetica Neue".to_string(),
+            "Helvetica".to_string(),
+            "Arial".to_string(),
+            "PingFang SC".to_string(),
+            "PingFang HK".to_string(),
+            "PingFang TC".to_string(),
+        ],
         _ => vec![
             "Arial".to_string(),
             "Times New Roman".to_string(),
