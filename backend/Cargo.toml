@@ -3,6 +3,14 @@ name = "backend"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "fury_backend"
+path = "src/lib.rs"
+
+[[bin]]
+name = "backend"
+path = "src/main.rs"
+
 [dependencies]
 axum = { version = "0.8.9", features = ["ws"] }
 chrono = { version = "0.4.45", features = ["serde"] }
