@@ -23,15 +23,17 @@ model User {
 }
 
 model AuthCode {
-  id         String   @id @default(uuid())
-  code       String   @unique
-  action     String   // "login" | "register"
-  state      String
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  consumed   Boolean  @default(false)
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
+  id                  String   @id @default(uuid())
+  code                String   @unique
+  action              String   // "login" | "register"
+  state               String
+  codeChallenge       String   @default("")
+  codeChallengeMethod String   @default("S256")
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  consumed            Boolean  @default(false)
+  expiresAt           DateTime
+  createdAt           DateTime @default(now())
 }
 
 model CloudProfile {

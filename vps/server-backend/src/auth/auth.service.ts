@@ -1,4 +1,4 @@
-import { randomBytes, createHmac, timingSafeEqual } from "node:crypto";
+import { randomBytes, createHash, timingSafeEqual } from "node:crypto";
 import {
   Injectable,
   BadRequestException,
@@ -13,30 +13,30 @@ import { PrismaService } from "../prisma/prisma.service.js";
 import { generateUserId } from "../common/id-generator.js";
 import { generateVaultSalt } from "../common/vault-hash.js";
 
-export interface DecodedChallenge {
-  action: "login" | "register";
-  state: string;
-  exp: number;
-}
-
 export interface WebRegisterDto {
   name?: string;
   email: string;
   password: string;
-  token: string;
+  state: string;
+  codeChallenge: string;
+  codeChallengeMethod?: string;
   redirectUri?: string;
 }
 
 export interface WebLoginDto {
   email: string;
   password: string;
-  token: string;
+  state: string;
+  codeChallenge: string;
+  codeChallengeMethod?: string;
   redirectUri?: string;
 }
 
 export interface ExchangeCodeDto {
   code: string;
   state: string;
+  codeVerifier?: string;
+  code_verifier?: string;
 }
 
 export interface RefreshTokenDto {
@@ -50,13 +50,6 @@ export class AuthService {
     private prisma: PrismaService,
   ) {}
 
-  private getOauthSecret(): string {
-    return this.configService.get<string>(
-      "OAUTH_SECRET",
-      "fury_oauth_secret_shared_with_rust_daemon",
-    );
-  }
-
   private getJwtSecret(): string {
     return this.configService.get<string>(
       "JWT_SECRET",
@@ -65,66 +58,11 @@ export class AuthService {
   }
 
   /**
-   * Valida o token assinado gerado pelo backend Rust (action, state, exp)
-   */
-  validateChallengeToken(tokenString: string): DecodedChallenge {
-    if (!tokenString || !tokenString.includes(".")) {
-      throw new BadRequestException("Token de desafio com formato inválido");
-    }
-
-    const [payloadB64, signature] = tokenString.split(".");
-    if (!payloadB64 || !signature) {
-      throw new BadRequestException("Partes do token ausentes");
-    }
-
-    const secret = this.getOauthSecret();
-    const expectedSignature = createHmac("sha256", secret)
-      .update(payloadB64)
-      .digest("hex");
-
-    const expectedBuf = Buffer.from(expectedSignature, "utf8");
-    const sigBuf = Buffer.from(signature, "utf8");
-
-    if (
-      expectedBuf.length !== sigBuf.length ||
-      !timingSafeEqual(expectedBuf, sigBuf)
-    ) {
-      throw new UnauthorizedException("Assinatura do token de autenticação inválida");
-    }
-
-    let payload: DecodedChallenge;
-    try {
-      const jsonStr = Buffer.from(payloadB64, "base64url").toString("utf8");
-      payload = JSON.parse(jsonStr);
-    } catch {
-      throw new BadRequestException("Carga do token corrompida");
-    }
-
-    if (!payload.action || !["login", "register"].includes(payload.action)) {
-      throw new BadRequestException("Ação de autenticação desconhecida");
-    }
-
-    if (!payload.state) {
-      throw new BadRequestException("Parâmetro de estado ausente no token");
-    }
-
-    const nowSeconds = Math.floor(Date.now() / 1000);
-    if (payload.exp && payload.exp < nowSeconds) {
-      throw new UnauthorizedException("Token de autenticação expirado. Solicite novo link no aplicativo.");
-    }
-
-    return payload;
-  }
-
-  /**
-   * Registro Web com persistência no SQLite via Prisma
+   * Registro Web com persistência no SQLite via Prisma (OAuth 2.0 PKCE)
    */
   async webRegister(dto: WebRegisterDto) {
-    const challenge = this.validateChallengeToken(dto.token);
-    if (challenge.action !== "register") {
-      throw new BadRequestException(
-        "Este link de acesso foi gerado para Entrar (Login), não para Criar Conta.",
-      );
+    if (!dto.state || !dto.codeChallenge) {
+      throw new BadRequestException("Parâmetros state e codeChallenge são obrigatórios para PKCE");
     }
 
     if (!dto.email || !dto.password) {
@@ -166,7 +104,9 @@ export class AuthService {
       data: {
         code,
         action: "register",
-        state: challenge.state,
+        state: dto.state,
+        codeChallenge: dto.codeChallenge,
+        codeChallengeMethod: dto.codeChallengeMethod || "S256",
         userId: user.id,
         expiresAt,
       },
@@ -175,20 +115,17 @@ export class AuthService {
     return {
       success: true,
       code,
-      state: challenge.state,
+      state: dto.state,
       redirectUri: dto.redirectUri || "http://127.0.0.1:8000/api/auth/callback",
     };
   }
 
   /**
-   * Login Web com validação de senha no SQLite via Prisma
+   * Login Web com validação de senha no SQLite via Prisma (OAuth 2.0 PKCE)
    */
   async webLogin(dto: WebLoginDto) {
-    const challenge = this.validateChallengeToken(dto.token);
-    if (challenge.action !== "login") {
-      throw new BadRequestException(
-        "Este link de acesso foi gerado para Criar Conta, não para Entrar.",
-      );
+    if (!dto.state || !dto.codeChallenge) {
+      throw new BadRequestException("Parâmetros state e codeChallenge são obrigatórios para PKCE");
     }
 
     if (!dto.email || !dto.password) {
@@ -215,7 +152,9 @@ export class AuthService {
       data: {
         code,
         action: "login",
-        state: challenge.state,
+        state: dto.state,
+        codeChallenge: dto.codeChallenge,
+        codeChallengeMethod: dto.codeChallengeMethod || "S256",
         userId: user.id,
         expiresAt,
       },
@@ -224,17 +163,23 @@ export class AuthService {
     return {
       success: true,
       code,
-      state: challenge.state,
+      state: dto.state,
       redirectUri: dto.redirectUri || "http://127.0.0.1:8000/api/auth/callback",
     };
   }
 
   /**
-   * Troca o AuthCode pelo JWT definitivo no loopback (RFC 8252)
+   * Troca o AuthCode pelo JWT definitivo no loopback com validação PKCE (RFC 7636 / RFC 8252)
    */
   async exchangeCode(dto: ExchangeCodeDto) {
+    const verifier = dto.codeVerifier || dto.code_verifier;
+
     if (!dto.code || !dto.state) {
       throw new BadRequestException("Código de autorização e estado são obrigatórios");
+    }
+
+    if (!verifier) {
+      throw new BadRequestException("Parâmetro code_verifier é obrigatório para validação PKCE");
     }
 
     const authCode = await this.prisma.authCode.findUnique({
@@ -246,6 +191,10 @@ export class AuthService {
       throw new UnauthorizedException("Código de autorização inexistente ou inválido");
     }
 
+    if (authCode.consumed) {
+      throw new UnauthorizedException("Código de autorização já utilizado");
+    }
+
     if (authCode.state !== dto.state) {
       throw new UnauthorizedException("Parâmetro de estado não corresponde (possível ataque CSRF)");
     }
@@ -254,13 +203,28 @@ export class AuthService {
       throw new UnauthorizedException("Código de autorização expirado");
     }
 
-    // Marca como consumido caso ainda não tenha sido
-    if (!authCode.consumed) {
-      await this.prisma.authCode.update({
-        where: { id: authCode.id },
-        data: { consumed: true },
-      });
+    // Validação Criptográfica PKCE (RFC 7636)
+    if (authCode.codeChallenge) {
+      const calculatedChallenge = createHash("sha256")
+        .update(verifier)
+        .digest("base64url");
+
+      const expectedBuf = Buffer.from(authCode.codeChallenge, "utf8");
+      const actualBuf = Buffer.from(calculatedChallenge, "utf8");
+
+      if (
+        expectedBuf.length !== actualBuf.length ||
+        !timingSafeEqual(expectedBuf, actualBuf)
+      ) {
+        throw new UnauthorizedException("Falha na validação PKCE: code_verifier inválido");
+      }
     }
+
+    // Marca como consumido imediatamente (uso único estrito)
+    await this.prisma.authCode.update({
+      where: { id: authCode.id },
+      data: { consumed: true },
+    });
 
     const user = authCode.user;
     let vaultSalt = user.vaultSalt;

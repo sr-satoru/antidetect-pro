@@ -17,6 +17,8 @@ pub struct SessionRecord {
     pub session_id: String,
     pub action: String, // "login" | "register"
     pub state: String,
+    #[serde(default)]
+    pub code_verifier: String,
     pub status: String, // "pending" | "authenticated" | "failed"
     pub created_at: i64,
     pub user: Option<CloudUser>,

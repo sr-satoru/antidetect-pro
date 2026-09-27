@@ -1,15 +1,13 @@
 use crate::models::{CloudUser, SessionRecord};
 use base64::Engine;
-use hmac::{Hmac, Mac};
+use rand::RngCore;
 use serde::{Deserialize, Serialize};
-use sha2::Sha256;
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
-
-type HmacSha256 = Hmac<Sha256>;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PersistedAuthSession {
@@ -28,7 +26,6 @@ pub struct CloudAuthService {
     current_token_expires_at: Arc<RwLock<i64>>,
     cloud_api_url: String,
     web_site_url: String,
-    oauth_secret: String,
     http_client: reqwest::Client,
     session_file: PathBuf,
 }
@@ -39,8 +36,6 @@ impl CloudAuthService {
             .unwrap_or_else(|_| "http://localhost:12342".to_string());
         let web_site_url = std::env::var("FURY_WEB_SITE_URL")
             .unwrap_or_else(|_| "http://localhost:3001".to_string());
-        let oauth_secret = std::env::var("OAUTH_SECRET")
-            .unwrap_or_else(|_| "fury_oauth_secret_shared_with_rust_daemon".to_string());
         let data_dir = std::env::var("FURY_DATA_DIR").unwrap_or_else(|_| "./data".to_string());
         let session_file = PathBuf::from(data_dir).join("auth_session.json");
 
@@ -69,49 +64,40 @@ impl CloudAuthService {
             current_token_expires_at: Arc::new(RwLock::new(initial_expires_at)),
             cloud_api_url,
             web_site_url,
-            oauth_secret,
             http_client: reqwest::Client::new(),
             session_file,
         }
     }
 
-    /// Gera o token assinado HMAC-SHA256 de curta duração para autorização segura
-    pub fn generate_challenge_token(&self, action: &str, state: &str) -> String {
-        let exp = chrono::Utc::now().timestamp() + 600; // 10 minutos
-        let payload = serde_json::json!({
-            "action": action,
-            "state": state,
-            "exp": exp
-        });
+    /// Gera o par PKCE (code_verifier, code_challenge) em conformidade com a RFC 7636
+    pub fn generate_pkce_pair() -> (String, String) {
+        let mut random_bytes = [0u8; 48];
+        rand::thread_rng().fill_bytes(&mut random_bytes);
+        let code_verifier = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(random_bytes);
 
-        let payload_str = payload.to_string();
-        let payload_b64 = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(payload_str.as_bytes());
+        let hash = Sha256::digest(code_verifier.as_bytes());
+        let code_challenge = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(hash);
 
-        let mut mac = HmacSha256::new_from_slice(self.oauth_secret.as_bytes())
-            .expect("Chave HMAC válida");
-        mac.update(payload_b64.as_bytes());
-        let signature = mac.finalize().into_bytes();
-        let sig_hex: String = signature.iter().map(|b| format!("{:02x}", b)).collect();
-
-        format!("{}.{}", payload_b64, sig_hex)
+        (code_verifier, code_challenge)
     }
 
-    /// Cria uma nova sessão para Login ou Registro e monta a URL do navegador
+    /// Cria uma nova sessão para Login ou Registro com PKCE e monta a URL de autorização
     pub async fn create_auth_session(&self, action: &str) -> (String, String, String) {
         let session_id = Uuid::new_v4().to_string();
         let auth_state = Uuid::new_v4().to_string();
-        let token = self.generate_challenge_token(action, &auth_state);
+        let (code_verifier, code_challenge) = Self::generate_pkce_pair();
         let redirect_uri = "http://127.0.0.1:8000/api/auth/callback";
 
         let auth_url = format!(
-            "{}/auth?action={}&token={}&state={}&redirect_uri={}",
-            self.web_site_url, action, token, auth_state, redirect_uri
+            "{}/auth?action={}&code_challenge={}&code_challenge_method=S256&state={}&redirect_uri={}",
+            self.web_site_url, action, code_challenge, auth_state, redirect_uri
         );
 
         let record = SessionRecord {
             session_id: session_id.clone(),
             action: action.to_string(),
             state: auth_state,
+            code_verifier: code_verifier.clone(),
             status: "pending".to_string(),
             created_at: chrono::Utc::now().timestamp(),
             user: None,
@@ -120,7 +106,7 @@ impl CloudAuthService {
         };
 
         self.sessions.write().await.insert(session_id.clone(), record);
-        (session_id, token, auth_url)
+        (session_id, code_verifier, auth_url)
     }
 
     /// Verifica se a sessão deste state já foi autenticada (idempotência para redirects duplos do browser)
@@ -135,14 +121,14 @@ impl CloudAuthService {
         })
     }
 
-    /// Realiza a troca do AuthCode pelo JWT definitivo no NestJS Cloud
+    /// Realiza a troca do AuthCode pelo JWT definitivo no NestJS Cloud enviando o code_verifier (PKCE)
     pub async fn exchange_code(&self, code: &str, oauth_state: &str) -> Result<CloudUser, String> {
-        let session_id = {
+        let (session_id, code_verifier) = {
             let sessions = self.sessions.read().await;
             sessions
                 .iter()
                 .find(|(_, rec)| rec.state == oauth_state)
-                .map(|(id, _)| id.clone())
+                .map(|(id, rec)| (id.clone(), rec.code_verifier.clone()))
                 .ok_or_else(|| "Sessão de autenticação expirada ou inválida".to_string())?
         };
 
@@ -150,6 +136,7 @@ impl CloudAuthService {
         let payload = serde_json::json!({
             "code": code,
             "state": oauth_state,
+            "code_verifier": code_verifier,
         });
 
         let resp = self

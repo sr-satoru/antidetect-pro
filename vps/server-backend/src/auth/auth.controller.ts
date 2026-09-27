@@ -12,16 +12,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   /**
-   * Valida se o token emitido pelo app desktop é autêntico e recupera a ação (login ou register)
-   * GET /api/auth/validate-token?token=...
+   * Endpoint de validação de conectividade mantido para compatibilidade
+   * GET /api/auth/validate-token
    */
   @Get("validate-token")
-  validateToken(@Query("token") token: string) {
-    const challenge = this.authService.validateChallengeToken(token);
+  validateToken() {
     return {
       valid: true,
-      action: challenge.action,
-      state: challenge.state,
     };
   }
 

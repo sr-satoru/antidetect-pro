@@ -9,9 +9,12 @@ function AuthContent() {
   const router = useRouter();
 
   const queryAction = searchParams.get("action") || "login";
-  const token = searchParams.get("token") || "";
+  const codeChallenge = searchParams.get("code_challenge") || "";
+  const codeChallengeMethod = searchParams.get("code_challenge_method") || "S256";
   const state = searchParams.get("state") || "";
   const redirectUri = searchParams.get("redirect_uri") || "http://127.0.0.1:8000/api/auth/callback";
+
+  const isDesktopSession = Boolean(codeChallenge && state);
 
   const [activeTab, setActiveTab] = useState<"login" | "register">(
     queryAction === "register" ? "register" : "login"
@@ -21,49 +24,10 @@ function AuthContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [validatingToken, setValidatingToken] = useState(Boolean(token));
-  const [tokenValid, setTokenValid] = useState<boolean | null>(null);
-  const [tokenError, setTokenError] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
 
   const CLOUD_API_URL = process.env.NEXT_PUBLIC_CLOUD_API_URL || "http://localhost:12342";
-
-  // Validação do Token no NestJS Backend
-  useEffect(() => {
-    if (!token) {
-      setValidatingToken(false);
-      return;
-    }
-
-    const checkToken = async () => {
-      try {
-        const res = await fetch(`${CLOUD_API_URL}/api/auth/validate-token?token=${encodeURIComponent(token)}`);
-        const data = await res.json();
-
-        if (res.ok && data.valid) {
-          setTokenValid(true);
-          if (data.action === "register") {
-            setActiveTab("register");
-          } else {
-            setActiveTab("login");
-          }
-        } else {
-          setTokenValid(false);
-          setTokenError(data.message || "Token de autenticação inválido ou expirado.");
-        }
-      } catch (err) {
-        console.error("Erro ao validar token:", err);
-        setTokenValid(false);
-        setTokenError("Não foi possível conectar ao servidor de autenticação.");
-      } finally {
-        setValidatingToken(false);
-      }
-    };
-
-    checkToken();
-  }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +44,9 @@ function AuthContent() {
         email,
         password,
         name: activeTab === "register" ? name : undefined,
-        token,
+        state,
+        codeChallenge,
+        codeChallengeMethod,
         redirectUri,
       };
 
@@ -96,7 +62,7 @@ function AuthContent() {
         throw new Error(data.message || "Falha ao processar solicitação");
       }
 
-      // Redireciona para a página de retorno padrão Google OAuth
+      // Redireciona para a página de retorno padrão Google OAuth 2.0
       const redirectTarget = `/auth/redirect?code=${encodeURIComponent(data.code)}&state=${encodeURIComponent(
         data.state || state
       )}&redirect_uri=${encodeURIComponent(data.redirectUri || redirectUri)}`;
@@ -120,34 +86,25 @@ function AuthContent() {
             <Shield className="h-6 w-6" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white">Fury Antidetect</h1>
-          <p className="text-xs text-slate-400 mt-1">Portal de Autenticação Segura (OAuth 2.0)</p>
+          <p className="text-xs text-slate-400 mt-1">Portal de Autenticação Segura (OAuth 2.0 PKCE)</p>
         </div>
 
         {/* Indicador de Conexão com o App Desktop */}
-        {token ? (
-          <div className="mb-6 rounded-xl border border-blue-500/20 bg-blue-500/10 p-3 flex items-start gap-2.5">
-            {validatingToken ? (
-              <Loader2 className="w-4 h-4 text-blue-400 animate-spin shrink-0 mt-0.5" />
-            ) : tokenValid ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-            )}
-            <div className="text-xs">
-              {validatingToken ? (
-                <span className="text-blue-300">Validando link seguro com o aplicativo...</span>
-              ) : tokenValid ? (
-                <span className="text-emerald-300 font-medium">
-                  Vinculando com segurança ao seu aplicativo Fury Desktop.
-                </span>
-              ) : (
-                <span className="text-amber-300">
-                  {tokenError || "Link de vinculação inválido ou expirado."}
-                </span>
-              )}
+        {isDesktopSession ? (
+          <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 flex items-start gap-2.5">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="text-xs text-emerald-300 font-medium">
+              Vinculando com segurança ao seu aplicativo Fury Desktop via PKCE (RFC 7636).
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="mb-6 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="text-xs text-amber-300">
+              Para vincular este acesso ao Fury Desktop, inicie a ação diretamente no aplicativo.
+            </div>
+          </div>
+        )}
 
         {/* Abas: Entrar / Criar Conta */}
         <div className="grid grid-cols-2 gap-1 rounded-xl bg-slate-950 p-1 mb-6 border border-slate-800/80">
@@ -238,7 +195,7 @@ function AuthContent() {
 
           <button
             type="submit"
-            disabled={loading || (Boolean(token) && tokenValid === false)}
+            disabled={loading}
             className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-xs font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {loading ? (
