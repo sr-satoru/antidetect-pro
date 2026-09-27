@@ -49,6 +49,22 @@ pub async fn import_profile_extensions(
     // 1. Identifica a lista de extensões que devem ser instaladas
     let mut targets: Vec<ExtensionTarget> = Vec::new();
 
+    // Carrega a biblioteca de extensões da equipe (<data_dir>/extensions/*.json) para enriquecimento
+    let mut team_library: Vec<ExtensionItem> = Vec::new();
+    let team_dir = root_dir.join("extensions");
+    if let Ok(entries) = fs::read_dir(&team_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.extension().map(|e| e == "json").unwrap_or(false) {
+                if let Ok(content) = fs::read_to_string(path) {
+                    if let Ok(ext) = serde_json::from_str::<ExtensionItem>(&content) {
+                        team_library.push(ext);
+                    }
+                }
+            }
+        }
+    }
+
     // Se o perfil possui uma lista explícita salva em profile.extensions (via avancado.tsx ou categorias)
     if let Some(ref exts_val) = profile.extensions {
         if let Some(arr) = exts_val.as_array() {
@@ -67,7 +83,7 @@ pub async fn import_profile_extensions(
                     .and_then(|n| n.as_str())
                     .unwrap_or("Extensão")
                     .to_string();
-                let url = item
+                let mut url = item
                     .get("provider_url")
                     .or_else(|| item.get("providerUrl"))
                     .and_then(|u| u.as_str())
@@ -75,7 +91,51 @@ pub async fn import_profile_extensions(
                 let guid = item
                     .get("id")
                     .and_then(|i| i.as_str())
-                    .map(|s| s.to_string());
+                    .map(|s| s.to_string())
+                    .or_else(|| item.get("id").and_then(|i| i.as_u64()).map(|n| n.to_string()));
+
+                // Se a URL não veio ou está vazia ou '#', busca na biblioteca da equipe por ID ou Nome
+                let is_empty_url = url.as_deref().map(|u| u.trim().is_empty() || u == "#").unwrap_or(true);
+                if is_empty_url {
+                    if let Some(ref gid) = guid {
+                        if let Some(matched) = team_library.iter().find(|t| t.id.to_string() == *gid) {
+                            if let Some(ref u) = matched.provider_url {
+                                if !u.trim().is_empty() && u != "#" {
+                                    url = Some(u.clone());
+                                }
+                            }
+                        }
+                    }
+                    if url.is_none() || url.as_deref().unwrap_or("").trim().is_empty() {
+                        if let Some(matched) = team_library.iter().find(|t| t.name.eq_ignore_ascii_case(&name)) {
+                            if let Some(ref u) = matched.provider_url {
+                                if !u.trim().is_empty() && u != "#" {
+                                    url = Some(u.clone());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Se ainda assim estiver sem URL, tenta inferir slug do Mozilla AMO a partir do guid/id
+                let still_empty = url.as_deref().map(|u| u.trim().is_empty() || u == "#").unwrap_or(true);
+                if still_empty {
+                    if let Some(ref gid) = guid {
+                        let trimmed = gid.trim();
+                        if !trimmed.is_empty() && !trimmed.starts_with("local_") && !trimmed.contains('/') && trimmed.parse::<u64>().is_err() {
+                            url = Some(format!("https://addons.mozilla.org/firefox/addon/{}/", trimmed));
+                        }
+                    }
+                }
+
+                // Fallback pelo nome da extensão se for um slug viável
+                let last_empty = url.as_deref().map(|u| u.trim().is_empty() || u == "#").unwrap_or(true);
+                if last_empty {
+                    let slug = name.trim().to_lowercase().replace(' ', "-");
+                    if !slug.is_empty() && slug != "extensão" {
+                        url = Some(format!("https://addons.mozilla.org/firefox/addon/{}/", slug));
+                    }
+                }
 
                 targets.push(ExtensionTarget {
                     name,
@@ -89,23 +149,13 @@ pub async fn import_profile_extensions(
     // Se não houver extensões na lista própria do perfil e o modo for 'team' ou 'category',
     // carrega as extensões ativas cadastradas na equipe (<data_dir>/extensions/*.json)
     if targets.is_empty() && (mode == "team" || mode == "category") {
-        let team_dir = root_dir.join("extensions");
-        if let Ok(entries) = fs::read_dir(team_dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if path.extension().map(|e| e == "json").unwrap_or(false) {
-                    if let Ok(content) = fs::read_to_string(path) {
-                        if let Ok(ext) = serde_json::from_str::<ExtensionItem>(&content) {
-                            if ext.enabled {
-                                targets.push(ExtensionTarget {
-                                    name: ext.name,
-                                    provider_url: ext.provider_url,
-                                    guid_hint: None,
-                                });
-                            }
-                        }
-                    }
-                }
+        for ext in &team_library {
+            if ext.enabled {
+                targets.push(ExtensionTarget {
+                    name: ext.name.clone(),
+                    provider_url: ext.provider_url.clone(),
+                    guid_hint: Some(ext.id.to_string()),
+                });
             }
         }
     }
@@ -126,12 +176,22 @@ pub async fn import_profile_extensions(
 
     // 2. Para cada extensão alvo, garante o download no cache e a cópia para o perfil
     for target in targets {
-        let url_str = target.provider_url.as_deref().unwrap_or("");
-        if url_str.trim().is_empty() || url_str == "#" {
+        let mut url_str = target.provider_url.as_deref().unwrap_or("").trim().to_string();
+        if url_str.is_empty() || url_str == "#" {
+            if let Some(ref gid) = target.guid_hint {
+                let trimmed = gid.trim();
+                if !trimmed.is_empty() && !trimmed.starts_with("local_") && trimmed.parse::<u64>().is_err() {
+                    url_str = trimmed.to_string();
+                }
+            }
+        }
+
+        if url_str.is_empty() || url_str == "#" {
+            warn!("⚠️ Extensão '{}' ignorada: nenhuma URL ou slug do AMO encontrado.", target.name);
             continue;
         }
 
-        match downloader::download_and_cache_xpi(url_str, &cache_dir, client).await {
+        match downloader::download_and_cache_xpi(&url_str, &cache_dir, client).await {
             Ok((cached_xpi, api_guid)) => {
                 // Determina o Gecko Add-on ID oficial
                 let addon_id = api_guid
@@ -230,6 +290,69 @@ mod tests {
         let client = reqwest::Client::new();
         let result = import_profile_extensions(&profile, &temp_dir, &temp_dir, &client).await.unwrap();
         assert!(result.is_empty());
+
+        let _ = fs::remove_dir_all(&temp_dir);
+    }
+
+    #[tokio::test]
+    async fn test_import_extensions_fallback_enrichment() {
+        let temp_dir = std::env::temp_dir().join("test_fury_enrichment");
+        let extensions_dir = temp_dir.join("extensions");
+        let _ = fs::create_dir_all(&extensions_dir);
+
+        // Cria uma extensão simulada na biblioteca de equipe
+        let sample_team_ext = ExtensionItem {
+            id: 9999,
+            name: "Test AdBlocker".to_string(),
+            icon_type: None,
+            icon_url: None,
+            icon_bg: None,
+            enabled: true,
+            status: "available".to_string(),
+            description: "Test".to_string(),
+            provider: "Firefox Add-ons".to_string(),
+            provider_url: Some("https://addons.mozilla.org/pt-BR/firefox/addon/ublock-origin/".to_string()),
+            tab: "team".to_string(),
+            version: None,
+        };
+        let _ = fs::write(
+            extensions_dir.join("9999.json"),
+            serde_json::to_string(&sample_team_ext).unwrap(),
+        );
+
+        // Perfil configurado com extensão SEM provider_url (como vinha de categorias customizadas salvas)
+        let profile = Profile {
+            id: "test-category".to_string(),
+            name: "Test Category".to_string(),
+            group: "Default".to_string(),
+            tags: vec![],
+            notes: "".to_string(),
+            status: "ready".to_string(),
+            kernel: "Camoufox".to_string(),
+            browser_version: "150".to_string(),
+            os: "windows".to_string(),
+            created_at: 100,
+            updated_at: 100,
+            last_launch: None,
+            is_deleted: false,
+            deleted_at: None,
+            proxy: ProfileProxyConfig::default(),
+            fingerprint_json: serde_json::json!({}),
+            extension_mode: Some("category".to_string()),
+            extension_category: Some("cat_custom".to_string()),
+            extensions: Some(serde_json::json!([
+                {
+                    "id": "9999",
+                    "name": "Test AdBlocker"
+                    // Sem provider_url nem providerUrl!
+                }
+            ])),
+        };
+
+        // Simula client mock que não precisa conectar de verdade
+        let client = reqwest::Client::new();
+        // Não falha na resolução de alvos mesmo se a rede falhar
+        let _ = import_profile_extensions(&profile, &temp_dir, &temp_dir, &client).await;
 
         let _ = fs::remove_dir_all(&temp_dir);
     }

@@ -12,6 +12,7 @@ export interface RegisteredExtension {
   description?: string;
   provider?: string;
   providerUrl?: string;
+  provider_url?: string;
   tab?: string;
   category?: string;
   version?: string;

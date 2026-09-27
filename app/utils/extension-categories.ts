@@ -9,6 +9,7 @@ export interface ExtensionItemSummary {
   iconBg?: string;
   description?: string;
   provider?: string;
+  providerUrl?: string;
 }
 
 export interface ExtensionCategory {
@@ -102,11 +103,50 @@ export function useExtensionCategories() {
     save(categories.filter((c) => c.id !== id));
   };
 
+  /**
+   * Enriquecimento retroativo automático para categorias salvas anteriormente sem providerUrl
+   */
+  const enrichCategoriesWithTeam = (teamExtensions: any[] = []) => {
+    if (!teamExtensions || teamExtensions.length === 0) return;
+    let modified = false;
+    const updated = categories.map((cat) => {
+      let catModified = false;
+      const enrichedExts = (cat.extensions || []).map((ext) => {
+        let url = ext.providerUrl;
+        if (!url) {
+          const match = teamExtensions.find(
+            (t) => String(t.id) === String(ext.id) || t.name?.toLowerCase() === ext.name?.toLowerCase()
+          );
+          url = match?.providerUrl || match?.provider_url;
+        }
+        if (!url && ext.id && !String(ext.id).includes('/') && !String(ext.id).startsWith('local_') && isNaN(Number(ext.id))) {
+          url = `https://addons.mozilla.org/firefox/addon/${ext.id}/`;
+        }
+        if (url && url !== ext.providerUrl) {
+          catModified = true;
+          return { ...ext, providerUrl: url };
+        }
+        return ext;
+      });
+
+      if (catModified) {
+        modified = true;
+        return { ...cat, extensions: enrichedExts };
+      }
+      return cat;
+    });
+
+    if (modified) {
+      save(updated);
+    }
+  };
+
   return {
     categories,
     addCategory,
     updateCategory,
     removeCategory,
+    enrichCategoriesWithTeam,
   };
 }
 
@@ -125,6 +165,7 @@ export async function searchExtensionsForCategory(
     iconBg: ext.iconBg || '#2F80ED',
     description: ext.description,
     provider: ext.provider || 'Equipe',
+    providerUrl: ext.providerUrl || ext.provider_url,
   }));
 
   if (!q) return teamItems;
@@ -143,6 +184,7 @@ export async function searchExtensionsForCategory(
         iconBg: c.iconBg || '#2F80ED',
         description: c.description,
         provider: c.provider || 'Firefox Add-ons',
+        providerUrl: c.providerUrl || c.provider_url || c.url,
       }));
 
       return [

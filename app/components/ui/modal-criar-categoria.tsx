@@ -46,7 +46,20 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
       if (categoryToEdit) {
         setNome(categoryToEdit.name || '');
         setObservacao(categoryToEdit.description || '');
-        setSelectedExtensions(categoryToEdit.extensions || []);
+        const enriched = (categoryToEdit.extensions || []).map((ext) => {
+          let url = ext.providerUrl;
+          if (!url) {
+            const match = teamExtensions.find(
+              (t) => String(t.id) === String(ext.id) || t.name?.toLowerCase() === ext.name?.toLowerCase()
+            );
+            url = match?.providerUrl || match?.provider_url;
+          }
+          if (!url && ext.id && !String(ext.id).includes('/') && !String(ext.id).startsWith('local_') && isNaN(Number(ext.id))) {
+            url = `https://addons.mozilla.org/firefox/addon/${ext.id}/`;
+          }
+          return { ...ext, providerUrl: url || ext.providerUrl };
+        });
+        setSelectedExtensions(enriched);
       } else {
         setNome('');
         setObservacao('');
@@ -55,7 +68,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
       setIsDropdownOpen(false);
       setSearchQuery('');
     }
-  }, [isOpen, categoryToEdit]);
+  }, [isOpen, categoryToEdit, teamExtensions]);
 
   // Carrega opções iniciais ao abrir o dropdown ou quando a busca muda
   useEffect(() => {
@@ -124,7 +137,17 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
       if (exists) {
         return prev.filter((item) => String(item.id) !== String(ext.id));
       } else {
-        return [...prev, ext];
+        let url = ext.providerUrl;
+        if (!url) {
+          const match = teamExtensions.find(
+            (t) => String(t.id) === String(ext.id) || t.name?.toLowerCase() === ext.name?.toLowerCase()
+          );
+          url = match?.providerUrl || match?.provider_url;
+        }
+        if (!url && ext.id && !String(ext.id).includes('/') && !String(ext.id).startsWith('local_') && isNaN(Number(ext.id))) {
+          url = `https://addons.mozilla.org/firefox/addon/${ext.id}/`;
+        }
+        return [...prev, { ...ext, providerUrl: url || ext.providerUrl }];
       }
     });
   };
@@ -139,11 +162,28 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
       return;
     }
 
+    const enrichedExtensions = selectedExtensions.map((ext) => {
+      let url = ext.providerUrl;
+      if (!url) {
+        const match = teamExtensions.find(
+          (t) => String(t.id) === String(ext.id) || t.name?.toLowerCase() === ext.name?.toLowerCase()
+        );
+        url = match?.providerUrl || match?.provider_url;
+      }
+      if (!url && ext.id && !String(ext.id).includes('/') && !String(ext.id).startsWith('local_') && isNaN(Number(ext.id))) {
+        url = `https://addons.mozilla.org/firefox/addon/${ext.id}/`;
+      }
+      return {
+        ...ext,
+        providerUrl: url || ext.providerUrl,
+      };
+    });
+
     if (categoryToEdit) {
       const updated = updateCategory(categoryToEdit.id, {
         name: nome.trim(),
         description: observacao.trim(),
-        extensions: selectedExtensions,
+        extensions: enrichedExtensions,
       });
 
       toast.success('Categoria atualizada com sucesso');
@@ -154,7 +194,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
       const created = addCategory({
         name: nome.trim(),
         description: observacao.trim(),
-        extensions: selectedExtensions,
+        extensions: enrichedExtensions,
       });
 
       toast.success('Categoria criada com sucesso');
