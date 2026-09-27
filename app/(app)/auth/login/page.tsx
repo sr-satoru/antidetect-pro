@@ -4,12 +4,10 @@ import { useAuth } from '@/contexts/auth-context';
 import {
   Shield,
   LogIn,
-  UserPlus,
   Loader2,
   ExternalLink,
   X,
   HardDrive,
-  Sparkles,
   ArrowRight,
   CheckCircle2,
 } from 'lucide-react';
@@ -25,7 +23,7 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { setCloudSession, continueOffline } = useAuth();
 
-  const [loadingAction, setLoadingAction] = useState<'login' | 'register' | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [waitingSession, setWaitingSession] = useState<PendingAuthSession | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -73,21 +71,21 @@ export const LoginPage: React.FC = () => {
     };
   }, [waitingSession, navigate, setCloudSession]);
 
-  // 1. Iniciar fluxo de LOGIN no navegador
-  const handleStartLogin = async () => {
+  // Iniciar fluxo de CONEXÃO no navegador via OAuth 2.0 PKCE
+  const handleConnect = async () => {
     try {
-      setLoadingAction('login');
+      setIsLoading(true);
       const res = await fetch('http://127.0.0.1:8000/api/auth/start-login', {
         method: 'POST',
       });
 
       if (!res.ok) {
-        throw new Error('Falha ao gerar link de login. Verifique se o daemon local está ativo.');
+        throw new Error('Falha ao gerar link de conexão. Verifique se o daemon local está ativo.');
       }
 
       const data = await res.json();
       window.open(data.auth_url, '_blank', 'noopener,noreferrer');
-      toast.info('Abrindo navegador seguro para login...');
+      toast.info('Abrindo navegador seguro para conectar...');
 
       setWaitingSession({
         sessionId: data.session_id,
@@ -95,48 +93,20 @@ export const LoginPage: React.FC = () => {
         authUrl: data.auth_url,
       });
     } catch (err: any) {
-      toast.error(err.message || 'Erro ao iniciar login');
+      toast.error(err.message || 'Erro ao conectar conta');
     } finally {
-      setLoadingAction(null);
+      setIsLoading(false);
     }
   };
 
-  // 2. Iniciar fluxo de REGISTRO no navegador
-  const handleStartRegister = async () => {
-    try {
-      setLoadingAction('register');
-      const res = await fetch('http://127.0.0.1:8000/api/auth/start-register', {
-        method: 'POST',
-      });
-
-      if (!res.ok) {
-        throw new Error('Falha ao gerar link de registro. Verifique se o daemon local está ativo.');
-      }
-
-      const data = await res.json();
-      window.open(data.auth_url, '_blank', 'noopener,noreferrer');
-      toast.info('Abrindo navegador seguro para criar conta...');
-
-      setWaitingSession({
-        sessionId: data.session_id,
-        action: 'register',
-        authUrl: data.auth_url,
-      });
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao iniciar cadastro');
-    } finally {
-      setLoadingAction(null);
-    }
-  };
-
-  // 3. Continuar Offline
+  // Continuar Offline
   const handleOffline = () => {
     continueOffline();
     toast.info('Modo Offline ativado. Perfis salvos localmente.');
     navigate('/perfis');
   };
 
-  // 4. Cancelar espera de autorização
+  // Cancelar espera de autorização
   const handleCancelWaiting = () => {
     if (pollIntervalRef.current) {
       clearInterval(pollIntervalRef.current);
@@ -205,40 +175,23 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Estado Inicial: 2 Botões de Ação Principais */
+          /* Estado Inicial: Botão Único de Conectar Conta */
           <div className="space-y-4">
             <button
               type="button"
-              disabled={loadingAction !== null}
-              onClick={handleStartLogin}
+              disabled={isLoading}
+              onClick={handleConnect}
               className="w-full flex items-center justify-between rounded-xl bg-[#1677FF] hover:bg-[#1462d6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#1677FF]/25 disabled:opacity-50 transition-all group"
             >
               <div className="flex items-center gap-3">
-                {loadingAction === 'login' ? (
+                {isLoading ? (
                   <Loader2 size={18} className="animate-spin" />
                 ) : (
                   <LogIn size={18} className="text-white/80 group-hover:text-white transition-colors" />
                 )}
-                <span>Entrar na Conta</span>
+                <span>Conectar Conta</span>
               </div>
               <ArrowRight size={16} className="text-white/70 group-hover:translate-x-0.5 transition-transform" />
-            </button>
-
-            <button
-              type="button"
-              disabled={loadingAction !== null}
-              onClick={handleStartRegister}
-              className="w-full flex items-center justify-between rounded-xl border border-[#262833] bg-[#181922] hover:bg-[#1f202c] hover:border-slate-700 px-5 py-3.5 text-sm font-semibold text-slate-200 hover:text-white disabled:opacity-50 transition-all group"
-            >
-              <div className="flex items-center gap-3">
-                {loadingAction === 'register' ? (
-                  <Loader2 size={18} className="animate-spin text-blue-400" />
-                ) : (
-                  <UserPlus size={18} className="text-blue-400" />
-                )}
-                <span>Criar Nova Conta</span>
-              </div>
-              <Sparkles size={16} className="text-blue-400/70 group-hover:text-blue-400 transition-colors" />
             </button>
 
             {/* Divisor */}
@@ -254,7 +207,7 @@ export const LoginPage: React.FC = () => {
             {/* Continuar Offline */}
             <button
               type="button"
-              disabled={loadingAction !== null}
+              disabled={isLoading}
               onClick={handleOffline}
               className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-medium text-[#8E92A2] hover:text-white hover:bg-white/[0.04] transition-all"
             >
