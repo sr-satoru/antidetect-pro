@@ -56,57 +56,16 @@ impl ProcessManager {
             .unwrap_or(18922)
     }
 
-    /// Resolve o executável do motor Fury na máquina (compatível com Linux, Windows e macOS).
+    /// Resolve o executável do motor Fury baixado e gerenciado pelo aplicativo.
+    /// A única forma permitida de iniciar é pelo binário oficial baixado automaticamente.
     pub fn resolve_browser_binary(data_dir: &Path) -> Result<PathBuf, String> {
-        // 1. Prioridade máxima: Motor oficial Fury isolado gerenciado pelo browser_downloader
-        if let Ok(engine_path) = crate::browser_downloader::resolve_engine_binary(data_dir) {
-            return Ok(engine_path);
-        }
+        let base_data_dir = if data_dir.ends_with("profiles") {
+            data_dir.parent().unwrap_or(data_dir)
+        } else {
+            data_dir
+        };
 
-        // 2. Caminho de desenvolvimento local caso ainda não tenha sido baixado
-        let dev_pc_camoufox = PathBuf::from("/home/vanir/.local/bin/camoufox");
-        if dev_pc_camoufox.exists() {
-            return Ok(dev_pc_camoufox);
-        }
-
-        // 3. Busca no diretório home do usuário (.local/bin ou .camoufox)
-        if let Ok(home) = std::env::var("HOME").or_else(|_| std::env::var("USERPROFILE")) {
-            let home_path = PathBuf::from(home);
-            let candidates = [
-                home_path.join(".local").join("bin").join("camoufox"),
-                home_path.join(".local").join("bin").join("camoufox.exe"),
-                home_path.join(".camoufox").join("camoufox"),
-                home_path.join(".camoufox").join("camoufox.exe"),
-            ];
-            for cand in candidates {
-                if cand.exists() {
-                    return Ok(cand);
-                }
-            }
-        }
-
-        // 4. Fallback no PATH do sistema: 'which' (Linux/macOS) ou 'where' (Windows)
-        #[cfg(unix)]
-        let finder = "which";
-        #[cfg(windows)]
-        let finder = "where";
-
-        if let Ok(output) = Command::new(finder).arg("camoufox").output() {
-            if output.status.success() {
-                let stdout = String::from_utf8_lossy(&output.stdout);
-                if let Some(first_line) = stdout.lines().next() {
-                    let trimmed = first_line.trim();
-                    if !trimmed.is_empty() {
-                        return Ok(PathBuf::from(trimmed));
-                    }
-                }
-            }
-        }
-
-        Err(
-            "O motor de navegação Fury não está instalado na máquina. Clique em 'Baixar Cliente' no topo para instalar automaticamente."
-                .to_string(),
-        )
+        crate::browser_downloader::resolve_engine_binary(base_data_dir)
     }
 
     /// Prepara a pasta isolada do perfil e injeta configurações (Proxy, Extensões, Fingerprint, WebRTC, etc.) no user.js

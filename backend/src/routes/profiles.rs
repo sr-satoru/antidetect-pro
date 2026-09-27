@@ -116,7 +116,7 @@ pub async fn empty_trash(
 pub async fn launch_profile(
     State(storage): State<Arc<ProfileStorage>>,
     Path(id): Path<String>,
-) -> Result<impl IntoResponse, (StatusCode, String)> {
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     match storage.launch(&id).await {
         Ok((profile, pid)) => Ok(Json(serde_json::json!({
             "status": "launched",
@@ -125,7 +125,17 @@ pub async fn launch_profile(
             "kernel": profile.kernel,
             "message": format!("Navegador {} iniciado com sucesso (PID: {pid}).", profile.kernel)
         }))),
-        Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, err)),
+        Err(err) => {
+            tracing::error!("❌ Erro ao iniciar perfil {}: {}", id, err);
+            Err((
+                StatusCode::BAD_REQUEST,
+                Json(serde_json::json!({
+                    "error": err,
+                    "detail": err,
+                    "code": "LAUNCH_FAILED"
+                })),
+            ))
+        }
     }
 }
 

@@ -53,9 +53,18 @@ async function request<T>(
     if (!res.ok) {
       let errorMsg = `Erro ${res.status}: ${res.statusText}`;
       try {
-        const errJson = await res.json();
-        if (errJson.detail) {
-          errorMsg = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
+        const text = await res.text();
+        try {
+          const errJson = JSON.parse(text);
+          errorMsg =
+            errJson.detail ||
+            errJson.error ||
+            errJson.message ||
+            (typeof errJson === 'string' ? errJson : text);
+        } catch {
+          if (text && text.trim().length > 0) {
+            errorMsg = text;
+          }
         }
       } catch {}
       throw new ApiError(res.status, errorMsg);

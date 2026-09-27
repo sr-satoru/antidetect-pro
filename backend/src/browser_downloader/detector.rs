@@ -24,7 +24,12 @@ pub enum EngineHealthStatus {
 
 /// Retorna o diretório base onde os arquivos protegidos do motor residem
 pub fn get_engine_dir(data_dir: &Path) -> PathBuf {
-    data_dir.join("binaries").join(".engine")
+    let base = if data_dir.ends_with("profiles") {
+        data_dir.parent().unwrap_or(data_dir)
+    } else {
+        data_dir
+    };
+    base.join("binaries").join(".engine")
 }
 
 /// Candidatos de busca do executável dentro da pasta do motor
