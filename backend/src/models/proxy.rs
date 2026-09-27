@@ -42,12 +42,37 @@ pub struct CreateProxyDto {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-#[allow(dead_code)]
 pub struct TestProxyDto {
     #[serde(rename = "type")]
     pub proxy_type: Option<String>,
     pub host: String,
     pub port: serde_json::Value,
     pub username: Option<String>,
+    pub user: Option<String>,
     pub password: Option<String>,
+    pub pass: Option<String>,
+}
+
+impl TestProxyDto {
+    pub fn get_username(&self) -> Option<&str> {
+        self.username
+            .as_deref()
+            .or(self.user.as_deref())
+            .filter(|s| !s.trim().is_empty())
+    }
+
+    pub fn get_password(&self) -> Option<&str> {
+        self.password
+            .as_deref()
+            .or(self.pass.as_deref())
+            .filter(|s| !s.trim().is_empty())
+    }
+
+    pub fn get_port(&self) -> u16 {
+        match &self.port {
+            serde_json::Value::Number(n) => n.as_u64().unwrap_or(8080) as u16,
+            serde_json::Value::String(s) => s.trim().parse::<u16>().unwrap_or(8080),
+            _ => 8080,
+        }
+    }
 }

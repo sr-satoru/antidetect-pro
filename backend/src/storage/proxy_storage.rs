@@ -76,6 +76,8 @@ impl ProxyStorage {
         Ok(item)
     }
 
+
+
     pub fn delete(&self, id: &str) -> Result<(), String> {
         let file_path = self.data_dir.join(format!("{id}.json"));
         if file_path.exists() {

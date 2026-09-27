@@ -43,13 +43,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-[#3E404D] bg-[#24252B] shadow-xs">
-      {editingProxy ? (
-        <EditarProxies
-          proxy={editingProxy}
-          onClose={onCloseCadastro}
-          onSave={onSaveCadastro}
-        />
-      ) : isAddingOrEditing ? (
+      {isAddingOrEditing ? (
         <CadastroProxies onClose={onCloseCadastro} onSave={onSaveCadastro} />
       ) : (
         <>
@@ -168,6 +162,15 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
             )}
           </div>
         </>
+      )}
+
+      {/* Modal Popup Simples de Edição de Proxy */}
+      {editingProxy && (
+        <EditarProxies
+          proxy={editingProxy}
+          onClose={onCloseCadastro}
+          onSave={onSaveCadastro}
+        />
       )}
     </div>
   );

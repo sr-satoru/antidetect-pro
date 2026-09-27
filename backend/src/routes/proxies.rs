@@ -24,6 +24,8 @@ pub async fn create_proxy(
     }
 }
 
+
+
 pub async fn delete_proxy(
     State(storage): State<Arc<ProxyStorage>>,
     Path(id): Path<String>,
@@ -35,11 +37,19 @@ pub async fn delete_proxy(
 }
 
 pub async fn test_proxy(Json(payload): Json<TestProxyDto>) -> impl IntoResponse {
-    // Retorna resposta de teste estruturada rápida
-    Json(serde_json::json!({
-        "status": "success",
-        "latency_ms": 115,
-        "exit_ip": payload.host,
-        "message": "Proxy conectado com sucesso."
-    }))
+    let proxy_type = payload.proxy_type.as_deref().unwrap_or("socks5");
+    let username = payload.get_username();
+    let password = payload.get_password();
+    let port = payload.get_port();
+
+    let result = crate::proxy_validator::ProxyValidator::validate(
+        proxy_type,
+        &payload.host,
+        port,
+        username,
+        password,
+    )
+    .await;
+
+    Json(result)
 }

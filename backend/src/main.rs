@@ -18,6 +18,7 @@ pub mod fingerprint;
 pub mod import_extensions_web;
 pub mod network;
 mod routes;
+pub mod proxy_validator;
 mod storage;
 mod tab_manager;
 mod ws;
