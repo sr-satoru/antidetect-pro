@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Shield, Lock, Mail, User, AlertCircle, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
+import { Shield, Lock, Mail, User, AlertCircle, Loader2, ArrowRight } from "lucide-react";
 
 function AuthContent() {
   const searchParams = useSearchParams();
@@ -89,22 +89,14 @@ function AuthContent() {
           <p className="text-xs text-slate-400 mt-1">Portal de Autenticação Segura (OAuth 2.0 PKCE)</p>
         </div>
 
-        {/* Indicador de Conexão com o App Desktop */}
-        {isDesktopSession ? (
-          <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            <div className="text-xs text-emerald-300 font-medium">
-              Vinculando com segurança ao seu aplicativo Fury Desktop via PKCE (RFC 7636).
-            </div>
-          </div>
-        ) : (
+        {!isDesktopSession ? (
           <div className="mb-6 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
             <div className="text-xs text-amber-300">
               Para vincular este acesso ao Fury Desktop, inicie a ação diretamente no aplicativo.
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Abas: Entrar / Criar Conta */}
         <div className="grid grid-cols-2 gap-1 rounded-xl bg-slate-950 p-1 mb-6 border border-slate-800/80">
