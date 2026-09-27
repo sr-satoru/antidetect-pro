@@ -14,6 +14,8 @@ pub struct NetworkSetupResult {
     pub env_vars: HashMap<String, String>,
     /// Micro-túnel SOCKS5 ativo (se aplicável), deve ser mantido vivo enquanto o perfil roda
     pub tunnel: Option<tunnel::Socks5LoopbackTunnel>,
+    /// Caminhos das extensões de rede injetadas (ex: proxy auto-auth)
+    pub addon_paths: Vec<String>,
 }
 
 impl NetworkSetupResult {
@@ -36,6 +38,7 @@ pub async fn prepare_network(
             user_js_snippet: prefs::build_proxy_prefs(proxy, None, None),
             env_vars: HashMap::new(),
             tunnel: None,
+            addon_paths: Vec::new(),
         });
     }
 
@@ -93,6 +96,7 @@ pub async fn prepare_network(
         user_js_snippet,
         env_vars,
         tunnel: active_tunnel,
+        addon_paths,
     })
 }
 
