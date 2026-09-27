@@ -332,13 +332,13 @@ impl ProcessManager {
         Ok(())
     }
 
-    /// Prepara a pasta isolada do perfil e injeta configurações (Proxy, Extensões, WebRTC, etc.) no user.js
+    /// Prepara a pasta isolada do perfil e injeta configurações (Proxy, Extensões, Fingerprint, WebRTC, etc.) no user.js
     pub async fn prepare_profile_dir(
         profile_dir: &Path,
         profile: &Profile,
         data_dir: &Path,
         client: &reqwest::Client,
-    ) -> Result<crate::network::NetworkSetupResult, String> {
+    ) -> Result<(crate::network::NetworkSetupResult, crate::fingerprint::FingerprintSetupResult), String> {
         fs::create_dir_all(profile_dir)
             .map_err(|e| format!("Erro ao criar diretório do perfil: {e}"))?;
 
@@ -388,9 +388,14 @@ impl ProcessManager {
         user_js.push_str("user_pref(\"xpinstall.signatures.required\", false);\n");
         user_js.push_str("user_pref(\"extensions.experiments.enabled\", true);\n");
 
-        // Delegação de Proxy, Auto-Auth e WebRTC via módulo desacoplado network
+        // 1. Delegação de Proxy, Auto-Auth e WebRTC via módulo desacoplado network
         let net_setup = crate::network::prepare_network(&profile.proxy, profile_dir).await?;
         user_js.push_str(&net_setup.user_js_snippet);
+
+        // 2. Delegação de Fingerprint e Sistema Operacional via módulo desacoplado fingerprint
+        let proxy_ip = profile.proxy.host.as_deref().filter(|h| !h.trim().is_empty());
+        let fp_setup = crate::fingerprint::prepare_fingerprint(profile, proxy_ip, &[]);
+        user_js.push_str(&fp_setup.user_js_snippet);
 
         let user_js_path = profile_dir.join("user.js");
         fs::write(user_js_path, user_js)
@@ -402,10 +407,10 @@ impl ProcessManager {
         let user_chrome_css = "#remote-control-box { display: none !important; }\n#urlbar-background { background-image: none !important; }\n";
         let _ = fs::write(chrome_dir.join("userChrome.css"), user_chrome_css);
 
-        // 2. Injeta e copia os pacotes .xpi das extensões
+        // 3. Injeta e copia os pacotes .xpi das extensões
         Self::prepare_extensions(profile_dir, profile, data_dir, client).await?;
 
-        Ok(net_setup)
+        Ok((net_setup, fp_setup))
     }
 
     /// Dispara o navegador Camoufox para o perfil especificado
@@ -429,7 +434,7 @@ impl ProcessManager {
         } else {
             data_dir.join("profiles").join(&profile.id).join("profile")
         };
-        let net_setup = Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
+        let (net_setup, fp_setup) = Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
 
         info!(
             "🚀 Disparando Camoufox para o perfil '{}' ({}) via {:?}",
@@ -439,7 +444,19 @@ impl ProcessManager {
         let mut cmd = tokio::process::Command::new(&binary_path);
         cmd.arg("--profile").arg(&profile_dir);
         cmd.arg("--new-instance");
+
+        // Aplica regras de rede
         net_setup.apply_to_command(&mut cmd);
+
+        // Injeta o CAMOU_CONFIG com spoofing nativo de SO e Fingerprint no C++ do Camoufox
+        let camou_config_json = fp_setup.to_camou_config_json();
+        info!(
+            "🎭 Injetando CAMOU_CONFIG (SO: {}, bytes: {}) para o perfil {}",
+            profile.os,
+            camou_config_json.len(),
+            profile.id
+        );
+        cmd.env("CAMOU_CONFIG", camou_config_json);
 
         let mut child = cmd.spawn().map_err(|e| {
             format!("Falha ao executar {:?}: {}", binary_path, e)

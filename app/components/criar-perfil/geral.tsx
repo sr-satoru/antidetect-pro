@@ -50,6 +50,23 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
       config.userAgents.linux;
     onChange('userAgent', uas[0]);
     onChange('deviceName', generateRandomDeviceName(selectedOS));
+
+    // Sincroniza a GPU padrão autêntica para o novo sistema operacional
+    const webgl =
+      (config.defaultWebglRenderers as Record<string, { vendor: string; renderer: string }>)[selectedOS] ||
+      config.defaultWebglRenderers.linux;
+    if (webgl) {
+      onChange('webglVendor', webgl.vendor);
+      onChange('webglRenderer', webgl.renderer);
+    }
+
+    const osVersion =
+      selectedOS === 'windows'
+        ? 'Windows NT 10.0; Win64; x64'
+        : selectedOS === 'macos'
+        ? 'Intel Mac OS X 10.15'
+        : 'Linux x86_64';
+    onChange('osVersion', osVersion);
   };
 
   const handleShuffleUserAgent = () => {
