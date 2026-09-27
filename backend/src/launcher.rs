@@ -56,15 +56,20 @@ impl ProcessManager {
             .unwrap_or(18922)
     }
 
-    /// Resolve o executável do Camoufox na máquina (compatível com Linux, Windows e macOS).
-    pub fn resolve_browser_binary() -> Result<PathBuf, String> {
-        // 1. Caminho prioritário específico do PC do desenvolvedor
+    /// Resolve o executável do motor Fury na máquina (compatível com Linux, Windows e macOS).
+    pub fn resolve_browser_binary(data_dir: &Path) -> Result<PathBuf, String> {
+        // 1. Prioridade máxima: Motor oficial Fury isolado gerenciado pelo browser_downloader
+        if let Ok(engine_path) = crate::browser_downloader::resolve_engine_binary(data_dir) {
+            return Ok(engine_path);
+        }
+
+        // 2. Caminho de desenvolvimento local caso ainda não tenha sido baixado
         let dev_pc_camoufox = PathBuf::from("/home/vanir/.local/bin/camoufox");
         if dev_pc_camoufox.exists() {
             return Ok(dev_pc_camoufox);
         }
 
-        // 2. Busca no diretório home do usuário (.local/bin ou .camoufox)
+        // 3. Busca no diretório home do usuário (.local/bin ou .camoufox)
         if let Ok(home) = std::env::var("HOME").or_else(|_| std::env::var("USERPROFILE")) {
             let home_path = PathBuf::from(home);
             let candidates = [
@@ -80,7 +85,7 @@ impl ProcessManager {
             }
         }
 
-        // 3. Fallback no PATH do sistema: 'which' (Linux/macOS) ou 'where' (Windows)
+        // 4. Fallback no PATH do sistema: 'which' (Linux/macOS) ou 'where' (Windows)
         #[cfg(unix)]
         let finder = "which";
         #[cfg(windows)]
@@ -99,7 +104,7 @@ impl ProcessManager {
         }
 
         Err(
-            "Executável do Camoufox não foi encontrado no PATH nem nos diretórios padrão do sistema."
+            "O motor de navegação Fury não está instalado na máquina. Clique em 'Baixar Cliente' no topo para instalar automaticamente."
                 .to_string(),
         )
     }
@@ -209,7 +214,7 @@ impl ProcessManager {
             }
         }
 
-        let binary_path = Self::resolve_browser_binary()?;
+        let binary_path = Self::resolve_browser_binary(data_dir)?;
         let profile_dir = if data_dir.ends_with("profiles") {
             data_dir.join(&profile.id).join("profile")
         } else {
@@ -225,6 +230,9 @@ impl ProcessManager {
         let mut cmd = tokio::process::Command::new(&binary_path);
         cmd.arg("--profile").arg(&profile_dir);
         cmd.arg("--new-instance");
+        // Isolamento de processo absoluto: impede colisão com qualquer navegador existente
+        cmd.arg("--no-remote");
+        cmd.env("MOZ_NO_REMOTE", "1");
 
         // Aplica regras de rede
         net_setup.apply_to_command(&mut cmd);

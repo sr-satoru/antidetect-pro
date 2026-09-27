@@ -6,3 +6,4 @@ pub mod proxies;
 pub mod tabs;
 pub mod tags;
 pub mod cloud_sync;
+pub mod browser;

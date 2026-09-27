@@ -7,8 +7,10 @@ import {
   Wifi,
   Bell,
   LogOut,
+  ShieldCheck,
 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
+import { useBrowser } from '@/contexts/browser-context';
 
 interface HeaderProps {
   title?: string;
@@ -18,6 +20,9 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { status, isDownloading, progress, openModal } = useBrowser();
+
+  const isInstalled = status?.health.status === 'installed';
 
   const getAutoTitle = () => {
     if (title) return title;
@@ -42,14 +47,41 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
       {/* Right Controls integrados diretamente no canvas */}
       <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* Baixar Cliente */}
+        {/* Baixar Cliente / Gerenciador do Motor */}
         <button
           type="button"
-          onClick={() => toast.info('Download do Cliente Desktop em breve!')}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#15161D] hover:bg-[#1E2028] text-[#C8CBD4] hover:text-white text-xs font-medium border border-[#2B2D38] hover:border-[#3E404D] transition-colors cursor-pointer"
+          onClick={openModal}
+          className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+            isDownloading
+              ? 'bg-[#DFE104]/10 text-[#DFE104] border-[#DFE104]/40 animate-pulse'
+              : isInstalled
+              ? 'bg-[#15161D] hover:bg-[#1E2028] text-[#C8CBD4] hover:text-white border-[#2B2D38] hover:border-[#3E404D]'
+              : 'bg-[#DFE104]/15 hover:bg-[#DFE104]/25 text-[#DFE104] border-[#DFE104]/40'
+          }`}
+          title={
+            isDownloading
+              ? `Baixando motor Fury: ${Math.round(progress)}%`
+              : isInstalled
+              ? 'Motor Fury Instalado e Protegido'
+              : 'Clique para baixar o motor Fury Camoufox'
+          }
         >
-          <Download size={13} />
-          <span>Baixar Cliente</span>
+          {isDownloading ? (
+            <>
+              <div className="w-3 h-3 rounded-full border-2 border-[#DFE104] border-t-transparent animate-spin" />
+              <span>Baixando ({Math.round(progress)}%)</span>
+            </>
+          ) : isInstalled ? (
+            <>
+              <ShieldCheck size={13} className="text-emerald-400" />
+              <span>Motor Fury</span>
+            </>
+          ) : (
+            <>
+              <Download size={13} className="text-[#DFE104]" />
+              <span>Baixar Cliente</span>
+            </>
+          )}
         </button>
 
         {/* Central de Tarefas */}

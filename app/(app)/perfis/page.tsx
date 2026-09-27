@@ -9,9 +9,11 @@ import { api } from '@/services/index.api';
 import { servicePerfis } from '@/services/perfis/service.perfis';
 import { X, Check, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
+import { useBrowser } from '@/contexts/browser-context';
 
 export const PerfisPage: React.FC = () => {
   const navigate = useNavigate();
+  const { openModal } = useBrowser();
 
   const [profiles, setProfiles] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -244,6 +246,13 @@ export const PerfisPage: React.FC = () => {
         }
       } catch (err: any) {
         toast.error(`Falha ao iniciar o perfil: ${err.message}`);
+        if (
+          err.message?.includes('motor') ||
+          err.message?.includes('instalado') ||
+          err.message?.includes('Baixar Cliente')
+        ) {
+          openModal();
+        }
         setProfiles((prev) =>
           prev.map((p) => (p.id === id ? { ...p, isRunning: false, status: 'ready' } : p)),
         );

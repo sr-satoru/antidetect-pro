@@ -1,0 +1,49 @@
+{
+  "engine_name": "fury-engine",
+  "version": "v2.0.0",
+  "release_tag": "v2.0.0",
+  "platforms": {
+    "win-x86_64": {
+      "filename": "camoufox-152.0.4-beta.31-win.x86_64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.0.0/camoufox-152.0.4-beta.31-win.x86_64.zip",
+      "exe_name": "fury-engine.exe",
+      "source_candidates": ["camoufox.exe", "firefox.exe"],
+      "size_mb": 470
+    },
+    "win-i686": {
+      "filename": "camoufox-152.0.4-beta.31-win.i686.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.0.0/camoufox-152.0.4-beta.31-win.i686.zip",
+      "exe_name": "fury-engine.exe",
+      "source_candidates": ["camoufox.exe", "firefox.exe"],
+      "size_mb": 456
+    },
+    "lin-x86_64": {
+      "filename": "camoufox-152.0.4-beta.31-lin.x86_64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.0.0/camoufox-152.0.4-beta.31-lin.x86_64.zip",
+      "exe_name": "fury-engine",
+      "source_candidates": ["camoufox", "camoufox-bin", "firefox"],
+      "size_mb": 632
+    },
+    "lin-arm64": {
+      "filename": "camoufox-152.0.4-beta.31-lin.arm64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.0.0/camoufox-152.0.4-beta.31-lin.arm64.zip",
+      "exe_name": "fury-engine",
+      "source_candidates": ["camoufox", "camoufox-bin", "firefox"],
+      "size_mb": 623
+    },
+    "mac-arm64": {
+      "filename": "camoufox-152.0.4-beta.31-mac.arm64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.0.0/camoufox-152.0.4-beta.31-mac.arm64.zip",
+      "exe_name": "fury-engine",
+      "source_candidates": ["camoufox", "Camoufox.app/Contents/MacOS/camoufox"],
+      "size_mb": 298
+    },
+    "mac-x86_64": {
+      "filename": "camoufox-152.0.4-beta.31-mac.x86_64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.0.0/camoufox-152.0.4-beta.31-mac.x86_64.zip",
+      "exe_name": "fury-engine",
+      "source_candidates": ["camoufox", "Camoufox.app/Contents/MacOS/camoufox"],
+      "size_mb": 305
+    }
+  }
+}

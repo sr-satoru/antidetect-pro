@@ -7,6 +7,7 @@ use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+pub mod browser_downloader;
 mod cache;
 mod cloud_auth;
 mod cloud_sync;
@@ -132,6 +133,22 @@ async fn main() {
         .route("/batch-delete", post(routes::tags::batch_delete_tags))
         .with_state(tag_storage);
 
+    let browser_download_service = Arc::new(browser_downloader::BrowserDownloadService::new(
+        std::path::Path::new(&data_dir),
+        ws_state.clone(),
+    ));
+
+    let browser_route_state = routes::browser::BrowserRouteState {
+        service: browser_download_service.clone(),
+        data_dir: std::path::PathBuf::from(&data_dir),
+    };
+
+    let browser_routes = Router::new()
+        .route("/status", get(routes::browser::get_browser_status))
+        .route("/download", post(routes::browser::trigger_browser_download))
+        .route("/manifest", get(routes::browser::get_browser_manifest))
+        .with_state(browser_route_state);
+
     let ws_routes = Router::new()
         .route("/", get(ws::ws_handler))
         .with_state(ws_state);
@@ -143,6 +160,7 @@ async fn main() {
         .nest("/api/extensions", extension_routes)
         .nest("/api/tags", tag_routes)
         .nest("/api/auth", auth_routes)
+        .nest("/api/browser", browser_routes)
         .nest("/api/ws", ws_routes)
         .layer(cors);
 

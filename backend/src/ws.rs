@@ -26,6 +26,16 @@ pub enum WsEvent {
         profile_id: String,
         size_kb: usize,
     },
+    #[serde(rename = "browser_download_progress")]
+    BrowserDownloadProgress {
+        stage: String,
+        progress: f32,
+        downloaded_bytes: u64,
+        total_bytes: u64,
+        speed_mb_s: f32,
+        eta_seconds: u64,
+        error: Option<String>,
+    },
 }
 
 #[derive(Clone)]
