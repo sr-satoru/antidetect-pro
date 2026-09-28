@@ -50,13 +50,55 @@ impl ProcessManager {
         map.get(profile_id).copied()
     }
 
+    /// Retorna o número de instâncias de navegadores atualmente abertos
+    pub fn get_running_count(&self) -> usize {
+        let map = self.running.lock().unwrap();
+        map.len()
+    }
+
     /// Escolhe uma porta TCP local disponível
-    #[allow(dead_code)]
     pub fn pick_available_port() -> u16 {
         std::net::TcpListener::bind("127.0.0.1:0")
             .and_then(|l| l.local_addr())
             .map(|a| a.port())
             .unwrap_or(18922)
+    }
+
+    /// Aguarda o surgimento do arquivo DevToolsActivePort ou responde pela API /json/version do CDP
+    pub async fn wait_for_devtools_endpoint(
+        client: &reqwest::Client,
+        profile_dir: &Path,
+        port: u16,
+    ) -> Option<String> {
+        let active_port_file = profile_dir.join("DevToolsActivePort");
+        for _ in 0..50 {
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+
+            // 1. Tenta ler o arquivo DevToolsActivePort gerado pelo Camoufox
+            if let Ok(content) = fs::read_to_string(&active_port_file) {
+                let lines: Vec<&str> = content.lines().collect();
+                if lines.len() >= 2 {
+                    let ws_path = lines[1].trim();
+                    if !ws_path.is_empty() {
+                        let path = if ws_path.starts_with('/') { ws_path.to_string() } else { format!("/{}", ws_path) };
+                        return Some(format!("ws://127.0.0.1:{}{}", port, path));
+                    }
+                }
+            }
+
+            // 2. Consulta alternativa no endpoint HTTP /json/version
+            let version_url = format!("http://127.0.0.1:{}/json/version", port);
+            if let Ok(resp) = client.get(&version_url).send().await {
+                if let Ok(json) = resp.json::<serde_json::Value>().await {
+                    if let Some(ws_url) = json.get("webSocketDebuggerUrl").and_then(|v| v.as_str()) {
+                        return Some(ws_url.to_string());
+                    }
+                }
+            }
+        }
+
+        // Fallback convencional caso o polling expire
+        Some(format!("ws://127.0.0.1:{}/devtools/browser/session", port))
     }
 
     /// Resolve o executável do motor Star Multlogin baixado e gerenciado pelo aplicativo.
@@ -118,6 +160,11 @@ impl ProcessManager {
         user_js.push_str("user_pref(\"privacy.clearOnShutdown.openWindows\", false);\n");
         user_js.push_str("user_pref(\"privacy.clearOnShutdown.cache\", false);\n");
         user_js.push_str("user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n");
+
+        // Preferências de Automação Segura e Protocolos CDP / WebDriver BiDi
+        user_js.push_str("user_pref(\"remote.active-protocols\", 3);\n");
+        user_js.push_str("user_pref(\"remote.allow-origins\", \"*\");\n");
+        user_js.push_str("user_pref(\"remote.allow-hosts\", \"localhost,127.0.0.1,[::1]\");\n");
 
         // Preferências nativas do Firefox para auto-ativação e sideload de extensões
         user_js.push_str("// Carregamento automático de extensões no perfil Camoufox\n");
@@ -184,15 +231,22 @@ impl ProcessManager {
         Ok((net_setup, fp_setup))
     }
 
-    /// Dispara o navegador Camoufox para o perfil especificado
-    pub async fn launch(&self, profile: &Profile, data_dir: &Path) -> Result<u32, String> {
+    /// Dispara o navegador Camoufox para o perfil com suporte opcional a depuração CDP / WebDriver BiDi
+    pub async fn launch_with_cdp(
+        &self,
+        profile: &Profile,
+        data_dir: &Path,
+        cdp: bool,
+    ) -> Result<(u32, Option<u16>, Option<String>), String> {
         // Se já constar como em execução, checa se o processo ou lock ainda está ativo no SO
         {
             let mut map = self.running.lock().unwrap();
             if let Some(&pid) = map.get(&profile.id) {
                 if sys::is_pid_alive(pid) {
                     info!("Perfil {} já está em execução no PID {}", profile.id, pid);
-                    return Ok(pid);
+                    let port = self.get_debug_port(&profile.id);
+                    let ws = port.map(|p| format!("ws://127.0.0.1:{}/devtools/browser/session", p));
+                    return Ok((pid, port, ws));
                 } else {
                     map.remove(&profile.id);
                 }
@@ -206,21 +260,34 @@ impl ProcessManager {
             data_dir.join("profiles").join(&profile.id).join("profile")
         };
 
-        // Executa migrações pendentes através do módulo especializado em migrations (com notificações apenas se necessário)
+        // Executa migrações pendentes através do módulo especializado em migrations
         let _ = crate::migrations::MigrationNotifier::new(Some(&self.ws))
             .migrate_profile_with_notification(&profile_dir, None);
 
         let (net_setup, fp_setup) = Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
 
+        let debug_port = if cdp {
+            let port = Self::pick_available_port();
+            let _ = fs::remove_file(profile_dir.join("DevToolsActivePort"));
+            Some(port)
+        } else {
+            None
+        };
+
         info!(
-            "🚀 Disparando Camoufox para o perfil '{}' ({}) via {:?}",
-            profile.name, profile.id, binary_path
+            "🚀 Disparando Camoufox para o perfil '{}' ({}) via {:?} (CDP: {:?})",
+            profile.name, profile.id, binary_path, debug_port
         );
 
         let mut cmd = tokio::process::Command::new(&binary_path);
         
         // Aplica sintaxe de comando compatível por SO (-profile no Windows, --profile no Linux)
         sys::configure_browser_command(&mut cmd, &profile_dir);
+
+        // Se CDP habilitado, injeta porta de depuração
+        if let Some(port) = debug_port {
+            cmd.arg("--remote-debugging-port").arg(port.to_string());
+        }
 
         // Aplica regras de rede
         net_setup.apply_to_command(&mut cmd);
@@ -250,7 +317,6 @@ impl ProcessManager {
         }
 
         // Injeta o CAMOU_CONFIG com spoofing nativo de SO e Fingerprint no C++ do Camoufox
-        // Suporta chunking CAMOU_CONFIG_n para mitigar estouro de variáveis de ambiente no Windows
         let camou_config_json = fp_setup.to_camou_config_json();
         info!(
             "🎭 Injetando CAMOU_CONFIG (SO: {}, bytes: {}) para o perfil {}",
@@ -285,6 +351,11 @@ impl ProcessManager {
 
             let mut dirs = self.profile_dirs.lock().unwrap();
             dirs.insert(profile.id.clone(), profile_dir.clone());
+
+            if let Some(port) = debug_port {
+                let mut ports = self.ports.lock().unwrap();
+                ports.insert(profile.id.clone(), port);
+            }
         }
 
         if let Some(relay) = net_setup.relay {
@@ -298,11 +369,18 @@ impl ProcessManager {
             status: "running".to_string(),
         });
 
-        // Monitoramento Híbrido em tempo real:
-        // Acompanha a saída do processo inicial e valida se a trava do perfil no disco continua ativa
+        // Polling do endpoint WebSocket se CDP estiver ativado
+        let ws_endpoint = if let Some(port) = debug_port {
+            Self::wait_for_devtools_endpoint(&self.client, &profile_dir, port).await
+        } else {
+            None
+        };
+
+        // Monitoramento Híbrido em tempo real
         let profile_id_clone = profile.id.clone();
         let running_map = self.running.clone();
         let profile_dirs_map = self.profile_dirs.clone();
+        let ports_map = self.ports.clone();
         let relays_map = self.relays.clone();
         let ws_clone = self.ws.clone();
         let auto_sync_clone = self.auto_sync.clone();
@@ -320,8 +398,6 @@ impl ProcessManager {
                 pid, profile_id_clone, exit_status
             );
 
-            // Verificação Híbrida: No Windows ou caso subprocessos continuem rodando,
-            // aguarda até que o lock do arquivo do perfil (parent.lock / .parentlock) seja liberado
             while sys::is_profile_locked(&profile_dir_clone) {
                 tokio::time::sleep(std::time::Duration::from_millis(800)).await;
             }
@@ -342,13 +418,18 @@ impl ProcessManager {
             }
 
             {
+                let mut ports = ports_map.lock().unwrap();
+                ports.remove(&profile_id_clone);
+            }
+
+            {
                 let mut relays = relays_map.lock().unwrap();
                 if let Some(mut relay) = relays.remove(&profile_id_clone) {
                     relay.stop();
                 }
             }
 
-            // Atualiza metadata.json no disco com status ready e timestamp atualizado
+            // Atualiza metadata.json no disco com status ready
             if let Ok(content) = fs::read_to_string(&meta_file) {
                 if let Ok(mut prof) = serde_json::from_str::<Profile>(&content) {
                     let now = std::time::SystemTime::now()
@@ -361,20 +442,25 @@ impl ProcessManager {
                 }
             }
 
-            // Emite o evento instantaneamente para o frontend via WebSocket!
             info!("📢 Notificando frontend via WebSocket: perfil {} agora é 'ready'", profile_id_clone);
             ws_clone.emit(WsEvent::ProfileStatus {
                 profile_id: profile_id_clone.clone(),
                 status: "ready".to_string(),
             });
 
-            // Trigger 2: Fechamento de Navegador. Aguarda 3 segundos para flushing completo de cookies e sessão antes do upload
             if let Some(engine) = auto_sync_clone.lock().unwrap().as_ref() {
                 engine.schedule_browser_closed(profile_id_clone);
             }
         });
 
-        Ok(pid)
+        Ok((pid, debug_port, ws_endpoint))
+    }
+
+    /// Dispara o navegador Camoufox para o perfil especificado (Modo padrão sem CDP)
+    pub async fn launch(&self, profile: &Profile, data_dir: &Path) -> Result<u32, String> {
+        self.launch_with_cdp(profile, data_dir, false)
+            .await
+            .map(|(pid, _, _)| pid)
     }
 
     /// Encerra a execução do navegador para o perfil informado
@@ -398,6 +484,11 @@ impl ProcessManager {
         {
             let mut dirs = self.profile_dirs.lock().unwrap();
             dirs.remove(profile_id);
+        }
+
+        {
+            let mut ports = self.ports.lock().unwrap();
+            ports.remove(profile_id);
         }
 
         {

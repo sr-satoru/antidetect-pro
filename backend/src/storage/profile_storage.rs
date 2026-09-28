@@ -453,6 +453,25 @@ impl ProfileStorage {
         Ok((profile, pid))
     }
 
+    /// Inicia o perfil com opção de depuração remota CDP / BiDi retornando ws_endpoint
+    pub async fn launch_with_cdp(
+        &self,
+        id: &str,
+        cdp: bool,
+    ) -> Result<(Profile, u32, Option<u16>, Option<String>), String> {
+        let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
+        let (pid, debug_port, ws_endpoint) = self.process_manager.launch_with_cdp(&profile, &self.data_dir, cdp).await?;
+        let now = Self::now_secs();
+        profile.status = "running".to_string();
+        profile.last_launch = Some(now);
+        profile.updated_at = now;
+
+        let meta_file = self.get_profile_path(id);
+        let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
+        fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
+        Ok((profile, pid, debug_port, ws_endpoint))
+    }
+
     pub fn stop(&self, id: &str) -> Result<Profile, String> {
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
         self.process_manager.stop(id)?;

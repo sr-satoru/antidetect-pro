@@ -15,6 +15,7 @@ pub mod fingerprint;
 pub mod id_generator;
 pub mod import_extensions_web;
 pub mod launcher;
+pub mod mcp;
 pub mod migrations;
 pub mod models;
 pub mod network;
@@ -174,6 +175,16 @@ pub async fn start_star_server(
         .route("/", get(ws::ws_handler))
         .with_state(ws_state);
 
+    let token = mcp::security::ensure_token(std::path::Path::new(&data_dir))
+        .map_err(|e| format!("Falha ao inicializar api-token: {}", e))?;
+    let token_state = mcp::security::TokenState::new(token, std::path::PathBuf::from(&data_dir));
+
+    let mcp_routes = mcp::create_mcp_router(
+        profile_storage.clone(),
+        std::path::PathBuf::from(&data_dir),
+        token_state,
+    );
+
     let app = Router::new()
         .nest("/api/profiles", profile_routes)
         .nest("/api/cloud-sync", cloud_sync_routes)
@@ -184,6 +195,8 @@ pub async fn start_star_server(
         .nest("/api/browser", browser_routes)
         .nest("/api/app", app_version_routes)
         .nest("/api/ws", ws_routes)
+        .nest("/api/v1", mcp_routes.clone())
+        .nest("/v1", mcp_routes)
         .layer(cors);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
