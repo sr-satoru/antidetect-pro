@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { LinhaTabela } from './linhatabela';
 import {
   Layers,
@@ -36,6 +36,24 @@ export const Tabela: React.FC<TabelaProps> = ({
   const isAllSelected =
     profiles.length > 0 && selectedIds.length === profiles.length;
   const runningCount = profiles.filter((p) => p.isRunning || p.status === 'running').length;
+
+  const [pageSize, setPageSize] = useState('20');
+  const [isPageDropdownOpen, setIsPageDropdownOpen] = useState(false);
+  const pageDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pageDropdownRef.current && !pageDropdownRef.current.contains(event.target as Node)) {
+        setIsPageDropdownOpen(false);
+      }
+    };
+    if (isPageDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isPageDropdownOpen]);
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-[#3E404D] bg-[#24252B] shadow-xs">
@@ -146,21 +164,40 @@ export const Tabela: React.FC<TabelaProps> = ({
 
         <div className="flex items-center gap-3">
           <span className="font-mono text-xs text-[#9EA2AE]">1 / 1</span>
-          <div className="relative">
-            <select
-              className="h-[26px] pl-2.5 pr-6 rounded border border-[#3E404D] bg-[#1A1B21] text-[11px] text-[#C8CBD4] hover:text-white appearance-none cursor-pointer focus:border-[#DFE104] focus:outline-hidden transition-colors"
-              style={{ colorScheme: 'dark' }}
-              defaultValue="20"
+          <div className="relative" ref={pageDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsPageDropdownOpen(!isPageDropdownOpen)}
+              className="flex h-[26px] items-center gap-1.5 rounded border border-[#3E404D] bg-[#1A1B21] px-2.5 text-[11px] text-[#C8CBD4] hover:border-[#DFE104]/50 hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden"
             >
-              <option value="10" className="bg-[#1A1B21] text-[#E5E7EB]">10 / pág</option>
-              <option value="20" className="bg-[#1A1B21] text-[#E5E7EB]">20 / pág</option>
-              <option value="50" className="bg-[#1A1B21] text-[#E5E7EB]">50 / pág</option>
-              <option value="100" className="bg-[#1A1B21] text-[#E5E7EB]">100 / pág</option>
-            </select>
-            <ChevronDown
-              size={12}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8E92A2] pointer-events-none"
-            />
+              <span>{pageSize} / pág</span>
+              <ChevronDown
+                size={12}
+                className={`text-[#8E92A2] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#DFE104]' : ''}`}
+              />
+            </button>
+
+            {isPageDropdownOpen && (
+              <div className="absolute bottom-full right-0 mb-1.5 z-50 min-w-[95px] overflow-hidden rounded-md border border-[#3E404D] bg-[#1A1B21] py-1 shadow-2xl animate-in fade-in zoom-in-95 duration-100">
+                {['10', '20', '50', '100'].map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => {
+                      setPageSize(size);
+                      setIsPageDropdownOpen(false);
+                    }}
+                    className={`flex w-full items-center px-3 py-1 text-[11px] transition-colors cursor-pointer select-none text-left ${
+                      pageSize === size
+                        ? 'bg-[#DFE104]/10 text-[#DFE104] font-medium'
+                        : 'text-[#C8CBD4] hover:bg-[#2A2C38] hover:text-white'
+                    }`}
+                  >
+                    {size} / pág
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-1">
