@@ -5,6 +5,7 @@ import {
   SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
 } from 'lucide-react';
 
 interface TabelaProps {
@@ -145,15 +146,22 @@ export const Tabela: React.FC<TabelaProps> = ({
 
         <div className="flex items-center gap-3">
           <span className="font-mono text-xs text-[#9EA2AE]">1 / 1</span>
-          <select
-            className="cursor-pointer rounded border border-[#3E404D] bg-[#1A1B21] px-2 py-1 text-[11px] text-white outline-hidden focus:border-[#DFE104]"
-            defaultValue="20"
-          >
-            <option value="10">10 / pág</option>
-            <option value="20">20 / pág</option>
-            <option value="50">50 / pág</option>
-            <option value="100">100 / pág</option>
-          </select>
+          <div className="relative">
+            <select
+              className="h-[26px] pl-2.5 pr-6 rounded border border-[#3E404D] bg-[#1A1B21] text-[11px] text-[#C8CBD4] hover:text-white appearance-none cursor-pointer focus:border-[#DFE104] focus:outline-hidden transition-colors"
+              style={{ colorScheme: 'dark' }}
+              defaultValue="20"
+            >
+              <option value="10" className="bg-[#1A1B21] text-[#E5E7EB]">10 / pág</option>
+              <option value="20" className="bg-[#1A1B21] text-[#E5E7EB]">20 / pág</option>
+              <option value="50" className="bg-[#1A1B21] text-[#E5E7EB]">50 / pág</option>
+              <option value="100" className="bg-[#1A1B21] text-[#E5E7EB]">100 / pág</option>
+            </select>
+            <ChevronDown
+              size={12}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8E92A2] pointer-events-none"
+            />
+          </div>
 
           <div className="flex items-center gap-1">
             <button
