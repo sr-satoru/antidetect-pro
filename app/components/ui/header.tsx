@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth-context';
 import {
   Download,
   ListTodo,
   Wifi,
+  Cloud,
+  CloudOff,
   Bell,
   LogOut,
   ShieldCheck,
 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import { useBrowser } from '@/contexts/browser-context';
+import { http } from '@/services/http';
 
 import { UpdateCenterDropdown } from '@/components/browser/update-center-dropdown';
 import { NotificationsDropdown } from '@/components/ui/notifications-dropdown';
@@ -23,6 +26,30 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [cloudOnline, setCloudOnline] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkHealth = async () => {
+      try {
+        const res = await http.get<{ cloud_online: boolean }>('/api/cloud-sync/health');
+        if (isMounted) {
+          setCloudOnline(res.cloud_online);
+        }
+      } catch {
+        if (isMounted) {
+          setCloudOnline(false);
+        }
+      }
+    };
+
+    checkHealth();
+    const interval = setInterval(checkHealth, 30000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const getAutoTitle = () => {
     const path = location.pathname;
@@ -62,15 +89,27 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           </span>
         </button>
 
-        {/* Status de Rede & Notificações */}
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            title="Status de Rede: Conectado"
-            className="p-1.5 rounded-lg text-[#787C8A] hover:text-[#4ade80] hover:bg-[#15161D] transition-colors cursor-pointer"
-          >
-            <Wifi size={15} />
-          </button>
+        {/* Status de Rede & Nuvem */}
+        <div className="flex items-center gap-1.5">
+          {cloudOnline === true ? (
+            <div
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium select-none shadow-2xs"
+              title="Servidor de Nuvem Conectado e Operacional"
+            >
+              <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <Cloud size={13} />
+              <span className="hidden sm:inline text-[11px] font-mono">Nuvem Online</span>
+            </div>
+          ) : (
+            <div
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium select-none shadow-2xs"
+              title="Nuvem offline ou inacessível no momento. Perfis operando normalmente em modo local seguro."
+            >
+              <span className="flex h-1.5 w-1.5 rounded-full bg-amber-400" />
+              <CloudOff size={13} />
+              <span className="hidden sm:inline text-[11px] font-mono">Nuvem Offline</span>
+            </div>
+          )}
 
           <NotificationsDropdown />
         </div>
@@ -87,7 +126,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1C1D24] hover:bg-[#252834] text-white text-xs font-medium border border-white/20 hover:border-white transition-all cursor-pointer shadow-xs"
               title="Clique para sincronizar ou conectar à sua conta na Nuvem"
             >
-              <span className="flex h-2 w-2 rounded-full bg-[#52C41A] animate-pulse" />
+              <span className="flex h-2 w-2 rounded-full bg-amber-400" />
               <span className="text-white font-medium">⚡ Modo Offline</span>
               <span className="text-[10px] text-[#A5A8B6] ml-0.5">· Conectar Nuvem</span>
             </button>
@@ -99,10 +138,10 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-[12px] font-semibold text-white leading-tight">
-                    @{user?.username}
+                    {user?.email || `@${user?.username}`}
                   </span>
                   <span className="text-[9.5px] text-[#52C41A] leading-tight font-medium">
-                    ☁️ Sincronizado
+                    {cloudOnline ? '☁️ Sincronizado' : '⚡ Local (Conectado)'}
                   </span>
                 </div>
               </div>

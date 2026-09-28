@@ -139,6 +139,7 @@ pub async fn start_star_server(
         .route("/{id}/cloud-sync", post(routes::cloud_sync::sync_to_cloud))
         .route("/{id}/cloud-restore", post(routes::cloud_sync::restore_from_cloud))
         .route("/{id}/cloud-status", get(routes::cloud_sync::get_cloud_stat))
+        .route("/health", get(routes::cloud_sync::check_cloud_health))
         .with_state(cloud_sync_service);
 
     let tag_routes = Router::new()
@@ -182,6 +183,11 @@ pub async fn start_star_server(
     let mcp_routes = mcp::create_mcp_router(
         profile_storage.clone(),
         std::path::PathBuf::from(&data_dir),
+        token_state.clone(),
+    );
+
+    let native_mcp_routes = mcp::create_native_mcp_router(
+        profile_storage.clone(),
         token_state,
     );
 
@@ -197,6 +203,7 @@ pub async fn start_star_server(
         .nest("/api/ws", ws_routes)
         .nest("/api/v1", mcp_routes.clone())
         .nest("/v1", mcp_routes)
+        .merge(native_mcp_routes)
         .layer(cors);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));

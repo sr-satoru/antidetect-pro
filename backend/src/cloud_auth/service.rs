@@ -27,37 +27,78 @@ pub struct CloudAuthService {
     cloud_api_url: String,
     web_site_url: String,
     http_client: reqwest::Client,
+    data_dir: PathBuf,
     session_file: PathBuf,
+    legacy_session_file: PathBuf,
 }
 
 impl CloudAuthService {
     pub fn new() -> Self {
         let cloud_api_url = std::env::var("STAR_CLOUD_API_URL")
-            .or_else(|_| std::env::var("STAR_CLOUD_API_URL"))
             .unwrap_or_else(|_| "http://localhost:12342".to_string());
         let web_site_url = std::env::var("STAR_WEB_SITE_URL")
-            .or_else(|_| std::env::var("STAR_WEB_SITE_URL"))
             .unwrap_or_else(|_| "http://localhost:3001".to_string());
-        let data_dir = std::env::var("STAR_DATA_DIR")
-            .or_else(|_| std::env::var("STAR_DATA_DIR"))
+        let data_dir_str = std::env::var("STAR_DATA_DIR")
             .unwrap_or_else(|_| "./data".to_string());
-        let session_file = PathBuf::from(data_dir).join("auth_session.json");
+        let data_dir = PathBuf::from(data_dir_str);
+        let session_file = data_dir.join("auth_session.enc");
+        let legacy_session_file = data_dir.join("auth_session.json");
 
         let mut initial_user = None;
         let mut initial_token = None;
         let mut initial_refresh_token = None;
         let mut initial_expires_at = 0;
 
+        // 1. Tentar ler do arquivo criptografado com AES-256-GCM (0600)
+        let mut loaded_from_encrypted = false;
         if session_file.exists() {
-            if let Ok(content) = std::fs::read_to_string(&session_file) {
+            match crate::mcp::security::decrypt_file_from_machine(
+                &data_dir,
+                &session_file,
+                crate::mcp::security::SESSION_MAGIC,
+            ) {
+                Ok(bytes) => {
+                    if let Ok(saved) = serde_json::from_slice::<PersistedAuthSession>(&bytes) {
+                        tracing::info!("🔒 Sessão de autenticação criptografada (AES-256-GCM) carregada para: {}", saved.user.email);
+                        initial_user = Some(saved.user);
+                        initial_token = Some(saved.access_token);
+                        initial_refresh_token = Some(saved.refresh_token);
+                        initial_expires_at = saved.expires_at;
+                        loaded_from_encrypted = true;
+                    } else {
+                        tracing::warn!("⚠️ Falha ao deserializar sessão salva em auth_session.enc");
+                    }
+                }
+                Err(e) => {
+                    tracing::warn!("⚠️ Não foi possível decifrar auth_session.enc: {}", e);
+                }
+            }
+        }
+
+        // 2. Se não carregou do criptografado, verificar se existe arquivo legado em texto puro para migração transparente
+        if !loaded_from_encrypted && legacy_session_file.exists() {
+            if let Ok(content) = std::fs::read_to_string(&legacy_session_file) {
                 if let Ok(saved) = serde_json::from_str::<PersistedAuthSession>(&content) {
-                    tracing::info!("🔄 Sessão de autenticação carregada do disco para: {}", saved.user.email);
+                    tracing::info!("🔄 Migrando sessão de autenticação legada (texto puro -> AES-256-GCM) para: {}", saved.user.email);
+                    if let Ok(json_bytes) = serde_json::to_vec(&saved) {
+                        let _ = crate::mcp::security::encrypt_file_for_machine(
+                            &data_dir,
+                            &session_file,
+                            &json_bytes,
+                            crate::mcp::security::SESSION_MAGIC,
+                        );
+                    }
                     initial_user = Some(saved.user);
                     initial_token = Some(saved.access_token);
                     initial_refresh_token = Some(saved.refresh_token);
                     initial_expires_at = saved.expires_at;
                 }
             }
+        }
+
+        // 3. Garantir que qualquer arquivo legado em texto puro seja removido do disco
+        if legacy_session_file.exists() {
+            let _ = std::fs::remove_file(&legacy_session_file);
         }
 
         Self {
@@ -69,7 +110,9 @@ impl CloudAuthService {
             cloud_api_url,
             web_site_url,
             http_client: reqwest::Client::new(),
+            data_dir,
             session_file,
+            legacy_session_file,
         }
     }
 
@@ -207,8 +250,20 @@ impl CloudAuthService {
             refresh_token: refresh_token.to_string(),
             expires_at,
         };
-        if let Ok(json) = serde_json::to_string_pretty(&session) {
-            let _ = std::fs::write(&self.session_file, json);
+        if let Ok(json_bytes) = serde_json::to_vec(&session) {
+            if let Err(e) = crate::mcp::security::encrypt_file_for_machine(
+                &self.data_dir,
+                &self.session_file,
+                &json_bytes,
+                crate::mcp::security::SESSION_MAGIC,
+            ) {
+                tracing::error!("❌ Erro ao salvar sessão criptografada no disco: {}", e);
+            } else {
+                tracing::info!("🔒 Sessão salva e criptografada com AES-256-GCM em {:?}", self.session_file);
+                if self.legacy_session_file.exists() {
+                    let _ = std::fs::remove_file(&self.legacy_session_file);
+                }
+            }
         }
     }
 
@@ -298,6 +353,7 @@ impl CloudAuthService {
         *self.current_refresh_token.write().await = None;
         *self.current_token_expires_at.write().await = 0;
         let _ = std::fs::remove_file(&self.session_file);
+        let _ = std::fs::remove_file(&self.legacy_session_file);
     }
 
     /// Renderiza a página HTML oficial de sucesso exibida no navegador após autenticar

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { http } from '@/services/http';
 
 export interface UserSession {
   id: string;
@@ -28,6 +29,7 @@ interface AuthContextType {
   setCloudSession: (user: any, token: string) => void;
   continueOffline: () => void;
   logout: () => void;
+  refreshSession: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,27 +41,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Carrega a sessão salva no localStorage
-  useEffect(() => {
-    const savedToken = localStorage.getItem('star_auth_token');
-    const savedUser = localStorage.getItem('star_auth_user');
-
-    if (savedToken && savedUser) {
-      try {
-        setToken(savedToken);
-        setUser(JSON.parse(savedUser));
-      } catch {
-        localStorage.removeItem('star_auth_token');
-        localStorage.removeItem('star_auth_user');
-        setUser(DEFAULT_OFFLINE_USER);
+  const fetchSessionFromBackend = async () => {
+    try {
+      const backendUser = await http.get<any>('/api/auth/me');
+      if (backendUser && !backendUser.is_offline && backendUser.email) {
+        const sessionUser: UserSession = {
+          id: String(backendUser.id || 'cloud_user'),
+          username: backendUser.name || backendUser.email.split('@')[0] || 'user',
+          email: backendUser.email,
+          plan: backendUser.plan || 'pro',
+          profileLimit: backendUser.max_profiles ?? 10,
+          is_offline: false,
+        };
+        setUser(sessionUser);
+        if (backendUser.token) {
+          setToken(backendUser.token);
+          localStorage.setItem('star_auth_token', backendUser.token);
+        }
+        localStorage.setItem('star_auth_user', JSON.stringify(sessionUser));
+        return true;
       }
-    } else {
-      setUser(DEFAULT_OFFLINE_USER);
+    } catch (err) {
+      console.warn('Erro ao consultar /api/auth/me do backend local:', err);
     }
-    setIsLoading(false);
+    return false;
+  };
+
+  // Carrega a sessão salva no localStorage e sincroniza com /api/auth/me
+  useEffect(() => {
+    let isMounted = true;
+
+    const initAuth = async () => {
+      const savedToken = localStorage.getItem('star_auth_token');
+      const savedUser = localStorage.getItem('star_auth_user');
+
+      if (savedToken && savedUser) {
+        try {
+          setToken(savedToken);
+          setUser(JSON.parse(savedUser));
+        } catch {
+          localStorage.removeItem('star_auth_token');
+          localStorage.removeItem('star_auth_user');
+          setUser(DEFAULT_OFFLINE_USER);
+        }
+      }
+
+      await fetchSessionFromBackend();
+      if (isMounted) {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
-
-
 
   /**
    * Define a sessão vinda diretamente do fluxo OAuth 2.0 Web
@@ -97,16 +135,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   /**
    * Desconectar da nuvem
    */
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await http.post('/api/auth/logout');
+    } catch {}
     setToken(null);
     setUser(DEFAULT_OFFLINE_USER);
     localStorage.removeItem('star_auth_token');
     localStorage.removeItem('star_auth_user');
   };
 
-  const isOnline = !!token && !user.is_offline;
+  const isOnline = !user.is_offline;
   const isOffline = !isOnline;
-  const isAuthenticated = true;
+  const isAuthenticated = isOnline;
 
   return (
     <AuthContext.Provider
@@ -120,6 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setCloudSession,
         continueOffline,
         logout,
+        refreshSession: fetchSessionFromBackend,
       }}
     >
       {children}

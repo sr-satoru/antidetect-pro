@@ -95,6 +95,10 @@ impl AutoSyncEngine {
                 }
                 Err(err) => {
                     warn!("⚠️ AutoSync: Falha no upload automático do perfil {}: {}", pid, err);
+                    ws.emit(WsEvent::ProfileSyncFailed {
+                        profile_id: pid,
+                        error: err.to_string(),
+                    });
                 }
             }
         });
@@ -149,6 +153,10 @@ impl AutoSyncEngine {
                 }
                 Err(err) => {
                     warn!("⚠️ AutoSync: Falha ao enviar perfil {} após fechamento: {}", pid, err);
+                    ws.emit(WsEvent::ProfileSyncFailed {
+                        profile_id: pid,
+                        error: err.to_string(),
+                    });
                 }
             }
         });

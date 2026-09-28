@@ -141,6 +141,16 @@ export const PerfisPage: React.FC = () => {
                     : curr,
                 ),
               );
+              // Watchdog de segurança: garante que o perfil destrava após 8s mesmo em falhas de rede silenciosas
+              setTimeout(() => {
+                setProfiles((prev) =>
+                  prev.map((curr) =>
+                    String(curr.id) === String(profile_id) && curr.isSyncing
+                      ? { ...curr, isSyncing: false }
+                      : curr,
+                  ),
+                );
+              }, 8000);
             } else if (msg.event === 'profile_synced' && msg.data) {
               const { profile_id, size_kb } = msg.data;
               console.log('✅ WebSocket profile_synced recebido:', { profile_id, size_kb });
@@ -161,6 +171,16 @@ export const PerfisPage: React.FC = () => {
                     : curr,
                 );
               });
+            } else if (msg.event === 'profile_sync_failed' && msg.data) {
+              const { profile_id, error } = msg.data;
+              console.warn('⚠️ WebSocket profile_sync_failed recebido:', { profile_id, error });
+              setProfiles((prev) =>
+                prev.map((curr) =>
+                  String(curr.id) === String(profile_id)
+                    ? { ...curr, isSyncing: false }
+                    : curr,
+                ),
+              );
             } else if (msg.event === 'profile_migrating' && msg.data) {
               const { profile_id, message } = msg.data;
               console.log('🛡️ WebSocket profile_migrating recebido:', profile_id);

@@ -144,3 +144,36 @@ pub async fn two_way_sync(
     }
 }
 
+/// Consulta rápida da conectividade com o servidor em nuvem e dados de sessão
+pub async fn check_cloud_health(
+    State(sync_service): State<Arc<CloudSyncService>>,
+) -> impl IntoResponse {
+    let cloud_url = sync_service.get_cloud_api_url().to_string();
+    let auth = sync_service.get_auth_service();
+    let user = auth.get_current_user().await;
+
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_millis(1200))
+        .build()
+        .unwrap_or_default();
+
+    let is_online = match client.get(format!("{}/health", cloud_url)).send().await {
+        Ok(resp) => resp.status().is_success() || resp.status().as_u16() < 500,
+        Err(_) => false,
+    };
+
+    Json(serde_json::json!({
+        "cloud_online": is_online,
+        "cloud_url": cloud_url,
+        "authenticated": user.is_some(),
+        "user": user.map(|u| serde_json::json!({
+            "id": u.id,
+            "email": u.email,
+            "name": u.name,
+            "plan": u.plan,
+            "is_offline": false
+        }))
+    }))
+}
+
+

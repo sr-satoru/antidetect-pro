@@ -140,6 +140,14 @@ impl CloudSyncService {
         *lock = Some(checker);
     }
 
+    pub fn get_cloud_api_url(&self) -> &str {
+        &self.cloud_api_url
+    }
+
+    pub fn get_auth_service(&self) -> Arc<CloudAuthService> {
+        self.auth_service.clone()
+    }
+
     pub fn is_running(&self, profile_id: &str) -> bool {
         if let Some(checker) = self.running_checker.lock().unwrap().as_ref() {
             checker(profile_id)
@@ -208,6 +216,21 @@ impl CloudSyncService {
 
     /// Faz o upload com suporte a token de fallback passado na requisição do desktop
     pub async fn upload_profile_with_fallback(
+        &self,
+        profile_id: &str,
+        header_token: Option<&str>,
+    ) -> Result<SyncUploadResult, String> {
+        let result = self.upload_profile_with_fallback_inner(profile_id, header_token).await;
+        if let Err(ref e) = result {
+            self.emit_ws(WsEvent::ProfileSyncFailed {
+                profile_id: profile_id.to_string(),
+                error: e.clone(),
+            });
+        }
+        result
+    }
+
+    async fn upload_profile_with_fallback_inner(
         &self,
         profile_id: &str,
         header_token: Option<&str>,

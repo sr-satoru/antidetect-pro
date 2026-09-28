@@ -2,6 +2,7 @@ pub mod audit;
 pub mod dto;
 pub mod handlers;
 pub mod security;
+pub mod sse;
 
 use axum::{
     middleware,
@@ -15,8 +16,9 @@ use crate::storage::ProfileStorage;
 pub use dto::*;
 pub use handlers::McpState;
 pub use security::TokenState;
+pub use sse::{McpSseState, SessionManager};
 
-/// Cria o Router de Automação e MCP protegido pelas 5 camadas invariantes de blindagem
+/// Cria o Router de Automação REST protegido pelas 5 camadas invariantes de blindagem
 pub fn create_mcp_router(
     profile_storage: Arc<ProfileStorage>,
     _data_dir: PathBuf,
@@ -45,5 +47,38 @@ pub fn create_mcp_router(
         // 2. Bloqueio de DNS Rebinding
         .layer(middleware::from_fn(security::host_validation_middleware))
         // 1. Filtro Anti-Origin de navegadores
+        .layer(middleware::from_fn(security::anti_origin_middleware))
+}
+
+/// Cria o Router nativo do protocolo MCP sobre SSE e HTTP para IDEs e Agentes de IA
+pub fn create_native_mcp_router(
+    profile_storage: Arc<ProfileStorage>,
+    token_state: TokenState,
+) -> Router {
+    let mcp_state = McpState {
+        profile_storage,
+        token_state,
+    };
+    let sse_state = McpSseState {
+        mcp_state,
+        session_manager: SessionManager::new(),
+    };
+
+    Router::new()
+        // Rotas canônicas: /mcp/{token}/sse e /mcp/{token}/messages
+        .route("/mcp/{token}/sse", get(sse::mcp_sse_handler))
+        .route("/mcp/{token}/messages", post(sse::mcp_messages_handler))
+        .route("/mcp/{token}", post(sse::mcp_direct_handler))
+        // Aliases de conveniência: /{token}/mcp/sse e /{token}/mcp/messages
+        .route("/{token}/mcp/sse", get(sse::mcp_sse_handler))
+        .route("/{token}/mcp/messages", post(sse::mcp_messages_handler))
+        .route("/{token}/mcp", post(sse::mcp_direct_handler))
+        // Metadados para a interface desktop local
+        .route("/mcp/info", get(sse::mcp_info_handler))
+        .route("/api/mcp/info", get(sse::mcp_info_handler))
+        .with_state(sse_state)
+        // Proteção Anti-DNS Rebinding
+        .layer(middleware::from_fn(security::host_validation_middleware))
+        // Proteção Anti-Origin de navegadores
         .layer(middleware::from_fn(security::anti_origin_middleware))
 }

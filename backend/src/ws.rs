@@ -26,6 +26,11 @@ pub enum WsEvent {
         profile_id: String,
         size_kb: usize,
     },
+    #[serde(rename = "profile_sync_failed")]
+    ProfileSyncFailed {
+        profile_id: String,
+        error: String,
+    },
     #[serde(rename = "profile_migrating")]
     ProfileMigrating {
         profile_id: String,

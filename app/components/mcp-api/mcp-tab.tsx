@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Bot,
   Copy,
@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
+import { http, BACKEND_PORT } from '@/services/http';
 
 interface McpTabProps {
   scriptPath?: string;
@@ -19,13 +20,25 @@ interface McpTabProps {
 }
 
 export const McpTab: React.FC<McpTabProps> = ({
-  scriptPath = 'tools/mcp/star-mcp.py',
-  apiPort = 18922,
+  apiPort = BACKEND_PORT,
 }) => {
   const [selectedClient, setSelectedClient] = useState<'claude' | 'cursor' | 'antigravity' | 'cli'>('claude');
   const [copiedSnippet, setCopiedSnippet] = useState(false);
   const [testOutput, setTestOutput] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState(false);
+  const [token, setToken] = useState('star_sec_loading');
+
+  useEffect(() => {
+    http.get<{ token: string }>('/mcp/info')
+      .then((res) => {
+        if (res?.token) {
+          setToken(res.token);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const sseUrl = `http://127.0.0.1:${apiPort}/mcp/${token}/sse`;
 
   const clientConfigs = {
     claude: {
@@ -35,9 +48,7 @@ export const McpTab: React.FC<McpTabProps> = ({
         {
           mcpServers: {
             star: {
-              command: 'python3',
-              args: [scriptPath],
-              env: { STAR_PORT: String(apiPort) },
+              serverUrl: sseUrl,
             },
           },
         },
@@ -47,14 +58,12 @@ export const McpTab: React.FC<McpTabProps> = ({
     },
     cursor: {
       name: 'Cursor IDE',
-      pathText: 'Settings > Features > MCP > Add New Server',
+      pathText: 'Settings > Features > MCP > Add New Server (Type: sse)',
       json: JSON.stringify(
         {
           mcpServers: {
             star: {
-              command: 'python3',
-              args: [scriptPath],
-              env: { STAR_PORT: String(apiPort) },
+              serverUrl: sseUrl,
             },
           },
         },
@@ -69,9 +78,7 @@ export const McpTab: React.FC<McpTabProps> = ({
         {
           mcpServers: {
             star: {
-              command: 'python3',
-              args: [scriptPath],
-              env: { STAR_PORT: String(apiPort) },
+              serverUrl: sseUrl,
             },
           },
         },
@@ -82,17 +89,18 @@ export const McpTab: React.FC<McpTabProps> = ({
     cli: {
       name: 'Claude CLI',
       pathText: 'Terminal / Shell:',
-      json: `claude mcp add star python3 ${scriptPath}`,
+      json: `claude mcp add --transport sse star ${sseUrl}`,
     },
   };
 
   const tools = [
     { name: 'star_status', desc: 'Informa à IA se o motor está ativo e perfis em execução.', tag: 'Leitura' },
-    { name: 'star_profiles', desc: 'Lista perfis com tags, proxy associado e status.', tag: 'Leitura' },
-    { name: 'star_start_profile', desc: 'Abre o perfil seguro e devolve a porta WebSocket.', tag: 'Execução' },
-    { name: 'star_stop_profile', desc: 'Encerra o perfil e persiste novos cookies no disco.', tag: 'Execução' },
+    { name: 'star_profiles', desc: 'Lista perfis com tags, status (Zero-Leakage: sem dados sensíveis).', tag: 'Leitura' },
+    { name: 'star_start_profile', desc: 'Abre o perfil seguro e devolve o endpoint WebSocket/CDP.', tag: 'Execução' },
+    { name: 'star_stop_profile', desc: 'Encerra o perfil graciosamente persistindo cookies e sessão.', tag: 'Execução' },
     { name: 'star_get_tabs', desc: 'Lê títulos e URLs das abas abertas em tempo real.', tag: 'Inspeção' },
     { name: 'star_open_tab', desc: 'Abre uma nova URL em uma aba do perfil.', tag: 'Ação' },
+    { name: 'star_close_tab', desc: 'Fecha uma aba específica do perfil sem fechar o navegador.', tag: 'Ação' },
   ];
 
   const handleCopySnippet = () => {
@@ -102,21 +110,23 @@ export const McpTab: React.FC<McpTabProps> = ({
     setTimeout(() => setCopiedSnippet(false), 2000);
   };
 
-  const handleRunTest = () => {
+  const handleRunTest = async () => {
     setIsTesting(true);
     setTestOutput(null);
-    setTimeout(() => {
-      setIsTesting(false);
+    try {
+      const status = await http.get<any>('/api/v1/status');
       setTestOutput(
         JSON.stringify(
           {
             jsonrpc: '2.0',
             id: 1,
             result: {
-              serverInfo: { name: 'star-mcp', version: '0.1.0' },
-              capabilities: { tools: 6 },
-              status: 'online',
-              message: 'Servidor MCP conectado com sucesso!',
+              serverInfo: { name: 'star-multlogin', version: status.version || '2.1.0' },
+              capabilities: { tools: tools.length },
+              transport: 'Server-Sent Events (SSE) Nativo',
+              status: status.ok ? 'online' : 'error',
+              running_profiles: status.running_count,
+              message: 'Servidor MCP nativo operacional sem Python!',
             },
           },
           null,
@@ -124,7 +134,25 @@ export const McpTab: React.FC<McpTabProps> = ({
         )
       );
       toast.success('Servidor MCP testado com sucesso!');
-    }, 450);
+    } catch (e: any) {
+      setTestOutput(
+        JSON.stringify(
+          {
+            jsonrpc: '2.0',
+            id: 1,
+            error: {
+              code: -32603,
+              message: e.message || 'Falha ao conectar no backend local',
+            },
+          },
+          null,
+          2
+        )
+      );
+      toast.error('Erro ao conectar no servidor MCP local');
+    } finally {
+      setIsTesting(false);
+    }
   };
 
   return (
