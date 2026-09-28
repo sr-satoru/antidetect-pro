@@ -16,14 +16,10 @@ pub fn is_pid_alive(pid: u32) -> bool {
     false
 }
 
-/// Verifica se o diretório do perfil no Linux possui trava ativa (.parentlock)
-pub fn is_profile_locked(profile_dir: &Path) -> bool {
-    let parentlock = profile_dir.join(".parentlock");
-    if parentlock.exists() {
-        // No Linux, o Firefox cria um link simbólico ou arquivo especial .parentlock
-        // Se existir e não puder ser aberto ou se o lock estiver ativo
-        return true;
-    }
+/// No Linux, o ciclo de vida do processo é perfeitamente monitorado pelo kernel (/proc/{pid}/status)
+/// e pelo child.wait(). O Firefox no Linux não remove o arquivo .parentlock do disco (ele persiste com 0 bytes).
+/// Portanto, a verificação de atividade no Linux depende unicamente do PID do processo e do child.wait().
+pub fn is_profile_locked(_profile_dir: &Path) -> bool {
     false
 }
 

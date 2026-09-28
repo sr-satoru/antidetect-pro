@@ -9,9 +9,8 @@ pub fn is_pid_alive(pid: u32) -> bool {
     }
 }
 
-pub fn is_profile_locked(profile_dir: &Path) -> bool {
-    let parentlock = profile_dir.join(".parentlock");
-    parentlock.exists()
+pub fn is_profile_locked(_profile_dir: &Path) -> bool {
+    false
 }
 
 pub fn terminate_process_tree(pid: u32) -> Result<(), String> {
