@@ -12,6 +12,7 @@ import { EditarPerfilPage } from './(app)/perfis/editar/page';
 import { ProxyPage } from './(app)/proxy/page';
 import { ExtensoesPage } from './(app)/extensoes/page';
 import { LixeiraPage } from './(app)/lixeira/page';
+import { McpApiPage } from './(app)/mcp-api/page';
 
 import { Toaster } from './components/ui/notification';
 
@@ -36,6 +37,8 @@ export const App: React.FC = () => {
               <Route path="/proxy" element={<ProxyPage />} />
               <Route path="/extensoes" element={<ExtensoesPage />} />
               <Route path="/lixeira" element={<LixeiraPage />} />
+              <Route path="/api-mcp" element={<McpApiPage />} />
+              <Route path="/mcp-api" element={<McpApiPage />} />
               <Route path="*" element={<Navigate to="/perfis" replace />} />
             </Route>
           </Route>

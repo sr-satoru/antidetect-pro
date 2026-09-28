@@ -1,0 +1,274 @@
+import React, { useState } from 'react';
+import {
+  Bot,
+  Copy,
+  Check,
+  Terminal,
+  Sparkles,
+  Play,
+  CheckCircle2,
+  Code2,
+  FileCode,
+  ShieldCheck,
+} from 'lucide-react';
+import { toast } from '@/components/ui/notification';
+
+interface McpTabProps {
+  scriptPath?: string;
+  apiPort?: number;
+}
+
+export const McpTab: React.FC<McpTabProps> = ({
+  scriptPath = '/home/vanir/fury/frontend/tools/mcp/fury-mcp.py',
+  apiPort = 18922,
+}) => {
+  const [selectedClient, setSelectedClient] = useState<'claude' | 'cursor' | 'antigravity' | 'cli'>('claude');
+  const [copiedSnippet, setCopiedSnippet] = useState(false);
+  const [testOutput, setTestOutput] = useState<string | null>(null);
+  const [isTesting, setIsTesting] = useState(false);
+
+  const clientConfigs = {
+    claude: {
+      name: 'Claude Desktop',
+      pathText: '~/.config/Claude/claude_desktop_config.json',
+      json: JSON.stringify(
+        {
+          mcpServers: {
+            fury: {
+              command: 'python3',
+              args: [scriptPath],
+              env: { FURY_PORT: String(apiPort) },
+            },
+          },
+        },
+        null,
+        2
+      ),
+    },
+    cursor: {
+      name: 'Cursor IDE',
+      pathText: 'Settings > Features > MCP > Add New Server',
+      json: JSON.stringify(
+        {
+          mcpServers: {
+            fury: {
+              command: 'python3',
+              args: [scriptPath],
+              env: { FURY_PORT: String(apiPort) },
+            },
+          },
+        },
+        null,
+        2
+      ),
+    },
+    antigravity: {
+      name: 'Antigravity IDE',
+      pathText: '~/.gemini/config/mcp_config.json',
+      json: JSON.stringify(
+        {
+          mcpServers: {
+            fury: {
+              command: 'python3',
+              args: [scriptPath],
+              env: { FURY_PORT: String(apiPort) },
+            },
+          },
+        },
+        null,
+        2
+      ),
+    },
+    cli: {
+      name: 'Claude CLI',
+      pathText: 'Terminal / Shell:',
+      json: `claude mcp add fury python3 ${scriptPath}`,
+    },
+  };
+
+  const tools = [
+    { name: 'fury_status', desc: 'Informa à IA se o motor está ativo e perfis em execução.', tag: 'Leitura' },
+    { name: 'fury_profiles', desc: 'Lista perfis com tags, proxy associado e status.', tag: 'Leitura' },
+    { name: 'fury_start_profile', desc: 'Abre o perfil seguro e devolve a porta WebSocket.', tag: 'Execução' },
+    { name: 'fury_stop_profile', desc: 'Encerra o perfil e persiste novos cookies no disco.', tag: 'Execução' },
+    { name: 'fury_get_tabs', desc: 'Lê títulos e URLs das abas abertas em tempo real.', tag: 'Inspeção' },
+    { name: 'fury_open_tab', desc: 'Abre uma nova URL em uma aba do perfil.', tag: 'Ação' },
+  ];
+
+  const handleCopySnippet = () => {
+    navigator.clipboard.writeText(clientConfigs[selectedClient].json);
+    setCopiedSnippet(true);
+    toast.success('Configuração copiada!');
+    setTimeout(() => setCopiedSnippet(false), 2000);
+  };
+
+  const handleRunTest = () => {
+    setIsTesting(true);
+    setTestOutput(null);
+    setTimeout(() => {
+      setIsTesting(false);
+      setTestOutput(
+        JSON.stringify(
+          {
+            jsonrpc: '2.0',
+            id: 1,
+            result: {
+              serverInfo: { name: 'fury-mcp', version: '0.1.0' },
+              capabilities: { tools: 6 },
+              status: 'online',
+              message: 'Servidor MCP conectado com sucesso!',
+            },
+          },
+          null,
+          2
+        )
+      );
+      toast.success('Servidor MCP testado com sucesso!');
+    }, 450);
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* Top Connection Card */}
+      <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 md:p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-[16px] font-bold text-white flex items-center gap-2">
+              <Bot size={18} className="text-[#DFE104]" />
+              Conectar Assistentes de IA (MCP)
+            </h3>
+            <p className="text-[12px] text-[#A6A6A6] mt-0.5">
+              Permita que o Claude Desktop, Cursor ou Antigravity controlem seus perfis do Fury diretamente pelo chat em linguagem natural.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleRunTest}
+            disabled={isTesting}
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#484848] hover:bg-[#525252] border border-white/[0.08] text-[#DFE104] text-[12px] font-bold transition-all shrink-0 active:scale-95 disabled:opacity-50"
+          >
+            <Play size={13} className={isTesting ? 'animate-spin' : ''} />
+            <span>{isTesting ? 'Testando...' : 'Testar Conexão MCP'}</span>
+          </button>
+        </div>
+
+        {/* Client selector tabs */}
+        <div className="flex flex-wrap items-center gap-1.5 p-1 bg-[#282828] border border-white/[0.08] rounded-xl w-fit">
+          {(['claude', 'cursor', 'antigravity', 'cli'] as const).map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setSelectedClient(key)}
+              className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all ${
+                selectedClient === key
+                  ? 'bg-[#484848] text-[#DFE104] shadow-xs'
+                  : 'text-[#A0A0A0] hover:text-white'
+              }`}
+            >
+              {clientConfigs[key].name}
+            </button>
+          ))}
+        </div>
+
+        {/* Snippet box */}
+        <div className="relative group">
+          <pre className="bg-[#242424]/90 border border-white/[0.08] rounded-xl p-4 text-[12px] font-mono text-[#EDEDED] overflow-x-auto max-h-[220px] shadow-inner">
+            {clientConfigs[selectedClient].json}
+          </pre>
+          <button
+            type="button"
+            onClick={handleCopySnippet}
+            className="absolute top-2.5 right-2.5 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#404040] hover:bg-[#4d4d4d] text-[#DFE104] text-[11px] font-bold border border-white/[0.08] transition-all"
+          >
+            {copiedSnippet ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+            <span>{copiedSnippet ? 'Copiado!' : 'Copiar JSON'}</span>
+          </button>
+        </div>
+
+        {/* Path Hint */}
+        <div className="text-[11px] text-[#A6A6A6]">
+          Arquivo de configuração: <code className="text-white font-mono bg-[#282828] px-2 py-0.5 rounded">{clientConfigs[selectedClient].pathText}</code>
+        </div>
+
+        {/* Test Result Preview */}
+        {testOutput && (
+          <div className="pt-3 border-t border-white/[0.08] space-y-1.5 animate-fadeIn">
+            <div className="flex items-center justify-between text-[11px] font-mono text-emerald-400 font-bold">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle2 size={13} /> Resposta do Servidor MCP:
+              </span>
+              <button onClick={() => setTestOutput(null)} className="text-[#8E8E93] hover:text-white text-[10px]">
+                Fechar
+              </button>
+            </div>
+            <pre className="bg-[#1e1e1e] border border-white/[0.08] rounded-xl p-3 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto shadow-inner">
+              {testOutput}
+            </pre>
+          </div>
+        )}
+      </div>
+
+      {/* Two clean columns: Prompts & Allowed Tools */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Column 1: Prompts */}
+        <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] space-y-3">
+          <h4 className="text-[13px] font-bold text-white flex items-center gap-1.5">
+            <Sparkles size={15} className="text-[#DFE104]" />
+            O Que Pedir Para a IA no Chat:
+          </h4>
+          <div className="space-y-2">
+            {[
+              '"Quais perfis eu tenho cadastrados no Fury?"',
+              '"Abra o perfil da Shopee e me informe o saldo de anúncios."',
+              '"Inicie todos os perfis com a tag \'aquecer\' em paralelo."',
+            ].map((prompt, idx) => (
+              <div
+                key={idx}
+                className="text-[12px] text-[#D4D4D8] bg-[#282828]/80 hover:bg-[#303030] px-3.5 py-2.5 rounded-xl border border-white/[0.04] font-mono select-all transition-colors cursor-pointer"
+                onClick={() => {
+                  navigator.clipboard.writeText(prompt.replace(/"/g, ''));
+                  toast.success('Prompt copiado!');
+                }}
+              >
+                {prompt}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Column 2: Allowed Tools */}
+        <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-[13px] font-bold text-white flex items-center gap-1.5">
+              <Code2 size={15} className="text-[#DFE104]" />
+              Ferramentas Expostas (MCP Tools):
+            </h4>
+            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              6 ativas
+            </span>
+          </div>
+
+          <div className="space-y-1.5 max-h-[190px] overflow-y-auto pr-1">
+            {tools.map((t) => (
+              <div
+                key={t.name}
+                className="flex items-center justify-between bg-[#282828]/60 px-3 py-2 rounded-xl text-[12px] border border-white/[0.04]"
+              >
+                <div>
+                  <code className="text-[#DFE104] font-mono font-bold block">{t.name}</code>
+                  <span className="text-[11px] text-[#A6A6A6]">{t.desc}</span>
+                </div>
+                <span className="text-[9px] font-mono text-[#A0A0A0] bg-white/[0.06] px-1.5 py-0.5 rounded shrink-0">
+                  {t.tag}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default McpTab;

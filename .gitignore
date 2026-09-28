@@ -8,10 +8,10 @@ data
 dist
 __pycache__
 reserva-giit
-navegador
+
 target
 donutsbrowsers
-navegador/
+
 donutbrowser/
 donutbrowser
 ramos
