@@ -28,6 +28,7 @@ jobs:
     outputs:
       tag_name: ${{ steps.version_step.outputs.tag_name }}
       version: ${{ steps.version_step.outputs.version }}
+      should_build: ${{ steps.version_step.outputs.should_build }}
     steps:
       - name: Checkout do Repositório
         uses: actions/checkout@v4
@@ -42,22 +43,53 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Obtém a mensagem do último commit limpando quebras de linha e espaços no final
+          COMMIT_MSG=$(git log -1 --pretty=%B | tr -d '\r' | sed -e 's/[[:space:]]*$//')
+          echo "Mensagem do commit: '$COMMIT_MSG'"
+
           INPUT_VERSION="${{ github.event.inputs.version }}"
+          SHOULD_BUILD="false"
 
           if [ -n "$INPUT_VERSION" ]; then
             VERSION="$INPUT_VERSION"
             echo "Usando versão informada manualmente: $VERSION"
-            # Atualiza app/package.json e app/src-tauri/tauri.conf.json
+            SHOULD_BUILD="true"
             node -e "
               const fs = require('fs');
               const pkg = JSON.parse(fs.readFileSync('app/package.json'));
               pkg.version = '$VERSION';
               fs.writeFileSync('app/package.json', JSON.stringify(pkg, null, 2) + '\n');
               
-              const tauri = JSON.parse(fs.readFileSync('app/src-tauri/tauri.conf.json'));
-              tauri.version = '$VERSION';
-              fs.writeFileSync('app/src-tauri/tauri.conf.json', JSON.stringify(tauri, null, 2) + '\n');
+              try {
+                const tauri = JSON.parse(fs.readFileSync('app/src-tauri/tauri.conf.json'));
+                tauri.version = '$VERSION';
+                fs.writeFileSync('app/src-tauri/tauri.conf.json', JSON.stringify(tauri, null, 2) + '\n');
+              } catch(e) {}
             "
+            git add app/package.json app/src-tauri/tauri.conf.json
+            git commit -m "chore(release): bump version to $VERSION [skip ci]" || true
+            git push origin main || true
+          elif [[ "$COMMIT_MSG" =~ [pP][uU][lL][lL]$ ]]; then
+            echo "🔥 Commit termina com a palavra 'pull'! Incrementando versão automaticamente..."
+            SHOULD_BUILD="true"
+            VERSION=$(node -e "
+              const fs = require('fs');
+              const pkg = JSON.parse(fs.readFileSync('app/package.json'));
+              const parts = (pkg.version || '0.1.0').split('.').map(Number);
+              parts[2] = (parts[2] || 0) + 1;
+              const nextVer = parts.join('.');
+              pkg.version = nextVer;
+              fs.writeFileSync('app/package.json', JSON.stringify(pkg, null, 2) + '\n');
+              
+              try {
+                const tauri = JSON.parse(fs.readFileSync('app/src-tauri/tauri.conf.json'));
+                tauri.version = nextVer;
+                fs.writeFileSync('app/src-tauri/tauri.conf.json', JSON.stringify(tauri, null, 2) + '\n');
+              } catch(e) {}
+              
+              console.log(nextVer);
+            ")
+            echo "Nova versão gerada automaticamente: $VERSION"
             git add app/package.json app/src-tauri/tauri.conf.json
             git commit -m "chore(release): bump version to $VERSION [skip ci]" || true
             git push origin main || true
@@ -77,11 +109,15 @@ jobs:
             echo "Criando nova tag git $TAG..."
             git tag -a "$TAG" -m "Release $TAG gerada automaticamente"
             git push origin "$TAG"
+            SHOULD_BUILD="true"
           fi
+
+          echo "should_build=$SHOULD_BUILD" >> "$GITHUB_OUTPUT"
 
   build-tauri:
     name: Compilar para ${{ matrix.platform }}
     needs: tag-release
+    if: needs.tag-release.outputs.should_build == 'true'
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
