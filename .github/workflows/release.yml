@@ -40,8 +40,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Obtém a mensagem do último commit limpando quebras de linha e espaços no final
-          COMMIT_MSG=$(git log -1 --pretty=%B | tr -d '\r' | sed -e 's/[[:space:]]*$//')
+          # Obtém apenas o título da última mensagem de commit
+          COMMIT_MSG=$(git log -1 --format="%s" | tr -d '\r' | xargs)
           echo "Mensagem do commit: '$COMMIT_MSG'"
 
           INPUT_VERSION="${{ github.event.inputs.version }}"
@@ -99,9 +99,13 @@ jobs:
           echo "tag_name=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-          # Verifica se a tag já existe no repositório remoto
-          if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "Tag $TAG já existe localmente."
+          # Cria a tag se ela ainda não existir remotamente
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG"; then
+            echo "Tag $TAG já existe no repositório remoto."
+            # Se disparado manualmente via dispatch, força o build mesmo com tag existente
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              SHOULD_BUILD="true"
+            fi
           else
             echo "Criando nova tag git $TAG..."
             git tag -a "$TAG" -m "Release $TAG gerada automaticamente"
@@ -132,7 +136,7 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: 'app/package-lock.json'
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
