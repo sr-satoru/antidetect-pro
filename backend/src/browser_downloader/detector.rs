@@ -1,7 +1,9 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
-use tracing::{info, warn};
+use tracing::info;
+#[cfg(unix)]
+use tracing::warn;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "status")]
