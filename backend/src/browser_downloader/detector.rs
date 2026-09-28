@@ -166,6 +166,22 @@ pub fn check_engine_health(data_dir: &Path) -> EngineHealthStatus {
         }
     }
 
+    // 4.1. Remove quarentena do Gatekeeper no macOS para liberar execução
+    #[cfg(target_os = "macos")]
+    {
+        let _ = std::process::Command::new("xattr")
+            .args(["-dr", "com.apple.quarantine"])
+            .arg(&exe_path)
+            .status();
+
+        if let Some(parent_app) = exe_path.ancestors().find(|p| p.extension().map_or(false, |ext| ext == "app")) {
+            let _ = std::process::Command::new("xattr")
+                .args(["-dr", "com.apple.quarantine"])
+                .arg(parent_app)
+                .status();
+        }
+    }
+
     // Lê a versão de installed.json se presente, ou assume a versão do manifesto
     let installed_json_path = engine_dir.join("installed.json");
     let version = fs::read_to_string(&installed_json_path)

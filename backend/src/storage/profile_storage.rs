@@ -404,11 +404,28 @@ impl ProfileStorage {
         Ok(profile)
     }
 
+    /// Remove diretório com tolerância a descritores em processo de fechamento no Windows
+    fn robust_remove_dir(path: &Path) -> Result<(), String> {
+        let mut attempts = 0;
+        loop {
+            match fs::remove_dir_all(path) {
+                Ok(_) => return Ok(()),
+                Err(e) => {
+                    attempts += 1;
+                    if attempts >= 4 || !path.exists() {
+                        return Err(e.to_string());
+                    }
+                    std::thread::sleep(std::time::Duration::from_millis(150));
+                }
+            }
+        }
+    }
+
     pub fn permanent_delete(&self, id: &str) -> Result<(), String> {
         let _ = self.process_manager.stop(id);
         let profile_dir = self.data_dir.join(id);
         if profile_dir.exists() {
-            fs::remove_dir_all(profile_dir).map_err(|e| e.to_string())?;
+            Self::robust_remove_dir(&profile_dir)?;
         }
         Ok(())
     }

@@ -79,6 +79,16 @@ impl CookieManager {
         Ok(())
     }
 
+    /// Formata uma URI válida do SQLite compatível com Windows (file:///C:/...) e Unix (file:/...)
+    pub fn format_sqlite_uri(path: &Path) -> String {
+        let p_str = path.to_string_lossy().replace('\\', "/");
+        if p_str.starts_with('/') {
+            format!("file:{}?mode=ro&immutable=1", p_str)
+        } else {
+            format!("file:///{}?mode=ro&immutable=1", p_str)
+        }
+    }
+
     /// Lê os cookies do perfil (mesmo com navegador aberto, abrindo como Read-Only com URI)
     pub fn read_cookies(profile_dir: &Path) -> Result<CookieStats, String> {
         let db_path = Self::get_cookie_db_path(profile_dir);
@@ -91,7 +101,7 @@ impl CookieManager {
         }
 
         let flags = OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_URI;
-        let uri = format!("file:{}?mode=ro", db_path.to_string_lossy());
+        let uri = Self::format_sqlite_uri(&db_path);
         let conn = Connection::open_with_flags(&uri, flags)
             .or_else(|_| Connection::open_with_flags(&db_path, flags))
             .map_err(|e| format!("Não foi possível abrir cookies.sqlite: {e}"))?;
