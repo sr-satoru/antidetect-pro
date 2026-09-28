@@ -88,8 +88,11 @@ pub fn run(metadata_file: &Path, backup_dir: Option<&Path>) -> Result<bool, Stri
         fs::write(&tmp_file, updated_str)
             .map_err(|e| format!("Erro ao gravar metadata temporário: {}", e))?;
 
-        fs::rename(&tmp_file, metadata_file)
-            .map_err(|e| format!("Falha na substituição atômica de metadata.json: {}", e))?;
+        if let Err(_) = fs::rename(&tmp_file, metadata_file) {
+            fs::copy(&tmp_file, metadata_file)
+                .map_err(|e| format!("Falha na substituição de metadata.json: {}", e))?;
+            let _ = fs::remove_file(&tmp_file);
+        }
 
         info!("✅ Migração [{}] concluída com sucesso", MIGRATION_ID);
         return Ok(true);

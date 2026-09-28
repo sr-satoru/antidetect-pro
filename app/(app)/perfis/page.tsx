@@ -12,6 +12,7 @@ import { X, Check, Loader2, FileText } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import { useBrowser } from '@/contexts/browser-context';
 import { WS_BASE_URL } from '@/services/http';
+import { serviceMigrations } from '@/services/migrations/service.migrations';
 
 export const PerfisPage: React.FC = () => {
   const navigate = useNavigate();
@@ -160,6 +161,14 @@ export const PerfisPage: React.FC = () => {
                     : curr,
                 );
               });
+            } else if (msg.event === 'profile_migrating' && msg.data) {
+              const { profile_id, message } = msg.data;
+              console.log('🛡️ WebSocket profile_migrating recebido:', profile_id);
+              serviceMigrations.handleProfileMigrating(profile_id, message);
+            } else if (msg.event === 'profile_migrated' && msg.data) {
+              const { profile_id, success, message } = msg.data;
+              console.log('✅ WebSocket profile_migrated recebido:', profile_id, success);
+              serviceMigrations.handleProfileMigrated(profile_id, success, message);
             }
           } catch (err) {
             console.error('Erro ao processar mensagem do WebSocket:', err);

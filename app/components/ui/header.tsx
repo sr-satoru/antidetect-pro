@@ -13,6 +13,7 @@ import { toast } from '@/components/ui/notification';
 import { useBrowser } from '@/contexts/browser-context';
 
 import { UpdateCenterDropdown } from '@/components/browser/update-center-dropdown';
+import { NotificationsDropdown } from '@/components/ui/notifications-dropdown';
 
 interface HeaderProps {
   title?: string;
@@ -71,14 +72,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
             <Wifi size={15} />
           </button>
 
-          <button
-            type="button"
-            title="Notificações"
-            className="p-1.5 rounded-lg text-[#787C8A] hover:text-white hover:bg-[#15161D] transition-colors relative cursor-pointer"
-          >
-            <Bell size={15} />
-            <span className="w-1.5 h-1.5 rounded-full bg-[#DFE104] absolute top-1.5 right-1.5" />
-          </button>
+          <NotificationsDropdown />
         </div>
 
         {/* Separador fino */}

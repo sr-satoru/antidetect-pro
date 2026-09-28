@@ -2,8 +2,11 @@
 // Sistema Central de Migrações Seguras para Perfis do Fury Browser
 
 pub mod backup;
+pub mod notifier;
 pub mod v1_purge_auth_extension;
 pub mod v2_metadata_upgrade;
+
+pub use notifier::MigrationNotifier;
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -16,19 +19,8 @@ pub struct MigrationReport {
     pub backup_path: Option<PathBuf>,
 }
 
-/// Executa todas as migrações aplicáveis a um perfil específico de forma segura com backup prévio
-pub fn migrate_profile(profile_dir: &Path, metadata_file: Option<&Path>) -> Result<MigrationReport, String> {
-    let profile_id = profile_dir
-        .parent()
-        .and_then(|p| p.file_name())
-        .and_then(|n| n.to_str())
-        .unwrap_or("unknown")
-        .to_string();
-
-    let mut applied = Vec::new();
-    let mut backup_dir: Option<PathBuf> = None;
-
-    // Detecta se há necessidade de rodar qualquer migração antes de criar backup
+/// Verifica se um perfil necessita de migração de versões anteriores
+pub fn needs_migration(profile_dir: &Path, metadata_file: Option<&Path>) -> bool {
     let needs_v1 = profile_dir
         .join("extensions")
         .join("fury-proxy-auth@antidetect.fury")
@@ -54,7 +46,26 @@ pub fn migrate_profile(profile_dir: &Path, metadata_file: Option<&Path>) -> Resu
         false
     };
 
-    if needs_v1 || needs_v2 {
+    needs_v1 || needs_v2
+}
+
+/// Executa todas as migrações aplicáveis a um perfil específico de forma segura com backup prévio
+pub fn migrate_profile(profile_dir: &Path, metadata_file: Option<&Path>) -> Result<MigrationReport, String> {
+    let profile_id = profile_dir
+        .parent()
+        .and_then(|p| p.file_name())
+        .and_then(|n| n.to_str())
+        .unwrap_or("unknown")
+        .to_string();
+
+    let mut applied = Vec::new();
+    let mut backup_dir: Option<PathBuf> = None;
+
+    let meta_path_buf = metadata_file.map(PathBuf::from).or_else(|| {
+        profile_dir.parent().map(|p| p.join("metadata.json"))
+    });
+
+    if needs_migration(profile_dir, metadata_file) {
         info!("🛡️ Iniciando migração com backup de segurança para o perfil '{}'...", profile_id);
         let b = backup::create_migration_backup(profile_dir, "auto_migration")?;
         backup_dir = Some(b);

@@ -6,6 +6,7 @@ import { TagBadge } from '../tags/tag-badge';
 import { serviceTags } from '../../services/tags/service.tags';
 import { toast } from 'sonner';
 import { servicePerfis } from '../../services/perfis/service.perfis';
+import { serviceMigrations } from '@/services/migrations/service.migrations';
 import {
   ArrowLeftRight,
   Play,
@@ -151,8 +152,18 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocalSyncing, setIsLocalSyncing] = useState(false);
+  const [isMigrating, setIsMigrating] = useState(() => serviceMigrations.isMigrating(profile.id));
+
+  useEffect(() => {
+    const unsub = serviceMigrations.subscribe(() => {
+      setIsMigrating(serviceMigrations.isMigrating(profile.id));
+    });
+    return unsub;
+  }, [profile.id]);
+
   const isRunning = profile.status === 'running' || profile.isRunning;
   const isSyncing = Boolean(profile.isSyncing || isLocalSyncing);
+  const isBusy = isSyncing || isMigrating;
 
   const handleRestoreCloud = async () => {
     try {
@@ -399,25 +410,42 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       >
         <button
           type="button"
-          disabled={isSyncing}
-          onClick={() => !isSyncing && onToggleRunning(profile.id)}
-          title={isSyncing ? 'Sincronizando perfil com a nuvem...' : undefined}
+          disabled={isBusy}
+          onClick={() => !isBusy && onToggleRunning(profile.id)}
+          title={
+            isMigrating
+              ? 'Migrando perfil para a nova arquitetura segura...'
+              : isSyncing
+                ? 'Sincronizando perfil com a nuvem...'
+                : undefined
+          }
           className={`inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-md px-3.5 text-xs font-bold transition-all active:scale-[0.98] ${
-            isSyncing
+            isBusy
               ? 'cursor-not-allowed opacity-60 border border-zinc-700 bg-zinc-800/50 text-zinc-400'
               : isRunning
                 ? 'cursor-pointer border border-[#ff334b]/35 bg-[#ff334b]/12 text-[#ff334b] hover:bg-[#ff334b] hover:text-black'
                 : 'cursor-pointer border border-[#DFE104]/35 bg-[#DFE104]/12 text-[#DFE104] hover:bg-[#DFE104] hover:text-black'
           }`}
         >
-          {isSyncing ? (
-            <Loader2 size={11} className="animate-spin text-zinc-400" />
+          {isBusy ? (
+            <Loader2
+              size={11}
+              className={`animate-spin ${isMigrating ? 'text-[#DFE104]' : 'text-zinc-400'}`}
+            />
           ) : isRunning ? (
             <Square size={11} fill="currentColor" />
           ) : (
             <Play size={11} fill="currentColor" />
           )}
-          <span>{isSyncing ? 'Sincronizando' : isRunning ? 'Parar' : 'Iniciar'}</span>
+          <span>
+            {isMigrating
+              ? 'Migrando...'
+              : isSyncing
+                ? 'Sincronizando'
+                : isRunning
+                  ? 'Parar'
+                  : 'Iniciar'}
+          </span>
         </button>
       </td>
 

@@ -68,8 +68,11 @@ pub fn terminate_process_tree(pid: u32) -> Result<(), String> {
 
     // /F = Forçar encerramento
     // /T = Encerra toda a árvore de processos (Process Tree / filhos)
+    use std::os::windows::process::CommandExt;
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
     let _ = Command::new("taskkill")
         .args(["/F", "/T", "/PID", &pid.to_string()])
+        .creation_flags(CREATE_NO_WINDOW)
         .status();
 
     Ok(())

@@ -26,6 +26,18 @@ pub enum WsEvent {
         profile_id: String,
         size_kb: usize,
     },
+    #[serde(rename = "profile_migrating")]
+    ProfileMigrating {
+        profile_id: String,
+        message: String,
+    },
+    #[serde(rename = "profile_migrated")]
+    ProfileMigrated {
+        profile_id: String,
+        success: bool,
+        message: String,
+        applied: Vec<String>,
+    },
     #[serde(rename = "browser_download_progress")]
     BrowserDownloadProgress {
         stage: String,
