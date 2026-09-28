@@ -8,13 +8,8 @@ use sha2::Sha256;
 
 type HmacSha256 = Hmac<Sha256>;
 
-pub const MAGIC_HEADER_STAR_V1: &[u8; 8] = b"STARENC1";
-pub const MAGIC_HEADER_STAR_V2: &[u8; 8] = b"STARENC2";
-pub const MAGIC_HEADER_STAR_V1: &[u8; 8] = b"STARENC1";
-pub const MAGIC_HEADER_STAR_V2: &[u8; 8] = b"STARENC2";
-
-pub const MAGIC_HEADER_V1: &[u8; 8] = MAGIC_HEADER_STAR_V1;
-pub const MAGIC_HEADER_V2: &[u8; 8] = MAGIC_HEADER_STAR_V2;
+pub const MAGIC_HEADER_V1: &[u8; 8] = b"STARENC1";
+pub const MAGIC_HEADER_V2: &[u8; 8] = b"STARENC2";
 pub const MAGIC_HEADER: &[u8; 8] = MAGIC_HEADER_V2;
 
 pub const SALT_LEN: usize = 16;
@@ -83,11 +78,11 @@ pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>,
     }
 
     let header = &encrypted_data[..8];
-    let key_bytes = if header == MAGIC_HEADER_STAR_V2 || header == MAGIC_HEADER_STAR_V2 {
+    let key_bytes = if header == MAGIC_HEADER_V2 {
         let mut salt = [0u8; SALT_LEN];
         salt.copy_from_slice(&encrypted_data[8..24]);
         derive_key_v2(user_key, &salt)
-    } else if header == MAGIC_HEADER_STAR_V1 || header == MAGIC_HEADER_STAR_V1 {
+    } else if header == MAGIC_HEADER_V1 {
         let mut salt = [0u8; SALT_LEN];
         salt.copy_from_slice(&encrypted_data[8..24]);
         derive_key_v1(user_key, &salt)
@@ -134,7 +129,7 @@ mod tests {
     #[test]
     fn test_e2ee_v1_backwards_compatibility() {
         let secret = "usr_legacy_secret_key";
-        let original_data = b"Capsule encrypted in older Star/Fury version (V1 HMAC)";
+        let original_data = b"Capsule encrypted in older Star/Star version (V1 HMAC)";
 
         // Simula criação manual de uma cápsula V1
         let mut salt = [0u8; SALT_LEN];

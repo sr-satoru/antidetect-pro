@@ -67,7 +67,7 @@ pub fn get_canonical_app_dir() -> PathBuf {
             if star_dir.exists() {
                 return star_dir;
             }
-            let legacy_dir = PathBuf::from(&appdata).join("Fury");
+            let legacy_dir = PathBuf::from(&appdata).join("Star");
             if legacy_dir.exists() {
                 return legacy_dir;
             }
@@ -88,7 +88,7 @@ pub fn get_canonical_app_dir() -> PathBuf {
             let legacy_dir = PathBuf::from(&home)
                 .join("Library")
                 .join("Application Support")
-                .join("Fury");
+                .join("Star");
             if legacy_dir.exists() {
                 return legacy_dir;
             }
