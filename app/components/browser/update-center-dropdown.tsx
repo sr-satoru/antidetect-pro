@@ -267,15 +267,16 @@ export const UpdateCenterDropdown: React.FC = () => {
                     </div>
                   </div>
                   {appRelease.downloadUrl && (
-                    <a
-                      href={appRelease.downloadUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors shadow-xs"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        appUpdateService.openDownload(appRelease.downloadUrl);
+                      }}
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer"
                     >
                       <Download size={13} />
                       <span>Atualizar</span>
-                    </a>
+                    </button>
                   )}
                 </div>
               </div>

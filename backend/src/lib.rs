@@ -21,6 +21,7 @@ pub mod proxy_validator;
 pub mod routes;
 pub mod storage;
 pub mod tab_manager;
+pub mod version_app;
 pub mod ws;
 
 use storage::{ExtensionStorage, ProfileStorage, ProxyStorage, TagStorage};
@@ -161,6 +162,9 @@ pub async fn start_fury_server(
         .route("/manifest", get(routes::browser::get_browser_manifest))
         .with_state(browser_route_state);
 
+    let app_version_service = Arc::new(version_app::AppVersionService::new());
+    let app_version_routes = version_app::create_app_version_routes(app_version_service);
+
     let ws_routes = Router::new()
         .route("/", get(ws::ws_handler))
         .with_state(ws_state);
@@ -173,6 +177,7 @@ pub async fn start_fury_server(
         .nest("/api/tags", tag_routes)
         .nest("/api/auth", auth_routes)
         .nest("/api/browser", browser_routes)
+        .nest("/api/app", app_version_routes)
         .nest("/api/ws", ws_routes)
         .layer(cors);
 
