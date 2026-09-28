@@ -49,7 +49,24 @@ pub fn prepare_fingerprint(
         .map(|n| n as u32)
         .unwrap_or(8);
 
-    let user_js_snippet = prefs::build_fingerprint_prefs(&ua, platform, oscpu, languages, cpu_cores);
+    let webgpu_mode = fp_map.get("webgpu_mode").and_then(|v| v.as_str());
+    let battery_mode = fp_map.get("battery_mode").and_then(|v| v.as_str());
+    let location_mode = fp_map.get("location_mode").and_then(|v| v.as_str());
+    let do_not_track_mode = fp_map.get("do_not_track_mode").and_then(|v| v.as_str());
+    let disable_tls_features = fp_map.get("disable_tls_features").and_then(|v| v.as_str());
+
+    let user_js_snippet = prefs::build_fingerprint_prefs(
+        &ua,
+        platform,
+        oscpu,
+        languages,
+        cpu_cores,
+        webgpu_mode,
+        battery_mode,
+        location_mode,
+        do_not_track_mode,
+        disable_tls_features,
+    );
     let camou_config = translator::build_camou_config(profile, proxy_ip, addon_paths);
 
     FingerprintSetupResult {
@@ -234,5 +251,148 @@ mod tests {
         assert_eq!(cfg.get("navigator.maxTouchPoints").unwrap(), 5);
         assert_eq!(cfg.get("webGl:vendor").unwrap(), "Apple");
         assert!(res.user_js_snippet.contains("general.platform.override\", \"iPhone\""));
+    }
+
+    #[test]
+    fn test_webrtc_mode_and_ipv4_validation() {
+        let base_profile = Profile {
+            id: "test-prof-webrtc".to_string(),
+            name: "Test WebRTC".to_string(),
+            group: "Default".to_string(),
+            tags: vec![],
+            notes: "".to_string(),
+            status: "ready".to_string(),
+            kernel: "Camoufox".to_string(),
+            browser_version: "150".to_string(),
+            os: "windows".to_string(),
+            created_at: 100,
+            updated_at: 100,
+            last_launch: None,
+            is_deleted: false,
+            deleted_at: None,
+            proxy: ProfileProxyConfig::default(),
+            fingerprint_json: serde_json::json!({
+                "webrtc_mode": "substitute"
+            }),
+            extension_mode: None,
+            extension_category: None,
+            extensions: None,
+        };
+
+        // 1. IP válido (IPv4) com substitute: deve injetar no webrtc:ipv4
+        let res_valid = prepare_fingerprint(&base_profile, Some("185.220.101.5"), &[]);
+        assert_eq!(res_valid.camou_config.get("webrtc:ipv4").unwrap(), "185.220.101.5");
+
+        // 2. Hostname/domínio (não é IPv4): NUNCA deve injetar string inválida que quebra o C++ inet_pton
+        let res_domain = prepare_fingerprint(&base_profile, Some("proxy.provider.com"), &[]);
+        assert!(res_domain.camou_config.get("webrtc:ipv4").is_none());
+
+        // 3. webrtc_mode == disabled: não deve injetar no CAMOU_CONFIG
+        let mut disabled_profile = base_profile.clone();
+        disabled_profile.fingerprint_json = serde_json::json!({ "webrtc_mode": "disabled" });
+        let res_disabled = prepare_fingerprint(&disabled_profile, Some("185.220.101.5"), &[]);
+        assert!(res_disabled.camou_config.get("webrtc:ipv4").is_none());
+    }
+
+    #[test]
+    fn test_hardware_noise_gating() {
+        let mut profile = Profile {
+            id: "test-prof-noise".to_string(),
+            name: "Test Noise".to_string(),
+            group: "Default".to_string(),
+            tags: vec![],
+            notes: "".to_string(),
+            status: "ready".to_string(),
+            kernel: "Camoufox".to_string(),
+            browser_version: "150".to_string(),
+            os: "windows".to_string(),
+            created_at: 100,
+            updated_at: 100,
+            last_launch: None,
+            is_deleted: false,
+            deleted_at: None,
+            proxy: ProfileProxyConfig::default(),
+            fingerprint_json: serde_json::json!({
+                "hardware_noise": {
+                    "canvas": false,
+                    "audio_context": false,
+                    "client_rects": false,
+                    "media_devices": false
+                }
+            }),
+            extension_mode: None,
+            extension_category: None,
+            extensions: None,
+        };
+
+        let res = prepare_fingerprint(&profile, None, &[]);
+        let cfg = res.camou_config;
+
+        // Com noise desativado, seeds não devem ser injetadas
+        assert!(cfg.get("canvas:seed").is_none());
+        assert!(cfg.get("audio:seed").is_none());
+        assert!(cfg.get("fonts:spacing_seed").is_none());
+        assert_eq!(cfg.get("mediaDevices:enabled").unwrap(), false);
+
+        // Agora com noise ativado
+        profile.fingerprint_json = serde_json::json!({
+            "hardware_noise": {
+                "canvas": true,
+                "audio_context": true,
+                "client_rects": true,
+                "media_devices": true
+            }
+        });
+        let res_enabled = prepare_fingerprint(&profile, None, &[]);
+        let cfg_enabled = res_enabled.camou_config;
+        assert!(cfg_enabled.get("canvas:seed").is_some());
+        assert!(cfg_enabled.get("audio:seed").is_some());
+        assert!(cfg_enabled.get("fonts:spacing_seed").is_some());
+        assert_eq!(cfg_enabled.get("mediaDevices:enabled").unwrap(), true);
+    }
+
+    #[test]
+    fn test_advanced_segmentations() {
+        let profile = Profile {
+            id: "test-prof-seg".to_string(),
+            name: "Test Segmentations".to_string(),
+            group: "Default".to_string(),
+            tags: vec![],
+            notes: "".to_string(),
+            status: "ready".to_string(),
+            kernel: "Camoufox".to_string(),
+            browser_version: "150".to_string(),
+            os: "windows".to_string(),
+            created_at: 100,
+            updated_at: 100,
+            last_launch: None,
+            is_deleted: false,
+            deleted_at: None,
+            proxy: ProfileProxyConfig::default(),
+            fingerprint_json: serde_json::json!({
+                "webgpu_mode": "block",
+                "battery_mode": "block",
+                "location_mode": "custom",
+                "custom_latitude": -23.5505,
+                "custom_longitude": -46.6333,
+                "custom_accuracy": 20.0,
+                "do_not_track_mode": "open",
+                "disable_tls_features": "open"
+            }),
+            extension_mode: None,
+            extension_category: None,
+            extensions: None,
+        };
+
+        let res = prepare_fingerprint(&profile, None, &[]);
+        assert!(res.user_js_snippet.contains("user_pref(\"dom.webgpu.enabled\", false);"));
+        assert!(res.user_js_snippet.contains("user_pref(\"dom.battery.enabled\", false);"));
+        assert!(res.user_js_snippet.contains("user_pref(\"privacy.donottrackheader.enabled\", true);"));
+        assert!(res.user_js_snippet.contains("user_pref(\"security.tls.enable_0rtt_data\", false);"));
+
+        let geo = res.camou_config.get("geolocation").unwrap().as_object().unwrap();
+        assert_eq!(geo.get("latitude").unwrap(), -23.5505);
+        assert_eq!(geo.get("longitude").unwrap(), -46.6333);
+        assert_eq!(geo.get("accuracy").unwrap(), 20.0);
     }
 }

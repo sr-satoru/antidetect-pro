@@ -31,4 +31,5 @@ hmac = "0.12"
 base64 = "0.22"
 aes-gcm = "0.10"
 rand = "0.8"
+pbkdf2 = { version = "0.12", default-features = false, features = ["hmac"] }
 

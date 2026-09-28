@@ -1,19 +1,17 @@
-pub mod auth_extension;
 pub mod prefs;
-pub mod tunnel;
+pub mod relay;
 
 use crate::models::ProfileProxyConfig;
 use std::collections::HashMap;
-use std::path::Path;
 
 pub struct NetworkSetupResult {
     /// Trecho de configuração a ser concatenado no user.js
     pub user_js_snippet: String,
     /// Variáveis de ambiente a serem injetadas no processo do Camoufox (ex: CAMOU_CONFIG)
     pub env_vars: HashMap<String, String>,
-    /// Micro-túnel SOCKS5 ativo (se aplicável), deve ser mantido vivo enquanto o perfil roda
-    pub tunnel: Option<tunnel::Socks5LoopbackTunnel>,
-    /// Caminhos das extensões de rede injetadas (ex: proxy auto-auth)
+    /// Universal Proxy Relay ativo em loopback, mantido vivo durante a execução do perfil
+    pub relay: Option<relay::ProxyRelay>,
+    /// Caminhos das extensões de rede injetadas
     pub addon_paths: Vec<String>,
 }
 
@@ -26,69 +24,92 @@ impl NetworkSetupResult {
     }
 }
 
-/// Prepara toda a infraestrutura de rede, proxy, autenticação e spoofing de WebRTC para o perfil.
+/// Prepara toda a infraestrutura de rede, Universal Proxy Relay (HTTP/SOCKS5 com Kill-Switch)
+/// e preferências anti-vazamento (HTTP/3 disabled, WebRTC hardening).
 pub async fn prepare_network(
     proxy: &ProfileProxyConfig,
-    profile_dir: &Path,
+    fingerprint_json: &serde_json::Value,
 ) -> Result<NetworkSetupResult, String> {
+    let fp_map = crate::fingerprint::translator::extract_fingerprint_map(fingerprint_json);
+
+    let webrtc_mode = fp_map
+        .get("webrtc_mode")
+        .and_then(|v| v.as_str())
+        .unwrap_or("substitute");
+
     // 1. Perfil sem proxy configurado
     if proxy.proxy_type == "none" || proxy.host.as_deref().unwrap_or("").trim().is_empty() {
         return Ok(NetworkSetupResult {
-            user_js_snippet: prefs::build_proxy_prefs(proxy, None, None),
+            user_js_snippet: prefs::build_proxy_prefs(proxy, None, None, Some(webrtc_mode)),
             env_vars: HashMap::new(),
-            tunnel: None,
+            relay: None,
             addon_paths: Vec::new(),
         });
     }
 
-    let host = proxy.host.as_deref().unwrap_or("").trim();
+    let host = proxy.host.as_deref().unwrap_or("").trim().to_string();
     let port = proxy.port.unwrap_or(8080);
     let username = proxy.username.as_deref().unwrap_or("").trim();
     let password = proxy.password.as_deref().unwrap_or("").trim();
-    let has_auth = !username.is_empty() && !password.is_empty();
-
-    let mut addon_paths: Vec<String> = Vec::new();
-    let mut active_tunnel: Option<tunnel::Socks5LoopbackTunnel> = None;
-    let mut effective_host = host;
-    let mut effective_port = port;
+    let auth = if !username.is_empty() && !password.is_empty() {
+        Some(relay::Credentials {
+            username: username.to_string(),
+            password: password.to_string(),
+        })
+    } else {
+        None
+    };
 
     let p_type = proxy.proxy_type.to_lowercase();
+    let upstream = if p_type == "socks5" || p_type == "socks4" {
+        relay::Upstream::Socks5 { host, port, auth }
+    } else {
+        relay::Upstream::Http { host, port, auth }
+    };
 
-    // 2. Se for SOCKS5 com autenticação: sobe micro-túnel loopback local
-    // porque o Firefox nativamente não suporta credenciais SOCKS5 via user.js
-    if (p_type == "socks5" || p_type == "socks4") && has_auth {
-        let tun = tunnel::Socks5LoopbackTunnel::start(
-            host.to_string(),
-            port,
-            username.to_string(),
-            password.to_string(),
-        )
-        .await?;
+    // Port scan protection: "close" significa proteção ativa (bloqueia loopback/LAN não permitidos)
+    let port_scan_mode = fp_map
+        .get("port_scan_protection")
+        .and_then(|v| v.as_str())
+        .unwrap_or("close");
+    let port_scan_protection = port_scan_mode == "close";
 
-        effective_host = "127.0.0.1";
-        effective_port = tun.local_port;
-        active_tunnel = Some(tun);
-    }
-    // 3. Se for HTTP/HTTPS com autenticação: injeta WebExtension nativa de auto-autenticação
-    else if (p_type == "http" || p_type == "https") && has_auth {
-        let ext_dir = auth_extension::install_proxy_auth_extension(profile_dir, username, password)?;
-        addon_paths.push(ext_dir.to_string_lossy().to_string());
-    }
+    let allowed_ports: Vec<u16> = fp_map
+        .get("port_scan_allowed_ports")
+        .and_then(|v| v.as_array())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|x| x.as_u64().map(|p| p as u16))
+                .collect()
+        })
+        .unwrap_or_default();
 
-    // 4. Monta o user.js endurecido
+    let relay_config = relay::RelayConfig {
+        upstream,
+        port_scan_protection,
+        allowed_ports,
+    };
+
+    // Inicia o Universal Proxy Relay em 127.0.0.1:0
+    let active_relay = relay::ProxyRelay::start(relay_config)
+        .await
+        .map_err(|e| format!("Falha ao inicializar Universal Proxy Relay: {}", e))?;
+
+    let relay_port = active_relay.port;
+
+    // Configura o user.js do Firefox para encaminhar todo o tráfego HTTP/HTTPS para o relay
     let user_js_snippet = prefs::build_proxy_prefs(
         proxy,
-        Some(effective_host),
-        Some(effective_port),
+        Some("127.0.0.1"),
+        Some(relay_port),
+        Some(webrtc_mode),
     );
-
-    let env_vars = HashMap::new();
 
     Ok(NetworkSetupResult {
         user_js_snippet,
-        env_vars,
-        tunnel: active_tunnel,
-        addon_paths,
+        env_vars: HashMap::new(),
+        relay: Some(active_relay),
+        addon_paths: Vec::new(),
     })
 }
 
@@ -96,40 +117,21 @@ pub async fn prepare_network(
 mod tests {
     use super::*;
 
-    struct TempDir(std::path::PathBuf);
-    impl TempDir {
-        fn new() -> Self {
-            let p = std::env::temp_dir().join(format!("fury_net_test_{}", uuid::Uuid::new_v4()));
-            std::fs::create_dir_all(&p).unwrap();
-            Self(p)
-        }
-        fn path(&self) -> &std::path::Path {
-            &self.0
-        }
-    }
-    impl Drop for TempDir {
-        fn drop(&mut self) {
-            let _ = std::fs::remove_dir_all(&self.0);
-        }
-    }
-
     #[tokio::test]
     async fn test_proxy_none() {
-        let temp_dir = TempDir::new();
         let proxy = ProfileProxyConfig {
             proxy_type: "none".to_string(),
             ..Default::default()
         };
 
-        let res = prepare_network(&proxy, temp_dir.path()).await.unwrap();
+        let res = prepare_network(&proxy, &serde_json::json!({})).await.unwrap();
         assert!(res.user_js_snippet.contains("user_pref(\"network.proxy.type\", 0);"));
-        assert!(res.tunnel.is_none());
+        assert!(res.relay.is_none());
         assert!(res.env_vars.is_empty());
     }
 
     #[tokio::test]
-    async fn test_http_proxy_with_auth() {
-        let temp_dir = TempDir::new();
+    async fn test_http_proxy_with_auth_uses_relay() {
         let proxy = ProfileProxyConfig {
             mode: "custom".to_string(),
             proxy_type: "http".to_string(),
@@ -141,22 +143,20 @@ mod tests {
             ..Default::default()
         };
 
-        let res = prepare_network(&proxy, temp_dir.path()).await.unwrap();
+        let res = prepare_network(&proxy, &serde_json::json!({})).await.unwrap();
         assert!(res.user_js_snippet.contains("user_pref(\"network.proxy.type\", 1);"));
-        assert!(res.user_js_snippet.contains("user_pref(\"network.proxy.http\", \"192.168.1.100\");"));
+        assert!(res.user_js_snippet.contains("user_pref(\"network.proxy.http\", \"127.0.0.1\");"));
         assert!(res.user_js_snippet.contains("user_pref(\"network.proxy.share_proxy_settings\", true);"));
         assert!(res.user_js_snippet.contains("user_pref(\"network.trr.mode\", 5);"));
+        assert!(res.user_js_snippet.contains("user_pref(\"network.http.http3.enable\", false);"));
 
-        // Garante que a extensão foi criada no diretório do perfil
-        let ext_manifest = temp_dir
-            .path()
-            .join("extensions")
-            .join("fury-proxy-auth@antidetect.fury")
-            .join("manifest.json");
-        assert!(ext_manifest.exists());
+        // O relay ativo deve estar presente
+        assert!(res.relay.is_some());
+        let relay_port = res.relay.unwrap().port;
+        assert!(relay_port > 0);
+        assert!(res.user_js_snippet.contains(&format!("\"network.proxy.http_port\", {relay_port}")));
 
-        // Verifica que a extensão de auto-autenticação foi registrada em addon_paths
-        assert_eq!(res.addon_paths.len(), 1);
-        assert!(res.addon_paths[0].contains("fury-proxy-auth@antidetect.fury"));
+        // Nenhuma extensão de auto-auth em disco!
+        assert!(res.addon_paths.is_empty());
     }
 }

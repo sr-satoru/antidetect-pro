@@ -6,10 +6,24 @@ use crate::models::ProfileProxyConfig;
 /// - network.proxy.share_proxy_settings: Garante que HTTPS trafegue pelo proxy HTTP configurado.
 /// - network.trr.mode = 5: Desativa completamente o DoH (DNS-over-HTTPS) do Firefox,
 ///   impedindo vazamento de DNS para a Cloudflare e forçando resolução pelo túnel do proxy.
-/// - network.proxy.socks_remote_dns: Garante que queries DNS passem pelo SOCKS5 remoto.
+/// - network.http.http3.enable = false: Desativa QUIC/HTTP3 para evitar vazamento via UDP fora do TCP proxy relay.
 /// - media.peerconnection.ice.*: Previne vazamentos do IP real da máquina em conexões WebRTC.
-pub fn build_proxy_prefs(proxy: &ProfileProxyConfig, override_host: Option<&str>, override_port: Option<u16>) -> String {
+pub fn build_proxy_prefs(
+    proxy: &ProfileProxyConfig,
+    override_host: Option<&str>,
+    override_port: Option<u16>,
+    webrtc_mode: Option<&str>,
+) -> String {
     let mut prefs = String::new();
+
+    // Se WebRTC estiver desativado nas impressões digitais, desativa o peerconnection
+    if webrtc_mode == Some("disabled") {
+        prefs.push_str("user_pref(\"media.peerconnection.enabled\", false);\n");
+    } else {
+        prefs.push_str("user_pref(\"media.peerconnection.enabled\", true);\n");
+        prefs.push_str("user_pref(\"media.peerconnection.ice.proxy_only_if_behind_proxy\", true);\n");
+        prefs.push_str("user_pref(\"media.peerconnection.ice.default_address_only\", true);\n");
+    }
 
     if proxy.proxy_type == "none" || proxy.host.as_deref().unwrap_or("").trim().is_empty() {
         prefs.push_str("user_pref(\"network.proxy.type\", 0);\n");
@@ -30,35 +44,15 @@ pub fn build_proxy_prefs(proxy: &ProfileProxyConfig, override_host: Option<&str>
     prefs.push_str("user_pref(\"network.trr.mode\", 5);\n");
     prefs.push_str("user_pref(\"signon.autologin.proxy\", true);\n");
 
-    match proxy.proxy_type.to_lowercase().as_str() {
-        "socks5" | "socks4" => {
-            let version = if proxy.proxy_type.to_lowercase() == "socks4" { 4 } else { 5 };
-            prefs.push_str(&format!("user_pref(\"network.proxy.socks\", \"{host}\");\n"));
-            prefs.push_str(&format!("user_pref(\"network.proxy.socks_port\", {port});\n"));
-            prefs.push_str(&format!("user_pref(\"network.proxy.socks_version\", {version});\n"));
+    // Desativa HTTP/3 (QUIC) para evitar vazamento de pacotes UDP por fora do túnel TCP do proxy
+    prefs.push_str("user_pref(\"network.http.http3.enable\", false);\n");
+    prefs.push_str("user_pref(\"network.http.http3.alt-svc-mapping-for-testing\", false);\n");
 
-            if proxy.socks_remote_dns {
-                prefs.push_str("user_pref(\"network.proxy.socks_remote_dns\", true);\n");
-            }
-
-            // Hardening WebRTC contra vazamento do IP real
-            prefs.push_str("user_pref(\"media.peerconnection.ice.proxy_only_if_behind_proxy\", true);\n");
-            prefs.push_str("user_pref(\"media.peerconnection.ice.default_address_only\", true);\n");
-        }
-        "http" | "https" => {
-            prefs.push_str(&format!("user_pref(\"network.proxy.http\", \"{host}\");\n"));
-            prefs.push_str(&format!("user_pref(\"network.proxy.http_port\", {port});\n"));
-            prefs.push_str(&format!("user_pref(\"network.proxy.ssl\", \"{host}\");\n"));
-            prefs.push_str(&format!("user_pref(\"network.proxy.ssl_port\", {port});\n"));
-
-            // WebRTC hardening para HTTP/HTTPS proxy
-            prefs.push_str("user_pref(\"media.peerconnection.ice.proxy_only_if_behind_proxy\", true);\n");
-            prefs.push_str("user_pref(\"media.peerconnection.ice.default_address_only\", true);\n");
-        }
-        _ => {
-            prefs.push_str("user_pref(\"network.proxy.type\", 0);\n");
-        }
-    }
+    // Com o ProxyRelay em loopback, o Firefox sempre envia CONNECT para 127.0.0.1:<port>
+    prefs.push_str(&format!("user_pref(\"network.proxy.http\", \"{host}\");\n"));
+    prefs.push_str(&format!("user_pref(\"network.proxy.http_port\", {port});\n"));
+    prefs.push_str(&format!("user_pref(\"network.proxy.ssl\", \"{host}\");\n"));
+    prefs.push_str(&format!("user_pref(\"network.proxy.ssl_port\", {port});\n"));
 
     prefs
 }

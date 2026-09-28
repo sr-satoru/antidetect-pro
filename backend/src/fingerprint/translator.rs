@@ -222,24 +222,35 @@ pub fn build_camou_config(
     config.insert("webGl:vendor".to_string(), Value::String(webgl_vendor.to_string()));
     config.insert("webGl:renderer".to_string(), Value::String(webgl_renderer.to_string()));
 
-    // 5. Anti-Fingerprint Seeds (Canvas, Audio e Font Spacing)
-    let canvas_seed = parse_seed(fp.get("canvas_seed"));
-    let audio_seed = parse_seed(fp.get("audio_seed"));
-    let font_seed = parse_seed(fp.get("client_rects_seed"));
+    // 5. Anti-Fingerprint Seeds com Gating por hardware_noise
+    let noise_obj = fp.get("hardware_noise");
+    let noise_canvas = noise_obj.and_then(|o| o.get("canvas")).and_then(|b| b.as_bool()).unwrap_or(true);
+    let noise_audio = noise_obj.and_then(|o| o.get("audio_context")).and_then(|b| b.as_bool()).unwrap_or(true);
+    let noise_client_rects = noise_obj.and_then(|o| o.get("client_rects")).and_then(|b| b.as_bool()).unwrap_or(true);
+    let noise_media = noise_obj.and_then(|o| o.get("media_devices")).and_then(|b| b.as_bool()).unwrap_or(true);
 
-    config.insert("canvas:seed".to_string(), Value::Number(canvas_seed.into()));
-    config.insert("audio:seed".to_string(), Value::Number(audio_seed.into()));
-    config.insert("fonts:spacing_seed".to_string(), Value::Number(font_seed.into()));
+    if noise_canvas {
+        let canvas_seed = parse_seed(fp.get("canvas_seed"));
+        config.insert("canvas:seed".to_string(), Value::Number(canvas_seed.into()));
+    }
 
-    // 6. AudioContext Sample Rate
-    let sample_rate = fp
-        .get("audio_sample_rate")
-        .and_then(|v| v.as_u64())
-        .map(|n| n as u32)
-        .unwrap_or(48000);
-    config.insert("AudioContext:sampleRate".to_string(), Value::Number(sample_rate.into()));
+    if noise_audio {
+        let audio_seed = parse_seed(fp.get("audio_seed"));
+        config.insert("audio:seed".to_string(), Value::Number(audio_seed.into()));
+        let sample_rate = fp
+            .get("audio_sample_rate")
+            .and_then(|v| v.as_u64())
+            .map(|n| n as u32)
+            .unwrap_or(48000);
+        config.insert("AudioContext:sampleRate".to_string(), Value::Number(sample_rate.into()));
+    }
 
-    // 7. Fuso Horário (Timezone)
+    if noise_client_rects {
+        let font_seed = parse_seed(fp.get("client_rects_seed"));
+        config.insert("fonts:spacing_seed".to_string(), Value::Number(font_seed.into()));
+    }
+
+    // 6. Fuso Horário (Timezone)
     if let Some(tz) = fp.get("custom_timezone").and_then(|v| v.as_str()) {
         let clean = tz.trim();
         if !clean.is_empty() {
@@ -247,7 +258,7 @@ pub fn build_camou_config(
         }
     }
 
-    // 8. Idioma e Localidade (Language & Locale)
+    // 7. Idioma e Localidade (Language & Locale)
     let custom_lang = fp
         .get("custom_language")
         .and_then(|v| v.as_str())
@@ -255,7 +266,6 @@ pub fn build_camou_config(
 
     config.insert("headers.Accept-Language".to_string(), Value::String(custom_lang.to_string()));
 
-    // Extrai o primeiro código de idioma (ex: "pt-BR")
     let primary_lang = custom_lang
         .split(',')
         .next()
@@ -264,7 +274,6 @@ pub fn build_camou_config(
 
     config.insert("navigator.language".to_string(), Value::String(primary_lang.to_string()));
 
-    // navigator.languages array
     let langs_arr: Vec<Value> = custom_lang
         .split(',')
         .map(|s| s.split(';').next().unwrap_or("").trim())
@@ -282,30 +291,57 @@ pub fn build_camou_config(
         config.insert("locale:language".to_string(), Value::String(primary_lang.to_string()));
     }
 
-    // 9. Dispositivos de Mídia Falsos (Media Devices)
-    let micros = fp.get("micros_count").and_then(|v| v.as_u64()).map(|n| n as u32).unwrap_or(1);
-    let webcams = fp.get("webcams_count").and_then(|v| v.as_u64()).map(|n| n as u32).unwrap_or(1);
-    let speakers = fp.get("speakers_count").and_then(|v| v.as_u64()).map(|n| n as u32).unwrap_or(2);
+    // 8. Dispositivos de Mídia (Media Devices)
+    if noise_media {
+        let micros = fp.get("micros_count").and_then(|v| v.as_u64()).map(|n| n as u32).unwrap_or(1);
+        let webcams = fp.get("webcams_count").and_then(|v| v.as_u64()).map(|n| n as u32).unwrap_or(1);
+        let speakers = fp.get("speakers_count").and_then(|v| v.as_u64()).map(|n| n as u32).unwrap_or(2);
 
-    config.insert("mediaDevices:micros".to_string(), Value::Number(micros.into()));
-    config.insert("mediaDevices:webcams".to_string(), Value::Number(webcams.into()));
-    config.insert("mediaDevices:speakers".to_string(), Value::Number(speakers.into()));
-    config.insert("mediaDevices:enabled".to_string(), Value::Bool(true));
+        config.insert("mediaDevices:micros".to_string(), Value::Number(micros.into()));
+        config.insert("mediaDevices:webcams".to_string(), Value::Number(webcams.into()));
+        config.insert("mediaDevices:speakers".to_string(), Value::Number(speakers.into()));
+        config.insert("mediaDevices:enabled".to_string(), Value::Bool(true));
+    } else {
+        config.insert("mediaDevices:enabled".to_string(), Value::Bool(false));
+    }
 
-    // 10. Lista de Fontes por SO (FontAllowlist do Camoufox)
+    // 9. Geolocalização Customizada (se location_mode == "custom")
+    let location_mode = fp.get("location_mode").and_then(|v| v.as_str()).unwrap_or("ip");
+    if location_mode == "custom" {
+        let lat = fp.get("custom_latitude").and_then(|v| v.as_f64()).unwrap_or(0.0);
+        let lng = fp.get("custom_longitude").and_then(|v| v.as_f64()).unwrap_or(0.0);
+        let acc = fp.get("custom_accuracy").and_then(|v| v.as_f64()).unwrap_or(50.0);
+        let mut geo_map = serde_json::Map::new();
+        if let Some(n) = serde_json::Number::from_f64(lat) { geo_map.insert("latitude".to_string(), Value::Number(n)); }
+        if let Some(n) = serde_json::Number::from_f64(lng) { geo_map.insert("longitude".to_string(), Value::Number(n)); }
+        if let Some(n) = serde_json::Number::from_f64(acc) { geo_map.insert("accuracy".to_string(), Value::Number(n)); }
+        config.insert("geolocation".to_string(), Value::Object(geo_map));
+    }
+
+    // 10. WebGPU Mode
+    let webgpu_mode = fp.get("webgpu_mode").and_then(|v| v.as_str()).unwrap_or("real");
+    if webgpu_mode == "block" {
+        config.insert("webgpu:enabled".to_string(), Value::Bool(false));
+    }
+
+    // 11. Lista de Fontes por SO (FontAllowlist do Camoufox)
     let os_fonts = get_os_fonts(&os);
     let fonts_arr: Vec<Value> = os_fonts.into_iter().map(Value::String).collect();
     config.insert("fonts".to_string(), Value::Array(fonts_arr));
 
-    // 11. Spoofing de IP no WebRTC (se houver proxy configurado)
-    if let Some(ip) = proxy_ip {
-        let clean = ip.trim();
-        if !clean.is_empty() {
-            config.insert("webrtc:ipv4".to_string(), Value::String(clean.to_string()));
+    // 12. Spoofing de IPv4 no WebRTC (apenas se webrtc_mode for "substitute" e o IP for um IPv4 estrito)
+    let webrtc_mode = fp.get("webrtc_mode").and_then(|v| v.as_str()).unwrap_or("substitute");
+    if webrtc_mode == "substitute" {
+        if let Some(ip) = proxy_ip {
+            let clean = ip.trim();
+            // Camoufox C++ inet_pton exige estritamente formato IPv4
+            if clean.parse::<std::net::Ipv4Addr>().is_ok() {
+                config.insert("webrtc:ipv4".to_string(), Value::String(clean.to_string()));
+            }
         }
     }
 
-    // 12. Extensões extras sideloaded
+    // 13. Extensões extras sideloaded
     if !addon_paths.is_empty() {
         let arr: Vec<Value> = addon_paths.iter().map(|p| Value::String(p.clone())).collect();
         config.insert("addons".to_string(), Value::Array(arr));

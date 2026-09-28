@@ -1,71 +1,29 @@
 use std::fs;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
-use aes_gcm::{
-    aead::{Aead, KeyInit},
-    Aes256Gcm, Key, Nonce,
-};
-use hmac::{Hmac, Mac};
-use sha2::Sha256;
 use tracing::{info, warn};
 use uuid::Uuid;
 use zip::ZipArchive;
 
-type HmacSha256 = Hmac<Sha256>;
-
-pub const MAGIC_HEADER: &[u8; 8] = b"FURYENC1";
-pub const SALT_LEN: usize = 16;
-pub const NONCE_LEN: usize = 12; // 96 bits para AES-GCM
-pub const MIN_PAYLOAD_LEN: usize = 8 + SALT_LEN + NONCE_LEN + 16; // Cabeçalho + Tag GCM
+pub const MAGIC_HEADER_V1: &[u8; 8] = crate::cloud_sync::crypto::MAGIC_HEADER_V1;
+pub const MAGIC_HEADER_V2: &[u8; 8] = crate::cloud_sync::crypto::MAGIC_HEADER_V2;
+pub const MAGIC_HEADER: &[u8; 8] = crate::cloud_sync::crypto::MAGIC_HEADER;
+pub const SALT_LEN: usize = crate::cloud_sync::crypto::SALT_LEN;
+pub const NONCE_LEN: usize = crate::cloud_sync::crypto::NONCE_LEN;
+pub const MIN_PAYLOAD_LEN: usize = crate::cloud_sync::crypto::MIN_PAYLOAD_LEN;
 
 /// Módulo dedicado à decriptação Zero-Knowledge (E2EE) e restauração atômica de perfis
 pub struct ProfileDecryptor;
 
 impl ProfileDecryptor {
-    /// Deriva a chave de decriptação de 256 bits a partir da chave do usuário e do salt da cápsula
+    /// Deriva a chave de decriptação de 256 bits a partir da chave do usuário e do salt da cápsula (V2 padrão)
     pub fn derive_key(user_key: &str, salt: &[u8; SALT_LEN]) -> [u8; 32] {
-        let mut mac = <HmacSha256 as Mac>::new_from_slice(user_key.as_bytes())
-            .expect("HMAC aceita chaves de qualquer tamanho");
-        mac.update(b"fury_e2ee_capsule_vault_v1");
-        mac.update(salt);
-        let result = mac.finalize().into_bytes();
-        let mut key = [0u8; 32];
-        key.copy_from_slice(&result[..32]);
-        key
+        crate::cloud_sync::crypto::derive_key_v2(user_key, salt)
     }
 
-    /// Descriptografa uma cápsula binária cifrada .enc com AES-256-GCM e verificação de integridade
+    /// Descriptografa uma cápsula binária cifrada .enc com suporte a FURYENC2 e retrocompatibilidade com FURYENC1
     pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>, String> {
-        if encrypted_data.len() < MIN_PAYLOAD_LEN {
-            return Err(format!(
-                "Payload cifrado corrompido ou truncado: tamanho {} < {}",
-                encrypted_data.len(),
-                MIN_PAYLOAD_LEN
-            ));
-        }
-
-        if &encrypted_data[..8] != MAGIC_HEADER {
-            return Err("Cabeçalho inválido: o arquivo não é uma cápsula Fury E2EE válida".to_string());
-        }
-
-        let mut salt = [0u8; SALT_LEN];
-        salt.copy_from_slice(&encrypted_data[8..24]);
-
-        let mut nonce_bytes = [0u8; NONCE_LEN];
-        nonce_bytes.copy_from_slice(&encrypted_data[24..36]);
-
-        let ciphertext = &encrypted_data[36..];
-
-        let key_bytes = Self::derive_key(user_key, &salt);
-        let key = Key::<Aes256Gcm>::from_slice(&key_bytes);
-        let cipher = Aes256Gcm::new(key);
-        let nonce = Nonce::from_slice(&nonce_bytes);
-
-        let plaintext = cipher
-            .decrypt(nonce, ciphertext)
-            .map_err(|e| format!("Falha de autenticação/integridade ao decifrar cápsula E2EE (chave incorreta ou dados corrompidos): {}", e))?;
-
-        Ok(plaintext)
+        crate::cloud_sync::crypto::decrypt_capsule(encrypted_data, user_key)
     }
 
     /// Descompacta com máxima segurança contra Zip-Slip e de forma atômica

@@ -14,7 +14,7 @@ pub struct ProcessManager {
     running: Arc<Mutex<HashMap<String, u32>>>,
     profile_dirs: Arc<Mutex<HashMap<String, PathBuf>>>,
     ports: Arc<Mutex<HashMap<String, u16>>>,
-    tunnels: Arc<Mutex<HashMap<String, crate::network::tunnel::Socks5LoopbackTunnel>>>,
+    relays: Arc<Mutex<HashMap<String, crate::network::relay::ProxyRelay>>>,
     client: reqwest::Client,
     ws: WsState,
     auto_sync: Arc<Mutex<Option<Arc<crate::cloud_sync::AutoSyncEngine>>>>,
@@ -32,7 +32,7 @@ impl ProcessManager {
             running: Arc::new(Mutex::new(HashMap::new())),
             profile_dirs: Arc::new(Mutex::new(HashMap::new())),
             ports: Arc::new(Mutex::new(HashMap::new())),
-            tunnels: Arc::new(Mutex::new(HashMap::new())),
+            relays: Arc::new(Mutex::new(HashMap::new())),
             client,
             ws,
             auto_sync: Arc::new(Mutex::new(None)),
@@ -127,8 +127,8 @@ impl ProcessManager {
         user_js.push_str("user_pref(\"xpinstall.signatures.required\", false);\n");
         user_js.push_str("user_pref(\"extensions.experiments.enabled\", true);\n");
 
-        // 1. Delegação de Proxy, Auto-Auth e WebRTC via módulo desacoplado network
-        let net_setup = crate::network::prepare_network(&profile.proxy, profile_dir).await?;
+        // 1. Delegação de Proxy Universal Relay e WebRTC via módulo desacoplado network
+        let net_setup = crate::network::prepare_network(&profile.proxy, &profile.fingerprint_json).await?;
         user_js.push_str(&net_setup.user_js_snippet);
 
         // 2. Importação e preparação das extensões via módulo desacoplado import_extensions_web
@@ -143,9 +143,32 @@ impl ProcessManager {
         let mut all_addon_paths = net_setup.addon_paths.clone();
         all_addon_paths.extend(ext_paths);
 
-        // 3. Delegação de Fingerprint e Sistema Operacional com TODAS as extensões
-        let proxy_ip = profile.proxy.host.as_deref().filter(|h| !h.trim().is_empty());
-        let fp_setup = crate::fingerprint::prepare_fingerprint(profile, proxy_ip, &all_addon_paths);
+        // 3. Delegação de Fingerprint e Sistema Operacional com IPv4 estrito para WebRTC
+        let proxy_ip: Option<String> = if profile.proxy.proxy_type != "none" {
+            if let Some(host) = profile.proxy.host.as_deref().filter(|h| !h.trim().is_empty()) {
+                if host.parse::<std::net::Ipv4Addr>().is_ok() {
+                    Some(host.to_string())
+                } else {
+                    let port = profile.proxy.port.unwrap_or(8080);
+                    tokio::net::lookup_host(format!("{}:{}", host, port))
+                        .await
+                        .ok()
+                        .and_then(|mut iter| iter.find_map(|addr| {
+                            if let std::net::SocketAddr::V4(v4) = addr {
+                                Some(v4.ip().to_string())
+                            } else {
+                                None
+                            }
+                        }))
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        let fp_setup = crate::fingerprint::prepare_fingerprint(profile, proxy_ip.as_deref(), &all_addon_paths);
         user_js.push_str(&fp_setup.user_js_snippet);
 
         let user_js_path = profile_dir.join("user.js");
@@ -197,7 +220,32 @@ impl ProcessManager {
         // Aplica regras de rede
         net_setup.apply_to_command(&mut cmd);
 
+        // Suporte a launch_hook personalizado vindo das impressões digitais do frontend
+        let fp_map = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
+        if let Some(hook) = fp_map.get("launch_hook").and_then(|v| v.as_str()) {
+            for arg in hook.split_whitespace() {
+                if !arg.is_empty() {
+                    cmd.arg(arg);
+                }
+            }
+        }
+
+        // FONTCONFIG_PATH injection se rodando em Linux
+        #[cfg(target_os = "linux")]
+        {
+            if let Some(engine_dir) = binary_path.parent() {
+                let fc_candidate = engine_dir.join("fontconfig").join("bundle");
+                let alt_fc = engine_dir.join("fontconfig");
+                if fc_candidate.exists() {
+                    cmd.env("FONTCONFIG_PATH", fc_candidate);
+                } else if alt_fc.exists() {
+                    cmd.env("FONTCONFIG_PATH", alt_fc);
+                }
+            }
+        }
+
         // Injeta o CAMOU_CONFIG com spoofing nativo de SO e Fingerprint no C++ do Camoufox
+        // Suporta chunking CAMOU_CONFIG_n para mitigar estouro de variáveis de ambiente no Windows
         let camou_config_json = fp_setup.to_camou_config_json();
         info!(
             "🎭 Injetando CAMOU_CONFIG (SO: {}, bytes: {}) para o perfil {}",
@@ -205,7 +253,19 @@ impl ProcessManager {
             camou_config_json.len(),
             profile.id
         );
-        cmd.env("CAMOU_CONFIG", camou_config_json);
+        if camou_config_json.len() > 2000 {
+            let mut chunk_idx = 1;
+            let mut start = 0;
+            let bytes = camou_config_json.as_bytes();
+            while start < bytes.len() {
+                let end = std::cmp::min(start + 2000, bytes.len());
+                let chunk = &camou_config_json[start..end];
+                cmd.env(format!("CAMOU_CONFIG_{chunk_idx}"), chunk);
+                chunk_idx += 1;
+                start = end;
+            }
+        }
+        cmd.env("CAMOU_CONFIG", &camou_config_json);
 
         let mut child = cmd.spawn().map_err(|e| {
             format!("Falha ao executar {:?}: {}", binary_path, e)
@@ -222,9 +282,9 @@ impl ProcessManager {
             dirs.insert(profile.id.clone(), profile_dir.clone());
         }
 
-        if let Some(tunnel) = net_setup.tunnel {
-            let mut tunnels = self.tunnels.lock().unwrap();
-            tunnels.insert(profile.id.clone(), tunnel);
+        if let Some(relay) = net_setup.relay {
+            let mut relays = self.relays.lock().unwrap();
+            relays.insert(profile.id.clone(), relay);
         }
 
         // Notifica o frontend via WebSocket imediatamente
@@ -238,7 +298,7 @@ impl ProcessManager {
         let profile_id_clone = profile.id.clone();
         let running_map = self.running.clone();
         let profile_dirs_map = self.profile_dirs.clone();
-        let tunnels_map = self.tunnels.clone();
+        let relays_map = self.relays.clone();
         let ws_clone = self.ws.clone();
         let auto_sync_clone = self.auto_sync.clone();
         let profile_dir_clone = profile_dir.clone();
@@ -277,8 +337,10 @@ impl ProcessManager {
             }
 
             {
-                let mut tunnels = tunnels_map.lock().unwrap();
-                tunnels.remove(&profile_id_clone);
+                let mut relays = relays_map.lock().unwrap();
+                if let Some(mut relay) = relays.remove(&profile_id_clone) {
+                    relay.stop();
+                }
             }
 
             // Atualiza metadata.json no disco com status ready e timestamp atualizado
@@ -334,8 +396,10 @@ impl ProcessManager {
         }
 
         {
-            let mut tunnels = self.tunnels.lock().unwrap();
-            tunnels.remove(profile_id);
+            let mut relays = self.relays.lock().unwrap();
+            if let Some(mut relay) = relays.remove(profile_id) {
+                relay.stop();
+            }
         }
 
         // Emite status "ready" via WebSocket
