@@ -12,7 +12,7 @@ pub const MIGRATION_ID: &str = "0001_purge_plaintext_proxy_auth_extension";
 pub fn run(profile_dir: &Path, backup_dir: Option<&Path>) -> Result<bool, String> {
     let legacy_ext = profile_dir
         .join("extensions")
-        .join("fury-proxy-auth@antidetect.fury");
+        .join("star-proxy-auth@antidetect.star");
 
     if !legacy_ext.exists() {
         return Ok(false);
@@ -22,7 +22,7 @@ pub fn run(profile_dir: &Path, backup_dir: Option<&Path>) -> Result<bool, String
 
     // Se houver diretório de backup, preserva cópia arquivada antes de remover
     if let Some(b_dir) = backup_dir {
-        let backup_dest = b_dir.join("extensions").join("fury-proxy-auth@antidetect.fury");
+        let backup_dest = b_dir.join("extensions").join("star-proxy-auth@antidetect.star");
         let _ = fs::create_dir_all(b_dir.join("extensions"));
         copy_dir_recursive(&legacy_ext, &backup_dest)?;
     }

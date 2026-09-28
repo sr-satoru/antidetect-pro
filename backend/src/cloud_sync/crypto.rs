@@ -10,8 +10,8 @@ type HmacSha256 = Hmac<Sha256>;
 
 pub const MAGIC_HEADER_STAR_V1: &[u8; 8] = b"STARENC1";
 pub const MAGIC_HEADER_STAR_V2: &[u8; 8] = b"STARENC2";
-pub const MAGIC_HEADER_FURY_V1: &[u8; 8] = b"FURYENC1";
-pub const MAGIC_HEADER_FURY_V2: &[u8; 8] = b"FURYENC2";
+pub const MAGIC_HEADER_STAR_V1: &[u8; 8] = b"STARENC1";
+pub const MAGIC_HEADER_STAR_V2: &[u8; 8] = b"STARENC2";
 
 pub const MAGIC_HEADER_V1: &[u8; 8] = MAGIC_HEADER_STAR_V1;
 pub const MAGIC_HEADER_V2: &[u8; 8] = MAGIC_HEADER_STAR_V2;
@@ -29,11 +29,11 @@ pub fn derive_key_v2(user_key: &str, salt: &[u8; SALT_LEN]) -> [u8; 32] {
     key
 }
 
-/// Derivação legado via HMAC-SHA256 de 1 rodada para compatibilidade retroativa (STARENC1/FURYENC1)
+/// Derivação legado via HMAC-SHA256 de 1 rodada para compatibilidade retroativa (STARENC1/STARENC1)
 pub fn derive_key_v1(user_key: &str, salt: &[u8; SALT_LEN]) -> [u8; 32] {
     let mut mac = <HmacSha256 as hmac::Mac>::new_from_slice(user_key.as_bytes())
         .expect("HMAC aceita chaves de qualquer tamanho");
-    mac.update(b"fury_e2ee_capsule_vault_v1");
+    mac.update(b"star_e2ee_capsule_vault_v1");
     mac.update(salt);
     let result = mac.finalize().into_bytes();
     let mut key = [0u8; 32];
@@ -72,7 +72,7 @@ pub fn encrypt_capsule(plaintext: &[u8], user_key: &str) -> Result<Vec<u8>, Stri
     Ok(output)
 }
 
-/// Descriptografa uma cápsula binária .enc validando o cabeçalho (STARENC2, STARENC1, FURYENC2 ou FURYENC1) e a tag de integridade GCM
+/// Descriptografa uma cápsula binária .enc validando o cabeçalho (STARENC2, STARENC1, STARENC2 ou STARENC1) e a tag de integridade GCM
 pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>, String> {
     if encrypted_data.len() < MIN_PAYLOAD_LEN {
         return Err(format!(
@@ -83,11 +83,11 @@ pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>,
     }
 
     let header = &encrypted_data[..8];
-    let key_bytes = if header == MAGIC_HEADER_STAR_V2 || header == MAGIC_HEADER_FURY_V2 {
+    let key_bytes = if header == MAGIC_HEADER_STAR_V2 || header == MAGIC_HEADER_STAR_V2 {
         let mut salt = [0u8; SALT_LEN];
         salt.copy_from_slice(&encrypted_data[8..24]);
         derive_key_v2(user_key, &salt)
-    } else if header == MAGIC_HEADER_STAR_V1 || header == MAGIC_HEADER_FURY_V1 {
+    } else if header == MAGIC_HEADER_STAR_V1 || header == MAGIC_HEADER_STAR_V1 {
         let mut salt = [0u8; SALT_LEN];
         salt.copy_from_slice(&encrypted_data[8..24]);
         derive_key_v1(user_key, &salt)

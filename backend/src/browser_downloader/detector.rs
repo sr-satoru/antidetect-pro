@@ -38,16 +38,16 @@ pub fn get_engine_dir(data_dir: &Path) -> PathBuf {
 fn get_executable_candidates(engine_dir: &Path) -> Vec<PathBuf> {
     let mut candidates = Vec::new();
 
-    // 1. Prioridade: star-engine / fury-engine
+    // 1. Prioridade: star-engine / star-engine
     #[cfg(windows)]
     {
         candidates.push(engine_dir.join("star-engine.exe"));
-        candidates.push(engine_dir.join("fury-engine.exe"));
+        candidates.push(engine_dir.join("star-engine.exe"));
     }
     #[cfg(not(windows))]
     {
         candidates.push(engine_dir.join("star-engine"));
-        candidates.push(engine_dir.join("fury-engine"));
+        candidates.push(engine_dir.join("star-engine"));
     }
 
     // 2. Nomes originais que podem ter sido descompactados antes da renomeação
@@ -90,9 +90,9 @@ pub fn find_or_standardize_executable(engine_dir: &Path) -> Option<PathBuf> {
     }
 
     #[cfg(windows)]
-    let legacy_name = "fury-engine.exe";
+    let legacy_name = "star-engine.exe";
     #[cfg(not(windows))]
-    let legacy_name = "fury-engine";
+    let legacy_name = "star-engine";
 
     let legacy_path = engine_dir.join(legacy_name);
     if legacy_path.exists() && legacy_path.is_file() {

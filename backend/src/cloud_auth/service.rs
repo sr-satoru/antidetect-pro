@@ -33,13 +33,13 @@ pub struct CloudAuthService {
 impl CloudAuthService {
     pub fn new() -> Self {
         let cloud_api_url = std::env::var("STAR_CLOUD_API_URL")
-            .or_else(|_| std::env::var("FURY_CLOUD_API_URL"))
+            .or_else(|_| std::env::var("STAR_CLOUD_API_URL"))
             .unwrap_or_else(|_| "http://localhost:12342".to_string());
         let web_site_url = std::env::var("STAR_WEB_SITE_URL")
-            .or_else(|_| std::env::var("FURY_WEB_SITE_URL"))
+            .or_else(|_| std::env::var("STAR_WEB_SITE_URL"))
             .unwrap_or_else(|_| "http://localhost:3001".to_string());
         let data_dir = std::env::var("STAR_DATA_DIR")
-            .or_else(|_| std::env::var("FURY_DATA_DIR"))
+            .or_else(|_| std::env::var("STAR_DATA_DIR"))
             .unwrap_or_else(|_| "./data".to_string());
         let session_file = PathBuf::from(data_dir).join("auth_session.json");
 
@@ -91,7 +91,7 @@ impl CloudAuthService {
         let auth_state = Uuid::new_v4().to_string();
         let (code_verifier, code_challenge) = Self::generate_pkce_pair();
         let backend_port = std::env::var("STAR_BACKEND_PORT")
-            .or_else(|_| std::env::var("FURY_BACKEND_PORT"))
+            .or_else(|_| std::env::var("STAR_BACKEND_PORT"))
             .unwrap_or_else(|_| "12540".to_string());
         let redirect_uri = format!("http://127.0.0.1:{}/api/auth/callback", backend_port);
 

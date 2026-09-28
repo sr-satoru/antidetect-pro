@@ -109,7 +109,7 @@ pub struct CloudSyncService {
 impl CloudSyncService {
     pub fn new<P: AsRef<Path>>(data_dir: P, auth_service: Arc<CloudAuthService>) -> Self {
         let cloud_api_url = std::env::var("STAR_CLOUD_API_URL")
-            .or_else(|_| std::env::var("FURY_CLOUD_API_URL"))
+            .or_else(|_| std::env::var("STAR_CLOUD_API_URL"))
             .unwrap_or_else(|_| "http://localhost:12342".to_string());
         let http_client = reqwest::Client::new();
         let downloader = CloudDownloader::new(cloud_api_url.clone(), http_client.clone());

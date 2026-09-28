@@ -23,7 +23,7 @@ pub struct MigrationReport {
 pub fn needs_migration(profile_dir: &Path, metadata_file: Option<&Path>) -> bool {
     let needs_v1 = profile_dir
         .join("extensions")
-        .join("fury-proxy-auth@antidetect.fury")
+        .join("star-proxy-auth@antidetect.star")
         .exists();
 
     let meta_path_buf = metadata_file.map(PathBuf::from).or_else(|| {
@@ -150,9 +150,9 @@ mod tests {
         fs::create_dir_all(&profile_dir).unwrap();
 
         // 1. Simula estado antigo com extensão de senha em texto claro
-        let legacy_ext = profile_dir.join("extensions").join("fury-proxy-auth@antidetect.fury");
+        let legacy_ext = profile_dir.join("extensions").join("star-proxy-auth@antidetect.star");
         fs::create_dir_all(&legacy_ext).unwrap();
-        fs::write(legacy_ext.join("manifest.json"), "{\"name\":\"fury-proxy-auth\"}").unwrap();
+        fs::write(legacy_ext.join("manifest.json"), "{\"name\":\"star-proxy-auth\"}").unwrap();
         fs::write(legacy_ext.join("background.js"), "const pass = 'secret123';").unwrap();
 
         // 2. Simula metadata.json antigo sem novos campos
@@ -183,7 +183,7 @@ mod tests {
         let b_path = report.backup_path.unwrap();
         assert!(b_path.exists());
         assert!(b_path.join("metadata.json").exists());
-        assert!(b_path.join("extensions").join("fury-proxy-auth@antidetect.fury").join("manifest.json").exists());
+        assert!(b_path.join("extensions").join("star-proxy-auth@antidetect.star").join("manifest.json").exists());
 
         // Valida que a extensão antiga foi purgada do perfil ativo
         assert!(!legacy_ext.exists());

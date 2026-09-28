@@ -53,7 +53,7 @@ pub fn get_os_display_name() -> &'static str {
 /// Retorna o diretório canônico padrão de armazenamento por sistema operacional
 #[allow(dead_code)]
 pub fn get_canonical_app_dir() -> PathBuf {
-    if let Ok(env_dir) = std::env::var("STAR_DATA_DIR").or_else(|_| std::env::var("FURY_DATA_DIR")) {
+    if let Ok(env_dir) = std::env::var("STAR_DATA_DIR").or_else(|_| std::env::var("STAR_DATA_DIR")) {
         let p = PathBuf::from(env_dir);
         if !p.as_os_str().is_empty() {
             return p;
@@ -103,7 +103,7 @@ pub fn get_canonical_app_dir() -> PathBuf {
             if star_dir.exists() {
                 return star_dir;
             }
-            let legacy_dir = PathBuf::from(&home).join(".local").join("share").join("fury");
+            let legacy_dir = PathBuf::from(&home).join(".local").join("share").join("star");
             if legacy_dir.exists() {
                 return legacy_dir;
             }

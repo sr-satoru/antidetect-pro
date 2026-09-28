@@ -34,7 +34,7 @@ pub async fn start_star_server(
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let data_dir = data_dir_override
         .or_else(|| std::env::var("STAR_DATA_DIR").ok())
-        .or_else(|| std::env::var("FURY_DATA_DIR").ok())
+        .or_else(|| std::env::var("STAR_DATA_DIR").ok())
         .unwrap_or_else(|| {
             let local_data = std::path::Path::new("./data");
             if local_data.exists() && local_data.is_dir() {
@@ -202,7 +202,7 @@ pub async fn start_star_server(
 
 /// Alias para manter compatibilidade com chamadas legadas
 #[inline]
-pub async fn start_fury_server(
+pub async fn start_star_server(
     data_dir_override: Option<String>,
     port: u16,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {

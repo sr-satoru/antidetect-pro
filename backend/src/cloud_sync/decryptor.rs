@@ -21,7 +21,7 @@ impl ProfileDecryptor {
         crate::cloud_sync::crypto::derive_key_v2(user_key, salt)
     }
 
-    /// Descriptografa uma cápsula binária cifrada .enc com suporte a STARENC2/FURYENC2 e retrocompatibilidade com V1
+    /// Descriptografa uma cápsula binária cifrada .enc com suporte a STARENC2/STARENC2 e retrocompatibilidade com V1
     pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>, String> {
         crate::cloud_sync::crypto::decrypt_capsule(encrypted_data, user_key)
     }
