@@ -81,6 +81,9 @@ impl ProcessManager {
         fs::create_dir_all(profile_dir)
             .map_err(|e| format!("Erro ao criar diretório do perfil: {e}"))?;
 
+        // Executa migrações de segurança automáticas com backup de arquivos críticos
+        let _ = crate::migrations::migrate_profile(profile_dir, None);
+
         // 1. Gera o arquivo user.js dentro da pasta do perfil Firefox/Camoufox
         let mut user_js = String::new();
         user_js.push_str("// Configurações geradas automaticamente pelo Fury Browser\n");

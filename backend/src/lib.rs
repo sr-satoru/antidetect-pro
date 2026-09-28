@@ -15,6 +15,7 @@ pub mod fingerprint;
 pub mod id_generator;
 pub mod import_extensions_web;
 pub mod launcher;
+pub mod migrations;
 pub mod models;
 pub mod network;
 pub mod proxy_validator;
@@ -47,6 +48,9 @@ pub async fn start_fury_server(
     let _ = std::fs::create_dir_all(&data_dir);
     let _ = std::fs::create_dir_all(std::path::Path::new(&data_dir).join("profiles"));
     let _ = std::fs::create_dir_all(std::path::Path::new(&data_dir).join("binaries"));
+
+    // Executa migrações automáticas seguras com backup em todos os perfis existentes
+    let _ = migrations::migrate_all_profiles(std::path::Path::new(&data_dir));
 
     let ws_state = ws::WsState::new();
     let profile_storage = Arc::new(ProfileStorage::new(&data_dir, ws_state.clone()));
