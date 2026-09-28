@@ -10,12 +10,12 @@ pub fn run() {
         )?;
       }
 
-      // Inicia o daemon local Fury (Axum na porta 12540) em segundo plano usando o diretório canônico padrão
+      // Inicia o daemon local Star Multlogin (Axum na porta 12540) em segundo plano usando o diretório canônico padrão
       tauri::async_runtime::spawn(async move {
-        let canonical_dir = fury_backend::browser_downloader::platform::get_canonical_app_dir();
+        let canonical_dir = star_multlogin_backend::browser_downloader::platform::get_canonical_app_dir();
         let data_dir_str = canonical_dir.to_string_lossy().to_string();
-        if let Err(e) = fury_backend::start_fury_server(Some(data_dir_str), 12540).await {
-          eprintln!("Erro no servidor interno Fury: {}", e);
+        if let Err(e) = star_multlogin_backend::start_star_server(Some(data_dir_str), 12540).await {
+          eprintln!("Erro no servidor interno Star Multlogin: {}", e);
         }
       });
 

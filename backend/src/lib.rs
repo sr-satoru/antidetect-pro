@@ -27,12 +27,13 @@ pub mod ws;
 
 use storage::{ExtensionStorage, ProfileStorage, ProxyStorage, TagStorage};
 
-/// Inicia o servidor Axum do ecossistema Fury na porta e diretório especificados
-pub async fn start_fury_server(
+/// Inicia o servidor Axum do ecossistema Star Multlogin na porta e diretório especificados
+pub async fn start_star_server(
     data_dir_override: Option<String>,
     port: u16,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let data_dir = data_dir_override
+        .or_else(|| std::env::var("STAR_DATA_DIR").ok())
         .or_else(|| std::env::var("FURY_DATA_DIR").ok())
         .unwrap_or_else(|| {
             let local_data = std::path::Path::new("./data");
@@ -186,7 +187,7 @@ pub async fn start_fury_server(
         .layer(cors);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
-    tracing::info!("🚀 Fury Backend Rust iniciado com sucesso em http://{}", addr);
+    tracing::info!("🚀 Star Multlogin Backend Rust iniciado com sucesso em http://{}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr)
         .await
@@ -197,4 +198,13 @@ pub async fn start_fury_server(
         .map_err(|e| format!("Erro ao executar servidor Axum: {}", e))?;
 
     Ok(())
+}
+
+/// Alias para manter compatibilidade com chamadas legadas
+#[inline]
+pub async fn start_fury_server(
+    data_dir_override: Option<String>,
+    port: u16,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    start_star_server(data_dir_override, port).await
 }

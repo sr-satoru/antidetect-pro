@@ -41,16 +41,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Carrega a sessão salva no localStorage
   useEffect(() => {
-    const savedToken = localStorage.getItem('fury_auth_token');
-    const savedUser = localStorage.getItem('fury_auth_user');
+    const savedToken = localStorage.getItem('star_auth_token');
+    const savedUser = localStorage.getItem('star_auth_user');
 
     if (savedToken && savedUser) {
       try {
         setToken(savedToken);
         setUser(JSON.parse(savedUser));
       } catch {
-        localStorage.removeItem('fury_auth_token');
-        localStorage.removeItem('fury_auth_user');
+        localStorage.removeItem('star_auth_token');
+        localStorage.removeItem('star_auth_user');
         setUser(DEFAULT_OFFLINE_USER);
       }
     } else {
@@ -80,8 +80,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setToken(sessionToken);
     setUser(sessionUser);
-    localStorage.setItem('fury_auth_token', sessionToken);
-    localStorage.setItem('fury_auth_user', JSON.stringify(sessionUser));
+    localStorage.setItem('star_auth_token', sessionToken);
+    localStorage.setItem('star_auth_user', JSON.stringify(sessionUser));
   };
 
   /**
@@ -90,8 +90,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const continueOffline = () => {
     setToken(null);
     setUser(DEFAULT_OFFLINE_USER);
-    localStorage.removeItem('fury_auth_token');
-    localStorage.removeItem('fury_auth_user');
+    localStorage.removeItem('star_auth_token');
+    localStorage.removeItem('star_auth_user');
   };
 
   /**
@@ -100,8 +100,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     setToken(null);
     setUser(DEFAULT_OFFLINE_USER);
-    localStorage.removeItem('fury_auth_token');
-    localStorage.removeItem('fury_auth_user');
+    localStorage.removeItem('star_auth_token');
+    localStorage.removeItem('star_auth_user');
   };
 
   const isOnline = !!token && !user.is_offline;

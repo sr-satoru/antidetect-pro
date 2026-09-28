@@ -23,7 +23,7 @@ pub struct ProcessManager {
 impl ProcessManager {
     pub fn new(ws: WsState) -> Self {
         let client = reqwest::Client::builder()
-            .user_agent("Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0 FuryBrowser/1.0")
+            .user_agent("Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0 StarMultlogin/1.0")
             .timeout(std::time::Duration::from_secs(15))
             .build()
             .unwrap_or_default();
@@ -59,7 +59,7 @@ impl ProcessManager {
             .unwrap_or(18922)
     }
 
-    /// Resolve o executável do motor Fury baixado e gerenciado pelo aplicativo.
+    /// Resolve o executável do motor Star Multlogin baixado e gerenciado pelo aplicativo.
     /// A única forma permitida de iniciar é pelo binário oficial baixado automaticamente.
     pub fn resolve_browser_binary(data_dir: &Path) -> Result<PathBuf, String> {
         let base_data_dir = if data_dir.ends_with("profiles") {
@@ -83,7 +83,7 @@ impl ProcessManager {
 
         // 1. Gera o arquivo user.js dentro da pasta do perfil Firefox/Camoufox
         let mut user_js = String::new();
-        user_js.push_str("// Configurações geradas automaticamente pelo Fury Browser\n");
+        user_js.push_str("// Configurações geradas automaticamente pelo Star Multlogin\n");
         user_js.push_str("user_pref(\"browser.shell.checkDefaultBrowser\", false);\n");
         user_js.push_str("user_pref(\"browser.warnOnQuit\", false);\n");
         user_js.push_str("user_pref(\"browser.aboutwelcome.enabled\", false);\n");

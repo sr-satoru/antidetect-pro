@@ -19,7 +19,7 @@ interface McpTabProps {
 }
 
 export const McpTab: React.FC<McpTabProps> = ({
-  scriptPath = '/home/vanir/fury/frontend/tools/mcp/fury-mcp.py',
+  scriptPath = 'tools/mcp/star-mcp.py',
   apiPort = 18922,
 }) => {
   const [selectedClient, setSelectedClient] = useState<'claude' | 'cursor' | 'antigravity' | 'cli'>('claude');
@@ -34,10 +34,10 @@ export const McpTab: React.FC<McpTabProps> = ({
       json: JSON.stringify(
         {
           mcpServers: {
-            fury: {
+            star: {
               command: 'python3',
               args: [scriptPath],
-              env: { FURY_PORT: String(apiPort) },
+              env: { STAR_PORT: String(apiPort) },
             },
           },
         },
@@ -51,10 +51,10 @@ export const McpTab: React.FC<McpTabProps> = ({
       json: JSON.stringify(
         {
           mcpServers: {
-            fury: {
+            star: {
               command: 'python3',
               args: [scriptPath],
-              env: { FURY_PORT: String(apiPort) },
+              env: { STAR_PORT: String(apiPort) },
             },
           },
         },
@@ -68,10 +68,10 @@ export const McpTab: React.FC<McpTabProps> = ({
       json: JSON.stringify(
         {
           mcpServers: {
-            fury: {
+            star: {
               command: 'python3',
               args: [scriptPath],
-              env: { FURY_PORT: String(apiPort) },
+              env: { STAR_PORT: String(apiPort) },
             },
           },
         },
@@ -82,17 +82,17 @@ export const McpTab: React.FC<McpTabProps> = ({
     cli: {
       name: 'Claude CLI',
       pathText: 'Terminal / Shell:',
-      json: `claude mcp add fury python3 ${scriptPath}`,
+      json: `claude mcp add star python3 ${scriptPath}`,
     },
   };
 
   const tools = [
-    { name: 'fury_status', desc: 'Informa à IA se o motor está ativo e perfis em execução.', tag: 'Leitura' },
-    { name: 'fury_profiles', desc: 'Lista perfis com tags, proxy associado e status.', tag: 'Leitura' },
-    { name: 'fury_start_profile', desc: 'Abre o perfil seguro e devolve a porta WebSocket.', tag: 'Execução' },
-    { name: 'fury_stop_profile', desc: 'Encerra o perfil e persiste novos cookies no disco.', tag: 'Execução' },
-    { name: 'fury_get_tabs', desc: 'Lê títulos e URLs das abas abertas em tempo real.', tag: 'Inspeção' },
-    { name: 'fury_open_tab', desc: 'Abre uma nova URL em uma aba do perfil.', tag: 'Ação' },
+    { name: 'star_status', desc: 'Informa à IA se o motor está ativo e perfis em execução.', tag: 'Leitura' },
+    { name: 'star_profiles', desc: 'Lista perfis com tags, proxy associado e status.', tag: 'Leitura' },
+    { name: 'star_start_profile', desc: 'Abre o perfil seguro e devolve a porta WebSocket.', tag: 'Execução' },
+    { name: 'star_stop_profile', desc: 'Encerra o perfil e persiste novos cookies no disco.', tag: 'Execução' },
+    { name: 'star_get_tabs', desc: 'Lê títulos e URLs das abas abertas em tempo real.', tag: 'Inspeção' },
+    { name: 'star_open_tab', desc: 'Abre uma nova URL em uma aba do perfil.', tag: 'Ação' },
   ];
 
   const handleCopySnippet = () => {
@@ -113,7 +113,7 @@ export const McpTab: React.FC<McpTabProps> = ({
             jsonrpc: '2.0',
             id: 1,
             result: {
-              serverInfo: { name: 'fury-mcp', version: '0.1.0' },
+              serverInfo: { name: 'star-mcp', version: '0.1.0' },
               capabilities: { tools: 6 },
               status: 'online',
               message: 'Servidor MCP conectado com sucesso!',
@@ -138,7 +138,7 @@ export const McpTab: React.FC<McpTabProps> = ({
               Conectar Assistentes de IA (MCP)
             </h3>
             <p className="text-[12px] text-[#A6A6A6] mt-0.5">
-              Permita que o Claude Desktop, Cursor ou Antigravity controlem seus perfis do Fury diretamente pelo chat em linguagem natural.
+              Permita que o Claude Desktop, Cursor ou Antigravity controlem seus perfis do Star Multlogin diretamente pelo chat em linguagem natural.
             </p>
           </div>
 
@@ -219,7 +219,7 @@ export const McpTab: React.FC<McpTabProps> = ({
           </h4>
           <div className="space-y-2">
             {[
-              '"Quais perfis eu tenho cadastrados no Fury?"',
+              '"Quais perfis eu tenho cadastrados no Star Multlogin?"',
               '"Abra o perfil da Shopee e me informe o saldo de anúncios."',
               '"Inicie todos os perfis com a tag \'aquecer\' em paralelo."',
             ].map((prompt, idx) => (

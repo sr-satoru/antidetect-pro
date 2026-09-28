@@ -46,7 +46,7 @@ interface EndpointDef {
 
 export const TheneoApiTab: React.FC<TheneoApiTabProps> = ({
   apiPort = 18922,
-  token = 'fury_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
+  token = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
 }) => {
   const baseUrl = `http://127.0.0.1:${apiPort}`;
 
@@ -90,7 +90,7 @@ export const TheneoApiTab: React.FC<TheneoApiTabProps> = ({
           name: 'Authorization',
           type: 'header (string)',
           required: true,
-          desc: 'Token Bearer secreto gerado pelo Fury.',
+          desc: 'Token Bearer secreto gerado pelo Star Multlogin.',
         },
       ],
       mockResponse: [
@@ -131,7 +131,7 @@ export const TheneoApiTab: React.FC<TheneoApiTabProps> = ({
           name: 'id',
           type: 'body (string)',
           required: true,
-          desc: 'Identificador único do perfil cadastrado no Fury Browser.',
+          desc: 'Identificador único do perfil cadastrado no Star Multlogin.',
         },
         {
           name: 'headless',
@@ -359,7 +359,7 @@ console.log(data);`;
     }
 
     if (selectedLang === 'playwright') {
-      return `// 1. Inicia o perfil via API REST do Fury
+      return `// 1. Inicia o perfil via API REST do Star Multlogin
 const startRes = await fetch('${baseUrl}/api/v1/profiles/start', {
   method: 'POST',
   headers: {

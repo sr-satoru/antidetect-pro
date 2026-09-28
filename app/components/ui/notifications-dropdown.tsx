@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-// Central de Notificações Popover do Fury Browser
+// Central de Notificações Popover do Star Multlogin
 
 import React, { useState, useRef, useEffect } from 'react';
 import {

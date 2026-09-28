@@ -158,7 +158,7 @@ mod tests {
 
     #[test]
     fn test_capsule_size_under_1mb() {
-        let temp_dir = std::env::temp_dir().join(format!("fury_test_profile_{}", uuid::Uuid::new_v4()));
+        let temp_dir = std::env::temp_dir().join(format!("star_test_profile_{}", uuid::Uuid::new_v4()));
         let profile_dir = temp_dir.join("profile");
         fs::create_dir_all(&profile_dir).unwrap();
 
@@ -201,7 +201,7 @@ mod tests {
         );
 
         // Valida restauração (desempacotamento)
-        let restore_dir = std::env::temp_dir().join(format!("fury_restore_profile_{}", uuid::Uuid::new_v4()));
+        let restore_dir = std::env::temp_dir().join(format!("star_restore_profile_{}", uuid::Uuid::new_v4()));
         unpack_profile_capsule(&capsule_bytes, &restore_dir).expect("Desempacota cápsula");
 
         // Confirma inclusão dos arquivos essenciais

@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "fury",
+  "productName": "star-multlogin",
   "version": "0.1.11",
-  "identifier": "pro.antidetect.fury",
+  "identifier": "pro.antidetect.star",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1254",

@@ -22,7 +22,7 @@ impl AppVersionService {
     pub fn new() -> Self {
         let client = reqwest::Client::builder()
             .timeout(Duration::from_secs(10))
-            .user_agent("Fury-Antidetect/1.0")
+            .user_agent("Star-Multlogin/1.0")
             .build()
             .unwrap_or_else(|_| reqwest::Client::new());
 
@@ -59,7 +59,7 @@ impl AppVersionService {
         DEFAULT_VERSION.to_string()
     }
 
-    /// Verifica no GitHub se há uma versão/tag mais recente para o Fury Desktop
+    /// Verifica no GitHub se há uma versão/tag mais recente para o Star Multlogin Desktop
     pub async fn check_update(&self, client_override_version: Option<String>) -> Result<AppVersionInfo, String> {
         let current_version = client_override_version
             .filter(|v| !v.trim().is_empty())
@@ -79,14 +79,14 @@ impl AppVersionService {
         // 3. Fallback para tag Git em /tags
         let (tag_name, name, body, published_at, html_url, assets) = if let Some(rel) = release_info {
             let tag = rel.tag_name.unwrap_or_else(|| format!("v{}", current_version));
-            let name = rel.name.unwrap_or_else(|| format!("Fury Antidetect {}", tag));
+            let name = rel.name.unwrap_or_else(|| format!("Star Multlogin {}", tag));
             let body = rel.body.unwrap_or_default();
             let published = rel.published_at.unwrap_or_else(|| chrono::Utc::now().to_rfc3339());
             let html = rel.html_url.unwrap_or_else(|| format!("https://github.com/{}/releases", REPO_OWNER_NAME));
             (tag, name, body, published, html, rel.assets)
         } else if let Some(latest_tag) = self.fetch_latest_git_tag().await {
             let tag = latest_tag;
-            let name = format!("Fury Antidetect {}", tag);
+            let name = format!("Star Multlogin {}", tag);
             let body = format!("Nova tag {} encontrada no repositório GitHub.", tag);
             let published = chrono::Utc::now().to_rfc3339();
             let html = format!("https://github.com/{}/releases/tag/{}", REPO_OWNER_NAME, tag);
@@ -97,7 +97,7 @@ impl AppVersionService {
                 current_version: current_version.clone(),
                 latest_version: current_version.clone(),
                 tag_name: format!("v{}", current_version),
-                name: format!("Fury Antidetect v{}", current_version),
+                name: format!("Star Multlogin v{}", current_version),
                 body: "Versão local em execução.".to_string(),
                 published_at: chrono::Utc::now().to_rfc3339(),
                 html_url: format!("https://github.com/{}/releases", REPO_OWNER_NAME),

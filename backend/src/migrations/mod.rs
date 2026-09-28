@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-// Sistema Central de Migrações Seguras para Perfis do Fury Browser
+// Sistema Central de Migrações Seguras para Perfis do Star Multlogin
 
 pub mod backup;
 pub mod notifier;
@@ -142,7 +142,7 @@ mod tests {
 
     #[test]
     fn test_migration_v1_and_v2_with_backup() {
-        let temp_dir = std::env::temp_dir().join(format!("fury_mig_test_{}", uuid::Uuid::new_v4()));
+        let temp_dir = std::env::temp_dir().join(format!("star_mig_test_{}", uuid::Uuid::new_v4()));
         let profile_root = temp_dir.join("test-profile-123");
         let profile_dir = profile_root.join("profile");
         let meta_file = profile_root.join("metadata.json");

@@ -1,5 +1,5 @@
 /**
- * Definições de Tipos Canônicos do Fury Antidetect.
+ * Definições de Tipos Canônicos do Star Multlogin.
  * Sincronizados 1:1 com os modelos do Backend Rust (`backend/src/models/`).
  */
 

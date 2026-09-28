@@ -108,7 +108,8 @@ pub struct CloudSyncService {
 
 impl CloudSyncService {
     pub fn new<P: AsRef<Path>>(data_dir: P, auth_service: Arc<CloudAuthService>) -> Self {
-        let cloud_api_url = std::env::var("FURY_CLOUD_API_URL")
+        let cloud_api_url = std::env::var("STAR_CLOUD_API_URL")
+            .or_else(|_| std::env::var("FURY_CLOUD_API_URL"))
             .unwrap_or_else(|_| "http://localhost:12342".to_string());
         let http_client = reqwest::Client::new();
         let downloader = CloudDownloader::new(cloud_api_url.clone(), http_client.clone());
@@ -180,7 +181,7 @@ impl CloudSyncService {
             })
             .and_then(|bytes| serde_json::from_slice::<serde_json::Value>(&bytes).ok())
             .and_then(|json| json.get("sub").and_then(|s| s.as_str().map(|s| s.to_string())))
-            .unwrap_or_else(|| "fury_user_master_vault".to_string())
+            .unwrap_or_else(|| "star_user_master_vault".to_string())
     }
 
     /// Resolve o token a ser usado: prioriza o token interno gerenciado, com fallback para o token do cabeçalho

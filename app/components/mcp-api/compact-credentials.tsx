@@ -9,7 +9,7 @@ interface CompactCredentialsProps {
 
 export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
   apiPort = 18922,
-  token = 'fury_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
+  token = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
 }) => {
   const [showToken, setShowToken] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);

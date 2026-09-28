@@ -38,11 +38,17 @@ pub fn get_engine_dir(data_dir: &Path) -> PathBuf {
 fn get_executable_candidates(engine_dir: &Path) -> Vec<PathBuf> {
     let mut candidates = Vec::new();
 
-    // 1. Prioridade absoluta: fury-engine / fury-engine.exe
+    // 1. Prioridade: star-engine / fury-engine
     #[cfg(windows)]
-    candidates.push(engine_dir.join("fury-engine.exe"));
+    {
+        candidates.push(engine_dir.join("star-engine.exe"));
+        candidates.push(engine_dir.join("fury-engine.exe"));
+    }
     #[cfg(not(windows))]
-    candidates.push(engine_dir.join("fury-engine"));
+    {
+        candidates.push(engine_dir.join("star-engine"));
+        candidates.push(engine_dir.join("fury-engine"));
+    }
 
     // 2. Nomes originais que podem ter sido descompactados antes da renomeação
     #[cfg(windows)]
@@ -71,19 +77,32 @@ fn get_executable_candidates(engine_dir: &Path) -> Vec<PathBuf> {
     candidates
 }
 
-/// Localiza e padroniza o executável fury-engine dentro do diretório .engine
+/// Localiza e padroniza o executável star-engine dentro do diretório .engine
 pub fn find_or_standardize_executable(engine_dir: &Path) -> Option<PathBuf> {
     #[cfg(windows)]
-    let target_name = "fury-engine.exe";
+    let target_name = "star-engine.exe";
     #[cfg(not(windows))]
-    let target_name = "fury-engine";
+    let target_name = "star-engine";
 
     let target_path = engine_dir.join(target_name);
     if target_path.exists() && target_path.is_file() {
         return Some(target_path);
     }
 
-    // Se o executável ainda estiver com o nome de origem (camoufox/firefox), renomeia para fury-engine
+    #[cfg(windows)]
+    let legacy_name = "fury-engine.exe";
+    #[cfg(not(windows))]
+    let legacy_name = "fury-engine";
+
+    let legacy_path = engine_dir.join(legacy_name);
+    if legacy_path.exists() && legacy_path.is_file() {
+        if fs::rename(&legacy_path, &target_path).is_ok() {
+            return Some(target_path);
+        }
+        return Some(legacy_path);
+    }
+
+    // Se o executável ainda estiver com o nome de origem (camoufox/firefox), renomeia para star-engine
     for candidate in get_executable_candidates(engine_dir) {
         if candidate.exists() && candidate.is_file() {
             info!(

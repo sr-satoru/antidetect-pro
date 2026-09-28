@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-// Serviço Global de Notificações do Fury Browser
+// Serviço Global de Notificações do Star Multlogin
 
 export interface NotificationItem {
   id: string;
@@ -16,7 +16,7 @@ type Listener = (notifications: NotificationItem[]) => void;
 class NotificationsService {
   private notifications: NotificationItem[] = [];
   private listeners: Set<Listener> = new Set();
-  private storageKey = 'fury_app_notifications_v1';
+  private storageKey = 'star_app_notifications_v1';
 
   constructor() {
     this.loadFromStorage();

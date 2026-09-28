@@ -59,7 +59,7 @@ export const PerfisPage: React.FC = () => {
   // Dupla Troca automática com a nuvem (Download de ausentes + Upload/LWW de locais) ao abrir a página
   const hasAutoSynced = useRef(false);
   useEffect(() => {
-    const token = localStorage.getItem('fury_auth_token');
+    const token = localStorage.getItem('star_auth_token');
     if (!token || hasAutoSynced.current) return;
     hasAutoSynced.current = true;
 
@@ -114,7 +114,7 @@ export const PerfisPage: React.FC = () => {
         ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
-          console.log('⚡ Conectado ao WebSocket do Fury Backend:', ws?.url);
+          console.log('⚡ Conectado ao WebSocket do Star Multlogin Backend:', ws?.url);
         };
 
         ws.onmessage = (event) => {

@@ -262,7 +262,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_import_extensions_mode_none() {
-        let temp_dir = std::env::temp_dir().join("test_fury_none");
+        let temp_dir = std::env::temp_dir().join("test_star_none");
         let _ = fs::create_dir_all(&temp_dir);
 
         let profile = Profile {
@@ -296,7 +296,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_import_extensions_fallback_enrichment() {
-        let temp_dir = std::env::temp_dir().join("test_fury_enrichment");
+        let temp_dir = std::env::temp_dir().join("test_star_enrichment");
         let extensions_dir = temp_dir.join("extensions");
         let _ = fs::create_dir_all(&extensions_dir);
 

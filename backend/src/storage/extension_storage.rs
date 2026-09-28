@@ -18,7 +18,7 @@ impl ExtensionStorage {
         let _ = fs::create_dir_all(&dir);
 
         let client = reqwest::Client::builder()
-            .user_agent("Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0 FuryBrowser/1.0")
+            .user_agent("Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0 StarMultlogin/1.0")
             .timeout(std::time::Duration::from_secs(8))
             .build()
             .unwrap_or_default();
@@ -81,7 +81,7 @@ impl ExtensionStorage {
             name: dto.name.unwrap_or_else(|| format!("Extensão #{id}")),
             icon_type: dto.icon_type.or(Some("custom".to_string())),
             icon_url: dto.icon_url,
-            icon_bg: dto.icon_bg.or(Some("#2F80ED".to_string())), // Cor padrão do app (Fury Blue)
+            icon_bg: dto.icon_bg.or(Some("#2F80ED".to_string())), // Cor padrão do app (Star Blue)
             enabled: dto.enabled.unwrap_or(true),
             status: dto.status.unwrap_or_else(|| "available".to_string()),
             description: dto.description.unwrap_or_else(|| "Extensão adicionada à equipe.".to_string()),

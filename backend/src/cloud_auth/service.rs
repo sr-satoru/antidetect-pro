@@ -32,11 +32,15 @@ pub struct CloudAuthService {
 
 impl CloudAuthService {
     pub fn new() -> Self {
-        let cloud_api_url = std::env::var("FURY_CLOUD_API_URL")
+        let cloud_api_url = std::env::var("STAR_CLOUD_API_URL")
+            .or_else(|_| std::env::var("FURY_CLOUD_API_URL"))
             .unwrap_or_else(|_| "http://localhost:12342".to_string());
-        let web_site_url = std::env::var("FURY_WEB_SITE_URL")
+        let web_site_url = std::env::var("STAR_WEB_SITE_URL")
+            .or_else(|_| std::env::var("FURY_WEB_SITE_URL"))
             .unwrap_or_else(|_| "http://localhost:3001".to_string());
-        let data_dir = std::env::var("FURY_DATA_DIR").unwrap_or_else(|_| "./data".to_string());
+        let data_dir = std::env::var("STAR_DATA_DIR")
+            .or_else(|_| std::env::var("FURY_DATA_DIR"))
+            .unwrap_or_else(|_| "./data".to_string());
         let session_file = PathBuf::from(data_dir).join("auth_session.json");
 
         let mut initial_user = None;
@@ -86,7 +90,9 @@ impl CloudAuthService {
         let session_id = Uuid::new_v4().to_string();
         let auth_state = Uuid::new_v4().to_string();
         let (code_verifier, code_challenge) = Self::generate_pkce_pair();
-        let backend_port = std::env::var("FURY_BACKEND_PORT").unwrap_or_else(|_| "12540".to_string());
+        let backend_port = std::env::var("STAR_BACKEND_PORT")
+            .or_else(|_| std::env::var("FURY_BACKEND_PORT"))
+            .unwrap_or_else(|_| "12540".to_string());
         let redirect_uri = format!("http://127.0.0.1:{}/api/auth/callback", backend_port);
 
         let auth_url = format!(
@@ -302,7 +308,7 @@ impl CloudAuthService {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fury Antidetect - Conectado</title>
+  <title>Star Multlogin - Conectado</title>
   <style>
     body {{
       background: #080c14;
@@ -380,7 +386,7 @@ impl CloudAuthService {
       Conectado com sucesso
     </div>
     <h1>Autenticação Concluída!</h1>
-    <p>Sua conta foi vinculada ao aplicativo <strong>Fury Antidetect</strong>.</p>
+    <p>Sua conta foi vinculada ao aplicativo <strong>Star Multlogin</strong>.</p>
     <div class="user-pill">Conectado como: <strong>{}</strong></div>
     <button class="btn" onclick="window.close()">Fechar esta Janela</button>
   </div>
@@ -395,7 +401,7 @@ impl CloudAuthService {
         format!(
             r#"<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>Fury - Erro na Autenticação</title>
+<head><meta charset="UTF-8"><title>Star Multlogin - Erro na Autenticação</title>
 <style>body{{background:#0b0f17;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}}
 .card{{background:#161f30;border:1px solid #ef4444;padding:36px;border-radius:16px;text-align:center;max-width:400px;}}
 h1{{color:#ef4444;font-size:20px;margin-bottom:12px;}}p{{color:#94a3b8;font-size:14px;line-height:1.5;}}</style>

@@ -10,7 +10,7 @@ interface TokenBarProps {
 
 export const TokenBar: React.FC<TokenBarProps> = ({
   apiPort = 18922,
-  token = 'fury_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
+  token = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
   onRefreshToken,
 }) => {
   const [showToken, setShowToken] = useState(false);

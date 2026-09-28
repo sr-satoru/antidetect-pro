@@ -30,7 +30,7 @@ export const appUpdateService = {
       );
       return data;
     } catch (err) {
-      console.warn('[UpdateService] Não foi possível verificar atualização com o backend Fury:', err);
+      console.warn('[UpdateService] Não foi possível verificar atualização com o backend Star Multlogin:', err);
       return null;
     }
   },

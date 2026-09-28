@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-// Módulo Especializado de Notificações para o Sistema de Migrações do Fury Browser
+// Módulo Especializado de Notificações para o Sistema de Migrações do Star Multlogin
 
 use std::path::Path;
 use tracing::info;

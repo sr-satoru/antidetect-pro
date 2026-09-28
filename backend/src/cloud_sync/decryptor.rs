@@ -21,7 +21,7 @@ impl ProfileDecryptor {
         crate::cloud_sync::crypto::derive_key_v2(user_key, salt)
     }
 
-    /// Descriptografa uma cápsula binária cifrada .enc com suporte a FURYENC2 e retrocompatibilidade com FURYENC1
+    /// Descriptografa uma cápsula binária cifrada .enc com suporte a STARENC2/FURYENC2 e retrocompatibilidade com V1
     pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>, String> {
         crate::cloud_sync::crypto::decrypt_capsule(encrypted_data, user_key)
     }
@@ -171,7 +171,7 @@ mod tests {
     #[test]
     fn test_decrypt_and_unpack() {
         let key = "usr_test_secret_12345";
-        let temp_dir = std::env::temp_dir().join(format!("fury_test_profile_{}", Uuid::new_v4()));
+        let temp_dir = std::env::temp_dir().join(format!("star_test_profile_{}", Uuid::new_v4()));
 
         // Cria um zip fictício contendo metadata.json
         let mut buffer = Vec::new();

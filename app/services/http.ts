@@ -33,7 +33,7 @@ async function request<T>(
     }
   }
 
-  const token = localStorage.getItem('fury_auth_token');
+  const token = localStorage.getItem('star_auth_token');
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

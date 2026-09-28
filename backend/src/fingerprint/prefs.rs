@@ -13,7 +13,7 @@ pub fn build_fingerprint_prefs(
     disable_tls_features: Option<&str>,
 ) -> String {
     let mut prefs = String::new();
-    prefs.push_str("\n// === FINGERPRINT & SO SPOOFING (FURY CAMOUFOX) ===\n");
+    prefs.push_str("\n// === FINGERPRINT & SO SPOOFING (STAR MULTLOGIN CAMOUFOX) ===\n");
 
     // Overrides oficiais do Firefox Gecko
     if !user_agent.trim().is_empty() {

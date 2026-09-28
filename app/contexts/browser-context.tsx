@@ -59,7 +59,7 @@ export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       return data;
     } catch (err) {
-      console.warn('Backend Fury offline ou inacessível ao verificar status do motor:', err);
+      console.warn('Backend Star Multlogin offline ou inacessível ao verificar status do motor:', err);
       return null;
     }
   }, []);
@@ -119,7 +119,7 @@ export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ child
               if (d.stage === 'ready') {
                 setIsDownloading(false);
                 setProgress(100);
-                toast.success('Motor Fury instalado e verificado com sucesso!');
+                toast.success('Motor Star Multlogin instalado e verificado com sucesso!');
                 checkStatus();
               }
 
@@ -166,7 +166,7 @@ export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ child
         (data.health.status === 'missing' || data.health.status === 'broken')
       ) {
         hasAutoStartedRef.current = true;
-        console.log('🔍 Motor Fury ausente detectado. Disponível para download na Central de Atualizações.');
+        console.log('🔍 Motor Star Multlogin ausente detectado. Disponível para download na Central de Atualizações.');
       }
     };
 

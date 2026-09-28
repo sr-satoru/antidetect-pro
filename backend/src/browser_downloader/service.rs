@@ -158,7 +158,7 @@ impl BrowserDownloadService {
 
         // 2. Conecta via reqwest com timeouts robustos e User-Agent adequado
         let client = reqwest::Client::builder()
-            .user_agent("FuryBrowser/1.0 (Downloader; +https://github.com/sr-satoru/antidetect-pro)")
+            .user_agent("StarMultloginBrowser/1.0 (Downloader; +https://github.com/sr-satoru/antidetect-pro)")
             .redirect(reqwest::redirect::Policy::limited(10))
             .connect_timeout(Duration::from_secs(25))
             .timeout(Duration::from_secs(1200))
@@ -382,7 +382,7 @@ impl BrowserDownloadService {
         flatten_wrapper_dir(&tmp_extract)
             .map_err(|e| format!("Falha ao normalizar diretório de extração: {}", e))?;
 
-        // Localiza e renomeia o executável principal para fury-engine (ou fury-engine.exe)
+        // Localiza e renomeia o executável principal para star-engine (ou star-engine.exe)
         let exe_path = detector::find_or_standardize_executable(&tmp_extract)
             .ok_or_else(|| "Executável do navegador não encontrado nos arquivos extraídos.".to_string())?;
 
@@ -413,7 +413,7 @@ impl BrowserDownloadService {
             "version": manifest.version,
             "platform": platform_key,
             "installed_at": chrono::Utc::now().to_rfc3339(),
-            "executable": exe_path.file_name().and_then(|f| f.to_str()).unwrap_or("fury-engine"),
+            "executable": exe_path.file_name().and_then(|f| f.to_str()).unwrap_or("star-engine"),
         });
         let _ = fs::write(
             tmp_extract.join("installed.json"),

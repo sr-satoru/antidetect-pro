@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-// Universal In-Process Proxy Relay for Fury Browser (Camoufox)
+// Universal In-Process Proxy Relay for Star Multlogin (Camoufox)
 
 use std::io;
 use std::net::SocketAddr;

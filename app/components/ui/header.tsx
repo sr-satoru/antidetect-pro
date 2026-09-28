@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
       {/* Right Controls integrados diretamente no canvas */}
       <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* Central de Atualizações / Gerenciador de Download do Motor Fury */}
+        {/* Central de Atualizações / Gerenciador de Download do Motor Star Multlogin */}
         <UpdateCenterDropdown />
 
         {/* Central de Tarefas */}

@@ -32,7 +32,7 @@ interface EndpointItem {
 
 export const ApiTab: React.FC<ApiTabProps> = ({
   apiPort = 18922,
-  token = 'fury_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
+  token = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
 }) => {
   const baseUrl = `http://127.0.0.1:${apiPort}`;
   const sandboxUrl = `http://127.0.0.1:${apiPort}/api-sandbox`;

@@ -75,7 +75,7 @@ export const ExtensoesPage: React.FC = () => {
       enabled: true,
       status: 'available',
       description:
-        data.description || 'Extensão adicionada à equipe do Fury Antidetect.',
+        data.description || 'Extensão adicionada à equipe do Star Multlogin.',
       provider: data.provider || 'Chrome Web Store',
       providerUrl: data.providerUrl || 'https://chromewebstore.google.com',
       tab: 'team',

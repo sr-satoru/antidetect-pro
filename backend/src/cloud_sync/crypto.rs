@@ -8,8 +8,13 @@ use sha2::Sha256;
 
 type HmacSha256 = Hmac<Sha256>;
 
-pub const MAGIC_HEADER_V1: &[u8; 8] = b"FURYENC1";
-pub const MAGIC_HEADER_V2: &[u8; 8] = b"FURYENC2";
+pub const MAGIC_HEADER_STAR_V1: &[u8; 8] = b"STARENC1";
+pub const MAGIC_HEADER_STAR_V2: &[u8; 8] = b"STARENC2";
+pub const MAGIC_HEADER_FURY_V1: &[u8; 8] = b"FURYENC1";
+pub const MAGIC_HEADER_FURY_V2: &[u8; 8] = b"FURYENC2";
+
+pub const MAGIC_HEADER_V1: &[u8; 8] = MAGIC_HEADER_STAR_V1;
+pub const MAGIC_HEADER_V2: &[u8; 8] = MAGIC_HEADER_STAR_V2;
 pub const MAGIC_HEADER: &[u8; 8] = MAGIC_HEADER_V2;
 
 pub const SALT_LEN: usize = 16;
@@ -17,14 +22,14 @@ pub const NONCE_LEN: usize = 12; // 96 bits para AES-GCM
 pub const PBKDF2_ROUNDS: u32 = 100_000;
 pub const MIN_PAYLOAD_LEN: usize = 8 + SALT_LEN + NONCE_LEN + 16; // Cabeçalho + tag de autenticação GCM
 
-/// Deriva uma chave de 256 bits via PBKDF2-HMAC-SHA256 com 100.000 iterações (Padrão FURYENC2)
+/// Deriva uma chave de 256 bits via PBKDF2-HMAC-SHA256 com 100.000 iterações (Padrão STARENC2)
 pub fn derive_key_v2(user_key: &str, salt: &[u8; SALT_LEN]) -> [u8; 32] {
     let mut key = [0u8; 32];
     pbkdf2_hmac::<Sha256>(user_key.as_bytes(), salt, PBKDF2_ROUNDS, &mut key);
     key
 }
 
-/// Derivação legado (FURYENC1) via HMAC-SHA256 de 1 rodada para compatibilidade retroativa
+/// Derivação legado via HMAC-SHA256 de 1 rodada para compatibilidade retroativa (STARENC1/FURYENC1)
 pub fn derive_key_v1(user_key: &str, salt: &[u8; SALT_LEN]) -> [u8; 32] {
     let mut mac = <HmacSha256 as hmac::Mac>::new_from_slice(user_key.as_bytes())
         .expect("HMAC aceita chaves de qualquer tamanho");
@@ -41,7 +46,7 @@ pub fn derive_key(user_key: &str, salt: &[u8; SALT_LEN]) -> [u8; 32] {
     derive_key_v2(user_key, salt)
 }
 
-/// Cifra os bytes de uma cápsula ZIP usando AES-256-GCM Zero-Knowledge (E2EE) com FURYENC2 + PBKDF2
+/// Cifra os bytes de uma cápsula ZIP usando AES-256-GCM Zero-Knowledge (E2EE) com STARENC2 + PBKDF2
 pub fn encrypt_capsule(plaintext: &[u8], user_key: &str) -> Result<Vec<u8>, String> {
     let mut salt = [0u8; SALT_LEN];
     let mut nonce_bytes = [0u8; NONCE_LEN];
@@ -67,7 +72,7 @@ pub fn encrypt_capsule(plaintext: &[u8], user_key: &str) -> Result<Vec<u8>, Stri
     Ok(output)
 }
 
-/// Descriptografa uma cápsula binária .enc validando o cabeçalho (FURYENC2 ou FURYENC1) e a tag de integridade GCM
+/// Descriptografa uma cápsula binária .enc validando o cabeçalho (STARENC2, STARENC1, FURYENC2 ou FURYENC1) e a tag de integridade GCM
 pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>, String> {
     if encrypted_data.len() < MIN_PAYLOAD_LEN {
         return Err(format!(
@@ -78,17 +83,17 @@ pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>,
     }
 
     let header = &encrypted_data[..8];
-    let key_bytes = if header == MAGIC_HEADER_V2 {
+    let key_bytes = if header == MAGIC_HEADER_STAR_V2 || header == MAGIC_HEADER_FURY_V2 {
         let mut salt = [0u8; SALT_LEN];
         salt.copy_from_slice(&encrypted_data[8..24]);
         derive_key_v2(user_key, &salt)
-    } else if header == MAGIC_HEADER_V1 {
+    } else if header == MAGIC_HEADER_STAR_V1 || header == MAGIC_HEADER_FURY_V1 {
         let mut salt = [0u8; SALT_LEN];
         salt.copy_from_slice(&encrypted_data[8..24]);
         derive_key_v1(user_key, &salt)
     } else {
         return Err(format!(
-            "Cabeçalho inválido ({:?}): o arquivo não é uma cápsula Fury E2EE válida",
+            "Cabeçalho inválido ({:?}): o arquivo não é uma cápsula Star Multlogin E2EE válida",
             String::from_utf8_lossy(header)
         ));
     };
@@ -115,7 +120,7 @@ mod tests {
     #[test]
     fn test_e2ee_v2_encrypt_decrypt_roundtrip() {
         let secret = "usr_4k9L2xZ_user_master_e2ee_key";
-        let original_data = b"Hello, Fury Cloud E2EE V2 with PBKDF2! This is confidential profile cookies and tokens.";
+        let original_data = b"Hello, Star Multlogin Cloud E2EE V2 with PBKDF2! This is confidential profile cookies and tokens.";
 
         let encrypted = encrypt_capsule(original_data, secret).expect("Cifra com sucesso");
         assert_ne!(encrypted.as_slice(), original_data);
@@ -129,7 +134,7 @@ mod tests {
     #[test]
     fn test_e2ee_v1_backwards_compatibility() {
         let secret = "usr_legacy_secret_key";
-        let original_data = b"Capsule encrypted in older Fury version (V1 HMAC)";
+        let original_data = b"Capsule encrypted in older Star/Fury version (V1 HMAC)";
 
         // Simula criação manual de uma cápsula V1
         let mut salt = [0u8; SALT_LEN];

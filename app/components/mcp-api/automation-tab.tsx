@@ -21,7 +21,7 @@ interface AutomationTabProps {
 
 export const AutomationTab: React.FC<AutomationTabProps> = ({
   apiPort = 18922,
-  token = 'fury_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
+  token = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
 }) => {
   const [selectedRecipe, setSelectedRecipe] = useState<string>('basic_connect');
   const [selectedLang, setSelectedLang] = useState<'python' | 'node'>('python');
@@ -60,7 +60,7 @@ export const AutomationTab: React.FC<AutomationTabProps> = ({
     basic_connect: {
       python: `#!/usr/bin/env python3
 """
-Conexão Direta Playwright -> Fury Camoufox Core
+Conexão Direta Playwright -> Star Multlogin Core
 Preserva 100% dos cookies, proxy residencial e camuflagem de hardware.
 SEM baixar navegadores extras ('playwright install' não é necessário!).
 """
@@ -71,7 +71,7 @@ API_BASE = "${baseUrl}"
 TOKEN = "${token}"
 HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 
-# 1. Inicia o perfil no Fury Browser
+# 1. Inicia o perfil no Star Multlogin
 profile_id = "seu_perfil_id_aqui"
 res = requests.post(f"{API_BASE}/api/v1/profiles/start", json={"id": profile_id}, headers=HEADERS)
 data = res.json()
@@ -88,7 +88,7 @@ with sync_playwright() as pw:
     page.goto("https://bot.sannysoft.com")
     print("✅ Página carregada com sucesso:", page.title())
 
-    # 3. Finaliza e persiste todos os cookies novos no banco SQLite do Fury
+    # 3. Finaliza e persiste todos os cookies novos no banco SQLite do Star Multlogin
     requests.post(f"{API_BASE}/api/v1/profiles/stop", json={"id": profile_id}, headers=HEADERS)
     print("🔒 Sessão encerrada e dados gravados com sucesso.")
 `,
@@ -105,7 +105,7 @@ const HEADERS = {
 async function main() {
   const profileId = 'seu_perfil_id_aqui';
 
-  // 1. Inicia o perfil via API REST do Fury
+  // 1. Inicia o perfil via API REST do Star Multlogin
   const startRes = await fetch(\`\${API_BASE}/api/v1/profiles/start\`, {
     method: 'POST',
     headers: HEADERS,
@@ -242,7 +242,7 @@ with sync_playwright() as pw:
 
     print("Cookies na sessão ativa:", len(page.context.cookies()))
 
-# 2. Descarrega cookies e persistência no disco do Fury
+# 2. Descarrega cookies e persistência no disco do Star Multlogin
 requests.post(f"{API_BASE}/api/v1/profiles/stop", json={"id": profile_id}, headers=HEADERS)
 print("✅ Cookies gravados no armazenamento local do perfil!")
 `,

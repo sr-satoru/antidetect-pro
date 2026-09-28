@@ -34,7 +34,7 @@ pub fn build_proxy_prefs(
     let host = raw_host.trim();
     let port = override_port.unwrap_or_else(|| proxy.port.unwrap_or(8080));
 
-    prefs.push_str("// --- Configurações de Rede e Proxy Isolado Fury ---\n");
+    prefs.push_str("// --- Configurações de Rede e Proxy Isolado Star Multlogin ---\n");
     prefs.push_str("user_pref(\"network.proxy.type\", 1);\n");
     prefs.push_str("user_pref(\"network.proxy.share_proxy_settings\", true);\n");
     prefs.push_str("user_pref(\"network.proxy.no_proxies_on\", \"\");\n");

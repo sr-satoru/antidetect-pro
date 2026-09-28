@@ -21,7 +21,7 @@ export interface ExtensionCategory {
   isDefault?: boolean;
 }
 
-const STORAGE_KEY = 'fury_extension_categories';
+const STORAGE_KEY = 'star_extension_categories';
 
 const DEFAULT_CATEGORIES: ExtensionCategory[] = [
   {

@@ -56,7 +56,7 @@ export interface BrowserManifest {
 
 export const browserService = {
   /**
-   * Obtém o estado completo de integridade e progresso do motor Fury
+   * Obtém o estado completo de integridade e progresso do motor Star Multlogin
    */
   async getStatus(): Promise<BrowserStatusResponse> {
     return http.get<BrowserStatusResponse>('/api/browser/status');
