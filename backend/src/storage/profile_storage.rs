@@ -59,8 +59,9 @@ impl ProfileStorage {
                         if let Ok(content) = fs::read_to_string(meta_path) {
                             if let Ok(mut profile) = serde_json::from_str::<Profile>(&content) {
                                 if !profile.is_deleted {
-                                    // Sincroniza em tempo real o status com o processo no SO
-                                    let is_alive = self.process_manager.is_running(&profile.id);
+                                    // Sincroniza em tempo real o status com o processo e trava no SO
+                                    let profile_dir = entry.path().join("profile");
+                                    let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
                                     if is_alive && profile.status != "running" {
                                         profile.status = "running".to_string();
                                     } else if !is_alive && profile.status == "running" {
@@ -131,7 +132,8 @@ impl ProfileStorage {
         let path = self.get_profile_path(id);
         if let Ok(content) = fs::read_to_string(path) {
             if let Ok(mut profile) = serde_json::from_str::<Profile>(&content) {
-                let is_alive = self.process_manager.is_running(&profile.id);
+                let profile_dir = self.data_dir.join(id).join("profile");
+                let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
                 if is_alive && profile.status != "running" {
                     profile.status = "running".to_string();
                 } else if !is_alive && profile.status == "running" {

@@ -17,7 +17,19 @@ pub fn get_current_platform_key() -> Result<String, String> {
     } else if cfg!(target_arch = "aarch64") {
         "arm64"
     } else if cfg!(target_arch = "x86") {
-        "i686"
+        #[cfg(target_os = "windows")]
+        {
+            // Se o binário é 32-bit rodando sob WOW64 em um Windows 64-bit
+            if std::env::var("PROCESSOR_ARCHITEW6432").is_ok() {
+                "x86_64"
+            } else {
+                "i686"
+            }
+        }
+        #[cfg(not(target_os = "windows"))]
+        {
+            "i686"
+        }
     } else {
         return Err("Arquitetura de processador não suportada.".to_string());
     };

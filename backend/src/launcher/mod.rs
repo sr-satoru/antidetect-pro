@@ -1,16 +1,18 @@
 use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 use std::sync::{Arc, Mutex};
 use tracing::info;
 
 use crate::models::Profile;
 use crate::ws::{WsEvent, WsState};
 
+pub mod sys;
+
 /// Gerenciador de processos do navegador Camoufox.
 pub struct ProcessManager {
     running: Arc<Mutex<HashMap<String, u32>>>,
+    profile_dirs: Arc<Mutex<HashMap<String, PathBuf>>>,
     ports: Arc<Mutex<HashMap<String, u16>>>,
     tunnels: Arc<Mutex<HashMap<String, crate::network::tunnel::Socks5LoopbackTunnel>>>,
     client: reqwest::Client,
@@ -28,6 +30,7 @@ impl ProcessManager {
 
         Self {
             running: Arc::new(Mutex::new(HashMap::new())),
+            profile_dirs: Arc::new(Mutex::new(HashMap::new())),
             ports: Arc::new(Mutex::new(HashMap::new())),
             tunnels: Arc::new(Mutex::new(HashMap::new())),
             client,
@@ -160,11 +163,11 @@ impl ProcessManager {
 
     /// Dispara o navegador Camoufox para o perfil especificado
     pub async fn launch(&self, profile: &Profile, data_dir: &Path) -> Result<u32, String> {
-        // Se já constar como em execução, checa se o processo ainda está vivo no SO
+        // Se já constar como em execução, checa se o processo ou lock ainda está ativo no SO
         {
             let mut map = self.running.lock().unwrap();
             if let Some(&pid) = map.get(&profile.id) {
-                if Self::is_pid_alive(pid) {
+                if sys::is_pid_alive(pid) {
                     info!("Perfil {} já está em execução no PID {}", profile.id, pid);
                     return Ok(pid);
                 } else {
@@ -187,11 +190,9 @@ impl ProcessManager {
         );
 
         let mut cmd = tokio::process::Command::new(&binary_path);
-        cmd.arg("--profile").arg(&profile_dir);
-        cmd.arg("--new-instance");
-        // Isolamento de processo absoluto: impede colisão com qualquer navegador existente
-        cmd.arg("--no-remote");
-        cmd.env("MOZ_NO_REMOTE", "1");
+        
+        // Aplica sintaxe de comando compatível por SO (-profile no Windows, --profile no Linux)
+        sys::configure_browser_command(&mut cmd, &profile_dir);
 
         // Aplica regras de rede
         net_setup.apply_to_command(&mut cmd);
@@ -216,6 +217,9 @@ impl ProcessManager {
         {
             let mut map = self.running.lock().unwrap();
             map.insert(profile.id.clone(), pid);
+
+            let mut dirs = self.profile_dirs.lock().unwrap();
+            dirs.insert(profile.id.clone(), profile_dir.clone());
         }
 
         if let Some(tunnel) = net_setup.tunnel {
@@ -229,12 +233,15 @@ impl ProcessManager {
             status: "running".to_string(),
         });
 
-        // Monitoramento nativo em tempo real: o OS notifica o momento exato em que a janela do Camoufox fechar
+        // Monitoramento Híbrido em tempo real:
+        // Acompanha a saída do processo inicial e valida se a trava do perfil no disco continua ativa
         let profile_id_clone = profile.id.clone();
         let running_map = self.running.clone();
+        let profile_dirs_map = self.profile_dirs.clone();
         let tunnels_map = self.tunnels.clone();
         let ws_clone = self.ws.clone();
         let auto_sync_clone = self.auto_sync.clone();
+        let profile_dir_clone = profile_dir.clone();
         let meta_file = if data_dir.ends_with("profiles") {
             data_dir.join(&profile.id).join("metadata.json")
         } else {
@@ -244,13 +251,29 @@ impl ProcessManager {
         tokio::spawn(async move {
             let exit_status = child.wait().await;
             info!(
-                "🛑 Processo Camoufox (PID {}) do perfil {} encerrou ({:?}).",
+                "🛑 Processo inicial Camoufox (PID {}) do perfil {} concluiu ({:?}).",
                 pid, profile_id_clone, exit_status
+            );
+
+            // Verificação Híbrida: No Windows ou caso subprocessos continuem rodando,
+            // aguarda até que o lock do arquivo do perfil (parent.lock / .parentlock) seja liberado
+            while sys::is_profile_locked(&profile_dir_clone) {
+                tokio::time::sleep(std::time::Duration::from_millis(800)).await;
+            }
+
+            info!(
+                "🏁 Janela do perfil {} totalmente fechada pelo usuário.",
+                profile_id_clone
             );
 
             {
                 let mut map = running_map.lock().unwrap();
                 map.remove(&profile_id_clone);
+            }
+
+            {
+                let mut dirs = profile_dirs_map.lock().unwrap();
+                dirs.remove(&profile_id_clone);
             }
 
             {
@@ -291,28 +314,23 @@ impl ProcessManager {
     pub fn stop(&self, profile_id: &str) -> Result<(), String> {
         let mut map = self.running.lock().unwrap();
         if let Some(pid) = map.remove(profile_id) {
-            if Self::is_pid_alive(pid) {
+            if sys::is_pid_alive(pid) {
                 info!("🛑 Encerrando processo PID {} para perfil {}", pid, profile_id);
-                #[cfg(unix)]
-                {
-                    let _ = Command::new("kill").arg(pid.to_string()).status();
-                }
-                #[cfg(windows)]
-                {
-                    let _ = Command::new("taskkill")
-                        .arg("/PID")
-                        .arg(pid.to_string())
-                        .status();
-                }
+                let _ = sys::terminate_process_tree(pid);
 
                 // Aguarda o processo salvar e descarregar no disco (cookies e sessionstore)
                 for _ in 0..30 {
-                    if !Self::is_pid_alive(pid) {
+                    if !sys::is_pid_alive(pid) {
                         break;
                     }
                     std::thread::sleep(std::time::Duration::from_millis(100));
                 }
             }
+        }
+
+        {
+            let mut dirs = self.profile_dirs.lock().unwrap();
+            dirs.remove(profile_id);
         }
 
         {
@@ -331,51 +349,47 @@ impl ProcessManager {
 
     /// Verifica se o perfil está com processo ativo no SO
     pub fn is_running(&self, profile_id: &str) -> bool {
+        self.is_running_with_dir(profile_id, None)
+    }
+
+    /// Verifica se o perfil está ativo conferindo tanto o PID quanto o arquivo de trava no diretório
+    pub fn is_running_with_dir(&self, profile_id: &str, candidate_profile_dir: Option<&Path>) -> bool {
         let mut map = self.running.lock().unwrap();
         if let Some(&pid) = map.get(profile_id) {
-            if Self::is_pid_alive(pid) {
+            if sys::is_pid_alive(pid) {
                 return true;
-            } else {
-                map.remove(profile_id);
+            }
+
+            // Se o PID inicial não responde mais, verifica se o perfil ainda tem trava ativa
+            let dirs = self.profile_dirs.lock().unwrap();
+            if let Some(pdir) = dirs.get(profile_id) {
+                if sys::is_profile_locked(pdir) {
+                    return true;
+                }
+            }
+
+            if let Some(cand) = candidate_profile_dir {
+                if sys::is_profile_locked(cand) {
+                    return true;
+                }
+            }
+
+            map.remove(profile_id);
+        } else {
+            // Se não está no mapa de PIDs, verifica se temos diretório registrado com trava
+            let dirs = self.profile_dirs.lock().unwrap();
+            if let Some(pdir) = dirs.get(profile_id) {
+                if sys::is_profile_locked(pdir) {
+                    return true;
+                }
+            }
+
+            if let Some(cand) = candidate_profile_dir {
+                if sys::is_profile_locked(cand) {
+                    return true;
+                }
             }
         }
         false
-    }
-
-    fn is_pid_alive(pid: u32) -> bool {
-        #[cfg(target_os = "linux")]
-        {
-            if let Ok(status) = std::fs::read_to_string(format!("/proc/{}/status", pid)) {
-                for line in status.lines() {
-                    if line.starts_with("State:") {
-                        let is_dead = line.contains('Z') || line.contains('X');
-                        return !is_dead;
-                    }
-                }
-                return true;
-            }
-            false
-        }
-        #[cfg(all(unix, not(target_os = "linux")))]
-        {
-            match Command::new("kill").arg("-0").arg(pid.to_string()).output() {
-                Ok(output) => output.status.success(),
-                Err(_) => false,
-            }
-        }
-        #[cfg(windows)]
-        {
-            match Command::new("tasklist")
-                .arg("/FI")
-                .arg(format!("PID eq {}", pid))
-                .output()
-            {
-                Ok(output) => {
-                    let text = String::from_utf8_lossy(&output.stdout);
-                    text.contains(&pid.to_string())
-                }
-                Err(_) => false,
-            }
-        }
     }
 }
