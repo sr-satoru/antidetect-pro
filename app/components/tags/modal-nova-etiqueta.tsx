@@ -122,7 +122,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
                   className={`w-full rounded-lg border bg-[#14151B] px-3.5 py-2.5 pr-14 text-[13px] text-white placeholder-[#585B6A] focus:outline-hidden transition-all ${
                     erro
                       ? 'border-[#FF4D4F] focus:ring-1 focus:ring-[#FF4D4F]'
-                      : 'border-[#303241]/80 focus:border-[#1677FF] focus:ring-1 focus:ring-[#1677FF]/40'
+                      : 'border-[#303241]/80 focus:border-white/50 focus:ring-1 focus:ring-white/20'
                   }`}
                   autoFocus
                 />
@@ -143,7 +143,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-8.5 min-w-[80px] cursor-pointer rounded-lg bg-gradient-to-r from-[#1677FF] to-[#0E63D8] px-4 text-xs font-semibold text-white shadow-md shadow-blue-500/20 transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+              className="h-8.5 min-w-[80px] cursor-pointer rounded-lg bg-[#1C1D24] border border-white/30 hover:border-white px-4 text-xs font-semibold text-white shadow-md transition-all hover:bg-[#252834] active:scale-[0.98] disabled:opacity-50"
             >
               {isSubmitting ? 'Salvando...' : 'OK'}
             </button>

@@ -95,7 +95,7 @@ export const ModalGerenciarCategorias: React.FC<
             <button
               type="button"
               onClick={handleOpenCreate}
-              className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#2F80ED] px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#256fd1] active:scale-[0.98]"
+              className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#1C1D24] border border-white/30 hover:border-white px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#252834] active:scale-[0.98]"
             >
               <PlusCircle size={15} />
               <span>Nova categoria</span>

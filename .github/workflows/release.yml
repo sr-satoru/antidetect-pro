@@ -166,9 +166,9 @@ jobs:
         with:
           projectPath: "./app"
           tagName: ${{ needs.tag-release.outputs.tag_name }}
-          releaseName: "Fury Antidetect ${{ needs.tag-release.outputs.tag_name }}"
+          releaseName: "One Star Multilogin ${{ needs.tag-release.outputs.tag_name }}"
           releaseBody: |
-            🚀 **Fury Antidetect ${{ needs.tag-release.outputs.tag_name }}**
+            🚀 **One Star Multilogin ${{ needs.tag-release.outputs.tag_name }}**
             
             Compilação nativa multiplataforma gerada automaticamente pelo GitHub Actions.
             

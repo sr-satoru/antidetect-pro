@@ -13,6 +13,7 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
+  Star,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -45,19 +46,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
       }`}
     >
       {/* Header / Brand */}
-      <div className="h-14 px-4 flex items-center justify-between border-b border-[#1c1e27]">
+      <div className="h-14 px-3.5 flex items-center justify-between border-b border-[#1c1e27]">
         <NavLink
           to="/perfis"
-          className={`flex items-center gap-2.5 overflow-hidden transition-opacity ${
-            isCollapsed ? 'opacity-0 w-0' : 'opacity-100'
-          }`}
+          className="flex items-center gap-2.5 overflow-hidden transition-all"
         >
-          <div className="w-7 h-7 rounded-md bg-[#DFE104] text-black font-black flex items-center justify-center text-sm shadow-[0_0_12px_rgba(223,225,4,0.3)]">
-            S
+          <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#DFE104] to-[#C5C702] text-black flex items-center justify-center shadow-[0_0_14px_rgba(223,225,4,0.35)] shrink-0">
+            <Star size={15} className="fill-black stroke-black" />
           </div>
-          <span className="font-bold text-[15px] tracking-tight text-[#F4F4F6]">
-            Syncro
-          </span>
+          {!isCollapsed && (
+            <div className="flex flex-col leading-tight">
+              <span className="font-extrabold text-[14px] tracking-tight text-white">
+                One Star
+              </span>
+              <span className="text-[9px] uppercase tracking-wider font-semibold text-[#8E92A2]">
+                Multilogin
+              </span>
+            </div>
+          )}
         </NavLink>
 
         <button

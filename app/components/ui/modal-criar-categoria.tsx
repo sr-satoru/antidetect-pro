@@ -435,7 +435,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
             type="button"
             onClick={handleConfirm}
             disabled={!nome.trim()}
-            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#2F80ED] px-6 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#256fd1] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#1C1D24] border border-white/30 hover:border-white px-6 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#252834] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Confirmar
           </button>

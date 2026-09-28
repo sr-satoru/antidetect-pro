@@ -220,7 +220,7 @@ export const CriarPerfilPage: React.FC = () => {
             type="button"
             disabled={isSaving}
             onClick={handleSave}
-            className="flex items-center gap-2 cursor-pointer rounded-md bg-[#0D62FF] px-7 py-2 text-[13px] font-medium text-white shadow transition-all select-none hover:bg-[#0B54DC] active:scale-[0.98] disabled:opacity-50"
+            className="flex items-center gap-2 cursor-pointer rounded-md bg-[#1C1D24] border border-white/30 hover:border-white px-7 py-2 text-[13px] font-medium text-white shadow-md transition-all select-none hover:bg-[#252834] active:scale-[0.98] disabled:opacity-50"
           >
             {isSaving && <Loader2 size={14} className="animate-spin text-white" />}
             <span>{isSaving ? 'Salvando...' : 'OK'}</span>
@@ -237,7 +237,7 @@ export const CriarPerfilPage: React.FC = () => {
 
         {/* Ícone flutuante de atendimento / suporte no canto inferior direito */}
         <div
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#0D62FF] text-white shadow-lg transition-transform hover:scale-105 hover:bg-[#0B54DC]"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[#1C1D24] border border-white/20 hover:border-white text-white shadow-lg transition-all hover:scale-105 hover:bg-[#252834]"
           title="Suporte"
         >
           <svg

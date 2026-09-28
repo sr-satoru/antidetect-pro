@@ -51,7 +51,7 @@ export const BrowserDownloadModal: React.FC = () => {
       case 'extracting':
         return 'Descompactando arquivos e bibliotecas...';
       case 'finalizing':
-        return 'Isolando executável fury-engine e configurando permissões...';
+        return 'Isolando executável do motor e configurando permissões...';
       case 'ready':
         return 'Motor de navegação pronto para uso!';
       case 'error':
@@ -91,7 +91,7 @@ export const BrowserDownloadModal: React.FC = () => {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-white tracking-tight">
-                Motor de Navegação Fury
+                Motor de Navegação One Star
               </h3>
               <p className="text-[11px] text-[#787C8A]">
                 Camoufox v2.0.0 • Binário Oficial Isolado
@@ -205,7 +205,7 @@ export const BrowserDownloadModal: React.FC = () => {
                   { num: 1, label: 'Conexão e verificação do link' },
                   { num: 2, label: 'Download do pacote compactado (ZIP)' },
                   { num: 3, label: 'Extração e verificação de arquivos' },
-                  { num: 4, label: 'Isolamento de processo (fury-engine)' },
+                  { num: 4, label: 'Isolamento de processo do motor' },
                 ].map((s) => (
                   <div key={s.num} className="flex items-center gap-2 text-xs">
                     {currentStep > s.num ? (
@@ -255,7 +255,7 @@ export const BrowserDownloadModal: React.FC = () => {
                 <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <div className="font-semibold text-emerald-200">
-                    Motor Fury instalado e totalmente operacional
+                    Motor One Star instalado e totalmente operacional
                   </div>
                   <p className="text-[11px] text-emerald-300/80">
                     O motor oficial Camoufox v2.0.0 está isolado na pasta .engine e pronto para lançar perfis com antidetect de alta fidelidade.
@@ -307,7 +307,7 @@ export const BrowserDownloadModal: React.FC = () => {
                 <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <div className="font-semibold text-amber-200">
-                    {isBroken ? 'Motor Corrompido ou Incompleto' : 'Motor Fury Não Instalado'}
+                    {isBroken ? 'Motor Corrompido ou Incompleto' : 'Motor One Star Não Instalado'}
                   </div>
                   <p className="text-[11px] leading-relaxed text-amber-300/80">
                     {isBroken

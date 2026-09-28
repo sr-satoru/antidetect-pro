@@ -90,24 +90,24 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
             <button
               type="button"
               onClick={() => navigate('/auth/login')}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1677FF]/15 hover:bg-[#1677FF]/25 text-[#4096ff] text-xs font-medium border border-[#1677FF]/30 transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#1C1D24] hover:bg-[#252834] text-white text-xs font-medium border border-white/20 hover:border-white transition-all cursor-pointer shadow-xs"
               title="Clique para sincronizar ou conectar à sua conta na Nuvem"
             >
               <span className="flex h-2 w-2 rounded-full bg-[#52C41A] animate-pulse" />
-              <span>⚡ Modo Offline</span>
-              <span className="text-[10px] text-[#8E92A2] ml-0.5">· Conectar Nuvem</span>
+              <span className="text-white font-medium">⚡ Modo Offline</span>
+              <span className="text-[10px] text-[#A5A8B6] ml-0.5">· Conectar Nuvem</span>
             </button>
           ) : (
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 rounded-lg border border-[#2B2D38] bg-[#15161D] px-2.5 py-1 select-none">
-                <div className="w-6 h-6 rounded-full bg-[#1677FF]/20 border border-[#1677FF]/40 flex items-center justify-center text-xs font-bold text-[#1677FF]">
+              <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-[#15161D] px-2.5 py-1 select-none">
+                <div className="w-6 h-6 rounded-full bg-[#DFE104]/15 border border-[#DFE104]/30 flex items-center justify-center text-xs font-bold text-[#DFE104]">
                   {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="text-[12px] font-semibold text-[#F4F4F6] leading-tight">
+                  <span className="text-[12px] font-semibold text-white leading-tight">
                     @{user?.username}
                   </span>
-                  <span className="text-[9.5px] text-[#4096ff] leading-tight font-medium">
+                  <span className="text-[9.5px] text-[#52C41A] leading-tight font-medium">
                     ☁️ Sincronizado
                   </span>
                 </div>

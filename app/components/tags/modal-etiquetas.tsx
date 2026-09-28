@@ -137,7 +137,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#2C2E3B]/80 px-6 py-4 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#1677FF]/15 text-[#1677FF]">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#DFE104]/15 text-[#DFE104]">
               <TagIcon size={15} />
             </div>
             <h2 className="text-[16px] font-semibold text-[#E1E4EE] tracking-tight">Gerenciar Etiquetas</h2>
@@ -161,7 +161,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                 setTagEmEdicao(null);
                 setIsSubmodalOpen(true);
               }}
-              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-gradient-to-r from-[#1677FF] to-[#0E63D8] px-4 text-xs font-medium text-white shadow-md shadow-blue-500/15 transition-all hover:brightness-110 active:scale-[0.98] shrink-0"
+              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-[#1C1D24] border border-white/30 hover:border-white px-4 text-xs font-medium text-white shadow-md transition-all hover:bg-[#252834] active:scale-[0.98] shrink-0"
             >
               <TagIcon size={13} className="text-white/90" />
               <span>Nova Etiqueta</span>

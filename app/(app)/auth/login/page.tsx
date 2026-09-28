@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth-context';
 import {
   Shield,
+  Star,
   LogIn,
   Loader2,
   ExternalLink,
@@ -124,17 +125,17 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="relative flex min-h-screen w-screen items-center justify-center bg-[#08090C] p-4 text-[#E1E4EA] select-none overflow-hidden font-sans">
       {/* Luzes de ambientação sutis */}
-      <div className="pointer-events-none absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#1677FF]/15 blur-[140px]" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-[#38bdf8]/10 blur-[140px]" />
+      <div className="pointer-events-none absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#DFE104]/10 blur-[140px]" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-white/5 blur-[140px]" />
 
-      <div className="relative z-10 w-full max-w-[420px] rounded-2xl border border-[#262833] bg-[#14151C]/95 p-8 shadow-2xl shadow-black/80 backdrop-blur-xl">
+      <div className="relative z-10 w-full max-w-[420px] rounded-2xl border border-white/20 bg-[#14151C]/95 p-8 shadow-2xl shadow-black/80 backdrop-blur-xl">
         {/* Cabeçalho */}
         <div className="text-center space-y-2 mb-8">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#1677FF] to-[#38bdf8] shadow-lg shadow-[#1677FF]/30">
-            <Shield size={28} className="text-white" />
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#DFE104] to-[#C5C702] shadow-lg shadow-[#DFE104]/25">
+            <Star size={28} className="fill-black stroke-black" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white">
-            Fury Antidetect
+            One Star Multilogin
           </h1>
           <p className="text-xs text-[#8E92A2] leading-relaxed max-w-[300px] mx-auto">
             Navegação segura com isolamento de fingerprint e sincronização em nuvem.
@@ -187,11 +188,11 @@ export const LoginPage: React.FC = () => {
               type="button"
               disabled={isLoading}
               onClick={handleConnect}
-              className="w-full flex items-center justify-between rounded-xl bg-[#1677FF] hover:bg-[#1462d6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#1677FF]/25 disabled:opacity-50 transition-all group"
+              className="w-full flex items-center justify-between rounded-xl bg-[#1C1D24] hover:bg-[#252733] border border-white/20 hover:border-white px-5 py-3.5 text-sm font-semibold text-white shadow-lg disabled:opacity-50 transition-all group cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 {isLoading ? (
-                  <Loader2 size={18} className="animate-spin" />
+                  <Loader2 size={18} className="animate-spin text-white" />
                 ) : (
                   <LogIn size={18} className="text-white/80 group-hover:text-white transition-colors" />
                 )}

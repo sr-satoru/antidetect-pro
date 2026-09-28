@@ -54,7 +54,7 @@ export const UpdateCenterDropdown: React.FC = () => {
       setAppRelease(release);
       setHasCheckedApp(true);
       if (release?.hasUpdate) {
-        toast.info(`Nova versão do Fury disponível: ${release.tagName}`);
+        toast.info(`Nova versão do One Star Multilogin disponível: ${release.tagName}`);
       } else {
         toast.success(`Você está utilizando a versão mais recente (v${CURRENT_APP_VERSION})`);
       }
@@ -68,7 +68,7 @@ export const UpdateCenterDropdown: React.FC = () => {
   const handleDownloadAll = () => {
     if (isMissing && !isDownloading) {
       startDownload();
-      toast.info('Iniciando download do motor Fury...');
+      toast.info('Iniciando download do motor One Star...');
     } else if (isDownloading) {
       toast.info(`Download em andamento: ${Math.round(progress)}%`);
     } else {
@@ -176,7 +176,7 @@ export const UpdateCenterDropdown: React.FC = () => {
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
                     <div>
                       <span className="text-xs font-semibold text-[#F4F4F6] block">
-                        Motor Fury (v2.0.0)
+                        Motor One Star (v2.0.0)
                       </span>
                       <span className="text-[11px] text-[#8E92A2] block mt-0.5">
                         {getStageDisplay()}
@@ -215,7 +215,7 @@ export const UpdateCenterDropdown: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-xs font-semibold text-[#F4F4F6]">
-                        Motor Fury (v2.0.0)
+                        Motor One Star (v2.0.0)
                       </div>
                       <div className="text-[11px] text-[#8E92A2] mt-0.5 leading-relaxed">
                         Instalação pendente para navegação e inicialização de perfis.
@@ -225,7 +225,7 @@ export const UpdateCenterDropdown: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => startDownload()}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3b82f6] hover:bg-[#2563eb] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1C1D24] border border-white/30 hover:border-white text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
                   >
                     <Download size={13} />
                     <span>Baixar</span>
@@ -244,12 +244,12 @@ export const UpdateCenterDropdown: React.FC = () => {
                   Tudo atualizado
                 </span>
                 <span className="text-[11.5px] text-[#8E92A2] max-w-[280px]">
-                  O motor Fury e o aplicativo estão na versão mais recente.
+                  O motor One Star e o aplicativo estão na versão mais recente.
                 </span>
               </div>
             )}
 
-            {/* Caso 4: Nova Versão do Aplicativo Fury Desktop Disponível */}
+            {/* Caso 4: Nova Versão do Aplicativo One Star Multilogin Disponível */}
             {appRelease?.hasUpdate && (
               <div className="rounded-xl bg-[#14151C] border border-blue-500/30 p-4 space-y-3">
                 <div className="flex items-center justify-between gap-3">
