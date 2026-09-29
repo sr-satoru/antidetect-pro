@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Auditor de Arquitetura — Star Multlogin / Fury
+Auditor de Arquitetura — Star Multlogin / Star
 Valida a separação estrita de camadas entre Frontend e Backend:
 1. app/services: Deve conter APENAS chamadas tipadas para a API Rust (sem lógica de negócio/banco)
 2. app/utils: Deve conter APENAS utilitários puros de UI/formatação (sem regras de domínio ou persistência)

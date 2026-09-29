@@ -246,12 +246,3 @@ pub async fn start_star_server(
 
     Ok(())
 }
-
-/// Alias para manter compatibilidade com chamadas legadas
-#[inline]
-pub async fn start_fury_server(
-    data_dir_override: Option<String>,
-    port: u16,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    start_star_server(data_dir_override, port).await
-}
