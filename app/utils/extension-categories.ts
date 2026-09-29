@@ -50,25 +50,10 @@ function loadCategories(): ExtensionCategory[] {
 }
 
 /**
- * Hook de estado sincronizado para categorias de extensões
+ * Hook de estado sincronizado para categorias de extensões com persistência no SQLite do backend
  */
 export function useExtensionCategories() {
   const [categories, setCategories] = useState<ExtensionCategory[]>(loadCategories);
-
-  useEffect(() => {
-    const handleUpdate = () => {
-      setCategories(loadCategories());
-    };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener(CATEGORIES_EVENT, handleUpdate);
-      window.addEventListener('storage', handleUpdate);
-      return () => {
-        window.removeEventListener(CATEGORIES_EVENT, handleUpdate);
-        window.removeEventListener('storage', handleUpdate);
-      };
-    }
-  }, []);
 
   const save = (updated: ExtensionCategory[]) => {
     setCategories(updated);
@@ -77,6 +62,59 @@ export function useExtensionCategories() {
       window.dispatchEvent(new CustomEvent(CATEGORIES_EVENT, { detail: updated }));
     }
   };
+
+  // Carrega e sincroniza com o banco de dados SQLite do backend
+  useEffect(() => {
+    let isCurrent = true;
+
+    const fetchFromBackend = async () => {
+      try {
+        const backendCategories = await api.extensionCategories.list();
+        if (isCurrent && Array.isArray(backendCategories) && backendCategories.length > 0) {
+          // Garante que o kit basico está presente
+          const hasBasic = backendCategories.some((c: any) => c.id === 'kit_basico');
+          const merged: ExtensionCategory[] = hasBasic
+            ? backendCategories
+            : [...DEFAULT_CATEGORIES, ...backendCategories];
+
+          save(merged);
+
+          // Migra categorias locais que ainda não estejam no SQLite
+          const localOnly = loadCategories().filter(
+            (local) => !merged.some((b) => b.id === local.id)
+          );
+          for (const item of localOnly) {
+            try {
+              await api.extensionCategories.create({
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                extensions: item.extensions || [],
+              });
+            } catch {}
+          }
+        }
+      } catch (err) {
+        // Fallback silencioso para localStorage se o backend estiver inicializando
+      }
+    };
+
+    fetchFromBackend();
+
+    const handleUpdate = () => {
+      setCategories(loadCategories());
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener(CATEGORIES_EVENT, handleUpdate);
+      window.addEventListener('storage', handleUpdate);
+      return () => {
+        isCurrent = false;
+        window.removeEventListener(CATEGORIES_EVENT, handleUpdate);
+        window.removeEventListener('storage', handleUpdate);
+      };
+    }
+  }, []);
 
   const addCategory = (data: {
     name: string;
@@ -93,6 +131,17 @@ export function useExtensionCategories() {
     };
     const updated = [...current, newCat];
     save(updated);
+
+    // Persiste no banco de dados SQLite
+    api.extensionCategories
+      .create({
+        id: newCat.id,
+        name: newCat.name,
+        description: newCat.description,
+        extensions: newCat.extensions,
+      })
+      .catch((err) => console.error('Erro ao persistir categoria no banco:', err));
+
     return newCat;
   };
 
@@ -108,15 +157,25 @@ export function useExtensionCategories() {
     const updated = current.map((c) =>
       c.id === id
         ? {
-          ...c,
-          name: data.name.trim(),
-          description: data.description?.trim() || '',
-          extensionIds: data.extensions.map((e) => e.id),
-          extensions: data.extensions,
-        }
+            ...c,
+            name: data.name.trim(),
+            description: data.description?.trim() || '',
+            extensionIds: data.extensions.map((e) => e.id),
+            extensions: data.extensions,
+          }
         : c,
     );
     save(updated);
+
+    // Atualiza no banco de dados SQLite
+    api.extensionCategories
+      .update(id, {
+        name: data.name.trim(),
+        description: data.description?.trim() || '',
+        extensions: data.extensions,
+      })
+      .catch((err) => console.error('Erro ao atualizar categoria no banco:', err));
+
     return updated.find((c) => c.id === id) || null;
   };
 
@@ -124,6 +183,11 @@ export function useExtensionCategories() {
     if (id === 'kit_basico') return;
     const current = loadCategories();
     save(current.filter((c) => c.id !== id));
+
+    // Remove do banco de dados SQLite
+    api.extensionCategories
+      .delete(id)
+      .catch((err) => console.error('Erro ao remover categoria do banco:', err));
   };
 
   return {

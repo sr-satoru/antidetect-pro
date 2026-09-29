@@ -90,3 +90,41 @@ pub struct RecommendedExtension {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub featured: Option<bool>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtensionCategoryItem {
+    pub id: String,
+    pub name: String,
+    #[serde(default)]
+    pub description: String,
+    #[serde(default)]
+    pub extension_ids: Vec<serde_json::Value>,
+    #[serde(default)]
+    pub extensions: Vec<serde_json::Value>,
+    #[serde(default)]
+    pub is_default: bool,
+    #[serde(default)]
+    pub created_at: i64,
+    #[serde(default)]
+    pub updated_at: i64,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateExtensionCategoryDto {
+    pub id: Option<String>,
+    pub name: String,
+    pub description: Option<String>,
+    #[serde(default)]
+    pub extensions: Vec<serde_json::Value>,
+    pub is_default: Option<bool>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateExtensionCategoryDto {
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub extensions: Option<Vec<serde_json::Value>>,
+}

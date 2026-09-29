@@ -46,6 +46,16 @@ export const api = {
       http.get<any[]>('/api/extensions/catalog', { params }),
   },
 
+  extensionCategories: {
+    list: () => http.get<any[]>('/api/extension-categories'),
+    get: (id: string) => http.get<any>(`/api/extension-categories/${id}`),
+    create: (data: any) => http.post<any>('/api/extension-categories', data),
+    update: (id: string, data: any) =>
+      http.put<any>(`/api/extension-categories/${id}`, data),
+    delete: (id: string) =>
+      http.delete<any>(`/api/extension-categories/${id}`),
+  },
+
   auth: {
     startLogin: () =>
       http.post<{ session_id: string; token: string; auth_url: string }>('/api/auth/start-login'),

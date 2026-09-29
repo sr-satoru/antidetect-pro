@@ -1,6 +1,7 @@
 pub mod auth;
 pub mod cookies;
 pub mod extensions;
+pub mod extension_categories;
 pub mod profiles;
 pub mod proxies;
 pub mod tabs;

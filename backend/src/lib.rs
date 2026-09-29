@@ -26,7 +26,7 @@ pub mod version_app;
 pub mod ws;
 
 use extensions::ExtensionStorage;
-use service_database::{ProfileStorage, ProxyStorage, TagStorage, Vault};
+use service_database::{ExtensionCategoryStorage, ProfileStorage, ProxyStorage, TagStorage, Vault};
 
 /// Inicia o servidor Axum do ecossistema Star Multlogin na porta e diretório especificados
 pub async fn start_star_server(
@@ -63,6 +63,7 @@ pub async fn start_star_server(
     let proxy_storage = Arc::new(ProxyStorage::new(vault.clone()));
     let tag_storage = Arc::new(TagStorage::new(vault.clone()));
     let extension_storage = Arc::new(ExtensionStorage::new(&data_dir));
+    let extension_category_storage = Arc::new(ExtensionCategoryStorage::new(vault.clone()));
 
     let cors = CorsLayer::new()
         .allow_origin(Any)
@@ -108,6 +109,20 @@ pub async fn start_star_server(
         .route("/{id}", put(routes::extensions::update_extension).delete(routes::extensions::delete_extension))
         .route("/catalog", get(routes::extensions::get_catalog))
         .with_state(extension_storage);
+
+    let extension_category_routes = Router::new()
+        .route(
+            "/",
+            get(routes::extension_categories::list_categories)
+                .post(routes::extension_categories::create_category),
+        )
+        .route(
+            "/{id}",
+            get(routes::extension_categories::get_category)
+                .put(routes::extension_categories::update_category)
+                .delete(routes::extension_categories::delete_category),
+        )
+        .with_state(extension_category_storage);
 
     let auth_service = Arc::new(cloud_auth::CloudAuthService::new(vault.clone()));
     let cloud_sync_service = Arc::new(
@@ -200,6 +215,7 @@ pub async fn start_star_server(
         .nest("/api/cloud-sync", cloud_sync_routes)
         .nest("/api/proxies", proxy_routes)
         .nest("/api/extensions", extension_routes)
+        .nest("/api/extension-categories", extension_category_routes)
         .nest("/api/tags", tag_routes)
         .nest("/api/auth", auth_routes)
         .nest("/api/browser", browser_routes)
