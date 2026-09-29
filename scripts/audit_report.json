@@ -1,0 +1,438 @@
+{
+  "WINDOWS_CDP_False": {
+    "ok": true,
+    "flaws": [],
+    "report": {
+      "meta": {
+        "timestamp": 1790702527002
+      },
+      "worker": {
+        "data": {
+          "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
+          "platform": "Win32",
+          "cores": 8,
+          "languages": [
+            "pt-BR"
+          ],
+          "timeZone": "America/Sao_Paulo"
+        },
+        "uaMatch": true,
+        "platformMatch": true,
+        "coresMatch": true,
+        "tzMatch": true,
+        "webdriverMatch": true
+      },
+      "prototype": {
+        "hasOwnWebdriver": false,
+        "ownDescriptor": null,
+        "protoDescriptor": {
+          "configurable": true,
+          "enumerable": true
+        },
+        "getterNative": true,
+        "canvasToDataURLNative": true,
+        "audioGetChannelNative": true
+      },
+      "crossApi": {
+        "colorDepth": 24,
+        "matchMediaColor8": true,
+        "matchMediaColor10": false,
+        "cssColorCoherent": true,
+        "timeZone": "America/Sao_Paulo",
+        "timezoneOffset": 180,
+        "dateString": "Tue Sep 29 2026 14:22:07 GMT-0300 (Hor\u00e1rio Padr\u00e3o de Bras\u00edlia)",
+        "language": "pt-BR",
+        "languages": [
+          "pt-BR"
+        ],
+        "intlLocale": "pt-BR",
+        "languageInLanguages": true
+      },
+      "setterSeal": {
+        "checkedCount": 14,
+        "leakedSetters": [],
+        "isCompletelySealed": true
+      },
+      "webgl": {
+        "vendor": "Google Inc. (NVIDIA)",
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "flipY": true,
+        "alphaBits": 0,
+        "depthBits": 24,
+        "unmaskedWithoutExtNull": true,
+        "unmaskedWithoutExtError": 1280
+      },
+      "audio": {
+        "sampleRate": 48000,
+        "run1": "31.882621",
+        "run2": "31.882621",
+        "run3": "31.882621",
+        "isDeterministic": true
+      },
+      "canvas": {
+        "isDeterministic": true,
+        "hashSample": "data:image/png;base64,iVBORw0KGgoAAAANSU"
+      },
+      "webrtc": {
+        "candidateCount": 5,
+        "candidates": [
+          "candidate:0 1 UDP 2122252543 76f5bc42-2fd2-45d3-aab8-649d66eba41f.local 34590 typ host",
+          "candidate:1 1 TCP 2105524479 76f5bc42-2fd2-45d3-aab8-649d66eba41f.local 9 typ host tcptype active",
+          "candidate:0 1 UDP 2122252543 57deadde-8ae4-4c63-b30e-cae622d5bc07.local 61280 typ host",
+          "candidate:2 1 TCP 2105524479 57deadde-8ae4-4c63-b30e-cae622d5bc07.local 9 typ host tcptype active",
+          "candidate:1 1 UDP 1686052863 189.40.12.34 61280 typ srflx raddr 0.0.0.0 rport 0"
+        ],
+        "lanLeak": false,
+        "usesMdns": true
+      },
+      "fonts": {
+        "keywords": {
+          "caption": "Segoe UI",
+          "icon": "Segoe UI",
+          "menu": "Segoe UI",
+          "message-box": "Segoe UI",
+          "small-caption": "Segoe UI",
+          "status-bar": "Segoe UI"
+        },
+        "systemFontCoherent": true
+      },
+      "automation": {
+        "navigatorWebdriver": false,
+        "hasCdcArray": false,
+        "hasWebdriverEval": false,
+        "hasSeleniumEval": false,
+        "hasPlaywrightBinding": false,
+        "hasPuppeteerEval": false,
+        "hasRemoteControlAttrInDOM": false,
+        "hasRemoteBoxInDOM": false
+      }
+    }
+  },
+  "MACOS_CDP_False": {
+    "ok": true,
+    "flaws": [],
+    "report": {
+      "meta": {
+        "timestamp": 1790702530548
+      },
+      "worker": {
+        "data": {
+          "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:135.0) Gecko/20100101 Firefox/135.0",
+          "platform": "MacIntel",
+          "cores": 8,
+          "languages": [
+            "pt-BR"
+          ],
+          "timeZone": "America/Sao_Paulo"
+        },
+        "uaMatch": true,
+        "platformMatch": true,
+        "coresMatch": true,
+        "tzMatch": true,
+        "webdriverMatch": true
+      },
+      "prototype": {
+        "hasOwnWebdriver": false,
+        "ownDescriptor": null,
+        "protoDescriptor": {
+          "configurable": true,
+          "enumerable": true
+        },
+        "getterNative": true,
+        "canvasToDataURLNative": true,
+        "audioGetChannelNative": true
+      },
+      "crossApi": {
+        "colorDepth": 24,
+        "matchMediaColor8": true,
+        "matchMediaColor10": false,
+        "cssColorCoherent": true,
+        "timeZone": "America/Sao_Paulo",
+        "timezoneOffset": 180,
+        "dateString": "Tue Sep 29 2026 14:22:10 GMT-0300 (Hor\u00e1rio Padr\u00e3o de Bras\u00edlia)",
+        "language": "pt-BR",
+        "languages": [
+          "pt-BR"
+        ],
+        "intlLocale": "pt-BR",
+        "languageInLanguages": true
+      },
+      "setterSeal": {
+        "checkedCount": 14,
+        "leakedSetters": [],
+        "isCompletelySealed": true
+      },
+      "webgl": {
+        "vendor": "Apple",
+        "renderer": "Apple M2",
+        "flipY": true,
+        "alphaBits": 0,
+        "depthBits": 24,
+        "unmaskedWithoutExtNull": true,
+        "unmaskedWithoutExtError": 1280
+      },
+      "audio": {
+        "sampleRate": 48000,
+        "run1": "31.882621",
+        "run2": "31.882621",
+        "run3": "31.882621",
+        "isDeterministic": true
+      },
+      "canvas": {
+        "isDeterministic": true,
+        "hashSample": "data:image/png;base64,iVBORw0KGgoAAAANSU"
+      },
+      "webrtc": {
+        "candidateCount": 5,
+        "candidates": [
+          "candidate:0 1 UDP 2122252543 51c71b28-ef14-4cea-97c2-cd90328f761f.local 59810 typ host",
+          "candidate:1 1 TCP 2105524479 51c71b28-ef14-4cea-97c2-cd90328f761f.local 9 typ host tcptype active",
+          "candidate:0 1 UDP 2122252543 8b081999-7d73-4a66-b061-ef6ddc949194.local 58391 typ host",
+          "candidate:2 1 TCP 2105524479 8b081999-7d73-4a66-b061-ef6ddc949194.local 9 typ host tcptype active",
+          "candidate:1 1 UDP 1686052863 189.40.12.34 58391 typ srflx raddr 0.0.0.0 rport 0"
+        ],
+        "lanLeak": false,
+        "usesMdns": true
+      },
+      "fonts": {
+        "keywords": {
+          "caption": "-apple-system",
+          "icon": "-apple-system",
+          "menu": "-apple-system",
+          "message-box": "-apple-system",
+          "small-caption": "-apple-system",
+          "status-bar": "-apple-system"
+        },
+        "systemFontCoherent": true
+      },
+      "automation": {
+        "navigatorWebdriver": false,
+        "hasCdcArray": false,
+        "hasWebdriverEval": false,
+        "hasSeleniumEval": false,
+        "hasPlaywrightBinding": false,
+        "hasPuppeteerEval": false,
+        "hasRemoteControlAttrInDOM": false,
+        "hasRemoteBoxInDOM": false
+      }
+    }
+  },
+  "LINUX_CDP_False": {
+    "ok": true,
+    "flaws": [],
+    "report": {
+      "meta": {
+        "timestamp": 1790702533941
+      },
+      "worker": {
+        "data": {
+          "ua": "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0",
+          "platform": "Linux x86_64",
+          "cores": 8,
+          "languages": [
+            "pt-BR"
+          ],
+          "timeZone": "America/Sao_Paulo"
+        },
+        "uaMatch": true,
+        "platformMatch": true,
+        "coresMatch": true,
+        "tzMatch": true,
+        "webdriverMatch": true
+      },
+      "prototype": {
+        "hasOwnWebdriver": false,
+        "ownDescriptor": null,
+        "protoDescriptor": {
+          "configurable": true,
+          "enumerable": true
+        },
+        "getterNative": true,
+        "canvasToDataURLNative": true,
+        "audioGetChannelNative": true
+      },
+      "crossApi": {
+        "colorDepth": 24,
+        "matchMediaColor8": true,
+        "matchMediaColor10": false,
+        "cssColorCoherent": true,
+        "timeZone": "America/Sao_Paulo",
+        "timezoneOffset": 180,
+        "dateString": "Tue Sep 29 2026 14:22:13 GMT-0300 (Hor\u00e1rio Padr\u00e3o de Bras\u00edlia)",
+        "language": "pt-BR",
+        "languages": [
+          "pt-BR"
+        ],
+        "intlLocale": "pt-BR",
+        "languageInLanguages": true
+      },
+      "setterSeal": {
+        "checkedCount": 14,
+        "leakedSetters": [],
+        "isCompletelySealed": true
+      },
+      "webgl": {
+        "vendor": "Google Inc. (Intel)",
+        "renderer": "ANGLE (Intel, Mesa Intel(R) Xe Graphics (TGL GT2), OpenGL 4.6)",
+        "flipY": true,
+        "alphaBits": 0,
+        "depthBits": 24,
+        "unmaskedWithoutExtNull": true,
+        "unmaskedWithoutExtError": 1280
+      },
+      "audio": {
+        "sampleRate": 48000,
+        "run1": "31.882621",
+        "run2": "31.882621",
+        "run3": "31.882621",
+        "isDeterministic": true
+      },
+      "canvas": {
+        "isDeterministic": true,
+        "hashSample": "data:image/png;base64,iVBORw0KGgoAAAANSU"
+      },
+      "webrtc": {
+        "candidateCount": 5,
+        "candidates": [
+          "candidate:0 1 UDP 2122252543 a716df68-da44-483b-ba4a-1c21b940d76d.local 46464 typ host",
+          "candidate:1 1 TCP 2105524479 a716df68-da44-483b-ba4a-1c21b940d76d.local 9 typ host tcptype active",
+          "candidate:0 1 UDP 2122252543 a3f7758a-e9cb-4be1-b751-538acadff556.local 41981 typ host",
+          "candidate:2 1 TCP 2105524479 a3f7758a-e9cb-4be1-b751-538acadff556.local 9 typ host tcptype active",
+          "candidate:1 1 UDP 1686052863 189.40.12.34 41981 typ srflx raddr 0.0.0.0 rport 0"
+        ],
+        "lanLeak": false,
+        "usesMdns": true
+      },
+      "fonts": {
+        "keywords": {
+          "caption": "sans-serif",
+          "icon": "sans-serif",
+          "menu": "sans-serif",
+          "message-box": "sans-serif",
+          "small-caption": "sans-serif",
+          "status-bar": "sans-serif"
+        },
+        "systemFontCoherent": true
+      },
+      "automation": {
+        "navigatorWebdriver": false,
+        "hasCdcArray": false,
+        "hasWebdriverEval": false,
+        "hasSeleniumEval": false,
+        "hasPlaywrightBinding": false,
+        "hasPuppeteerEval": false,
+        "hasRemoteControlAttrInDOM": false,
+        "hasRemoteBoxInDOM": false
+      }
+    }
+  },
+  "WINDOWS_CDP_True": {
+    "ok": true,
+    "flaws": [],
+    "report": {
+      "meta": {
+        "timestamp": 1790702537356
+      },
+      "worker": {
+        "data": {
+          "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
+          "platform": "Win32",
+          "cores": 8,
+          "languages": [
+            "pt-BR"
+          ],
+          "timeZone": "America/Sao_Paulo"
+        },
+        "uaMatch": true,
+        "platformMatch": true,
+        "coresMatch": true,
+        "tzMatch": true,
+        "webdriverMatch": true
+      },
+      "prototype": {
+        "hasOwnWebdriver": false,
+        "ownDescriptor": null,
+        "protoDescriptor": {
+          "configurable": true,
+          "enumerable": true
+        },
+        "getterNative": true,
+        "canvasToDataURLNative": true,
+        "audioGetChannelNative": true
+      },
+      "crossApi": {
+        "colorDepth": 24,
+        "matchMediaColor8": true,
+        "matchMediaColor10": false,
+        "cssColorCoherent": true,
+        "timeZone": "America/Sao_Paulo",
+        "timezoneOffset": 180,
+        "dateString": "Tue Sep 29 2026 14:22:17 GMT-0300 (Hor\u00e1rio Padr\u00e3o de Bras\u00edlia)",
+        "language": "pt-BR",
+        "languages": [
+          "pt-BR"
+        ],
+        "intlLocale": "pt-BR",
+        "languageInLanguages": true
+      },
+      "setterSeal": {
+        "checkedCount": 14,
+        "leakedSetters": [],
+        "isCompletelySealed": true
+      },
+      "webgl": {
+        "vendor": "Google Inc. (NVIDIA)",
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "flipY": true,
+        "alphaBits": 0,
+        "depthBits": 24,
+        "unmaskedWithoutExtNull": true,
+        "unmaskedWithoutExtError": 1280
+      },
+      "audio": {
+        "sampleRate": 48000,
+        "run1": "31.882621",
+        "run2": "31.882621",
+        "run3": "31.882621",
+        "isDeterministic": true
+      },
+      "canvas": {
+        "isDeterministic": true,
+        "hashSample": "data:image/png;base64,iVBORw0KGgoAAAANSU"
+      },
+      "webrtc": {
+        "candidateCount": 5,
+        "candidates": [
+          "candidate:0 1 UDP 2122252543 5749129d-df09-4b23-9815-e3a6c75d52ee.local 34786 typ host",
+          "candidate:1 1 TCP 2105524479 5749129d-df09-4b23-9815-e3a6c75d52ee.local 9 typ host tcptype active",
+          "candidate:0 1 UDP 2122252543 700bb58f-032f-4fd9-a82d-81bbe95d0277.local 55066 typ host",
+          "candidate:2 1 TCP 2105524479 700bb58f-032f-4fd9-a82d-81bbe95d0277.local 9 typ host tcptype active",
+          "candidate:1 1 UDP 1686052863 189.40.12.34 55066 typ srflx raddr 0.0.0.0 rport 0"
+        ],
+        "lanLeak": false,
+        "usesMdns": true
+      },
+      "fonts": {
+        "keywords": {
+          "caption": "Segoe UI",
+          "icon": "Segoe UI",
+          "menu": "Segoe UI",
+          "message-box": "Segoe UI",
+          "small-caption": "Segoe UI",
+          "status-bar": "Segoe UI"
+        },
+        "systemFontCoherent": true
+      },
+      "automation": {
+        "navigatorWebdriver": false,
+        "hasCdcArray": false,
+        "hasWebdriverEval": false,
+        "hasSeleniumEval": false,
+        "hasPlaywrightBinding": false,
+        "hasPuppeteerEval": false,
+        "hasRemoteControlAttrInDOM": false,
+        "hasRemoteBoxInDOM": false
+      }
+    }
+  }
+}
