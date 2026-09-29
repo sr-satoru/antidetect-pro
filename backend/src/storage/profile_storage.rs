@@ -1,5 +1,6 @@
 use crate::launcher::ProcessManager;
 use crate::models::{CreateProfileDto, Profile, ProfileProxyConfig, UpdateProfileDto};
+use crate::storage::vault::traits::ProfileRepository;
 use crate::ws::WsState;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -10,16 +11,18 @@ pub struct ProfileStorage {
     data_dir: PathBuf,
     process_manager: Arc<ProcessManager>,
     auto_sync: Arc<Mutex<Option<Arc<crate::cloud_sync::AutoSyncEngine>>>>,
+    repo: Arc<dyn ProfileRepository>,
 }
 
 impl ProfileStorage {
-    pub fn new<P: AsRef<Path>>(data_dir: P, ws: WsState) -> Self {
+    pub fn new<P: AsRef<Path>>(data_dir: P, ws: WsState, repo: Arc<dyn ProfileRepository>) -> Self {
         let dir = data_dir.as_ref().join("profiles");
         let _ = fs::create_dir_all(&dir);
         Self {
             data_dir: dir,
             process_manager: Arc::new(ProcessManager::new(ws)),
             auto_sync: Arc::new(Mutex::new(None)),
+            repo,
         }
     }
 
@@ -45,34 +48,23 @@ impl ProfileStorage {
             .as_secs() as i64
     }
 
-    fn get_profile_path(&self, id: &str) -> PathBuf {
-        self.data_dir.join(id).join("metadata.json")
-    }
-
     pub fn list(&self, search: Option<&str>, group: Option<&str>) -> Vec<Profile> {
-        let mut profiles = Vec::new();
-        if let Ok(entries) = fs::read_dir(&self.data_dir) {
-            for entry in entries.flatten() {
-                if let Ok(file_type) = entry.file_type() {
-                    if file_type.is_dir() {
-                        let meta_path = entry.path().join("metadata.json");
-                        if let Ok(content) = fs::read_to_string(meta_path) {
-                            if let Ok(mut profile) = serde_json::from_str::<Profile>(&content) {
-                                if !profile.is_deleted {
-                                    // Sincroniza em tempo real o status com o processo e trava no SO
-                                    let profile_dir = entry.path().join("profile");
-                                    let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
-                                    if is_alive && profile.status != "running" {
-                                        profile.status = "running".to_string();
-                                    } else if !is_alive && profile.status == "running" {
-                                        profile.status = "ready".to_string();
-                                    }
-                                    profiles.push(profile);
-                                }
-                            }
-                        }
-                    }
-                }
+        let mut profiles = match self.repo.list(None, None) {
+            Ok(list) => list,
+            Err(e) => {
+                tracing::error!("Erro ao listar perfis do cofre: {}", e);
+                Vec::new()
+            }
+        };
+
+        // Sincroniza em tempo real o status com os processos ativos no SO
+        for p in profiles.iter_mut() {
+            let profile_dir = self.data_dir.join(&p.id).join("profile");
+            let is_alive = self.process_manager.is_running_with_dir(&p.id, Some(&profile_dir));
+            if is_alive && p.status != "running" {
+                p.status = "running".to_string();
+            } else if !is_alive && p.status == "running" {
+                p.status = "ready".to_string();
             }
         }
 
@@ -107,42 +99,19 @@ impl ProfileStorage {
     }
 
     pub fn list_trash(&self) -> Vec<Profile> {
-        let mut profiles = Vec::new();
-        if let Ok(entries) = fs::read_dir(&self.data_dir) {
-            for entry in entries.flatten() {
-                if let Ok(file_type) = entry.file_type() {
-                    if file_type.is_dir() {
-                        let meta_path = entry.path().join("metadata.json");
-                        if let Ok(content) = fs::read_to_string(meta_path) {
-                            if let Ok(profile) = serde_json::from_str::<Profile>(&content) {
-                                if profile.is_deleted {
-                                    profiles.push(profile);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        profiles.sort_by(|a, b| b.deleted_at.unwrap_or(0).cmp(&a.deleted_at.unwrap_or(0)));
-        profiles
+        self.repo.list_trash().unwrap_or_default()
     }
 
     pub fn get(&self, id: &str) -> Option<Profile> {
-        let path = self.get_profile_path(id);
-        if let Ok(content) = fs::read_to_string(path) {
-            if let Ok(mut profile) = serde_json::from_str::<Profile>(&content) {
-                let profile_dir = self.data_dir.join(id).join("profile");
-                let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
-                if is_alive && profile.status != "running" {
-                    profile.status = "running".to_string();
-                } else if !is_alive && profile.status == "running" {
-                    profile.status = "ready".to_string();
-                }
-                return Some(profile);
-            }
+        let mut profile = self.repo.get(id).ok()??;
+        let profile_dir = self.data_dir.join(id).join("profile");
+        let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
+        if is_alive && profile.status != "running" {
+            profile.status = "running".to_string();
+        } else if !is_alive && profile.status == "running" {
+            profile.status = "ready".to_string();
         }
-        None
+        Some(profile)
     }
 
     pub fn create(&self, dto: CreateProfileDto) -> Result<Profile, String> {
@@ -153,7 +122,6 @@ impl ProfileStorage {
 
         let now = Self::now_secs();
 
-        // Normalização de tags
         let tags: Vec<String> = match dto.tags {
             Some(serde_json::Value::Array(arr)) => arr
                 .into_iter()
@@ -220,13 +188,12 @@ impl ProfileStorage {
             extensions,
         };
 
-        // Grava no disco em data/profiles/<id>/metadata.json
+        // Garante a existência do diretório do navegador
         let profile_dir = self.data_dir.join(&id);
         fs::create_dir_all(&profile_dir).map_err(|e| e.to_string())?;
 
-        let meta_file = profile_dir.join("metadata.json");
-        let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
-        fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
+        // Salva com criptografia no Star Secure Vault
+        self.repo.save(&profile)?;
 
         // Agenda sincronização automática com debounce de 5 segundos
         self.trigger_auto_sync(&id);
@@ -316,17 +283,15 @@ impl ProfileStorage {
 
         profile.updated_at = Self::now_secs();
 
-        let meta_file = self.get_profile_path(id);
-        let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
-        fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
+        // Salva atualizado no Star Secure Vault
+        self.repo.save(&profile)?;
 
-        // Agenda sincronização automática com debounce de 5 segundos
+        // Agenda sincronização automática
         self.trigger_auto_sync(id);
 
         Ok(profile)
     }
 
-    /// Clona atomicamente um perfil existente no disco com um novo UUID
     pub fn clone_profile(&self, id: &str) -> Result<Profile, String> {
         let original = self.get(id).ok_or_else(|| "Perfil original não encontrado".to_string())?;
 
@@ -358,14 +323,11 @@ impl ProfileStorage {
             }
         }
 
-        // Salva o metadata.json no disco
-        let meta_file = new_profile_dir.join("metadata.json");
-        let json_str = serde_json::to_string_pretty(&cloned).map_err(|e| e.to_string())?;
-        fs::write(meta_file, json_str).map_err(|e| format!("Erro ao salvar metadata do clone: {e}"))?;
+        // Salva no Star Secure Vault
+        self.repo.save(&cloned)?;
 
         tracing::info!("📋 Perfil '{}' ({}) clonado com sucesso para novo ID {}", original.name, id, new_id);
 
-        // Agenda sincronização automática para o novo perfil clonado
         self.trigger_auto_sync(&new_id);
 
         Ok(cloned)
@@ -373,38 +335,17 @@ impl ProfileStorage {
 
     pub fn soft_delete(&self, id: &str) -> Result<(), String> {
         let _ = self.process_manager.stop(id);
-        let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
-        profile.is_deleted = true;
-        profile.deleted_at = Some(Self::now_secs());
-        profile.updated_at = Self::now_secs();
-
-        let meta_file = self.get_profile_path(id);
-        let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
-        fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
-
-        // Agenda sincronização automática da exclusão
+        self.repo.delete_soft(id)?;
         self.trigger_auto_sync(id);
-
         Ok(())
     }
 
     pub fn restore(&self, id: &str) -> Result<Profile, String> {
-        let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
-        profile.is_deleted = false;
-        profile.deleted_at = None;
-        profile.updated_at = Self::now_secs();
-
-        let meta_file = self.get_profile_path(id);
-        let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
-        fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
-
-        // Agenda sincronização automática da restauração
+        let profile = self.repo.restore(id)?.ok_or_else(|| "Perfil não encontrado".to_string())?;
         self.trigger_auto_sync(id);
-
         Ok(profile)
     }
 
-    /// Remove diretório com tolerância a descritores em processo de fechamento no Windows
     fn robust_remove_dir(path: &Path) -> Result<(), String> {
         let mut attempts = 0;
         loop {
@@ -423,6 +364,7 @@ impl ProfileStorage {
 
     pub fn permanent_delete(&self, id: &str) -> Result<(), String> {
         let _ = self.process_manager.stop(id);
+        self.repo.delete_permanent(id)?;
         let profile_dir = self.data_dir.join(id);
         if profile_dir.exists() {
             Self::robust_remove_dir(&profile_dir)?;
@@ -447,13 +389,10 @@ impl ProfileStorage {
         profile.last_launch = Some(now);
         profile.updated_at = now;
 
-        let meta_file = self.get_profile_path(id);
-        let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
-        fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
+        self.repo.save(&profile)?;
         Ok((profile, pid))
     }
 
-    /// Inicia o perfil com opção de depuração remota CDP / BiDi retornando ws_endpoint
     pub async fn launch_with_cdp(
         &self,
         id: &str,
@@ -466,9 +405,7 @@ impl ProfileStorage {
         profile.last_launch = Some(now);
         profile.updated_at = now;
 
-        let meta_file = self.get_profile_path(id);
-        let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
-        fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
+        self.repo.save(&profile)?;
         Ok((profile, pid, debug_port, ws_endpoint))
     }
 
@@ -479,9 +416,7 @@ impl ProfileStorage {
         profile.status = "ready".to_string();
         profile.updated_at = now;
 
-        let meta_file = self.get_profile_path(id);
-        let json_str = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
-        fs::write(meta_file, json_str).map_err(|e| e.to_string())?;
+        self.repo.save(&profile)?;
         Ok(profile)
     }
 
@@ -496,17 +431,10 @@ impl ProfileStorage {
 
     #[allow(dead_code)]
     pub fn get_profile_updated_at(&self, profile_id: &str) -> Option<i64> {
-        let path = self.get_profile_path(profile_id);
-        if let Ok(content) = fs::read_to_string(path) {
-            if let Ok(profile) = serde_json::from_str::<Profile>(&content) {
-                return Some(profile.updated_at);
-            }
-        }
-        None
+        self.repo.get(profile_id).ok()?.map(|p| p.updated_at)
     }
 
     pub fn get_profile_dir(&self, id: &str) -> PathBuf {
         self.data_dir.join(id).join("profile")
     }
 }
-

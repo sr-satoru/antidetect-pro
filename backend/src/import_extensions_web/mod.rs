@@ -349,8 +349,11 @@ mod tests {
             ])),
         };
 
-        // Simula client mock que não precisa conectar de verdade
-        let client = reqwest::Client::new();
+        // Simula client mock com timeout curto para não travar aguardando DNS de terceiros
+        let client = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_millis(500))
+            .build()
+            .unwrap_or_default();
         // Não falha na resolução de alvos mesmo se a rede falhar
         let _ = import_profile_extensions(&profile, &temp_dir, &temp_dir, &client).await;
 

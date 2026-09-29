@@ -21,6 +21,7 @@ pub mod models;
 pub mod network;
 pub mod proxy_validator;
 pub mod routes;
+pub mod security;
 pub mod storage;
 pub mod tab_manager;
 pub mod version_app;
@@ -51,14 +52,18 @@ pub async fn start_star_server(
     let _ = std::fs::create_dir_all(std::path::Path::new(&data_dir).join("profiles"));
     let _ = std::fs::create_dir_all(std::path::Path::new(&data_dir).join("binaries"));
 
-    // Executa migrações automáticas seguras com backup em todos os perfis existentes
-    let _ = migrations::migrate_all_profiles(std::path::Path::new(&data_dir));
+    // 1. Blindagem de memória RAM anti-trojan/anti-poking
+    crate::security::harden_process_memory();
+
+    // 2. Inicialização do cofre criptografado Star Secure Vault
+    let vault = Arc::new(storage::StarVault::new(std::path::Path::new(&data_dir))
+        .map_err(|e| format!("Falha ao inicializar Star Secure Vault: {}", e))?);
 
     let ws_state = ws::WsState::new();
-    let profile_storage = Arc::new(ProfileStorage::new(&data_dir, ws_state.clone()));
-    let proxy_storage = Arc::new(ProxyStorage::new(&data_dir));
+    let profile_storage = Arc::new(ProfileStorage::new(&data_dir, ws_state.clone(), vault.profiles()));
+    let proxy_storage = Arc::new(ProxyStorage::new(vault.proxies()));
     let extension_storage = Arc::new(ExtensionStorage::new(&data_dir));
-    let tag_storage = Arc::new(TagStorage::new(&data_dir));
+    let tag_storage = Arc::new(TagStorage::new(vault.tags()));
 
     let cors = CorsLayer::new()
         .allow_origin(Any)
@@ -105,7 +110,7 @@ pub async fn start_star_server(
         .route("/catalog", get(routes::extensions::get_catalog))
         .with_state(extension_storage);
 
-    let auth_service = Arc::new(cloud_auth::CloudAuthService::new());
+    let auth_service = Arc::new(cloud_auth::CloudAuthService::new(vault.auth()));
     let cloud_sync_service = Arc::new(
         cloud_sync::CloudSyncService::new(&data_dir, auth_service.clone())
             .with_ws(ws_state.clone()),
@@ -176,9 +181,9 @@ pub async fn start_star_server(
         .route("/", get(ws::ws_handler))
         .with_state(ws_state);
 
-    let token = mcp::security::ensure_token(std::path::Path::new(&data_dir))
+    let token = mcp::security::ensure_token(vault.mcp())
         .map_err(|e| format!("Falha ao inicializar api-token: {}", e))?;
-    let token_state = mcp::security::TokenState::new(token, std::path::PathBuf::from(&data_dir));
+    let token_state = mcp::security::TokenState::new(token, vault.mcp(), std::path::PathBuf::from(&data_dir));
 
     let mcp_routes = mcp::create_mcp_router(
         profile_storage.clone(),
