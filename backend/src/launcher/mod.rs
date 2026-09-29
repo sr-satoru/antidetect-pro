@@ -119,6 +119,7 @@ impl ProcessManager {
         profile: &Profile,
         data_dir: &Path,
         client: &reqwest::Client,
+        cdp: bool,
     ) -> Result<(crate::network::NetworkSetupResult, crate::fingerprint::FingerprintSetupResult), String> {
         fs::create_dir_all(profile_dir)
             .map_err(|e| format!("Erro ao criar diretório do perfil: {e}"))?;
@@ -161,10 +162,12 @@ impl ProcessManager {
         user_js.push_str("user_pref(\"privacy.clearOnShutdown.cache\", false);\n");
         user_js.push_str("user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n");
 
-        // Preferências de Automação Segura e Protocolos CDP / WebDriver BiDi
-        user_js.push_str("user_pref(\"remote.active-protocols\", 3);\n");
-        user_js.push_str("user_pref(\"remote.allow-origins\", \"*\");\n");
-        user_js.push_str("user_pref(\"remote.allow-hosts\", \"localhost,127.0.0.1,[::1]\");\n");
+        // Preferências de Automação e Protocolos CDP / WebDriver BiDi injetadas somente quando CDP estiver ativo
+        if cdp {
+            user_js.push_str("user_pref(\"remote.active-protocols\", 3);\n");
+            user_js.push_str("user_pref(\"remote.allow-origins\", \"*\");\n");
+            user_js.push_str("user_pref(\"remote.allow-hosts\", \"localhost,127.0.0.1,[::1]\");\n");
+        }
 
         // Preferências nativas do Firefox para auto-ativação e sideload de extensões
         user_js.push_str("// Carregamento automático de extensões no perfil Camoufox\n");
@@ -222,10 +225,32 @@ impl ProcessManager {
         fs::write(user_js_path, user_js)
             .map_err(|e| format!("Erro ao gravar user.js do perfil: {e}"))?;
 
-        // Garante ocultação de qualquer banner de automação/depuração no Camoufox
+        // Garante ocultação de qualquer banner de automação/depuração e listras vermelhas no Camoufox
         let chrome_dir = profile_dir.join("chrome");
         let _ = fs::create_dir_all(&chrome_dir);
-        let user_chrome_css = "#remote-control-box { display: none !important; }\n#urlbar-background { background-image: none !important; }\n";
+        let user_chrome_css = r#"
+/* Oculta completamente o ícone de robô de controle remoto e seu container */
+:root[remotecontrol] #remote-control-box,
+#remote-control-box,
+#remote-control-icon,
+.remote-control-icon {
+    display: none !important;
+    visibility: collapse !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Remove completamente as listras diagonais vermelhas e bordas de alerta */
+:root[remotecontrol] #urlbar-background,
+:root[remotecontrol] #urlbar[focused="true"] > #urlbar-background,
+#urlbar[remotecontrol] #urlbar-background,
+#urlbar-background {
+    background-image: none !important;
+    box-shadow: none !important;
+}
+"#;
         let _ = fs::write(chrome_dir.join("userChrome.css"), user_chrome_css);
 
         Ok((net_setup, fp_setup))
@@ -260,7 +285,7 @@ impl ProcessManager {
             data_dir.join("profiles").join(&profile.id).join("profile")
         };
 
-        let (net_setup, fp_setup) = Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
+        let (net_setup, fp_setup) = Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client, cdp).await?;
 
         let debug_port = if cdp {
             let port = Self::pick_available_port();

@@ -113,11 +113,18 @@ pub async fn empty_trash(
     }
 }
 
+#[derive(Debug, Deserialize)]
+pub struct LaunchProfileQuery {
+    pub cdp: Option<bool>,
+}
+
 pub async fn launch_profile(
     State(storage): State<Arc<ProfileStorage>>,
     Path(id): Path<String>,
+    Query(params): Query<LaunchProfileQuery>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    match storage.launch_with_cdp(&id, true).await {
+    let cdp = params.cdp.unwrap_or(false);
+    match storage.launch_with_cdp(&id, cdp).await {
         Ok((profile, pid, debug_port, ws_endpoint)) => Ok(Json(serde_json::json!({
             "status": "launched",
             "profile_id": profile.id,
