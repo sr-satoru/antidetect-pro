@@ -12,10 +12,10 @@ export interface LinhaTabelaProxiesProps {
   proxy: any;
   isSelected: boolean;
   index?: number;
-  onSelect: (id: number) => void;
-  onTest?: (id: number) => void;
+  onSelect: (id: string | number) => void;
+  onTest?: (id: string | number) => void;
   onEdit: (proxy: any) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string | number) => void;
 }
 
 const renderProtocolBadge = (type: string) => {
@@ -92,7 +92,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
 
       {/* 2. Nº / ID */}
       <td className="w-[70px] min-w-[70px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-white">
-        #{proxy.id < 10 ? `0${proxy.id}` : proxy.id}
+        #{String((index ?? 0) + 1).padStart(2, '0')}
       </td>
 
       {/* 3. Nome do Proxy */}

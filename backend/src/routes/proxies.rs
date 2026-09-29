@@ -6,12 +6,16 @@ use axum::{
 };
 use std::sync::Arc;
 
-use crate::models::{CreateProxyDto, TestProxyDto};
+use crate::models::{CreateProxyDto, TestProxyDto, UpdateProxyDto};
 use crate::service_database::ProxyStorage;
 
-pub async fn list_proxies(State(storage): State<Arc<ProxyStorage>>) -> impl IntoResponse {
-    let list = storage.list();
-    Json(list)
+pub async fn list_proxies(
+    State(storage): State<Arc<ProxyStorage>>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    match storage.list() {
+        Ok(proxies) => Ok(Json(proxies)),
+        Err(err) => Err((StatusCode::INTERNAL_SERVER_ERROR, err)),
+    }
 }
 
 pub async fn create_proxy(
@@ -24,7 +28,16 @@ pub async fn create_proxy(
     }
 }
 
-
+pub async fn update_proxy(
+    State(storage): State<Arc<ProxyStorage>>,
+    Path(id): Path<String>,
+    Json(payload): Json<UpdateProxyDto>,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    match storage.update(&id, payload) {
+        Ok(proxy) => Ok(Json(proxy)),
+        Err(err) => Err((StatusCode::NOT_FOUND, err)),
+    }
+}
 
 pub async fn delete_proxy(
     State(storage): State<Arc<ProxyStorage>>,

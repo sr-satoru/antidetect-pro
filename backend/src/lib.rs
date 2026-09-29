@@ -103,7 +103,7 @@ pub async fn start_star_server(
     let proxy_routes = Router::new()
         .route("/", get(routes::proxies::list_proxies).post(routes::proxies::create_proxy))
         .route("/test", post(routes::proxies::test_proxy))
-        .route("/{id}", delete(routes::proxies::delete_proxy))
+        .route("/{id}", put(routes::proxies::update_proxy).delete(routes::proxies::delete_proxy))
         .with_state(proxy_storage);
 
     let extension_routes = Router::new()

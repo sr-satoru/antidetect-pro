@@ -28,10 +28,10 @@ fn default_status() -> String {
     "active".to_string()
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateProxyDto {
     pub name: Option<String>,
-    #[serde(rename = "type")]
+    #[serde(rename = "type", alias = "proxy_type")]
     pub proxy_type: Option<String>,
     pub host: String,
     pub port: serde_json::Value,
@@ -41,9 +41,24 @@ pub struct CreateProxyDto {
     pub pass: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateProxyDto {
+    pub name: Option<String>,
+    #[serde(rename = "type", alias = "proxy_type")]
+    pub proxy_type: Option<String>,
+    pub host: Option<String>,
+    pub port: Option<serde_json::Value>,
+    pub username: Option<String>,
+    pub user: Option<String>,
+    pub password: Option<String>,
+    pub pass: Option<String>,
+    pub status: Option<String>,
+    pub country: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TestProxyDto {
-    #[serde(rename = "type")]
+    #[serde(rename = "type", alias = "proxy_type")]
     pub proxy_type: Option<String>,
     pub host: String,
     pub port: serde_json::Value,

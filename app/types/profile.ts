@@ -53,6 +53,20 @@ export interface CreateProxyDto {
   password?: string;
 }
 
+export interface UpdateProxyDto {
+  name?: string;
+  type?: string;
+  proxy_type?: string;
+  host?: string;
+  port?: string | number;
+  user?: string;
+  username?: string;
+  pass?: string;
+  password?: string;
+  status?: string;
+  country?: string;
+}
+
 export interface TestProxyDto {
   type?: string;
   proxy_type?: string;

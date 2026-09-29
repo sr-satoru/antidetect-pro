@@ -14,7 +14,7 @@ import { toast } from '@/components/ui/notification';
 export const ProxyPage: React.FC = () => {
   const [proxies, setProxies] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -28,9 +28,10 @@ export const ProxyPage: React.FC = () => {
     try {
       setIsLoading(true);
       const data = await api.proxies.list();
-      setProxies(data);
+      setProxies(Array.isArray(data) ? data : []);
     } catch (err: any) {
       console.error('Erro ao carregar proxies:', err);
+      setProxies([]);
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +55,8 @@ export const ProxyPage: React.FC = () => {
 
       const matchesType =
         selectedType === 'all' ||
-        (p.type && p.type.toLowerCase() === selectedType.toLowerCase());
+        (p.type && p.type.toLowerCase() === selectedType.toLowerCase()) ||
+        (p.proxy_type && p.proxy_type.toLowerCase() === selectedType.toLowerCase());
 
       const matchesStatus =
         selectedStatus === 'all' ||
@@ -66,7 +68,7 @@ export const ProxyPage: React.FC = () => {
   }, [proxies, searchQuery, selectedType, selectedStatus]);
 
   // Selection
-  const handleSelectProxy = (id: number) => {
+  const handleSelectProxy = (id: string | number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
@@ -85,17 +87,17 @@ export const ProxyPage: React.FC = () => {
   };
 
   // Test handlers
-  const handleTestProxy = async (id: number) => {
+  const handleTestProxy = async (id: string | number) => {
     const proxy = proxies.find((p) => p.id === id);
     if (!proxy) return;
 
     try {
       const res = await api.proxies.test({
-        type: proxy.type,
+        type: proxy.type || proxy.proxy_type || 'socks5',
         host: proxy.host,
         port: Number(proxy.port),
-        username: proxy.user,
-        password: proxy.pass,
+        username: proxy.user || proxy.username,
+        password: proxy.pass || proxy.password,
       });
 
       setProxies((prev) =>
@@ -123,7 +125,7 @@ export const ProxyPage: React.FC = () => {
   };
 
   // Delete single proxy
-  const handleDeleteProxy = async (id: number) => {
+  const handleDeleteProxy = async (id: string | number) => {
     const target = proxies.find((p) => p.id === id);
     if (
       confirm(
@@ -164,6 +166,8 @@ export const ProxyPage: React.FC = () => {
         for (const item of data) {
           await api.proxies.create(item);
         }
+      } else if (data.id) {
+        await api.proxies.update(data.id, data);
       } else {
         await api.proxies.create(data);
       }

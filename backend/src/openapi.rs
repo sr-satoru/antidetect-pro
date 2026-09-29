@@ -226,6 +226,22 @@ pub struct CreateProxyDtoDoc {
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
+pub struct UpdateProxyDtoDoc {
+    #[schema(example = "Proxy BR Atualizado")]
+    pub name: Option<String>,
+    #[schema(example = "socks5")]
+    pub proxy_type: Option<String>,
+    #[schema(example = "177.18.29.30")]
+    pub host: Option<String>,
+    #[schema(example = 1080)]
+    pub port: Option<u16>,
+    pub username: Option<String>,
+    pub password: Option<String>,
+    pub status: Option<String>,
+    pub country: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct TestProxyDtoDoc {
     #[schema(example = "socks5")]
     pub proxy_type: Option<String>,
@@ -607,6 +623,18 @@ pub async fn doc_create_proxy() {}
 pub async fn doc_test_proxy() {}
 
 #[utoipa::path(
+    put,
+    path = "/api/proxies/{id}",
+    tag = "Proxies",
+    summary = "Atualizar proxy",
+    description = "Atualiza os dados de um proxy existente no cofre seguro.",
+    params(("id" = String, Path, description = "ID do proxy")),
+    request_body = UpdateProxyDtoDoc,
+    responses((status = 200, description = "Proxy atualizado com sucesso", body = ProxyItemDoc))
+)]
+pub async fn doc_update_proxy() {}
+
+#[utoipa::path(
     delete,
     path = "/api/proxies/{id}",
     tag = "Proxies",
@@ -856,6 +884,7 @@ pub async fn doc_app_check_update() {}
         // Proxies
         doc_list_proxies,
         doc_create_proxy,
+        doc_update_proxy,
         doc_test_proxy,
         doc_delete_proxy,
         // Tags
@@ -901,6 +930,7 @@ pub async fn doc_app_check_update() {}
             ImportCookiesDtoDoc,
             ProxyItemDoc,
             CreateProxyDtoDoc,
+            UpdateProxyDtoDoc,
             TestProxyDtoDoc,
             ProxyValidationResultDoc,
             TagDoc,

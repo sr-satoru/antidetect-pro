@@ -199,13 +199,23 @@ export const serviceProxies = {
   /**
    * Consulta a lista bruta de proxies cadastrados no backend
    */
-  list: () => http.get<ProxyItem[]>('/api/proxies'),
+  list: async (): Promise<ProxyItem[]> => {
+    const res = await http.get<any>('/api/proxies');
+    if (Array.isArray(res)) return res;
+    if (res && Array.isArray(res.Ok)) return res.Ok;
+    return [];
+  },
 
   /**
    * Carrega e formata a lista de proxies salvos para os selects da interface
    */
   listarSalvos: async (): Promise<ProxyItem[]> => {
-    const list = await http.get<ProxyItem[]>('/api/proxies');
+    const res = await http.get<any>('/api/proxies');
+    const list: ProxyItem[] = Array.isArray(res)
+      ? res
+      : res && Array.isArray(res.Ok)
+        ? res.Ok
+        : [];
     return list.map((p) => ({
       id: p.id,
       name: p.name || `Proxy ${p.host}`,
@@ -225,6 +235,12 @@ export const serviceProxies = {
    * Salva um novo proxy no banco de dados SQLite/Vault do Rust
    */
   create: (data: any) => http.post<any>('/api/proxies', data),
+
+  /**
+   * Atualiza um proxy existente no banco de dados SQLite/Vault do Rust
+   */
+  update: (id: string | number, data: any) =>
+    http.put<any>(`/api/proxies/${id}`, data),
 
   /**
    * Exclui um proxy pelo ID

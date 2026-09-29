@@ -11,12 +11,12 @@ import {
 
 interface TabelasProxiesProps {
   proxies: any[];
-  selectedIds: number[];
-  onSelectProxy: (id: number) => void;
+  selectedIds: (string | number)[];
+  onSelectProxy: (id: string | number) => void;
   onSelectAll: () => void;
-  onTestProxy: (id: number) => void;
+  onTestProxy: (id: string | number) => void;
   onEditProxy: (proxy: any) => void;
-  onDeleteProxy: (id: number) => void;
+  onDeleteProxy: (id: string | number) => void;
   isAddingOrEditing?: boolean;
   editingProxy?: any | null;
   onCloseCadastro?: () => void;

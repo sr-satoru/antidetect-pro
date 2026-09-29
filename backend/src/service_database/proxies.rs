@@ -1,5 +1,5 @@
 use super::data::{crypto::decrypt_payload, crypto::encrypt_payload, Vault};
-use crate::models::{CreateProxyDto, ProxyItem, ProxyTestRequest, ProxyTestResult};
+use crate::models::{CreateProxyDto, ProxyItem, ProxyTestRequest, ProxyTestResult, UpdateProxyDto};
 use rusqlite::params;
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -137,6 +137,116 @@ impl ProxyService {
             country,
             status,
             created_at,
+        })
+    }
+
+    pub fn get(&self, id: &str) -> Result<ProxyItem, String> {
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+
+        let mut stmt = conn_guard
+            .prepare("SELECT id, name, proxy_type, host, port, credentials_enc, ip, country, status, created_at FROM proxies WHERE id = ?1")
+            .map_err(|e| e.to_string())?;
+
+        let row = stmt.query_row(params![id], |row| {
+            let id: String = row.get(0)?;
+            let name: String = row.get(1)?;
+            let proxy_type: String = row.get(2)?;
+            let host: String = row.get(3)?;
+            let port: String = row.get(4)?;
+            let credentials_enc: Vec<u8> = row.get(5)?;
+            let ip: String = row.get(6)?;
+            let country: String = row.get(7)?;
+            let status: String = row.get(8)?;
+            let created_at: i64 = row.get(9)?;
+            Ok((id, name, proxy_type, host, port, credentials_enc, ip, country, status, created_at))
+        }).map_err(|_| "Proxy não encontrado".to_string())?;
+
+        let (user, pass) = match decrypt_payload(self.vault.key().as_ref(), &row.5) {
+            Ok(decrypted) => match serde_json::from_slice::<ProxyCredentials>(&decrypted) {
+                Ok(creds) => (creds.user, creds.pass),
+                Err(_) => (String::new(), String::new()),
+            },
+            Err(_) => (String::new(), String::new()),
+        };
+
+        Ok(ProxyItem {
+            id: row.0,
+            name: row.1,
+            proxy_type: row.2,
+            host: row.3,
+            port: row.4,
+            user,
+            pass,
+            ip: row.6,
+            country: row.7,
+            status: row.8,
+            created_at: row.9,
+        })
+    }
+
+    pub fn update(&self, id: &str, dto: UpdateProxyDto) -> Result<ProxyItem, String> {
+        let existing = self.get(id)?;
+        let new_name = dto.name.unwrap_or(existing.name);
+        let new_type = dto.proxy_type.unwrap_or(existing.proxy_type);
+        let new_host = dto.host.unwrap_or(existing.host);
+        let new_port = if let Some(p) = dto.port {
+            if let Some(n) = p.as_u64() {
+                n.to_string()
+            } else if let Some(s) = p.as_str() {
+                s.to_string()
+            } else {
+                existing.port
+            }
+        } else {
+            existing.port
+        };
+
+        let new_user = dto.username.or(dto.user).unwrap_or(existing.user);
+        let new_pass = dto.password.or(dto.pass).unwrap_or(existing.pass);
+        let new_country = dto.country.unwrap_or(existing.country);
+        let new_status = dto.status.unwrap_or(existing.status);
+        let new_ip = new_host.clone();
+
+        let creds = ProxyCredentials {
+            user: new_user.clone(),
+            pass: new_pass.clone(),
+        };
+        let creds_bytes = serde_json::to_vec(&creds).map_err(|e| e.to_string())?;
+        let credentials_enc = encrypt_payload(self.vault.key().as_ref(), &creds_bytes)?;
+
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+
+        conn_guard
+            .execute(
+                "UPDATE proxies SET name = ?1, proxy_type = ?2, host = ?3, port = ?4, credentials_enc = ?5, ip = ?6, country = ?7, status = ?8 WHERE id = ?9",
+                params![
+                    new_name,
+                    new_type,
+                    new_host,
+                    new_port,
+                    credentials_enc,
+                    new_ip,
+                    new_country,
+                    new_status,
+                    id,
+                ],
+            )
+            .map_err(|e| e.to_string())?;
+
+        Ok(ProxyItem {
+            id: id.to_string(),
+            name: new_name,
+            proxy_type: new_type,
+            host: new_host,
+            port: new_port,
+            user: new_user,
+            pass: new_pass,
+            ip: new_ip,
+            country: new_country,
+            status: new_status,
+            created_at: existing.created_at,
         })
     }
 
