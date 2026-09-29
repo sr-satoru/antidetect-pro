@@ -293,3 +293,19 @@ fn map_amo_category(cats: Option<&Vec<serde_json::Value>>) -> String {
     }
     "Tools".to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_amo_fetch() {
+        let storage = ExtensionStorage::new(std::env::temp_dir().join("test_ext_storage"));
+        let results = storage.search_catalog(None, None, None).await;
+        eprintln!(">>> TEST AMO RESULTS COUNT: {}", results.len());
+        for r in results.iter().take(3) {
+            eprintln!(">>> EXT: {} ({})", r.name, r.id);
+        }
+        assert!(!results.is_empty(), "AMO catalog returned empty list!");
+    }
+}
