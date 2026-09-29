@@ -5,7 +5,6 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use rand::RngCore;
 use serde_json::json;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -54,60 +53,8 @@ impl TokenState {
     }
 }
 
-/// Obtém o token ativo do cofre seguro ou gera um novo com alta entropia
-pub fn ensure_token(vault: Arc<Vault>) -> Result<String, std::io::Error> {
-    let conn = vault.conn();
-    if let Ok(conn_guard) = conn.lock() {
-        let token_enc_opt: Option<Vec<u8>> = conn_guard
-            .query_row(
-                "SELECT token_enc FROM mcp_tokens WHERE id = 'active' OR id = 'primary' ORDER BY created_at DESC LIMIT 1",
-                [],
-                |row| row.get(0),
-            )
-            .ok();
-
-        if let Some(token_enc) = token_enc_opt {
-            if let Ok(dec) = crate::service_database::vault::decrypt_payload(vault.key().as_ref(), &token_enc) {
-                if let Ok(s) = String::from_utf8(dec) {
-                    let trimmed = s.trim().to_string();
-                    if !trimmed.is_empty() {
-                        return Ok(trimmed);
-                    }
-                }
-            }
-        }
-    }
-
-    rotate_token(vault)
-}
-
-/// Gera um novo token aleatório de 256 bits via OsRng do kernel e grava no cofre protegido
-pub fn rotate_token(vault: Arc<Vault>) -> Result<String, std::io::Error> {
-    let mut bytes = [0u8; 32];
-    rand::rngs::OsRng.fill_bytes(&mut bytes);
-
-    let token = format!("star_sec_{}", hex::encode(bytes));
-    let token_enc = crate::service_database::vault::encrypt_payload(vault.key().as_ref(), token.as_bytes())
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
-
-    let now = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs() as i64;
-
-    let conn = vault.conn();
-    let conn_guard = conn.lock().map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
-
-    conn_guard
-        .execute(
-            "INSERT INTO mcp_tokens (id, token_enc, created_at) VALUES ('active', ?1, ?2)
-             ON CONFLICT(id) DO UPDATE SET token_enc = excluded.token_enc, created_at = excluded.created_at",
-            rusqlite::params![token_enc, now],
-        )
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
-
-    Ok(token)
-}
+pub use crate::security::mcp_api::crypto::rotate_token;
+pub use crate::security::mcp_api::descrypto::ensure_token;
 
 /// Comparação em tempo constante (contra timing attacks / side-channel leaks)
 pub fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
@@ -197,18 +144,6 @@ pub async fn bearer_auth_middleware(
     }
 
     next.run(req).await
-}
-
-/// Função utilitária simples para encode hexadecimal sem dependência externa
-mod hex {
-    pub fn encode(bytes: [u8; 32]) -> String {
-        let mut s = String::with_capacity(64);
-        for b in bytes {
-            use std::fmt::Write;
-            let _ = write!(s, "{:02x}", b);
-        }
-        s
-    }
 }
 
 #[cfg(test)]
