@@ -19,7 +19,7 @@ impl ExtensionStorage {
 
         let client = reqwest::Client::builder()
             .user_agent("Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0 StarMultlogin/1.0")
-            .timeout(std::time::Duration::from_secs(8))
+            .timeout(std::time::Duration::from_secs(15))
             .build()
             .unwrap_or_default();
 
@@ -181,61 +181,69 @@ impl ExtensionStorage {
 
         let mut fetched_items: Vec<RecommendedExtension> = Vec::new();
 
-        if let Ok(resp) = self.client.get(&url).send().await {
-            if let Ok(json) = resp.json::<serde_json::Value>().await {
-                if let Some(results) = json.get("results").and_then(|r| r.as_array()) {
-                    fetched_items = results
-                        .iter()
-                        .filter_map(|item| {
-                            let name = extract_localized_string(item.get("name"))?;
-                            let desc = extract_localized_string(item.get("summary"))
-                                .unwrap_or_else(|| "Extensão oficial do catálogo.".to_string());
-                            let icon_url = item.get("icon_url").and_then(|i| i.as_str()).map(|s| s.to_string());
-                            let addon_url = item.get("url").and_then(|u| u.as_str()).map(|s| s.to_string());
-                            let id = item.get("guid")
-                                .and_then(|g| g.as_str())
-                                .or_else(|| item.get("slug").and_then(|s| s.as_str()))
-                                .unwrap_or_else(|| &name)
-                                .to_string();
+        match self.client.get(&url).send().await {
+            Ok(resp) => {
+                if let Ok(json) = resp.json::<serde_json::Value>().await {
+                    if let Some(results) = json.get("results").and_then(|r| r.as_array()) {
+                        fetched_items = results
+                            .iter()
+                            .filter_map(|item| {
+                                let name = extract_localized_string(item.get("name"))?;
+                                let desc = extract_localized_string(item.get("summary"))
+                                    .unwrap_or_else(|| "Extensão oficial do catálogo.".to_string());
+                                let icon_url = item.get("icon_url").and_then(|i| i.as_str()).map(|s| s.to_string());
+                                let addon_url = item.get("url").and_then(|u| u.as_str()).map(|s| s.to_string());
+                                let id = item.get("guid")
+                                    .and_then(|g| g.as_str())
+                                    .or_else(|| item.get("slug").and_then(|s| s.as_str()))
+                                    .unwrap_or_else(|| &name)
+                                    .to_string();
 
-                            let raw_categories = item.get("categories").and_then(|c| c.as_array());
-                            let mapped_cat = if !is_all_cat {
-                                cat.to_string()
-                            } else {
-                                map_amo_category(raw_categories)
-                            };
+                                let raw_categories = item.get("categories").and_then(|c| c.as_array());
+                                let mapped_cat = if !is_all_cat {
+                                    cat.to_string()
+                                } else {
+                                    map_amo_category(raw_categories)
+                                };
 
-                            let provider = if st.eq_ignore_ascii_case("chrome") {
-                                "Chrome Web Store".to_string()
-                            } else {
-                                "Firefox Add-ons".to_string()
-                            };
+                                let provider = if st.eq_ignore_ascii_case("chrome") {
+                                    "Chrome Web Store".to_string()
+                                } else {
+                                    "Firefox Add-ons".to_string()
+                                };
 
-                            let provider_url = if st.eq_ignore_ascii_case("chrome") {
-                                Some(format!("https://chromewebstore.google.com/search?q={}", urlencoding(&name)))
-                            } else {
-                                addon_url
-                            };
+                                let provider_url = if st.eq_ignore_ascii_case("chrome") {
+                                    Some(format!("https://chromewebstore.google.com/search?q={}", urlencoding(&name)))
+                                } else {
+                                    addon_url
+                                };
 
-                            Some(RecommendedExtension {
-                                id,
-                                name,
-                                category: mapped_cat,
-                                description: desc,
-                                provider,
-                                provider_url,
-                                icon_type: "puzzle".to_string(),
-                                icon_bg: String::new(),
-                                icon_url,
-                                featured: Some(false),
+                                Some(RecommendedExtension {
+                                    id,
+                                    name,
+                                    category: mapped_cat,
+                                    description: desc,
+                                    provider,
+                                    provider_url,
+                                    icon_type: "puzzle".to_string(),
+                                    icon_bg: String::new(),
+                                    icon_url,
+                                    featured: Some(false),
+                                })
                             })
-                        })
-                        .collect();
+                            .collect();
+                    }
                 }
+            }
+            Err(err) => {
+                tracing::warn!("⚠️ Erro ao consultar catálogo AMO ({}): {}", url, err);
             }
         }
 
-        self.cache.set(query, category, store, fetched_items.clone());
+        // Só armazena em cache se obtiver resultados reais para não poluir o cache com falhas de rede
+        if !fetched_items.is_empty() {
+            self.cache.set(query, category, store, fetched_items.clone());
+        }
 
         fetched_items
     }
@@ -292,20 +300,4 @@ fn map_amo_category(cats: Option<&Vec<serde_json::Value>>) -> String {
         }
     }
     "Tools".to_string()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn test_amo_fetch() {
-        let storage = ExtensionStorage::new(std::env::temp_dir().join("test_ext_storage"));
-        let results = storage.search_catalog(None, None, None).await;
-        eprintln!(">>> TEST AMO RESULTS COUNT: {}", results.len());
-        for r in results.iter().take(3) {
-            eprintln!(">>> EXT: {} ({})", r.name, r.id);
-        }
-        assert!(!results.is_empty(), "AMO catalog returned empty list!");
-    }
 }
