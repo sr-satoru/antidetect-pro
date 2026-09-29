@@ -149,7 +149,15 @@ impl ProxyService {
         Ok(())
     }
 
-    pub async fn test_proxy(&self, dto: &ProxyTestRequest) -> Result<ProxyTestResult, String> {
-        crate::proxy_validator::test_proxy_connection(dto).await
+    pub async fn test_proxy(&self, dto: &ProxyTestRequest) -> ProxyTestResult {
+        let proxy_type = dto.proxy_type.as_deref().unwrap_or("socks5");
+        crate::proxy_validator::ProxyValidator::validate(
+            proxy_type,
+            &dto.host,
+            dto.get_port(),
+            dto.get_username(),
+            dto.get_password(),
+        )
+        .await
     }
 }

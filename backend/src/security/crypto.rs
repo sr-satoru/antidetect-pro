@@ -8,8 +8,10 @@ const NONCE_LEN: usize = 12;
 const TAG_LEN: usize = 16;
 
 /// Criptografa dados em AES-256-GCM com nonce aleatório via OsRng.
+/// Aceita qualquer tipo que implemente AsRef<[u8]> (como &[u8], [u8; 32], ProtectedKey).
 /// Formato da saída: [12 bytes de Nonce || Ciphertext + Tag de 16 bytes]
-pub fn encrypt_payload(key: &[u8], plaintext: &[u8]) -> Result<Vec<u8>, String> {
+pub fn encrypt_payload(key: impl AsRef<[u8]>, plaintext: &[u8]) -> Result<Vec<u8>, String> {
+    let key = key.as_ref();
     let cipher = Aes256Gcm::new_from_slice(key)
         .map_err(|e| format!("Chave inválida para AES-256-GCM: {e}"))?;
 
@@ -28,7 +30,8 @@ pub fn encrypt_payload(key: &[u8], plaintext: &[u8]) -> Result<Vec<u8>, String> 
 }
 
 /// Descriptografa dados em AES-256-GCM extraindo o nonce dos primeiros 12 bytes.
-pub fn decrypt_payload(key: &[u8], payload: &[u8]) -> Result<Vec<u8>, String> {
+pub fn decrypt_payload(key: impl AsRef<[u8]>, payload: &[u8]) -> Result<Vec<u8>, String> {
+    let key = key.as_ref();
     if payload.len() < NONCE_LEN + TAG_LEN {
         return Err("Payload menor que o tamanho mínimo de encriptação".to_string());
     }

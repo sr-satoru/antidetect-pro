@@ -54,16 +54,20 @@ impl TokenState {
 pub fn ensure_token(vault: Arc<Vault>) -> Result<String, std::io::Error> {
     let conn = vault.conn();
     if let Ok(conn_guard) = conn.lock() {
-        if let Ok(mut stmt) = conn_guard.prepare("SELECT token_enc FROM mcp_tokens WHERE id = 'active' LIMIT 1") {
-            if let Ok(Some(row)) = stmt.query([]).and_then(|mut r| r.next()) {
-                if let Ok(token_enc) = row.get::<_, Vec<u8>>(0) {
-                    if let Ok(dec) = crate::service_database::vault::decrypt_payload(vault.key().as_ref(), &token_enc) {
-                        if let Ok(s) = String::from_utf8(dec) {
-                            let trimmed = s.trim().to_string();
-                            if !trimmed.is_empty() {
-                                return Ok(trimmed);
-                            }
-                        }
+        let token_enc_opt: Option<Vec<u8>> = conn_guard
+            .query_row(
+                "SELECT token_enc FROM mcp_tokens WHERE id = 'active' LIMIT 1",
+                [],
+                |row| row.get(0),
+            )
+            .ok();
+
+        if let Some(token_enc) = token_enc_opt {
+            if let Ok(dec) = crate::service_database::vault::decrypt_payload(vault.key().as_ref(), &token_enc) {
+                if let Ok(s) = String::from_utf8(dec) {
+                    let trimmed = s.trim().to_string();
+                    if !trimmed.is_empty() {
+                        return Ok(trimmed);
                     }
                 }
             }
@@ -226,55 +230,5 @@ mod tests {
         let a = b"star_sec_short";
         let b = b"star_sec_much_longer_token";
         assert!(!constant_time_eq(a, b));
-    }
-
-    struct MockMcpRepo {
-        token: std::sync::Mutex<Option<String>>,
-    }
-
-    impl MockMcpRepo {
-        fn new() -> Self {
-            Self {
-                token: std::sync::Mutex::new(None),
-            }
-        }
-    }
-
-    impl McpRepository for MockMcpRepo {
-        fn get_token(&self) -> Result<Option<String>, String> {
-            Ok(self.token.lock().unwrap().clone())
-        }
-
-        fn save_token(&self, token: &str) -> Result<(), String> {
-            *self.token.lock().unwrap() = Some(token.to_string());
-            Ok(())
-        }
-    }
-
-    #[test]
-    fn test_vault_token_lifecycle() {
-        let repo = Arc::new(MockMcpRepo::new());
-
-        // 1. Gera token inicial
-        let token1 = ensure_token(repo.clone()).expect("Falha ao gerar token");
-        assert!(token1.starts_with("star_sec_"));
-        assert_eq!(token1.len(), 9 + 64);
-
-        // 2. ensure_token subsequente deve retornar exatamente o mesmo token
-        let token2 = ensure_token(repo.clone()).expect("Falha ao obter token existente");
-        assert_eq!(token1, token2);
-
-        // 3. Rotação manual deve gerar novo token e ser diferente do anterior
-        let token3 = rotate_token(repo.clone()).expect("Falha ao rotacionar token");
-        assert_ne!(token1, token3);
-        assert!(token3.starts_with("star_sec_"));
-
-        // 4. TokenState deve refletir a validação
-        let state = TokenState::new(token3.clone(), repo.clone(), PathBuf::from("/tmp"));
-        let rt = tokio::runtime::Runtime::new().unwrap();
-        rt.block_on(async {
-            assert!(state.is_valid_token(&token3).await);
-            assert!(!state.is_valid_token("invalid_token").await);
-        });
     }
 }

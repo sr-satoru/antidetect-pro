@@ -19,7 +19,7 @@ unsafe fn libc_prctl_dumpable(dumpable: i32) -> i32 {
         fn prctl(option: i32, arg2: u64, arg3: u64, arg4: u64, arg5: u64) -> i32;
     }
     const PR_SET_DUMPABLE: i32 = 4;
-    prctl(PR_SET_DUMPABLE, dumpable as u64, 0, 0, 0)
+    unsafe { prctl(PR_SET_DUMPABLE, dumpable as u64, 0, 0, 0) }
 }
 
 /// Estrutura de chave de 256 bits com ZeroizeOnDrop (garante sobrescrita com 0x00 ao ser descartada da memória)

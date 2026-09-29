@@ -76,3 +76,6 @@ impl TestProxyDto {
         }
     }
 }
+
+pub type ProxyTestRequest = TestProxyDto;
+pub type ProxyTestResult = crate::proxy_validator::ProxyValidationResult;
