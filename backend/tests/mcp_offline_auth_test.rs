@@ -32,12 +32,10 @@ async fn test_offline_mode_post_and_mcp_local_token_workflow() {
     println!("  🔑 Token do MCP gerado no cofre local: {}", token);
     assert!(token.starts_with("star_sec_"), "O token MCP deve ter prefixo star_sec_");
 
-    // 2. VERIFICAÇÃO 1: O arquivo 'api-token' foi gravado no disco para uso offline de scripts e IDEs?
+    // 2. VERIFICAÇÃO 1: Zero Plaintext at Rest - Nenhum arquivo de texto exposto no disco!
     let api_token_path = temp_dir.join("api-token");
-    assert!(api_token_path.exists(), "O arquivo data/api-token DEVE existir para scripts offline!");
-    let disk_token = fs::read_to_string(&api_token_path).unwrap();
-    assert_eq!(disk_token.trim(), token.trim(), "O token em disco deve coincidir com o cofre!");
-    println!("  ✅ Arquivo data/api-token gravado com sucesso no disco para scripts locais.");
+    assert!(!api_token_path.exists(), "O arquivo api-token NÃO deve existir em texto puro no disco!");
+    println!("  ✅ Zero Plaintext at Rest garantido: token não é salvo em arquivo aberto no disco.");
 
     // 3. VERIFICAÇÃO 2: Rota POST /api/profiles em modo offline (Sem nenhum token de nuvem)
     let new_profile_dto: CreateProfileDto = serde_json::from_value(serde_json::json!({

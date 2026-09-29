@@ -23,9 +23,8 @@ pub struct TokenState {
 
 impl TokenState {
     pub fn new(initial_token: String, vault: Arc<Vault>, data_dir: PathBuf) -> Self {
-        // Garante a existência do diretório e grava o api-token no disco para uso offline
-        let _ = std::fs::create_dir_all(&data_dir);
-        let _ = std::fs::write(data_dir.join("api-token"), &initial_token);
+        // Garante Zero Plaintext at Rest: remove qualquer resquício de token em texto puro no disco
+        let _ = std::fs::remove_file(data_dir.join("api-token"));
 
         Self {
             token: Arc::new(RwLock::new(initial_token)),
@@ -45,10 +44,10 @@ impl TokenState {
         constant_time_eq(current.as_bytes(), candidate.as_bytes())
     }
 
-    /// Rotaciona o token gravando no cofre e atualizando a memória RAM e arquivo api-token
+    /// Rotaciona o token gravando criptografado no cofre e atualizando a memória RAM
     pub async fn refresh_token(&self) -> Result<String, std::io::Error> {
         let new_token = rotate_token(self.vault.clone())?;
-        let _ = std::fs::write(self.data_dir.join("api-token"), &new_token);
+        let _ = std::fs::remove_file(self.data_dir.join("api-token"));
         let mut lock = self.token.write().await;
         *lock = new_token.clone();
         Ok(new_token)
@@ -191,7 +190,7 @@ pub async fn bearer_auth_middleware(
             StatusCode::UNAUTHORIZED,
             Json(json!({
                 "error": "unauthenticated",
-                "message": "Send the token from the api-token file as a bearer token."
+                "message": "Forneça o token Bearer válido ou conecte via URL MCP autenticada."
             })),
         )
             .into_response();
