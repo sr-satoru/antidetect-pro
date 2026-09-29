@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from '@/services/index.api';
 
 export interface ExtensionItemSummary {
@@ -22,6 +22,7 @@ export interface ExtensionCategory {
 }
 
 const STORAGE_KEY = 'star_extension_categories';
+const CATEGORIES_EVENT = 'star_extension_categories_changed';
 
 const DEFAULT_CATEGORIES: ExtensionCategory[] = [
   {
@@ -49,14 +50,32 @@ function loadCategories(): ExtensionCategory[] {
 }
 
 /**
- * Hook simples de estado frontend para categorias de extensões
+ * Hook de estado sincronizado para categorias de extensões
  */
 export function useExtensionCategories() {
   const [categories, setCategories] = useState<ExtensionCategory[]>(loadCategories);
 
+  useEffect(() => {
+    const handleUpdate = () => {
+      setCategories(loadCategories());
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener(CATEGORIES_EVENT, handleUpdate);
+      window.addEventListener('storage', handleUpdate);
+      return () => {
+        window.removeEventListener(CATEGORIES_EVENT, handleUpdate);
+        window.removeEventListener('storage', handleUpdate);
+      };
+    }
+  }, []);
+
   const save = (updated: ExtensionCategory[]) => {
     setCategories(updated);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(CATEGORIES_EVENT, { detail: updated }));
+    }
   };
 
   const addCategory = (data: {
@@ -64,6 +83,7 @@ export function useExtensionCategories() {
     description?: string;
     extensions: ExtensionItemSummary[];
   }) => {
+    const current = loadCategories();
     const newCat: ExtensionCategory = {
       id: `cat_${Date.now()}`,
       name: data.name.trim(),
@@ -71,7 +91,8 @@ export function useExtensionCategories() {
       extensionIds: data.extensions.map((e) => e.id),
       extensions: data.extensions,
     };
-    save([...categories, newCat]);
+    const updated = [...current, newCat];
+    save(updated);
     return newCat;
   };
 
@@ -83,7 +104,8 @@ export function useExtensionCategories() {
       extensions: ExtensionItemSummary[];
     },
   ) => {
-    const updated = categories.map((c) =>
+    const current = loadCategories();
+    const updated = current.map((c) =>
       c.id === id
         ? {
             ...c,
@@ -100,7 +122,8 @@ export function useExtensionCategories() {
 
   const removeCategory = (id: string) => {
     if (id === 'kit_basico') return;
-    save(categories.filter((c) => c.id !== id));
+    const current = loadCategories();
+    save(current.filter((c) => c.id !== id));
   };
 
   /**

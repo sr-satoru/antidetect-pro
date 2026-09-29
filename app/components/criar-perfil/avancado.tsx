@@ -113,11 +113,16 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
     enrichExtension,
   ]);
 
-  const handleSelectMode = (mode: string, categoryId?: string) => {
+  const handleSelectMode = (
+    mode: string,
+    categoryId?: string,
+    explicitCategory?: ExtensionCategory,
+  ) => {
     onChange('extensionMode', mode);
     if (categoryId) {
       onChange('extensionCategory', categoryId);
-      const found = categories.find((c) => c.id === categoryId);
+      const found =
+        explicitCategory || categories.find((c) => c.id === categoryId);
       if (found) {
         const exts =
           categoryId === 'kit_basico' &&
@@ -304,7 +309,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
         isOpen={showCreateCategoryModal}
         onClose={() => setShowCreateCategoryModal(false)}
         onSuccess={(newCat) => {
-          handleSelectMode('category', newCat.id);
+          handleSelectMode('category', newCat.id, newCat);
         }}
       />
     </div>
