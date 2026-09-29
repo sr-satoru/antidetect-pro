@@ -193,25 +193,24 @@ export const UpdateCenterDropdown: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer select-none overflow-hidden ${
-          isDownloading || isAppDownloading
+        className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer select-none overflow-hidden ${isDownloading || isAppDownloading
             ? 'bg-[#15161D] text-[#F4F4F6] border-emerald-500/40 shadow-xs shadow-emerald-500/10'
             : isAppReadyToRestart
-            ? 'bg-[#15161D] hover:bg-[#1E2028] text-emerald-400 border-emerald-500/50 shadow-xs shadow-emerald-500/20'
-            : hasAnyUpdatePending
-            ? 'bg-[#15161D] hover:bg-[#1E2028] text-[#F4F4F6] border-amber-500/40 hover:border-amber-500/60'
-            : 'bg-[#15161D] hover:bg-[#1E2028] text-[#E5E7EB] hover:text-white border-[#2B2D38] hover:border-[#3E404D]'
-        }`}
+              ? 'bg-[#15161D] hover:bg-[#1E2028] text-emerald-400 border-emerald-500/50 shadow-xs shadow-emerald-500/20'
+              : hasAnyUpdatePending
+                ? 'bg-[#15161D] hover:bg-[#1E2028] text-[#F4F4F6] border-amber-500/40 hover:border-amber-500/60'
+                : 'bg-[#15161D] hover:bg-[#1E2028] text-[#E5E7EB] hover:text-white border-[#2B2D38] hover:border-[#3E404D]'
+          }`}
         title={
           isAppDownloading
             ? `Baixando atualização do Star Multlogin: ${Math.round(appProgress)}%`
             : isDownloading
-            ? `Baixando motor: ${Math.round(progress)}%`
-            : isAppReadyToRestart
-            ? 'Atualização concluída! Clique para reiniciar.'
-            : hasAnyUpdatePending
-            ? 'Atualização pendente. Clique para gerenciar.'
-            : 'Atualização do sistema. Clique para gerenciar.'
+              ? `Baixando motor: ${Math.round(progress)}%`
+              : isAppReadyToRestart
+                ? 'Atualização concluída! Clique para reiniciar.'
+                : hasAnyUpdatePending
+                  ? 'Atualização pendente. Clique para gerenciar.'
+                  : 'Atualização do sistema. Clique para gerenciar.'
         }
       >
         {isDownloading || isAppDownloading ? (
@@ -403,8 +402,8 @@ export const UpdateCenterDropdown: React.FC = () => {
                         {appStage === 'connecting'
                           ? 'Conectando ao repositório...'
                           : appSpeedMbS > 0
-                          ? `${appSpeedMbS.toFixed(1)} MB/s • ${appEtaSeconds}s restantes`
-                          : 'Baixando atualização...'}
+                            ? `${appSpeedMbS.toFixed(1)} MB/s • ${appEtaSeconds}s restantes`
+                            : 'Baixando atualização...'}
                       </span>
                       <span className="font-mono font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
                         {Math.round(appProgress)}%

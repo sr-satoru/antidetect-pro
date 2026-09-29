@@ -4,7 +4,7 @@ node_modules
 venv
 .DS_Store
 *.db
-data
+
 dist
 __pycache__
 reserva-giit
