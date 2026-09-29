@@ -260,10 +260,6 @@ impl ProcessManager {
             data_dir.join("profiles").join(&profile.id).join("profile")
         };
 
-        // Executa migrações pendentes através do módulo especializado em migrations
-        let _ = crate::migrations::MigrationNotifier::new(Some(&self.ws))
-            .migrate_profile_with_notification(&profile_dir, None);
-
         let (net_setup, fp_setup) = Self::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client).await?;
 
         let debug_port = if cdp {

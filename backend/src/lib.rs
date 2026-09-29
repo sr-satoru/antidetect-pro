@@ -16,7 +16,6 @@ pub mod id_generator;
 pub mod import_extensions_web;
 pub mod launcher;
 pub mod mcp;
-pub mod migrations;
 pub mod models;
 pub mod network;
 pub mod proxy_validator;
