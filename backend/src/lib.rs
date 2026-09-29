@@ -151,8 +151,9 @@ pub fn build_app_router(
         .route("/manifest", get(routes::browser::get_browser_manifest))
         .with_state(browser_state);
 
-    let app_version_service = Arc::new(version_app::AppVersionService::new());
-    let app_version_routes = version_app::create_app_version_routes(app_version_service);
+    let version_ws_state = version_app::VersionWsState::new();
+    let app_version_service = Arc::new(version_app::AppVersionService::new(version_ws_state.clone()));
+    let app_version_routes = version_app::create_app_version_routes(app_version_service, version_ws_state);
 
     let ws_routes = Router::new()
         .route("/", get(ws::ws_handler))

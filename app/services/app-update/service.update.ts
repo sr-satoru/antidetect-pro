@@ -11,17 +11,30 @@ export interface AppReleaseInfo {
   htmlUrl: string;
   hasUpdate: boolean;
   downloadUrl?: string;
+  assetName?: string;
+  assetSize?: number;
   platform: string;
   arch: string;
 }
 
-// Versão atual dinâmica puxada diretamente do package.json da aplicação
-export const CURRENT_APP_VERSION: string = packageInfo.version || '0.1.1';
+export interface AppUpdateStatus {
+  isDownloading: boolean;
+  stage: string;
+  progress: number;
+  speedMbS: number;
+  etaSeconds: number;
+  downloadedBytes: number;
+  totalBytes: number;
+  error?: string;
+  readyToRestart: boolean;
+}
+
+export const CURRENT_APP_VERSION: string = packageInfo.version || '0.1.11';
 
 export const appUpdateService = {
   /**
    * Consulta o backend Rust (/api/app/check-update) que gerencia nativamente
-   * a busca de releases, tags no GitHub e matching de sistema operacional.
+   * a busca de releases no GitHub e detecção cirúrgica de SO/arquitetura.
    */
   async checkForAppUpdate(): Promise<AppReleaseInfo | null> {
     try {
@@ -30,24 +43,49 @@ export const appUpdateService = {
       );
       return data;
     } catch (err) {
-      console.warn('[UpdateService] Não foi possível verificar atualização com o backend Star Multlogin:', err);
+      console.warn('[UpdateService] Não foi possível verificar atualização com o backend:', err);
       return null;
     }
   },
 
   /**
-   * Solicita ao backend Rust abrir a URL de download ou release diretamente
-   * no navegador nativo do sistema operacional (xdg-open no Linux, start no Windows, open no Mac).
+   * Inicia o download em segundo plano no backend Rust.
+   * O progresso é transmitido em tempo real pelo WebSocket dedicado (/api/app/ws).
    */
-  async openDownload(url?: string): Promise<boolean> {
+  async startDownload(downloadUrl?: string): Promise<{ success: boolean; message: string }> {
     try {
-      await http.post<{ success: boolean; message: string }>('/api/app/open-download', { url });
-      return true;
+      const res = await http.post<{ success: boolean; message: string }>('/api/app/start-download', {
+        download_url: downloadUrl,
+      });
+      return res;
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err?.message || 'Falha ao solicitar início de download no backend.',
+      };
+    }
+  },
+
+  /**
+   * Obtém o status atual do download mantido no backend Rust.
+   */
+  async getStatus(): Promise<AppUpdateStatus | null> {
+    try {
+      return await http.get<AppUpdateStatus>('/api/app/status');
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Solicita ao backend Rust aplicar a atualização substituindo o executável e reiniciando a aplicação.
+   */
+  async applyRestart(): Promise<boolean> {
+    try {
+      const res = await http.post<{ success: boolean; message: string }>('/api/app/apply-restart');
+      return res.success;
     } catch (err) {
-      console.warn('[UpdateService] Falha ao abrir via backend, usando fallback webview:', err);
-      if (typeof window !== 'undefined' && url) {
-        window.open(url, '_blank', 'noopener,noreferrer');
-      }
+      console.error('[UpdateService] Erro ao reiniciar aplicação via backend:', err);
       return false;
     }
   },

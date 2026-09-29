@@ -7,6 +7,7 @@ import {
 import { useBrowser } from '../../contexts/browser-context';
 import { appUpdateService, AppReleaseInfo, CURRENT_APP_VERSION } from '../../services/app-update/service.update';
 import { toast } from '../ui/notification';
+import { APP_UPDATE_WS_URL } from '../../services/http';
 
 export const UpdateCenterDropdown: React.FC = () => {
   const {
@@ -26,9 +27,18 @@ export const UpdateCenterDropdown: React.FC = () => {
   const [hasCheckedApp, setHasCheckedApp] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Estados dedicados exclusivamente para a animação do progresso de atualização do app
+  const [appProgress, setAppProgress] = useState(0);
+  const [appSpeedMbS, setAppSpeedMbS] = useState(0);
+  const [appEtaSeconds, setAppEtaSeconds] = useState(0);
+  const [appStage, setAppStage] = useState('idle');
+  const [isAppDownloading, setIsAppDownloading] = useState(false);
+  const [isAppReadyToRestart, setIsAppReadyToRestart] = useState(false);
+  const [isRestarting, setIsRestarting] = useState(false);
+
   const isInstalled = status?.health.status === 'installed';
   const isMissing = status?.health.status === 'missing' || status?.health.status === 'broken';
-  const hasAnyUpdatePending = isMissing || !!appRelease?.hasUpdate;
+  const hasAnyUpdatePending = isMissing || !!appRelease?.hasUpdate || isAppReadyToRestart;
 
   // Fecha o dropdown ao clicar fora
   useEffect(() => {
@@ -45,6 +55,68 @@ export const UpdateCenterDropdown: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen]);
+
+  // Conexão reativa com o WebSocket dedicado de atualização do backend Rust (/api/app/ws)
+  useEffect(() => {
+    let ws: WebSocket | null = null;
+    let isDisposed = false;
+    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const connectWs = () => {
+      if (isDisposed) return;
+      try {
+        ws = new WebSocket(APP_UPDATE_WS_URL);
+
+        ws.onmessage = (event) => {
+          try {
+            const parsed = JSON.parse(event.data);
+            if (parsed.event === 'update_progress' && parsed.data) {
+              const d = parsed.data;
+              setAppStage(d.stage);
+              setAppProgress(d.progress ?? 0);
+              setAppSpeedMbS(d.speed_mb_s ?? 0);
+              setAppEtaSeconds(d.eta_seconds ?? 0);
+
+              if (d.stage === 'connecting' || d.stage === 'downloading') {
+                setIsAppDownloading(true);
+                setIsAppReadyToRestart(false);
+              } else if (d.stage === 'ready') {
+                setIsAppDownloading(false);
+                setAppProgress(100);
+                setIsAppReadyToRestart(true);
+                toast.success('Atualização baixada com sucesso! Clique em reiniciar para aplicar.');
+              } else if (d.stage === 'error') {
+                setIsAppDownloading(false);
+                toast.error(d.error || 'Falha ao baixar atualização.');
+              }
+            } else if (parsed.event === 'update_ready') {
+              setIsAppDownloading(false);
+              setAppProgress(100);
+              setIsAppReadyToRestart(true);
+            }
+          } catch (e) {
+            console.error('Erro ao ler WebSocket dedicado de atualização:', e);
+          }
+        };
+
+        ws.onclose = () => {
+          if (!isDisposed) {
+            reconnectTimeout = setTimeout(connectWs, 3000);
+          }
+        };
+      } catch (err) {
+        console.warn('Erro ao conectar ao WebSocket de atualização:', err);
+      }
+    };
+
+    connectWs();
+
+    return () => {
+      isDisposed = true;
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      if (ws) ws.close();
+    };
+  }, []);
 
   // Checa versão do aplicativo quando abrir
   const handleCheckAppUpdate = async () => {
@@ -63,6 +135,27 @@ export const UpdateCenterDropdown: React.FC = () => {
     } finally {
       setIsCheckingApp(false);
     }
+  };
+
+  const handleStartAppDownload = async () => {
+    if (!appRelease?.downloadUrl) return;
+    setIsAppDownloading(true);
+    setAppProgress(0);
+    setAppStage('connecting');
+
+    const res = await appUpdateService.startDownload(appRelease.downloadUrl);
+    if (!res.success) {
+      setIsAppDownloading(false);
+      toast.error(res.message);
+    } else {
+      toast.info('Iniciando download automático no backend...');
+    }
+  };
+
+  const handleApplyRestart = async () => {
+    setIsRestarting(true);
+    toast.info('Reiniciando aplicativo...');
+    await appUpdateService.applyRestart();
   };
 
   const handleDownloadAll = () => {
@@ -101,26 +194,38 @@ export const UpdateCenterDropdown: React.FC = () => {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer select-none overflow-hidden ${
-          isDownloading
+          isDownloading || isAppDownloading
             ? 'bg-[#15161D] text-[#F4F4F6] border-emerald-500/40 shadow-xs shadow-emerald-500/10'
+            : isAppReadyToRestart
+            ? 'bg-[#15161D] hover:bg-[#1E2028] text-emerald-400 border-emerald-500/50 shadow-xs shadow-emerald-500/20'
             : hasAnyUpdatePending
             ? 'bg-[#15161D] hover:bg-[#1E2028] text-[#F4F4F6] border-amber-500/40 hover:border-amber-500/60'
             : 'bg-[#15161D] hover:bg-[#1E2028] text-[#E5E7EB] hover:text-white border-[#2B2D38] hover:border-[#3E404D]'
         }`}
         title={
-          isDownloading
-            ? `Baixando atualização: ${Math.round(progress)}%`
+          isAppDownloading
+            ? `Baixando atualização do Star Multlogin: ${Math.round(appProgress)}%`
+            : isDownloading
+            ? `Baixando motor: ${Math.round(progress)}%`
+            : isAppReadyToRestart
+            ? 'Atualização concluída! Clique para reiniciar.'
             : hasAnyUpdatePending
             ? 'Atualização pendente. Clique para gerenciar.'
             : 'Atualização do sistema. Clique para gerenciar.'
         }
       >
-        {isDownloading ? (
+        {isDownloading || isAppDownloading ? (
           <>
             <RefreshCw size={13} className="text-emerald-400 animate-spin shrink-0" />
             <span className="font-semibold text-emerald-400">
-              Atualizando ({Math.round(progress)}%)
+              {isAppDownloading ? `Atualizando App (${Math.round(appProgress)}%)` : `Atualizando Motor (${Math.round(progress)}%)`}
             </span>
+          </>
+        ) : isAppReadyToRestart ? (
+          <>
+            <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
+            <span className="font-semibold text-emerald-400">Reiniciar App</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
           </>
         ) : hasAnyUpdatePending ? (
           <>
@@ -136,10 +241,10 @@ export const UpdateCenterDropdown: React.FC = () => {
         )}
 
         {/* Linha discreta de progresso no botão ao baixar */}
-        {isDownloading && (
+        {(isDownloading || isAppDownloading) && (
           <div
             className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-blue-500 to-emerald-400 transition-all duration-300"
-            style={{ width: `${progress}%` }}
+            style={{ width: `${isAppDownloading ? appProgress : progress}%` }}
           />
         )}
       </button>
@@ -158,7 +263,7 @@ export const UpdateCenterDropdown: React.FC = () => {
             <button
               type="button"
               onClick={handleDownloadAll}
-              disabled={isCheckingApp}
+              disabled={isCheckingApp || isAppDownloading}
               className="flex items-center gap-1.5 text-xs text-[#3b82f6] hover:text-[#60a5fa] font-medium transition-colors cursor-pointer disabled:opacity-50"
             >
               <RefreshCw size={11} className={isCheckingApp ? 'animate-spin' : ''} />
@@ -168,7 +273,7 @@ export const UpdateCenterDropdown: React.FC = () => {
 
           {/* Corpo do Popover */}
           <div className="p-4 space-y-3">
-            {/* Caso 1: Motor Baixando no momento (visão discreta, sem detalhes excessivos) */}
+            {/* Caso 1: Motor Baixando no momento */}
             {isDownloading && (
               <div className="rounded-xl bg-[#14151C] border border-[#2B2D38] p-4 space-y-3">
                 <div className="flex items-center justify-between">
@@ -188,7 +293,6 @@ export const UpdateCenterDropdown: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Barra de progresso fina e elegante */}
                 <div className="w-full bg-[#2B2D38] h-2 rounded-full overflow-hidden">
                   <div
                     className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 h-full transition-all duration-300"
@@ -205,7 +309,7 @@ export const UpdateCenterDropdown: React.FC = () => {
               </div>
             )}
 
-            {/* Caso 2: Motor Ausente ou Quebrado (Necessita Download) */}
+            {/* Caso 2: Motor Ausente ou Quebrado */}
             {!isDownloading && isMissing && (
               <div className="rounded-xl bg-[#14151C] border border-amber-500/20 p-4 space-y-3">
                 <div className="flex items-center justify-between gap-3">
@@ -235,7 +339,7 @@ export const UpdateCenterDropdown: React.FC = () => {
             )}
 
             {/* Caso 3: Motor Instalado e Sem Downloads Ativos */}
-            {!isDownloading && !isMissing && !appRelease?.hasUpdate && (
+            {!isDownloading && !isMissing && !appRelease?.hasUpdate && !isAppReadyToRestart && (
               <div className="py-10 px-4 flex flex-col items-center justify-center text-center select-none space-y-2">
                 <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-1">
                   <CheckCircle2 size={20} />
@@ -249,36 +353,79 @@ export const UpdateCenterDropdown: React.FC = () => {
               </div>
             )}
 
-            {/* Caso 4: Nova Versão do Aplicativo One Star Multilogin Disponível */}
+            {/* Caso 4: Nova Versão do Aplicativo Star Multlogin com Animação em Tempo Real */}
             {appRelease?.hasUpdate && (
               <div className="rounded-xl bg-[#14151C] border border-blue-500/30 p-4 space-y-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-start gap-3">
                     <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 shrink-0 mt-0.5">
-                      <RefreshCw size={16} />
+                      <RefreshCw size={16} className={isAppDownloading ? 'animate-spin' : ''} />
                     </div>
                     <div>
                       <div className="text-xs font-semibold text-white">
                         Nova versão {appRelease.tagName} disponível!
                       </div>
                       <div className="text-[11px] text-[#8E92A2] mt-0.5">
-                        Versão atual: v{CURRENT_APP_VERSION}
+                        Versão atual: v{CURRENT_APP_VERSION} • {appRelease.platform}
                       </div>
                     </div>
                   </div>
-                  {appRelease.downloadUrl && (
+
+                  {!isAppDownloading && !isAppReadyToRestart && (
                     <button
                       type="button"
-                      onClick={() => {
-                        appUpdateService.openDownload(appRelease.downloadUrl);
-                      }}
+                      onClick={handleStartAppDownload}
                       className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer"
                     >
                       <Download size={13} />
                       <span>Atualizar</span>
                     </button>
                   )}
+
+                  {isAppReadyToRestart && (
+                    <button
+                      type="button"
+                      onClick={handleApplyRestart}
+                      disabled={isRestarting}
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      <RefreshCw size={13} className={isRestarting ? 'animate-spin' : ''} />
+                      <span>{isRestarting ? 'Reiniciando...' : 'Reiniciar Agora'}</span>
+                    </button>
+                  )}
                 </div>
+
+                {/* Animação e Barra de Progresso em Tempo Real (alimentada pelo WebSocket dedicado do Rust) */}
+                {isAppDownloading && (
+                  <div className="space-y-2 pt-2 border-t border-[#2B2D38]/60">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-[#8E92A2]">
+                        {appStage === 'connecting'
+                          ? 'Conectando ao repositório...'
+                          : appSpeedMbS > 0
+                          ? `${appSpeedMbS.toFixed(1)} MB/s • ${appEtaSeconds}s restantes`
+                          : 'Baixando atualização...'}
+                      </span>
+                      <span className="font-mono font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                        {Math.round(appProgress)}%
+                      </span>
+                    </div>
+
+                    <div className="w-full bg-[#2B2D38] h-2 rounded-full overflow-hidden">
+                      <div
+                        className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 h-full transition-all duration-300"
+                        style={{ width: `${appProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {isAppReadyToRestart && (
+                  <div className="text-[11px] text-emerald-400 flex items-center gap-1.5 pt-1">
+                    <CheckCircle2 size={13} />
+                    <span>Download concluído! Clique em reiniciar para aplicar a nova versão.</span>
+                  </div>
+                )}
               </div>
             )}
           </div>

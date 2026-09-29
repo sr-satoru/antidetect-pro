@@ -1,28 +1,36 @@
 use std::sync::Arc;
 use axum::{
-    extract::{Query, State},
+    extract::{Query, State, WebSocketUpgrade},
     http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
 };
 
-use super::models::{CheckUpdateQuery, GenericResponse, OpenUrlRequest};
+use super::models::{CheckUpdateQuery, GenericResponse, StartDownloadRequest};
 use super::service::AppVersionService;
+use super::ws::{version_ws_handler, VersionWsState};
 
 #[derive(Clone)]
 pub struct AppVersionRouteState {
     pub service: Arc<AppVersionService>,
+    pub ws_state: VersionWsState,
 }
 
 /// Cria o sub-roteador do módulo version_app para /api/app
-pub fn create_app_version_routes(service: Arc<AppVersionService>) -> Router {
-    let state = AppVersionRouteState { service };
+pub fn create_app_version_routes(
+    service: Arc<AppVersionService>,
+    ws_state: VersionWsState,
+) -> Router {
+    let state = AppVersionRouteState { service, ws_state };
 
     Router::new()
         .route("/version", get(get_current_version))
         .route("/check-update", get(check_app_update))
-        .route("/open-download", post(open_download_url))
+        .route("/status", get(get_update_status))
+        .route("/start-download", post(start_app_download))
+        .route("/apply-restart", post(apply_app_restart))
+        .route("/ws", get(upgrade_version_ws))
         .with_state(state)
 }
 
@@ -50,35 +58,47 @@ pub async fn check_app_update(
     }
 }
 
-/// POST /api/app/open-download
-pub async fn open_download_url(
+/// GET /api/app/status
+pub async fn get_update_status(
     State(state): State<AppVersionRouteState>,
-    Json(payload): Json<OpenUrlRequest>,
 ) -> impl IntoResponse {
-    let target_url = if let Some(u) = payload.url.filter(|s| !s.trim().is_empty()) {
-        u
-    } else {
-        // Se nenhuma URL foi passada, busca o download_url da última versão
-        match state.service.check_update(None).await {
-            Ok(info) => info.download_url.unwrap_or(info.html_url),
-            Err(e) => {
-                return (
-                    StatusCode::BAD_REQUEST,
-                    Json(GenericResponse {
-                        success: false,
-                        message: format!("Não foi possível determinar URL de download: {}", e),
-                    }),
-                );
-            }
-        }
-    };
+    let status = state.service.get_status().await;
+    (StatusCode::OK, Json(status))
+}
 
-    match state.service.open_external_url(&target_url) {
+/// POST /api/app/start-download
+pub async fn start_app_download(
+    State(state): State<AppVersionRouteState>,
+    Json(payload): Json<StartDownloadRequest>,
+) -> impl IntoResponse {
+    match state.service.start_download(payload.download_url).await {
+        Ok(msg) => (
+            StatusCode::OK,
+            Json(GenericResponse {
+                success: true,
+                message: msg,
+            }),
+        ),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(GenericResponse {
+                success: false,
+                message: e,
+            }),
+        ),
+    }
+}
+
+/// POST /api/app/apply-restart
+pub async fn apply_app_restart(
+    State(state): State<AppVersionRouteState>,
+) -> impl IntoResponse {
+    match state.service.apply_restart().await {
         Ok(_) => (
             StatusCode::OK,
             Json(GenericResponse {
                 success: true,
-                message: format!("URL externa aberta com sucesso: {}", target_url),
+                message: "Reiniciando aplicação...".to_string(),
             }),
         ),
         Err(e) => (
@@ -89,4 +109,12 @@ pub async fn open_download_url(
             }),
         ),
     }
+}
+
+/// GET /api/app/ws (WebSocket dedicado de atualização)
+pub async fn upgrade_version_ws(
+    ws: WebSocketUpgrade,
+    State(state): State<AppVersionRouteState>,
+) -> impl IntoResponse {
+    version_ws_handler(ws, axum::extract::State(state.ws_state)).await
 }

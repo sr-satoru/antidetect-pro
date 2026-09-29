@@ -6,6 +6,7 @@
 export const BACKEND_PORT = 12540;
 export const API_BASE_URL = `http://127.0.0.1:${BACKEND_PORT}`;
 export const WS_BASE_URL = `ws://127.0.0.1:${BACKEND_PORT}/api/ws`;
+export const APP_UPDATE_WS_URL = `ws://127.0.0.1:${BACKEND_PORT}/api/app/ws`;
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
