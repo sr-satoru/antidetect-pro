@@ -7,7 +7,6 @@ interface ImpressaoDigitalTabProps {
   onChange: (key: string, value: any) => void;
 }
 
-import { generateRandomDeviceName, generateRandomMacAddress } from '@/utils';
 
 const FormRow: React.FC<{
   label: string;
@@ -162,11 +161,11 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
   };
 
   const handleShuffleDeviceName = () => {
-    onChange('deviceName', generateRandomDeviceName(formData.os));
+    onChange('deviceName', '');
   };
 
   const handleShuffleMacAddress = () => {
-    onChange('macAddress', generateRandomMacAddress());
+    onChange('macAddress', '');
   };
 
   return (

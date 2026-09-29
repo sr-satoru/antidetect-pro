@@ -4,21 +4,26 @@
 
 import { serviceGeral } from './criar-perfil/service.geral';
 import { impressaoDigitalService } from './criar-perfil/service.impressoes';
-import { serviceProxy } from './criar-perfil/service.proxy';
+import { serviceProxies } from './proxies/service.proxies';
 import { servicePerfis } from './perfis/service.perfis';
 import { serviceTabs } from './perfis/service.tabs';
 import { serviceCookies } from './perfis/service.cookies';
 import { serviceTags } from './tags/service.tags';
 import { http } from './http';
 
+import { serviceExtensoes } from './extensoes/service.extensoes';
+import { serviceCategorias } from './extensoes/service.categorias';
+
 // Re-exporta serviços ativos
 export { serviceGeral } from './criar-perfil/service.geral';
 export { impressaoDigitalService } from './criar-perfil/service.impressoes';
-export { serviceProxy } from './criar-perfil/service.proxy';
+export { serviceProxies, serviceProxies as serviceProxy } from './proxies/service.proxies';
 export { servicePerfis } from './perfis/service.perfis';
 export { serviceTabs } from './perfis/service.tabs';
 export { serviceCookies } from './perfis/service.cookies';
 export { serviceTags } from './tags/service.tags';
+export { serviceExtensoes } from './extensoes/service.extensoes';
+export { serviceCategorias } from './extensoes/service.categorias';
 export { http, ApiError } from './http';
 
 /**
@@ -27,34 +32,10 @@ export { http, ApiError } from './http';
 export const api = {
   profiles: servicePerfis,
   tags: serviceTags,
+  proxies: serviceProxies,
 
-  proxies: {
-    list: serviceProxy.listarSalvos,
-    test: serviceProxy.testar,
-    create: (data: any) => http.post<any>('/api/proxies', data),
-    delete: (id: string | number) => http.delete<any>(`/api/proxies/${id}`),
-  },
-
-  extensions: {
-    list: () => http.get<any[]>('/api/extensions'),
-    create: (data: any) => http.post<any>('/api/extensions', data),
-    update: (id: string | number, data: any) =>
-      http.put<any>(`/api/extensions/${id}`, data),
-    delete: (id: string | number) =>
-      http.delete<any>(`/api/extensions/${id}`),
-    getCatalog: (params?: any) =>
-      http.get<any[]>('/api/extensions/catalog', { params }),
-  },
-
-  extensionCategories: {
-    list: () => http.get<any[]>('/api/extension-categories'),
-    get: (id: string) => http.get<any>(`/api/extension-categories/${id}`),
-    create: (data: any) => http.post<any>('/api/extension-categories', data),
-    update: (id: string, data: any) =>
-      http.put<any>(`/api/extension-categories/${id}`, data),
-    delete: (id: string) =>
-      http.delete<any>(`/api/extension-categories/${id}`),
-  },
+  extensions: serviceExtensoes,
+  extensionCategories: serviceCategorias,
 
   auth: {
     startLogin: () =>

@@ -6,8 +6,8 @@ import {
   ExtensionItemSummary,
   searchExtensionsForCategory,
   useExtensionCategories,
-} from '@/utils/extension-categories';
-import { useRegisteredExtensions } from '@/utils/extensions';
+} from '@/services/extensoes/service.categorias';
+import { useRegisteredExtensions } from '@/services/extensoes/service.extensoes';
 
 interface ModalCriarCategoriaProps {
   isOpen: boolean;
@@ -133,14 +133,14 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
     return selectedExtensions.some((item) => String(item.id) === String(id));
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!nome.trim()) {
       toast.warning('Por favor, informe o nome da categoria.');
       return;
     }
 
     if (categoryToEdit) {
-      const updated = updateCategory(categoryToEdit.id, {
+      const updated = await updateCategory(categoryToEdit.id, {
         name: nome.trim(),
         description: observacao.trim(),
         extensions: selectedExtensions,
@@ -151,14 +151,14 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
         onSuccess(updated);
       }
     } else {
-      const created = addCategory({
+      const created = await addCategory({
         name: nome.trim(),
         description: observacao.trim(),
         extensions: selectedExtensions,
       });
 
       toast.success('Categoria criada com sucesso');
-      if (onSuccess) {
+      if (onSuccess && created) {
         onSuccess(created);
       }
     }

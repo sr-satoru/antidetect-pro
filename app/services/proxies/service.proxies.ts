@@ -1,6 +1,5 @@
-/**
- * Utilitários compartilhados para manipulação, validação e teste de proxies.
- */
+import { http } from '../http';
+import type { ProxyItem, ProxyTestResult, TestProxyDto } from '@/types';
 
 export interface ParsedProxyItem {
   id: string;
@@ -32,50 +31,7 @@ export interface FormattedTestResult {
 }
 
 /**
- * Valida se um host é um IPv4 válido, IPv6 ou hostname/domínio válido.
- */
-export function isValidHostAddress(host: string): boolean {
-  const clean = host.trim().replace(/^\[|\]$/g, '');
-  if (!clean) return false;
-
-  // 1. IPv4 (4 números de 0 a 255)
-  const ipv4Parts = clean.split('.');
-  if (ipv4Parts.length === 4) {
-    const isIpv4 = ipv4Parts.every((part) => {
-      if (!/^\d+$/.test(part)) return false;
-      const num = parseInt(part, 10);
-      return num >= 0 && num <= 255;
-    });
-    if (isIpv4) return true;
-  }
-
-  // 2. IPv6 (contém múltiplos colons e caracteres hexadecimais)
-  if (clean.includes(':') && /^[0-9a-fA-F:]+$/.test(clean)) {
-    return true;
-  }
-
-  // 3. Nome de domínio / hostname válido ou localhost
-  if (
-    /^([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(clean) ||
-    clean.toLowerCase() === 'localhost'
-  ) {
-    return true;
-  }
-
-  return false;
-}
-
-/**
- * Valida se uma porta está no intervalo permitido (1..65535).
- */
-export function isValidPortNumber(port: string): boolean {
-  if (!/^\d+$/.test(port.trim())) return false;
-  const num = parseInt(port.trim(), 10);
-  return num >= 1 && num <= 65535;
-}
-
-/**
- * Analisa uma linha de texto e extrai as propriedades do proxy.
+ * Analisa uma linha de texto colada pelo usuário no formulário de proxies (ex: host:port:user:pass)
  */
 export function parseProxyLine(
   rawLine: string,
@@ -92,7 +48,7 @@ export function parseProxyLine(
     str = str.replace(notesMatch[0], '').trim();
   }
 
-  // 2. Extrair URL de Rotação [Mudar o URL IP] se não for o host IPv6
+  // 2. Extrair URL de Rotação [URL]
   let rotationLink = '';
   const bracketMatches = Array.from(str.matchAll(/\[([^\]]+)\]/g));
   for (const m of bracketMatches) {
@@ -158,12 +114,11 @@ export function parseProxyLine(
     ? pType.toLowerCase()
     : defaultType.toLowerCase();
 
-  const isHostValid = isValidHostAddress(host);
-  const isPortValid = isValidPortNumber(port);
-  const isValid = isHostValid && isPortValid;
+  const isPortValid = /^\d+$/.test(port.trim()) && Number(port) >= 1 && Number(port) <= 65535;
+  const isValid = host.trim().length > 0 && isPortValid;
 
   return {
-    id: Math.random().toString(36).substring(2, 9),
+    id: `px_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
     type: finalType,
     host: host.trim(),
     port: port.trim(),
@@ -178,7 +133,7 @@ export function parseProxyLine(
 }
 
 /**
- * Traduz a resposta da API de validação do Rust para um formato de UI amigável.
+ * Traduz a resposta da API de validação do Rust (/api/proxies/test) para a UI
  */
 export function formatProxyTestResult(
   res: {
@@ -236,3 +191,79 @@ export function formatProxyTestResult(
       : res.message || 'Erro',
   };
 }
+
+/**
+ * Service Proxies — Gerenciamento e testes de conexões proxy junto ao backend Rust.
+ */
+export const serviceProxies = {
+  /**
+   * Consulta a lista bruta de proxies cadastrados no backend
+   */
+  list: () => http.get<ProxyItem[]>('/api/proxies'),
+
+  /**
+   * Carrega e formata a lista de proxies salvos para os selects da interface
+   */
+  listarSalvos: async (): Promise<ProxyItem[]> => {
+    const list = await http.get<ProxyItem[]>('/api/proxies');
+    return list.map((p) => ({
+      id: p.id,
+      name: p.name || `Proxy ${p.host}`,
+      type: p.type || p.proxy_type || 'socks5',
+      host: p.host,
+      port: String(p.port),
+      user: p.user || p.username || '',
+      pass: p.pass || p.password || '',
+      ip: p.ip || p.host,
+      country: p.country || 'BR - Brasil',
+      status: p.status || 'active',
+      created_at: p.created_at,
+    }));
+  },
+
+  /**
+   * Salva um novo proxy no banco de dados SQLite/Vault do Rust
+   */
+  create: (data: any) => http.post<any>('/api/proxies', data),
+
+  /**
+   * Exclui um proxy pelo ID
+   */
+  delete: (id: string | number) => http.delete<any>(`/api/proxies/${id}`),
+
+  /**
+   * Testa a conexão de um proxy via backend Rust (/api/proxies/test).
+   */
+  test: (
+    data:
+      | TestProxyDto
+      | {
+          type?: string;
+          proxy_type?: string;
+          host: string;
+          port: number | string;
+          username?: string;
+          password?: string;
+          user?: string;
+          pass?: string;
+        },
+  ) => http.post<ProxyTestResult>('/api/proxies/test', data),
+
+  /** Alias para manter compatibilidade com telas existentes */
+  testar: (
+    data:
+      | TestProxyDto
+      | {
+          type?: string;
+          proxy_type?: string;
+          host: string;
+          port: number | string;
+          username?: string;
+          password?: string;
+          user?: string;
+          pass?: string;
+        },
+  ) => http.post<ProxyTestResult>('/api/proxies/test', data),
+};
+
+export default serviceProxies;

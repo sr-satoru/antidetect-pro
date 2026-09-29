@@ -7,9 +7,9 @@ import {
   ParsedProxyItem,
   parseProxyLine,
   formatProxyTestResult,
-} from '@/utils/proxy-utils';
+} from '@/services/proxies/service.proxies';
 
-export type { ParsedProxyItem } from '@/utils/proxy-utils';
+export type { ParsedProxyItem } from '@/services/proxies/service.proxies';
 
 export interface CadastroProxiesProps {
   onClose: () => void;

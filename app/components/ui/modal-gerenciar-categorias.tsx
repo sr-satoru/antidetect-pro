@@ -4,7 +4,7 @@ import { toast } from '@/components/ui/notification';
 import {
   ExtensionCategory,
   useExtensionCategories,
-} from '@/utils/extension-categories';
+} from '@/services/extensoes/service.categorias';
 import { ModalCriarCategoria } from '@/components/ui/modal-criar-categoria';
 
 interface ModalGerenciarCategoriasProps {

@@ -17,7 +17,7 @@ export const ExtensoesPage: React.FC = () => {
   const fetchExtensions = useCallback(async () => {
     try {
       const data = await api.extensions.list();
-      setExtensions(data);
+      setExtensions(data as any);
     } catch (err) {
       console.error('Erro ao carregar extensões:', err);
     } finally {

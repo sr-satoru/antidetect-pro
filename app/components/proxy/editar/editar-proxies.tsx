@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronDown, Info, RotateCw, Loader2 } from 'lucide-react';
 import { api } from '@/services/index.api';
-import { formatProxyTestResult, FormattedTestResult } from '@/utils/proxy-utils';
+import { formatProxyTestResult, FormattedTestResult } from '@/services/proxies/service.proxies';
 
 interface EditarProxiesProps {
   proxy: any;

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit:arch": "python3 ../scripts/audit_architecture.py"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.9",

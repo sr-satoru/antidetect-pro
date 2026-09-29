@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search, Loader2, Trash2 } from 'lucide-react';
-import { ParsedProxyItem } from '@/utils/proxy-utils';
+import { ParsedProxyItem } from '@/services/proxies/service.proxies';
 
 export interface TabelaPreviaProxiesProps {
   items: ParsedProxyItem[];

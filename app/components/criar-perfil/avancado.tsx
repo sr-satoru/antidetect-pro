@@ -6,11 +6,11 @@ import {
   AlertCircle,
   Check,
 } from 'lucide-react';
-import { useRegisteredExtensions } from '@/utils/extensions';
+import { useRegisteredExtensions } from '@/services/extensoes/service.extensoes';
 import {
   useExtensionCategories,
   ExtensionCategory,
-} from '@/utils/extension-categories';
+} from '@/services/extensoes/service.categorias';
 import { ModalCriarCategoria } from '@/components/ui/modal-criar-categoria';
 
 interface AvancadoTabProps {

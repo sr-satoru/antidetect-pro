@@ -11,12 +11,6 @@ import { api } from '@/services/index.api';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 
-import {
-  generateRandomSeed,
-  generateRandomDeviceName,
-  generateRandomMacAddress,
-} from '@/utils';
-
 const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
   const osKey = (
     suggestedOS in config.userAgents ? suggestedOS : 'linux'
@@ -92,10 +86,10 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
       fontPack: false,
       fontMetrics: false,
     },
-    clientRectsSeed: generateRandomSeed(),
-    canvasSeed: generateRandomSeed(),
-    webglSeed: generateRandomSeed(),
-    audioSeed: generateRandomSeed(),
+    clientRectsSeed: '',
+    canvasSeed: '',
+    webglSeed: '',
+    audioSeed: '',
     webglMetadataMode: 'custom',
     webglVendor: webgl.vendor,
     webglRenderer: webgl.renderer,
@@ -103,9 +97,9 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
     ramMode: 'custom',
     ramGb: 8,
     deviceNameMode: 'custom',
-    deviceName: 'SZDK27E-laptop',
+    deviceName: '',
     macAddressMode: 'custom',
-    macAddress: generateRandomMacAddress(),
+    macAddress: '',
     doNotTrackMode: 'default',
     portScanProtection: 'open',
     portScanAllowedPorts: '',

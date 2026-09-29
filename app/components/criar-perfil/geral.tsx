@@ -7,7 +7,6 @@ interface GeralTabProps {
   onChange: (key: string, value: any) => void;
 }
 
-import { generateRandomDeviceName, generateRandomSeed } from '@/utils';
 import { OsIcon } from '../ui/os-icon';
 import { TagBadge } from '../tags/tag-badge';
 import { DropdownSeletorEtiquetas } from '../tags/dropdown-seletor-etiquetas';
@@ -69,7 +68,6 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
     onChange('os', selectedOS);
     const uas = getFilteredUas(selectedOS, formData.userAgentCategory || 'Todo');
     onChange('userAgent', uas[0]);
-    onChange('deviceName', generateRandomDeviceName(selectedOS));
 
     // Sincroniza a GPU padrão autêntica para o novo sistema operacional
     const webgl =
@@ -101,7 +99,6 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
     const currentIdx = uas.indexOf(formData.userAgent);
     const nextIdx = (currentIdx + 1) % uas.length;
     onChange('userAgent', uas[nextIdx]);
-    onChange('clientRectsSeed', generateRandomSeed());
   };
 
   const activeCategoryUas = getFilteredUas(formData.os, formData.userAgentCategory || 'Todo');

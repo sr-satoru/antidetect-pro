@@ -273,24 +273,6 @@ export const impressaoDigitalService = {
   getById: (id: string | number) => {
     return http.get<ImpressaoDigitalData>(`/api/profiles/${id}`);
   },
-
-  /**
-   * Testa a conexão de um proxy informado
-   */
-  testarProxy: (proxyConfig: {
-    type: string;
-    host: string;
-    port: number | string;
-    username?: string;
-    password?: string;
-  }) => {
-    return http.post<{
-      status: string;
-      latency_ms: number | null;
-      exit_ip: string | null;
-      message: string;
-    }>('/api/proxies/test', proxyConfig);
-  },
 };
 
 export default impressaoDigitalService;

@@ -6,12 +6,6 @@ interface PreviasProps {
   onChange: (key: string, value: any) => void;
 }
 
-import {
-  generateRandomDeviceName,
-  generateRandomMacAddress,
-  generateRandomSeed,
-} from '@/utils';
-
 export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   const handleRegenerateFingerprint = () => {
     const os = (
@@ -28,12 +22,10 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       )[os] || config.defaultWebglRenderers.linux;
 
     onChange('userAgent', randomUa);
-    onChange('deviceName', generateRandomDeviceName(os));
-    onChange('macAddress', generateRandomMacAddress());
-    onChange('canvasSeed', generateRandomSeed());
-    onChange('webglSeed', generateRandomSeed());
-    onChange('audioSeed', generateRandomSeed());
-    onChange('clientRectsSeed', generateRandomSeed());
+    onChange('canvasSeed', '');
+    onChange('webglSeed', '');
+    onChange('audioSeed', '');
+    onChange('clientRectsSeed', '');
     onChange('webglVendor', webgl.vendor);
     onChange('webglRenderer', webgl.renderer);
   };
