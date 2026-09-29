@@ -21,6 +21,7 @@ pub fn spawn_lifecycle_watcher(
     relays: Arc<Mutex<HashMap<String, crate::network::relay::ProxyRelay>>>,
     ws: WsState,
     auto_sync: Arc<Mutex<Option<Arc<crate::server_sync::AutoSyncEngine>>>>,
+    vault: Arc<Mutex<Option<Arc<crate::service_database::Vault>>>>,
 ) {
     tokio::spawn(async move {
         let exit_status = child.wait().await;
@@ -38,6 +39,32 @@ pub fn spawn_lifecycle_watcher(
             "🏁 Janela do perfil {} totalmente fechada pelo usuário.",
             profile_id
         );
+
+        // 1. Zero-Trace Vault Sync: Extração da sessão atualizada, criptografia no Vault e limpeza do disco
+        let vault_opt = vault.lock().unwrap().clone();
+        if let Some(v) = vault_opt {
+            let session_svc = crate::service_database::SessionService::new(v);
+            match crate::extraction_session::fire_fox::extract_unified_session(&profile_dir) {
+                Ok(fresh_session) => {
+                    info!(
+                        "🔒 Criptografando e persistindo sessão atualizada no Star Vault para o perfil {} ({} cookies, {} storage)",
+                        profile_id, fresh_session.total_cookies, fresh_session.total_storage_items
+                    );
+                    if let Err(e) = session_svc.save_session(&profile_id, &fresh_session) {
+                        tracing::error!("Erro ao salvar sessão criptografada no Vault: {e}");
+                    }
+                }
+                Err(e) => {
+                    tracing::warn!("Aviso ao extrair sessão no fechamento da janela: {e}");
+                }
+            }
+
+            info!(
+                "🛡️ Zero-Trace: expurgando arquivos temporários de sessão em texto puro do disco ({})",
+                profile_id
+            );
+            crate::launcher::engine::injection::purge_ephemeral_session_files(&profile_dir);
+        }
 
         // Limpa registros em memória
         {

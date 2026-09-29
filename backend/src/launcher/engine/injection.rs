@@ -225,3 +225,19 @@ pub fn clear_profile_storage(profile_dir: &Path) -> Result<(), String> {
 
     Ok(())
 }
+
+/// Remove completamente os arquivos físicos temporários de cookies e LocalStorage do disco (Zero-Trace)
+pub fn purge_ephemeral_session_files(profile_dir: &Path) {
+    let _ = std::fs::remove_file(profile_dir.join("cookies.sqlite"));
+    let _ = std::fs::remove_file(profile_dir.join("cookies.sqlite-wal"));
+    let _ = std::fs::remove_file(profile_dir.join("cookies.sqlite-shm"));
+    let storage_dir = profile_dir.join("storage").join("default");
+    if storage_dir.exists() {
+        let _ = std::fs::remove_dir_all(&storage_dir);
+    }
+    let legacy_db = profile_dir.join("webappsstore.sqlite");
+    if legacy_db.exists() {
+        let _ = std::fs::remove_file(&legacy_db);
+    }
+}
+

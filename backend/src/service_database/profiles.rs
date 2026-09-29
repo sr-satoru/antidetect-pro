@@ -29,10 +29,12 @@ impl ProfileService {
     pub fn new<P: AsRef<Path>>(data_dir: P, ws: WsState, vault: Arc<Vault>) -> Self {
         let dir = data_dir.as_ref().join("profiles");
         let _ = fs::create_dir_all(&dir);
+        let pm = Arc::new(ProcessManager::new(ws));
+        pm.set_vault(vault.clone());
         Self {
             vault,
             data_dir: dir,
-            process_manager: Arc::new(ProcessManager::new(ws)),
+            process_manager: pm,
             auto_sync: Arc::new(Mutex::new(None)),
         }
     }
@@ -630,15 +632,8 @@ impl ProfileService {
     }
 
     pub async fn launch(&self, id: &str) -> Result<(Profile, u32), String> {
-        let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
-        let pid = self.process_manager.launch(&profile, &self.data_dir).await?;
-        let now = now_secs();
-        profile.status = "running".to_string();
-        profile.last_launch = Some(now);
-        profile.updated_at = now;
-
-        self.save_to_db(&profile)?;
-        Ok((profile, pid))
+        let (prof, pid, _, _) = self.launch_with_cdp(id, false).await?;
+        Ok((prof, pid))
     }
 
     pub async fn launch_with_cdp(
@@ -647,6 +642,21 @@ impl ProfileService {
         cdp: bool,
     ) -> Result<(Profile, u32, Option<u16>, Option<String>), String> {
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
+        let profile_dir = self.get_profile_dir(id);
+
+        // Descriptografa e monta a sessão efêmera do Vault nos arquivos SQLite temporários
+        let session_svc = super::sessions::SessionService::new(self.vault.clone());
+        if let Ok(Some(session)) = session_svc.load_session(id) {
+            tracing::info!(
+                "🔓 Descriptografando e montando sessão efêmera do Vault para perfil {} ({} cookies, {} storage)",
+                id, session.total_cookies, session.total_storage_items
+            );
+            let _ = crate::launcher::engine::injection::inject_cookies(&profile_dir, &session.cookies);
+            for (origin, items) in &session.local_storage {
+                let _ = crate::launcher::engine::injection::inject_local_storage(&profile_dir, origin, items);
+            }
+        }
+
         let (pid, debug_port, ws_endpoint) = self.process_manager.launch_with_cdp(&profile, &self.data_dir, cdp).await?;
         let now = now_secs();
         profile.status = "running".to_string();
@@ -659,13 +669,35 @@ impl ProfileService {
 
     pub fn stop(&self, id: &str) -> Result<Profile, String> {
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
+        let profile_dir = self.get_profile_dir(id);
+
+        // 1. Encerra o processo do navegador
         self.process_manager.stop(id)?;
+
+        // 2. Extrai a sessão atualizada, criptografa no Vault e limpa o disco temporário
+        let session_svc = super::sessions::SessionService::new(self.vault.clone());
+        if let Ok(fresh_session) = crate::extraction_session::fire_fox::extract_unified_session(&profile_dir) {
+            if fresh_session.total_cookies > 0 || fresh_session.total_storage_items > 0 {
+                tracing::info!(
+                    "🔒 Criptografando e salvando sessão no Vault para perfil {} via stop API ({} cookies, {} storage)",
+                    id, fresh_session.total_cookies, fresh_session.total_storage_items
+                );
+                let _ = session_svc.save_session(id, &fresh_session);
+            }
+        }
+        tracing::info!("🛡️ Zero-Trace: expurgando arquivos temporários de sessão no disco pós stop ({})", id);
+        crate::launcher::engine::injection::purge_ephemeral_session_files(&profile_dir);
+
         let now = now_secs();
         profile.status = "ready".to_string();
         profile.updated_at = now;
 
         self.save_to_db(&profile)?;
         Ok(profile)
+    }
+
+    pub fn vault(&self) -> &Arc<Vault> {
+        &self.vault
     }
 
     pub fn get_process_manager(&self) -> Arc<ProcessManager> {

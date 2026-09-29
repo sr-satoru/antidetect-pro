@@ -17,6 +17,7 @@ pub struct ProcessManager {
     client: reqwest::Client,
     ws: WsState,
     auto_sync: Arc<Mutex<Option<Arc<crate::server_sync::AutoSyncEngine>>>>,
+    vault: Arc<Mutex<Option<Arc<crate::service_database::Vault>>>>,
 }
 
 impl ProcessManager {
@@ -35,12 +36,18 @@ impl ProcessManager {
             client,
             ws,
             auto_sync: Arc::new(Mutex::new(None)),
+            vault: Arc::new(Mutex::new(None)),
         }
     }
 
     pub fn set_auto_sync(&self, auto_sync: Arc<crate::server_sync::AutoSyncEngine>) {
         let mut lock = self.auto_sync.lock().unwrap();
         *lock = Some(auto_sync);
+    }
+
+    pub fn set_vault(&self, vault: Arc<crate::service_database::Vault>) {
+        let mut lock = self.vault.lock().unwrap();
+        *lock = Some(vault);
     }
 
     /// Retorna a porta de depuração do perfil caso esteja ativa
@@ -171,6 +178,7 @@ impl ProcessManager {
             self.relays.clone(),
             self.ws.clone(),
             self.auto_sync.clone(),
+            self.vault.clone(),
         );
 
         Ok((pid, debug_port, ws_endpoint))
