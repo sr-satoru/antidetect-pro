@@ -8,7 +8,7 @@ use serde::Deserialize;
 use std::sync::Arc;
 
 use crate::cookie_manager::CookieManager;
-use crate::storage::ProfileStorage;
+use crate::service_database::ProfileStorage;
 
 #[derive(Debug, Deserialize)]
 pub struct ImportCookiesDto {

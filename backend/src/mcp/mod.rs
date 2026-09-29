@@ -12,7 +12,7 @@ use axum::{
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use crate::storage::ProfileStorage;
+use crate::service_database::ProfileStorage;
 pub use dto::*;
 pub use handlers::McpState;
 pub use security::TokenState;

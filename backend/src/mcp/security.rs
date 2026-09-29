@@ -11,21 +11,21 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-use crate::storage::vault::traits::McpRepository;
+use crate::service_database::Vault;
 
-/// Estado compartilhado para armazenamento e rotação segura do token de automação em memória e no Star Secure Vault
+/// Estado compartilhado para armazenamento e rotação segura do token de automação em memória e no Star Vault
 #[derive(Clone)]
 pub struct TokenState {
     pub token: Arc<RwLock<String>>,
-    pub mcp_repo: Arc<dyn McpRepository>,
+    pub vault: Arc<Vault>,
     pub data_dir: PathBuf,
 }
 
 impl TokenState {
-    pub fn new(initial_token: String, mcp_repo: Arc<dyn McpRepository>, data_dir: PathBuf) -> Self {
+    pub fn new(initial_token: String, vault: Arc<Vault>, data_dir: PathBuf) -> Self {
         Self {
             token: Arc::new(RwLock::new(initial_token)),
-            mcp_repo,
+            vault,
             data_dir,
         }
     }
@@ -43,7 +43,7 @@ impl TokenState {
 
     /// Rotaciona o token gravando no cofre e atualizando a memória RAM
     pub async fn refresh_token(&self) -> Result<String, std::io::Error> {
-        let new_token = rotate_token(self.mcp_repo.clone())?;
+        let new_token = rotate_token(self.vault.clone())?;
         let mut lock = self.token.write().await;
         *lock = new_token.clone();
         Ok(new_token)
@@ -51,26 +51,52 @@ impl TokenState {
 }
 
 /// Obtém o token ativo do cofre seguro ou gera um novo com alta entropia
-pub fn ensure_token(mcp_repo: Arc<dyn McpRepository>) -> Result<String, std::io::Error> {
-    if let Ok(Some(token)) = mcp_repo.get_token() {
-        let trimmed = token.trim().to_string();
-        if !trimmed.is_empty() {
-            return Ok(trimmed);
+pub fn ensure_token(vault: Arc<Vault>) -> Result<String, std::io::Error> {
+    let conn = vault.conn();
+    if let Ok(conn_guard) = conn.lock() {
+        if let Ok(mut stmt) = conn_guard.prepare("SELECT token_enc FROM mcp_tokens WHERE id = 'active' LIMIT 1") {
+            if let Ok(Some(row)) = stmt.query([]).and_then(|mut r| r.next()) {
+                if let Ok(token_enc) = row.get::<_, Vec<u8>>(0) {
+                    if let Ok(dec) = crate::service_database::vault::decrypt_payload(vault.key().as_ref(), &token_enc) {
+                        if let Ok(s) = String::from_utf8(dec) {
+                            let trimmed = s.trim().to_string();
+                            if !trimmed.is_empty() {
+                                return Ok(trimmed);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    rotate_token(mcp_repo)
+    rotate_token(vault)
 }
 
 /// Gera um novo token aleatório de 256 bits via OsRng do kernel e grava no cofre protegido
-pub fn rotate_token(mcp_repo: Arc<dyn McpRepository>) -> Result<String, std::io::Error> {
+pub fn rotate_token(vault: Arc<Vault>) -> Result<String, std::io::Error> {
     let mut bytes = [0u8; 32];
     rand::rngs::OsRng.fill_bytes(&mut bytes);
 
     let token = format!("star_sec_{}", hex::encode(bytes));
-    mcp_repo
-        .save_token(&token)
+    let token_enc = crate::service_database::vault::encrypt_payload(vault.key().as_ref(), token.as_bytes())
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs() as i64;
+
+    let conn = vault.conn();
+    let conn_guard = conn.lock().map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
+
+    conn_guard
+        .execute(
+            "INSERT INTO mcp_tokens (id, token_enc, created_at) VALUES ('active', ?1, ?2)
+             ON CONFLICT(id) DO UPDATE SET token_enc = excluded.token_enc, created_at = excluded.created_at",
+            rusqlite::params![token_enc, now],
+        )
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
 
     Ok(token)
 }

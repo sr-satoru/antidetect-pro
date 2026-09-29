@@ -7,7 +7,7 @@ use axum::{
 use std::sync::Arc;
 
 use crate::models::{CreateProxyDto, TestProxyDto};
-use crate::storage::ProxyStorage;
+use crate::service_database::ProxyStorage;
 
 pub async fn list_proxies(State(storage): State<Arc<ProxyStorage>>) -> impl IntoResponse {
     let list = storage.list();

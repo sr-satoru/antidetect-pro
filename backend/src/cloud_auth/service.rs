@@ -26,11 +26,18 @@ pub struct CloudAuthService {
     cloud_api_url: String,
     web_site_url: String,
     http_client: reqwest::Client,
-    auth_repo: Arc<dyn crate::storage::vault::traits::AuthRepository>,
+    vault: Arc<crate::service_database::Vault>,
+}
+
+#[derive(serde::Serialize, serde::Deserialize)]
+struct EncryptedSessionTokens {
+    access_token: String,
+    refresh_token: String,
+    expires_at: i64,
 }
 
 impl CloudAuthService {
-    pub fn new(auth_repo: Arc<dyn crate::storage::vault::traits::AuthRepository>) -> Self {
+    pub fn new(vault: Arc<crate::service_database::Vault>) -> Self {
         let cloud_api_url = std::env::var("STAR_CLOUD_API_URL")
             .unwrap_or_else(|_| "http://localhost:12342".to_string());
         let web_site_url = std::env::var("STAR_WEB_SITE_URL")
@@ -41,8 +48,8 @@ impl CloudAuthService {
         let mut initial_refresh_token = None;
         let mut initial_expires_at = 0;
 
-        if let Ok(Some(saved)) = auth_repo.get() {
-            tracing::info!("🔒 Sessão de autenticação carregada do Star Secure Vault para: {}", saved.user.email);
+        if let Ok(Some(saved)) = Self::load_session_from_vault(&vault) {
+            tracing::info!("🔒 Sessão de autenticação carregada do Star Vault para: {}", saved.user.email);
             initial_user = Some(saved.user);
             initial_token = Some(saved.access_token);
             initial_refresh_token = Some(saved.refresh_token);
@@ -58,7 +65,45 @@ impl CloudAuthService {
             cloud_api_url,
             web_site_url,
             http_client: reqwest::Client::new(),
-            auth_repo,
+            vault,
+        }
+    }
+
+    fn load_session_from_vault(vault: &Arc<crate::service_database::Vault>) -> Result<Option<PersistedAuthSession>, String> {
+        let conn = vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+        let mut stmt = conn_guard
+            .prepare("SELECT user_id, email, name, plan, max_profiles, profile_count, session_enc FROM auth_sessions LIMIT 1")
+            .map_err(|e| e.to_string())?;
+        let mut rows = stmt.query([]).map_err(|e| e.to_string())?;
+
+        if let Some(row) = rows.next().map_err(|e| e.to_string())? {
+            let user_id: String = row.get(0).map_err(|e| e.to_string())?;
+            let email: String = row.get(1).map_err(|e| e.to_string())?;
+            let name: Option<String> = row.get(2).map_err(|e| e.to_string())?;
+            let plan: String = row.get(3).map_err(|e| e.to_string())?;
+            let max_profiles: i64 = row.get(4).map_err(|e| e.to_string())?;
+            let profile_count: i64 = row.get(5).map_err(|e| e.to_string())?;
+            let session_enc: Vec<u8> = row.get(6).map_err(|e| e.to_string())?;
+
+            let decrypted = crate::service_database::vault::decrypt_payload(vault.key().as_ref(), &session_enc)?;
+            let tokens = serde_json::from_slice::<EncryptedSessionTokens>(&decrypted).map_err(|e| e.to_string())?;
+
+            Ok(Some(PersistedAuthSession {
+                user: CloudUser {
+                    id: user_id,
+                    email,
+                    name,
+                    plan,
+                    max_profiles,
+                    profile_count,
+                },
+                access_token: tokens.access_token,
+                refresh_token: tokens.refresh_token,
+                expires_at: tokens.expires_at,
+            }))
+        } else {
+            Ok(None)
         }
     }
 
@@ -190,16 +235,66 @@ impl CloudAuthService {
     }
 
     fn save_session_to_disk(&self, user: &CloudUser, access_token: &str, refresh_token: &str, expires_at: i64) {
-        let session = PersistedAuthSession {
-            user: user.clone(),
+        let tokens = EncryptedSessionTokens {
             access_token: access_token.to_string(),
             refresh_token: refresh_token.to_string(),
             expires_at,
         };
-        if let Err(e) = self.auth_repo.save(&session) {
-            tracing::error!("❌ Erro ao salvar sessão no Star Secure Vault: {}", e);
+        let tokens_bytes = match serde_json::to_vec(&tokens) {
+            Ok(b) => b,
+            Err(e) => {
+                tracing::error!("❌ Erro ao serializar tokens de autenticação: {e}");
+                return;
+            }
+        };
+
+        let session_enc = match crate::service_database::vault::encrypt_payload(self.vault.key().as_ref(), &tokens_bytes) {
+            Ok(enc) => enc,
+            Err(e) => {
+                tracing::error!("❌ Erro ao criptografar tokens de autenticação: {e}");
+                return;
+            }
+        };
+
+        let now = chrono::Utc::now().timestamp();
+        let conn = self.vault.conn();
+        let conn_guard = match conn.lock() {
+            Ok(g) => g,
+            Err(e) => {
+                tracing::error!("❌ Erro ao obter conexão do cofre: {e}");
+                return;
+            }
+        };
+
+        let res = conn_guard.execute(
+            "INSERT INTO auth_sessions (user_id, email, name, plan, max_profiles, profile_count, session_enc, expires_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+             ON CONFLICT(user_id) DO UPDATE SET
+                email = excluded.email,
+                name = excluded.name,
+                plan = excluded.plan,
+                max_profiles = excluded.max_profiles,
+                profile_count = excluded.profile_count,
+                session_enc = excluded.session_enc,
+                expires_at = excluded.expires_at,
+                updated_at = excluded.updated_at",
+            rusqlite::params![
+                user.id,
+                user.email,
+                user.name,
+                user.plan,
+                user.max_profiles,
+                user.profile_count,
+                session_enc,
+                expires_at,
+                now,
+            ],
+        );
+
+        if let Err(e) = res {
+            tracing::error!("❌ Erro ao salvar sessão no Star Vault: {}", e);
         } else {
-            tracing::info!("🔒 Sessão salva e protegida com AES-256-GCM no Star Secure Vault");
+            tracing::info!("🔒 Sessão salva e protegida com AES-256-GCM no Star Vault");
         }
     }
 
@@ -288,7 +383,9 @@ impl CloudAuthService {
         *self.current_token.write().await = None;
         *self.current_refresh_token.write().await = None;
         *self.current_token_expires_at.write().await = 0;
-        let _ = self.auth_repo.clear();
+        if let Ok(conn_guard) = self.vault.conn().lock() {
+            let _ = conn_guard.execute("DELETE FROM auth_sessions", []);
+        }
     }
 
     /// Renderiza a página HTML oficial de sucesso exibida no navegador após autenticar

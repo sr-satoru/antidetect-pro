@@ -178,8 +178,8 @@ impl ProcessManager {
         let net_setup = crate::network::prepare_network(&profile.proxy, &profile.fingerprint_json).await?;
         user_js.push_str(&net_setup.user_js_snippet);
 
-        // 2. Importação e preparação das extensões via módulo desacoplado import_extensions_web
-        let ext_paths = crate::import_extensions_web::import_profile_extensions(
+        // 2. Importação e preparação das extensões via módulo desacoplado extensions
+        let ext_paths = crate::extensions::import_profile_extensions(
             profile,
             profile_dir,
             data_dir,

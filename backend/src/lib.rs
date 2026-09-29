@@ -7,13 +7,12 @@ use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 
 pub mod browser_downloader;
-pub mod cache;
 pub mod cloud_auth;
 pub mod cloud_sync;
 pub mod cookie_manager;
+pub mod extensions;
 pub mod fingerprint;
 pub mod id_generator;
-pub mod import_extensions_web;
 pub mod launcher;
 pub mod mcp;
 pub mod models;
@@ -21,12 +20,13 @@ pub mod network;
 pub mod proxy_validator;
 pub mod routes;
 pub mod security;
-pub mod storage;
+pub mod service_database;
 pub mod tab_manager;
 pub mod version_app;
 pub mod ws;
 
-use storage::{ExtensionStorage, ProfileStorage, ProxyStorage, TagStorage};
+use extensions::ExtensionStorage;
+use service_database::{ProfileStorage, ProxyStorage, TagStorage, Vault};
 
 /// Inicia o servidor Axum do ecossistema Star Multlogin na porta e diretório especificados
 pub async fn start_star_server(
@@ -54,15 +54,15 @@ pub async fn start_star_server(
     // 1. Blindagem de memória RAM anti-trojan/anti-poking
     crate::security::harden_process_memory();
 
-    // 2. Inicialização do cofre criptografado Star Secure Vault
-    let vault = Arc::new(storage::StarVault::new(std::path::Path::new(&data_dir))
-        .map_err(|e| format!("Falha ao inicializar Star Secure Vault: {}", e))?);
+    // 2. Inicialização do cofre criptografado Star Vault em service_database/data
+    let vault = Arc::new(Vault::new(std::path::Path::new(&data_dir))
+        .map_err(|e| format!("Falha ao inicializar Star Vault: {}", e))?);
 
     let ws_state = ws::WsState::new();
-    let profile_storage = Arc::new(ProfileStorage::new(&data_dir, ws_state.clone(), vault.profiles()));
-    let proxy_storage = Arc::new(ProxyStorage::new(vault.proxies()));
+    let profile_storage = Arc::new(ProfileStorage::new(&data_dir, ws_state.clone(), vault.clone()));
+    let proxy_storage = Arc::new(ProxyStorage::new(vault.clone()));
+    let tag_storage = Arc::new(TagStorage::new(vault.clone()));
     let extension_storage = Arc::new(ExtensionStorage::new(&data_dir));
-    let tag_storage = Arc::new(TagStorage::new(vault.tags()));
 
     let cors = CorsLayer::new()
         .allow_origin(Any)
@@ -109,7 +109,7 @@ pub async fn start_star_server(
         .route("/catalog", get(routes::extensions::get_catalog))
         .with_state(extension_storage);
 
-    let auth_service = Arc::new(cloud_auth::CloudAuthService::new(vault.auth()));
+    let auth_service = Arc::new(cloud_auth::CloudAuthService::new(vault.clone()));
     let cloud_sync_service = Arc::new(
         cloud_sync::CloudSyncService::new(&data_dir, auth_service.clone())
             .with_ws(ws_state.clone()),
@@ -180,9 +180,9 @@ pub async fn start_star_server(
         .route("/", get(ws::ws_handler))
         .with_state(ws_state);
 
-    let token = mcp::security::ensure_token(vault.mcp())
+    let token = mcp::security::ensure_token(vault.clone())
         .map_err(|e| format!("Falha ao inicializar api-token: {}", e))?;
-    let token_state = mcp::security::TokenState::new(token, vault.mcp(), std::path::PathBuf::from(&data_dir));
+    let token_state = mcp::security::TokenState::new(token, vault.clone(), std::path::PathBuf::from(&data_dir));
 
     let mcp_routes = mcp::create_mcp_router(
         profile_storage.clone(),

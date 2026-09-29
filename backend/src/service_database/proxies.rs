@@ -1,9 +1,7 @@
-use crate::models::{CreateProxyDto, ProxyItem};
-use crate::security::ProtectedKey;
-use crate::storage::vault::crypto::{decrypt_payload, encrypt_payload};
-use crate::storage::vault::traits::ProxyRepository;
-use rusqlite::{params, Connection};
-use std::sync::{Arc, Mutex};
+use super::data::{crypto::decrypt_payload, crypto::encrypt_payload, Vault};
+use crate::models::{CreateProxyDto, ProxyItem, ProxyTestRequest, ProxyTestResult};
+use rusqlite::params;
+use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn now_secs() -> i64 {
@@ -19,21 +17,24 @@ struct ProxyCredentials {
     pass: String,
 }
 
-pub struct SqliteProxyRepository {
-    conn: Arc<Mutex<Connection>>,
-    key: Arc<ProtectedKey>,
+/// Serviço de proxies com persistência direta na tabela `proxies` do Star Vault
+#[derive(Clone)]
+pub struct ProxyService {
+    vault: Arc<Vault>,
 }
 
-impl SqliteProxyRepository {
-    pub fn new(conn: Arc<Mutex<Connection>>, key: Arc<ProtectedKey>) -> Self {
-        Self { conn, key }
+pub type ProxyStorage = ProxyService;
+
+impl ProxyService {
+    pub fn new(vault: Arc<Vault>) -> Self {
+        Self { vault }
     }
-}
 
-impl ProxyRepository for SqliteProxyRepository {
-    fn list(&self) -> Result<Vec<ProxyItem>, String> {
-        let conn = self.conn.lock().map_err(|e| e.to_string())?;
-        let mut stmt = conn
+    pub fn list(&self) -> Result<Vec<ProxyItem>, String> {
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+
+        let mut stmt = conn_guard
             .prepare("SELECT id, name, proxy_type, host, port, credentials_enc, ip, country, status, created_at FROM proxies ORDER BY created_at DESC")
             .map_err(|e| e.to_string())?;
         let mut rows = stmt.query([]).map_err(|e| e.to_string())?;
@@ -51,7 +52,7 @@ impl ProxyRepository for SqliteProxyRepository {
             let status: String = row.get(8).map_err(|e| e.to_string())?;
             let created_at: i64 = row.get(9).map_err(|e| e.to_string())?;
 
-            let (user, pass) = match decrypt_payload(self.key.as_bytes(), &credentials_enc) {
+            let (user, pass) = match decrypt_payload(self.vault.key().as_ref(), &credentials_enc) {
                 Ok(decrypted) => match serde_json::from_slice::<ProxyCredentials>(&decrypted) {
                     Ok(creds) => (creds.user, creds.pass),
                     Err(_) => (String::new(), String::new()),
@@ -77,9 +78,7 @@ impl ProxyRepository for SqliteProxyRepository {
         Ok(proxies)
     }
 
-    fn create(&self, dto: CreateProxyDto) -> Result<ProxyItem, String> {
-        let conn = self.conn.lock().map_err(|e| e.to_string())?;
-
+    pub fn create(&self, dto: CreateProxyDto) -> Result<ProxyItem, String> {
         let id = uuid::Uuid::new_v4().to_string();
         let port_str = if let Some(n) = dto.port.as_u64() {
             n.to_string()
@@ -102,25 +101,29 @@ impl ProxyRepository for SqliteProxyRepository {
             pass: pass.clone(),
         };
         let creds_bytes = serde_json::to_vec(&creds).map_err(|e| e.to_string())?;
-        let credentials_enc = encrypt_payload(self.key.as_bytes(), &creds_bytes)?;
+        let credentials_enc = encrypt_payload(self.vault.key().as_ref(), &creds_bytes)?;
 
-        conn.execute(
-            "INSERT INTO proxies (id, name, proxy_type, host, port, credentials_enc, ip, country, status, created_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
-            params![
-                id,
-                name,
-                proxy_type,
-                dto.host,
-                port_str,
-                credentials_enc,
-                dto.host,
-                country,
-                status,
-                created_at,
-            ],
-        )
-        .map_err(|e| e.to_string())?;
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+
+        conn_guard
+            .execute(
+                "INSERT INTO proxies (id, name, proxy_type, host, port, credentials_enc, ip, country, status, created_at)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+                params![
+                    id,
+                    name,
+                    proxy_type,
+                    dto.host,
+                    port_str,
+                    credentials_enc,
+                    dto.host,
+                    country,
+                    status,
+                    created_at,
+                ],
+            )
+            .map_err(|e| e.to_string())?;
 
         Ok(ProxyItem {
             id,
@@ -137,10 +140,16 @@ impl ProxyRepository for SqliteProxyRepository {
         })
     }
 
-    fn delete(&self, id: &str) -> Result<(), String> {
-        let conn = self.conn.lock().map_err(|e| e.to_string())?;
-        conn.execute("DELETE FROM proxies WHERE id = ?", params![id])
+    pub fn delete(&self, id: &str) -> Result<(), String> {
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+        conn_guard
+            .execute("DELETE FROM proxies WHERE id = ?1", params![id])
             .map_err(|e| e.to_string())?;
         Ok(())
+    }
+
+    pub async fn test_proxy(&self, dto: &ProxyTestRequest) -> Result<ProxyTestResult, String> {
+        crate::proxy_validator::test_proxy_connection(dto).await
     }
 }

@@ -1,28 +1,39 @@
+use super::data::{crypto::decrypt_payload, crypto::encrypt_payload, Vault};
 use crate::launcher::ProcessManager;
 use crate::models::{CreateProfileDto, Profile, ProfileProxyConfig, UpdateProfileDto};
-use crate::storage::vault::traits::ProfileRepository;
 use crate::ws::WsState;
+use rusqlite::params;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub struct ProfileStorage {
+fn now_secs() -> i64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs() as i64
+}
+
+/// Serviço de perfis com persistência direta na tabela `profiles` do Star Vault
+pub struct ProfileService {
+    vault: Arc<Vault>,
     data_dir: PathBuf,
     process_manager: Arc<ProcessManager>,
     auto_sync: Arc<Mutex<Option<Arc<crate::cloud_sync::AutoSyncEngine>>>>,
-    repo: Arc<dyn ProfileRepository>,
 }
 
-impl ProfileStorage {
-    pub fn new<P: AsRef<Path>>(data_dir: P, ws: WsState, repo: Arc<dyn ProfileRepository>) -> Self {
+pub type ProfileStorage = ProfileService;
+
+impl ProfileService {
+    pub fn new<P: AsRef<Path>>(data_dir: P, ws: WsState, vault: Arc<Vault>) -> Self {
         let dir = data_dir.as_ref().join("profiles");
         let _ = fs::create_dir_all(&dir);
         Self {
+            vault,
             data_dir: dir,
             process_manager: Arc::new(ProcessManager::new(ws)),
             auto_sync: Arc::new(Mutex::new(None)),
-            repo,
         }
     }
 
@@ -41,77 +52,186 @@ impl ProfileStorage {
         }
     }
 
-    fn now_secs() -> i64 {
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs() as i64
+    fn save_to_db(&self, profile: &Profile) -> Result<(), String> {
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+
+        let json_bytes = serde_json::to_vec(profile).map_err(|e| e.to_string())?;
+        let payload_enc = encrypt_payload(self.vault.key().as_ref(), &json_bytes)?;
+
+        conn_guard
+            .execute(
+                "INSERT INTO profiles (
+                    id, name, group_name, status, kernel, browser_version, os,
+                    payload_enc, created_at, updated_at, last_launch, is_deleted, deleted_at
+                ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)
+                ON CONFLICT(id) DO UPDATE SET
+                    name = excluded.name,
+                    group_name = excluded.group_name,
+                    status = excluded.status,
+                    kernel = excluded.kernel,
+                    browser_version = excluded.browser_version,
+                    os = excluded.os,
+                    payload_enc = excluded.payload_enc,
+                    updated_at = excluded.updated_at,
+                    last_launch = excluded.last_launch,
+                    is_deleted = excluded.is_deleted,
+                    deleted_at = excluded.deleted_at",
+                params![
+                    profile.id,
+                    profile.name,
+                    profile.group,
+                    profile.status,
+                    profile.kernel,
+                    profile.browser_version,
+                    profile.os,
+                    payload_enc,
+                    profile.created_at,
+                    profile.updated_at,
+                    profile.last_launch,
+                    profile.is_deleted as i32,
+                    profile.deleted_at,
+                ],
+            )
+            .map_err(|e| format!("Erro ao salvar perfil no banco de dados: {e}"))?;
+
+        Ok(())
     }
 
     pub fn list(&self, search: Option<&str>, group: Option<&str>) -> Vec<Profile> {
-        let mut profiles = match self.repo.list(None, None) {
-            Ok(list) => list,
+        let conn = self.vault.conn();
+        let conn_guard = match conn.lock() {
+            Ok(g) => g,
             Err(e) => {
-                tracing::error!("Erro ao listar perfis do cofre: {}", e);
-                Vec::new()
+                tracing::error!("Erro de concorrência no banco: {e}");
+                return Vec::new();
             }
         };
 
-        // Sincroniza em tempo real o status com os processos ativos no SO
-        for p in profiles.iter_mut() {
-            let profile_dir = self.data_dir.join(&p.id).join("profile");
-            let is_alive = self.process_manager.is_running_with_dir(&p.id, Some(&profile_dir));
-            if is_alive && p.status != "running" {
-                p.status = "running".to_string();
-            } else if !is_alive && p.status == "running" {
-                p.status = "ready".to_string();
+        let mut sql = "SELECT payload_enc FROM profiles WHERE is_deleted = 0".to_string();
+        let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+
+        if let Some(grp) = group {
+            if grp != "all" && grp != "Todos os grupos" && !grp.trim().is_empty() {
+                sql.push_str(" AND group_name = ?");
+                params_vec.push(Box::new(grp.to_string()));
             }
         }
 
-        // Ordena pelos mais recentes
-        profiles.sort_by(|a, b| b.created_at.cmp(&a.created_at));
+        sql.push_str(" ORDER BY created_at DESC");
 
-        // Aplica filtros de busca e grupo
-        profiles
-            .into_iter()
-            .filter(|p| {
-                if let Some(grp) = group {
-                    if grp != "Todos os grupos" && p.group != grp {
-                        return false;
+        let params_slice: Vec<&dyn rusqlite::ToSql> = params_vec.iter().map(|b| b.as_ref()).collect();
+        let mut stmt = match conn_guard.prepare(&sql) {
+            Ok(s) => s,
+            Err(e) => {
+                tracing::error!("Erro ao preparar query de perfis: {e}");
+                return Vec::new();
+            }
+        };
+
+        let mut rows = match stmt.query(&params_slice[..]) {
+            Ok(r) => r,
+            Err(e) => {
+                tracing::error!("Erro ao executar query de perfis: {e}");
+                return Vec::new();
+            }
+        };
+
+        let mut profiles = Vec::new();
+        while let Ok(Some(row)) = rows.next() {
+            if let Ok(payload_enc) = row.get::<_, Vec<u8>>(0) {
+                if let Ok(decrypted) = decrypt_payload(self.vault.key().as_ref(), &payload_enc) {
+                    if let Ok(mut profile) = serde_json::from_slice::<Profile>(&decrypted) {
+                        let profile_dir = self.data_dir.join(&profile.id).join("profile");
+                        let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
+                        if is_alive && profile.status != "running" {
+                            profile.status = "running".to_string();
+                        } else if !is_alive && profile.status == "running" {
+                            profile.status = "ready".to_string();
+                        }
+
+                        if let Some(s) = search {
+                            let term = s.to_lowercase();
+                            let matches_name = profile.name.to_lowercase().contains(&term);
+                            let matches_notes = profile.notes.to_lowercase().contains(&term);
+                            let matches_proxy = profile
+                                .proxy
+                                .host
+                                .as_deref()
+                                .map(|h| h.to_lowercase().contains(&term))
+                                .unwrap_or(false);
+                            let matches_tags = profile.tags.iter().any(|t| t.to_lowercase().contains(&term));
+                            if !(matches_name || matches_notes || matches_proxy || matches_tags) {
+                                continue;
+                            }
+                        }
+
+                        profiles.push(profile);
                     }
                 }
-                if let Some(s) = search {
-                    let term = s.to_lowercase();
-                    let matches_name = p.name.to_lowercase().contains(&term);
-                    let matches_notes = p.notes.to_lowercase().contains(&term);
-                    let matches_proxy = p
-                        .proxy
-                        .host
-                        .as_deref()
-                        .map(|h| h.to_lowercase().contains(&term))
-                        .unwrap_or(false);
-                    let matches_tags = p.tags.iter().any(|t| t.to_lowercase().contains(&term));
-                    return matches_name || matches_notes || matches_proxy || matches_tags;
-                }
-                true
-            })
-            .collect()
+            }
+        }
+
+        profiles
     }
 
     pub fn list_trash(&self) -> Vec<Profile> {
-        self.repo.list_trash().unwrap_or_default()
+        let conn = self.vault.conn();
+        let conn_guard = match conn.lock() {
+            Ok(g) => g,
+            Err(_) => return Vec::new(),
+        };
+
+        let mut stmt = match conn_guard.prepare("SELECT payload_enc FROM profiles WHERE is_deleted = 1 ORDER BY deleted_at DESC") {
+            Ok(s) => s,
+            Err(_) => return Vec::new(),
+        };
+
+        let mut rows = match stmt.query([]) {
+            Ok(r) => r,
+            Err(_) => return Vec::new(),
+        };
+
+        let mut profiles = Vec::new();
+        while let Ok(Some(row)) = rows.next() {
+            if let Ok(payload_enc) = row.get::<_, Vec<u8>>(0) {
+                if let Ok(decrypted) = decrypt_payload(self.vault.key().as_ref(), &payload_enc) {
+                    if let Ok(profile) = serde_json::from_slice::<Profile>(&decrypted) {
+                        profiles.push(profile);
+                    }
+                }
+            }
+        }
+
+        profiles
     }
 
     pub fn get(&self, id: &str) -> Option<Profile> {
-        let mut profile = self.repo.get(id).ok()??;
-        let profile_dir = self.data_dir.join(id).join("profile");
-        let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
-        if is_alive && profile.status != "running" {
-            profile.status = "running".to_string();
-        } else if !is_alive && profile.status == "running" {
-            profile.status = "ready".to_string();
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().ok()?;
+
+        let mut stmt = conn_guard
+            .prepare("SELECT payload_enc FROM profiles WHERE id = ? LIMIT 1")
+            .ok()?;
+        let mut rows = stmt.query(params![id]).ok()?;
+
+        if let Ok(Some(row)) = rows.next() {
+            let payload_enc: Vec<u8> = row.get(0).ok()?;
+            let decrypted = decrypt_payload(self.vault.key().as_ref(), &payload_enc).ok()?;
+            let mut profile = serde_json::from_slice::<Profile>(&decrypted).ok()?;
+
+            let profile_dir = self.data_dir.join(id).join("profile");
+            let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
+            if is_alive && profile.status != "running" {
+                profile.status = "running".to_string();
+            } else if !is_alive && profile.status == "running" {
+                profile.status = "ready".to_string();
+            }
+
+            return Some(profile);
         }
-        Some(profile)
+
+        None
     }
 
     pub fn create(&self, dto: CreateProfileDto) -> Result<Profile, String> {
@@ -120,7 +240,7 @@ impl ProfileStorage {
             .filter(|s| !s.trim().is_empty())
             .unwrap_or_else(|| crate::id_generator::generate_profile_id());
 
-        let now = Self::now_secs();
+        let now = now_secs();
 
         let tags: Vec<String> = match dto.tags {
             Some(serde_json::Value::Array(arr)) => arr
@@ -188,14 +308,10 @@ impl ProfileStorage {
             extensions,
         };
 
-        // Garante a existência do diretório do navegador
         let profile_dir = self.data_dir.join(&id);
         fs::create_dir_all(&profile_dir).map_err(|e| e.to_string())?;
 
-        // Salva com criptografia no Star Secure Vault
-        self.repo.save(&profile)?;
-
-        // Agenda sincronização automática com debounce de 5 segundos
+        self.save_to_db(&profile)?;
         self.trigger_auto_sync(&id);
 
         Ok(profile)
@@ -281,12 +397,9 @@ impl ProfileStorage {
             profile.extensions = Some(exts);
         }
 
-        profile.updated_at = Self::now_secs();
+        profile.updated_at = now_secs();
 
-        // Salva atualizado no Star Secure Vault
-        self.repo.save(&profile)?;
-
-        // Agenda sincronização automática
+        self.save_to_db(&profile)?;
         self.trigger_auto_sync(id);
 
         Ok(profile)
@@ -296,7 +409,7 @@ impl ProfileStorage {
         let original = self.get(id).ok_or_else(|| "Perfil original não encontrado".to_string())?;
 
         let new_id = crate::id_generator::generate_profile_id();
-        let now = Self::now_secs();
+        let now = now_secs();
 
         let mut cloned = original.clone();
         cloned.id = new_id.clone();
@@ -308,11 +421,9 @@ impl ProfileStorage {
         cloned.is_deleted = false;
         cloned.deleted_at = None;
 
-        // Cria o diretório para o clone no disco
         let new_profile_dir = self.data_dir.join(&new_id);
         fs::create_dir_all(&new_profile_dir).map_err(|e| format!("Erro ao criar pasta do clone: {e}"))?;
 
-        // Clona diretório de dados do navegador se existir
         let orig_browser_dir = self.data_dir.join(id).join("profile");
         let new_browser_dir = new_profile_dir.join("profile");
         if orig_browser_dir.exists() {
@@ -323,9 +434,7 @@ impl ProfileStorage {
             }
         }
 
-        // Salva no Star Secure Vault
-        self.repo.save(&cloned)?;
-
+        self.save_to_db(&cloned)?;
         tracing::info!("📋 Perfil '{}' ({}) clonado com sucesso para novo ID {}", original.name, id, new_id);
 
         self.trigger_auto_sync(&new_id);
@@ -335,13 +444,33 @@ impl ProfileStorage {
 
     pub fn soft_delete(&self, id: &str) -> Result<(), String> {
         let _ = self.process_manager.stop(id);
-        self.repo.delete_soft(id)?;
+        let now = now_secs();
+
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+        conn_guard
+            .execute(
+                "UPDATE profiles SET is_deleted = 1, deleted_at = ?1 WHERE id = ?2",
+                params![now, id],
+            )
+            .map_err(|e| e.to_string())?;
+
         self.trigger_auto_sync(id);
         Ok(())
     }
 
     pub fn restore(&self, id: &str) -> Result<Profile, String> {
-        let profile = self.repo.restore(id)?.ok_or_else(|| "Perfil não encontrado".to_string())?;
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+        conn_guard
+            .execute(
+                "UPDATE profiles SET is_deleted = 0, deleted_at = NULL WHERE id = ?1",
+                params![id],
+            )
+            .map_err(|e| e.to_string())?;
+
+        drop(conn_guard);
+        let profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
         self.trigger_auto_sync(id);
         Ok(profile)
     }
@@ -364,7 +493,13 @@ impl ProfileStorage {
 
     pub fn permanent_delete(&self, id: &str) -> Result<(), String> {
         let _ = self.process_manager.stop(id);
-        self.repo.delete_permanent(id)?;
+
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+        conn_guard
+            .execute("DELETE FROM profiles WHERE id = ?1", params![id])
+            .map_err(|e| e.to_string())?;
+
         let profile_dir = self.data_dir.join(id);
         if profile_dir.exists() {
             Self::robust_remove_dir(&profile_dir)?;
@@ -384,12 +519,12 @@ impl ProfileStorage {
     pub async fn launch(&self, id: &str) -> Result<(Profile, u32), String> {
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
         let pid = self.process_manager.launch(&profile, &self.data_dir).await?;
-        let now = Self::now_secs();
+        let now = now_secs();
         profile.status = "running".to_string();
         profile.last_launch = Some(now);
         profile.updated_at = now;
 
-        self.repo.save(&profile)?;
+        self.save_to_db(&profile)?;
         Ok((profile, pid))
     }
 
@@ -400,23 +535,23 @@ impl ProfileStorage {
     ) -> Result<(Profile, u32, Option<u16>, Option<String>), String> {
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
         let (pid, debug_port, ws_endpoint) = self.process_manager.launch_with_cdp(&profile, &self.data_dir, cdp).await?;
-        let now = Self::now_secs();
+        let now = now_secs();
         profile.status = "running".to_string();
         profile.last_launch = Some(now);
         profile.updated_at = now;
 
-        self.repo.save(&profile)?;
+        self.save_to_db(&profile)?;
         Ok((profile, pid, debug_port, ws_endpoint))
     }
 
     pub fn stop(&self, id: &str) -> Result<Profile, String> {
         let mut profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
         self.process_manager.stop(id)?;
-        let now = Self::now_secs();
+        let now = now_secs();
         profile.status = "ready".to_string();
         profile.updated_at = now;
 
-        self.repo.save(&profile)?;
+        self.save_to_db(&profile)?;
         Ok(profile)
     }
 
@@ -431,7 +566,7 @@ impl ProfileStorage {
 
     #[allow(dead_code)]
     pub fn get_profile_updated_at(&self, profile_id: &str) -> Option<i64> {
-        self.repo.get(profile_id).ok()?.map(|p| p.updated_at)
+        self.get(profile_id).map(|p| p.updated_at)
     }
 
     pub fn get_profile_dir(&self, id: &str) -> PathBuf {

@@ -8,7 +8,7 @@ use serde::Deserialize;
 use std::sync::Arc;
 
 use crate::models::{CreateProfileDto, UpdateProfileDto};
-use crate::storage::ProfileStorage;
+use crate::service_database::ProfileStorage;
 
 #[derive(Debug, Deserialize)]
 pub struct ListParams {

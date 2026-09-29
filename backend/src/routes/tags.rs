@@ -8,7 +8,7 @@ use serde::Deserialize;
 use std::sync::Arc;
 
 use crate::models::{BatchDeleteTagsDto, CreateTagDto, UpdateTagDto};
-use crate::storage::TagStorage;
+use crate::service_database::TagStorage;
 
 #[derive(Debug, Deserialize)]
 pub struct ListTagsQuery {

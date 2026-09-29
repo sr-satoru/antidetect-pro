@@ -8,7 +8,7 @@ use serde::Deserialize;
 use std::sync::Arc;
 
 use crate::models::{CreateExtensionDto, UpdateExtensionDto};
-use crate::storage::ExtensionStorage;
+use crate::extensions::ExtensionStorage;
 
 #[derive(Debug, Deserialize)]
 pub struct CatalogParams {

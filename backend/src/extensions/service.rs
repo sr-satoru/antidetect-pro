@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tracing::info;
 
-use crate::cache::ExtensionCache;
+use super::cache::ExtensionCache;
 use crate::models::{CreateExtensionDto, ExtensionItem, RecommendedExtension, UpdateExtensionDto};
 
 pub struct ExtensionStorage {
@@ -44,7 +44,6 @@ impl ExtensionStorage {
         Ok(())
     }
 
-    /// Retorna as extensões salvas na equipe (sem nada pré-adicionado)
     pub fn list(&self) -> Vec<ExtensionItem> {
         let mut list = Vec::new();
         if let Ok(entries) = fs::read_dir(&self.data_dir) {
@@ -72,7 +71,6 @@ impl ExtensionStorage {
         }
     }
 
-    /// Salva uma nova extensão adicionada pelo usuário
     pub fn create(&self, dto: CreateExtensionDto) -> Result<ExtensionItem, String> {
         let id = dto.id.unwrap_or_else(Self::now_millis);
 
@@ -81,7 +79,7 @@ impl ExtensionStorage {
             name: dto.name.unwrap_or_else(|| format!("Extensão #{id}")),
             icon_type: dto.icon_type.or(Some("custom".to_string())),
             icon_url: dto.icon_url,
-            icon_bg: dto.icon_bg.or(Some("#2F80ED".to_string())), // Cor padrão do app (Star Blue)
+            icon_bg: dto.icon_bg.or(Some("#2F80ED".to_string())),
             enabled: dto.enabled.unwrap_or(true),
             status: dto.status.unwrap_or_else(|| "available".to_string()),
             description: dto.description.unwrap_or_else(|| "Extensão adicionada à equipe.".to_string()),
@@ -96,7 +94,6 @@ impl ExtensionStorage {
         Ok(item)
     }
 
-    /// Altera o status (ex: ligar/desligar) ou metadados da extensão
     pub fn update(&self, id: u64, dto: UpdateExtensionDto) -> Result<ExtensionItem, String> {
         let mut item = self.get(id).ok_or_else(|| format!("Extensão {id} não encontrada"))?;
 
@@ -135,7 +132,6 @@ impl ExtensionStorage {
         Ok(())
     }
 
-    /// Busca extensões com cache em memória no backend e integração com AMO
     pub async fn search_catalog(
         &self,
         query: Option<&str>,
@@ -146,12 +142,10 @@ impl ExtensionStorage {
         let cat = category.unwrap_or("All");
         let st = store.unwrap_or("all");
 
-        // 1. Verifica cache desacoplado do backend
         if let Some(cached) = self.cache.get(query, category, store) {
             return cached;
         }
 
-        // 2. Mapeamento de categorias para slugs oficiais da API Mozilla AMO
         let (amo_cat_slug, is_all_cat) = match cat {
             "Privacy and security" => (Some("privacy-security"), false),
             "Developer tools" => (Some("web-development"), false),
@@ -163,7 +157,6 @@ impl ExtensionStorage {
             _ => (None, true),
         };
 
-        // 3. Monta a URL de busca direta no Mozilla AMO
         let url = if !q.is_empty() {
             if let Some(slug) = amo_cat_slug {
                 format!(
@@ -242,7 +235,6 @@ impl ExtensionStorage {
             }
         }
 
-        // 4. Salva no módulo desacoplado de cache
         self.cache.set(query, category, store, fetched_items.clone());
 
         fetched_items
