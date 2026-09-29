@@ -7,8 +7,8 @@ use axum::{
 use serde::Deserialize;
 use std::sync::Arc;
 
+use crate::launcher::TabManager;
 use crate::service_database::ProfileStorage;
-use crate::tab_manager::TabManager;
 
 #[derive(Debug, Deserialize)]
 pub struct OpenTabDto {

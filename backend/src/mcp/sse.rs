@@ -18,7 +18,7 @@ use tokio::sync::{mpsc, RwLock};
 use tracing::{info, warn};
 
 use super::handlers::McpState;
-use crate::tab_manager::TabManager;
+use crate::launcher::TabManager;
 
 /// Gerenciador de sessões SSE ativas para o protocolo MCP
 #[derive(Clone)]

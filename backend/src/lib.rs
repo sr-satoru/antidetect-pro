@@ -22,7 +22,6 @@ pub mod routes;
 pub mod security;
 pub mod server_sync;
 pub mod service_database;
-pub mod tab_manager;
 pub mod version_app;
 pub mod ws;
 

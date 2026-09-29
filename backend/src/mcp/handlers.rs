@@ -14,8 +14,8 @@ use super::dto::{
     TokenRefreshResponse,
 };
 use super::security::TokenState;
+use crate::launcher::TabManager;
 use crate::service_database::ProfileStorage;
-use crate::tab_manager::TabManager;
 
 /// Estado compartilhado para os handlers do módulo MCP
 #[derive(Clone)]

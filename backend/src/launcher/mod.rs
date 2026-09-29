@@ -1,4 +1,4 @@
 pub mod engine;
 pub mod sys;
 
-pub use engine::ProcessManager;
+pub use engine::{ProcessManager, TabInfo, TabManager};
