@@ -8,7 +8,7 @@ pub mod linux;
 #[cfg(target_os = "linux")]
 pub use linux::*;
 
-#[cfg(all(unix, not(target_os = "linux")))]
-pub mod unix;
-#[cfg(all(unix, not(target_os = "linux")))]
-pub use unix::*;
+#[cfg(any(target_os = "macos", all(unix, not(target_os = "linux"))))]
+pub mod macos;
+#[cfg(any(target_os = "macos", all(unix, not(target_os = "linux"))))]
+pub use macos::*;
