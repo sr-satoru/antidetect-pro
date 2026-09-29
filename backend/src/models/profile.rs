@@ -149,7 +149,7 @@ fn default_json_obj() -> serde_json::Value {
 }
 
 /// DTO recebido do frontend na criação do perfil
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateProfileDto {
     pub id: Option<String>,
     pub name: Option<String>,
@@ -176,7 +176,7 @@ pub struct CreateProfileDto {
 }
 
 /// DTO para atualização de perfil
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateProfileDto {
     pub name: Option<String>,
     pub group: Option<String>,
