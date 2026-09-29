@@ -1,3 +1,4 @@
+use std::fmt::Write as _;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -49,8 +50,8 @@ impl ExtensionStorage {
         if let Ok(entries) = fs::read_dir(&self.data_dir) {
             for entry in entries.flatten() {
                 let path = entry.path();
-                if path.extension().map(|e| e == "json").unwrap_or(false) {
-                    if let Ok(content) = fs::read_to_string(path) {
+                if path.extension().map_or(false, |e| e == "json") {
+                    if let Ok(content) = fs::read_to_string(&path) {
                         if let Ok(item) = serde_json::from_str::<ExtensionItem>(&content) {
                             list.push(item);
                         }
@@ -64,11 +65,8 @@ impl ExtensionStorage {
 
     pub fn get(&self, id: u64) -> Option<ExtensionItem> {
         let path = self.data_dir.join(format!("{id}.json"));
-        if let Ok(content) = fs::read_to_string(path) {
-            serde_json::from_str::<ExtensionItem>(&content).ok()
-        } else {
-            None
-        }
+        let content = fs::read_to_string(path).ok()?;
+        serde_json::from_str::<ExtensionItem>(&content).ok()
     }
 
     pub fn create(&self, dto: CreateExtensionDto) -> Result<ExtensionItem, String> {
@@ -77,16 +75,16 @@ impl ExtensionStorage {
         let item = ExtensionItem {
             id,
             name: dto.name.unwrap_or_else(|| format!("Extensão #{id}")),
-            icon_type: dto.icon_type.or(Some("custom".to_string())),
+            icon_type: dto.icon_type.or_else(|| Some("custom".to_string())),
             icon_url: dto.icon_url,
-            icon_bg: dto.icon_bg.or(Some("#2F80ED".to_string())),
+            icon_bg: dto.icon_bg.or_else(|| Some("#2F80ED".to_string())),
             enabled: dto.enabled.unwrap_or(true),
             status: dto.status.unwrap_or_else(|| "available".to_string()),
             description: dto.description.unwrap_or_else(|| "Extensão adicionada à equipe.".to_string()),
             provider: dto.provider.unwrap_or_else(|| "Firefox Add-ons".to_string()),
             provider_url: dto.provider_url,
             tab: dto.tab.unwrap_or_else(|| "team".to_string()),
-            version: dto.version.or(Some("1.0.0".to_string())),
+            version: dto.version.or_else(|| Some("1.0.0".to_string())),
         };
 
         self.save_extension(&item)?;
@@ -98,8 +96,9 @@ impl ExtensionStorage {
         let mut item = self.get(id).ok_or_else(|| format!("Extensão {id} não encontrada"))?;
 
         if let Some(name) = dto.name {
-            if !name.trim().is_empty() {
-                item.name = name.trim().to_string();
+            let trimmed = name.trim();
+            if !trimmed.is_empty() {
+                item.name = trimmed.to_string();
             }
         }
         if let Some(enabled) = dto.enabled {
@@ -157,63 +156,63 @@ impl ExtensionStorage {
             _ => (None, true),
         };
 
-        let url = if !q.is_empty() {
-            if let Some(slug) = amo_cat_slug {
-                format!(
-                    "https://addons.mozilla.org/api/v5/addons/search/?q={}&category={}&type=extension&page_size=30",
-                    urlencoding(q),
-                    slug
-                )
-            } else {
-                format!(
-                    "https://addons.mozilla.org/api/v5/addons/search/?q={}&type=extension&page_size=30",
-                    urlencoding(q)
-                )
+        let url = match (q.is_empty(), amo_cat_slug) {
+            (false, Some(slug)) => format!(
+                "https://addons.mozilla.org/api/v5/addons/search/?q={}&category={slug}&type=extension&page_size=30",
+                urlencode(q)
+            ),
+            (false, None) => format!(
+                "https://addons.mozilla.org/api/v5/addons/search/?q={}&type=extension&page_size=30",
+                urlencode(q)
+            ),
+            (true, Some(slug)) => format!(
+                "https://addons.mozilla.org/api/v5/addons/search/?category={slug}&type=extension&sort=users&page_size=30"
+            ),
+            (true, None) => {
+                "https://addons.mozilla.org/api/v5/addons/search/?type=extension&sort=users&page_size=30".to_string()
             }
-        } else if let Some(slug) = amo_cat_slug {
-            format!(
-                "https://addons.mozilla.org/api/v5/addons/search/?category={}&type=extension&sort=users&page_size=30",
-                slug
-            )
-        } else {
-            "https://addons.mozilla.org/api/v5/addons/search/?type=extension&sort=users&page_size=30".to_string()
         };
 
-        let mut fetched_items: Vec<RecommendedExtension> = Vec::new();
+        let is_chrome = st.eq_ignore_ascii_case("chrome");
+        let provider = if is_chrome { "Chrome Web Store" } else { "Firefox Add-ons" };
 
-        match self.client.get(&url).send().await {
-            Ok(resp) => {
-                if let Ok(json) = resp.json::<serde_json::Value>().await {
-                    if let Some(results) = json.get("results").and_then(|r| r.as_array()) {
-                        fetched_items = results
+        let fetched_items: Vec<RecommendedExtension> = match self.client.get(&url).send().await {
+            Ok(resp) if resp.status().is_success() => {
+                let json = resp.json::<serde_json::Value>().await.unwrap_or_default();
+                json.get("results")
+                    .and_then(|r| r.as_array())
+                    .map(|results| {
+                        results
                             .iter()
                             .filter_map(|item| {
                                 let name = extract_localized_string(item.get("name"))?;
                                 let desc = extract_localized_string(item.get("summary"))
                                     .unwrap_or_else(|| "Extensão oficial do catálogo.".to_string());
-                                let icon_url = item.get("icon_url").and_then(|i| i.as_str()).map(|s| s.to_string());
-                                let addon_url = item.get("url").and_then(|u| u.as_str()).map(|s| s.to_string());
-                                let id = item.get("guid")
+                                let icon_url = item.get("icon_url").and_then(|i| i.as_str()).map(String::from);
+                                let addon_url = item.get("url").and_then(|u| u.as_str()).map(String::from);
+                                let id = item
+                                    .get("guid")
                                     .and_then(|g| g.as_str())
                                     .or_else(|| item.get("slug").and_then(|s| s.as_str()))
-                                    .unwrap_or_else(|| &name)
+                                    .unwrap_or(&name)
                                     .to_string();
 
-                                let raw_categories = item.get("categories").and_then(|c| c.as_array());
                                 let mapped_cat = if !is_all_cat {
                                     cat.to_string()
                                 } else {
-                                    map_amo_category(raw_categories)
+                                    map_amo_category(
+                                        item.get("categories")
+                                            .and_then(|c| c.as_array())
+                                            .map(|v| v.as_slice()),
+                                    )
+                                    .to_string()
                                 };
 
-                                let provider = if st.eq_ignore_ascii_case("chrome") {
-                                    "Chrome Web Store".to_string()
-                                } else {
-                                    "Firefox Add-ons".to_string()
-                                };
-
-                                let provider_url = if st.eq_ignore_ascii_case("chrome") {
-                                    Some(format!("https://chromewebstore.google.com/search?q={}", urlencoding(&name)))
+                                let provider_url = if is_chrome {
+                                    Some(format!(
+                                        "https://chromewebstore.google.com/search?q={}",
+                                        urlencode(&name)
+                                    ))
                                 } else {
                                     addon_url
                                 };
@@ -223,7 +222,7 @@ impl ExtensionStorage {
                                     name,
                                     category: mapped_cat,
                                     description: desc,
-                                    provider,
+                                    provider: provider.to_string(),
                                     provider_url,
                                     icon_type: "puzzle".to_string(),
                                     icon_bg: String::new(),
@@ -231,16 +230,20 @@ impl ExtensionStorage {
                                     featured: Some(false),
                                 })
                             })
-                            .collect();
-                    }
-                }
+                            .collect()
+                    })
+                    .unwrap_or_default()
+            }
+            Ok(resp) => {
+                tracing::warn!("⚠️ Catálogo AMO retornou status {} para {}", resp.status(), url);
+                Vec::new()
             }
             Err(err) => {
                 tracing::warn!("⚠️ Erro ao consultar catálogo AMO ({}): {}", url, err);
+                Vec::new()
             }
-        }
+        };
 
-        // Só armazena em cache se obtiver resultados reais para não poluir o cache com falhas de rede
         if !fetched_items.is_empty() {
             self.cache.set(query, category, store, fetched_items.clone());
         }
@@ -249,55 +252,51 @@ impl ExtensionStorage {
     }
 }
 
-fn urlencoding(input: &str) -> String {
-    let mut encoded = String::new();
+/// Codifica parâmetros de URL de forma leve e sem alocações excedentes
+fn urlencode(input: &str) -> String {
+    let mut encoded = String::with_capacity(input.len());
     for b in input.bytes() {
         match b {
             b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => {
                 encoded.push(b as char);
             }
             _ => {
-                encoded.push_str(&format!("%{:02X}", b));
+                let _ = write!(encoded, "%{b:02X}");
             }
         }
     }
     encoded
 }
 
+/// Extrai a string no idioma do usuário ou com fallback seguro
 fn extract_localized_string(val: Option<&serde_json::Value>) -> Option<String> {
-    match val {
-        Some(serde_json::Value::String(s)) => Some(s.clone()),
-        Some(serde_json::Value::Object(map)) => {
-            if let Some(serde_json::Value::String(s)) = map.get("pt-BR") {
-                Some(s.clone())
-            } else if let Some(serde_json::Value::String(s)) = map.get("en-US") {
-                Some(s.clone())
-            } else if let Some((_, serde_json::Value::String(s))) = map.iter().next() {
-                Some(s.clone())
-            } else {
-                None
-            }
-        }
+    match val? {
+        serde_json::Value::String(s) => Some(s.clone()),
+        serde_json::Value::Object(map) => map
+            .get("pt-BR")
+            .or_else(|| map.get("en-US"))
+            .or_else(|| map.values().next())
+            .and_then(|v| v.as_str())
+            .map(String::from),
         _ => None,
     }
 }
 
-fn map_amo_category(cats: Option<&Vec<serde_json::Value>>) -> String {
-    if let Some(arr) = cats {
-        for c in arr {
-            if let Some(slug) = c.as_str() {
-                match slug {
-                    "privacy-security" => return "Privacy and security".to_string(),
-                    "web-development" | "developer-tools" => return "Developer tools".to_string(),
-                    "appearance" | "accessibility" => return "Accessibility".to_string(),
-                    "feeds-news-blogging" | "social-communication" | "tabs" | "bookmarks" => return "Workflow and planning".to_string(),
-                    "shopping" => return "Shopping".to_string(),
-                    "language-support" => return "Education".to_string(),
-                    "download-management" | "search-tools" | "alerts-updates" => return "Tools".to_string(),
-                    _ => {}
-                }
+/// Mapeia o slug da categoria do AMO para o nome amigável exibido no UI
+fn map_amo_category(cats: Option<&[serde_json::Value]>) -> &'static str {
+    cats.and_then(|arr| {
+        arr.iter().filter_map(|c| c.as_str()).find_map(|slug| match slug {
+            "privacy-security" => Some("Privacy and security"),
+            "web-development" | "developer-tools" => Some("Developer tools"),
+            "appearance" | "accessibility" => Some("Accessibility"),
+            "feeds-news-blogging" | "social-communication" | "tabs" | "bookmarks" => {
+                Some("Workflow and planning")
             }
-        }
-    }
-    "Tools".to_string()
+            "shopping" => Some("Shopping"),
+            "language-support" => Some("Education"),
+            "download-management" | "search-tools" | "alerts-updates" => Some("Tools"),
+            _ => None,
+        })
+    })
+    .unwrap_or("Tools")
 }

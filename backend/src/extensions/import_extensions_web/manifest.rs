@@ -1,5 +1,4 @@
 use std::fs;
-use std::io::Read;
 use std::path::Path;
 use tracing::warn;
 
@@ -11,37 +10,22 @@ pub fn extract_addon_id_from_xpi<P: AsRef<Path>>(xpi_path: P) -> Option<String> 
     let file = fs::File::open(xpi_path.as_ref()).ok()?;
     let mut archive = zip::ZipArchive::new(file).ok()?;
     let mut manifest_file = archive.by_name("manifest.json").ok()?;
-    let mut content = String::new();
-    manifest_file.read_to_string(&mut content).ok()?;
-    let val: serde_json::Value = serde_json::from_str(&content).ok()?;
+    let val: serde_json::Value = serde_json::from_reader(&mut manifest_file).ok()?;
 
-    if let Some(id) = val
-        .get("browser_specific_settings")
-        .and_then(|b| b.get("gecko"))
-        .and_then(|g| g.get("id"))
-        .and_then(|i| i.as_str())
-    {
-        let trimmed = id.trim();
-        if !trimmed.is_empty() {
-            return Some(trimmed.to_string());
-        }
+    let id = val
+        .pointer("/browser_specific_settings/gecko/id")
+        .or_else(|| val.pointer("/applications/gecko/id"))
+        .and_then(|v| v.as_str())
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(String::from);
+
+    if id.is_none() {
+        warn!(
+            "manifest.json em {:?} não possui ID explícito de gecko/applications.",
+            xpi_path.as_ref()
+        );
     }
 
-    if let Some(id) = val
-        .get("applications")
-        .and_then(|a| a.get("gecko"))
-        .and_then(|g| g.get("id"))
-        .and_then(|i| i.as_str())
-    {
-        let trimmed = id.trim();
-        if !trimmed.is_empty() {
-            return Some(trimmed.to_string());
-        }
-    }
-
-    warn!(
-        "manifest.json em {:?} não possui ID explícito de gecko/applications.",
-        xpi_path.as_ref()
-    );
-    None
+    id
 }
