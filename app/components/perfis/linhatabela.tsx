@@ -226,10 +226,21 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
     profile.created_at || profile.createdAt,
   ) || { date: 'Hoje', time: '' };
 
-  const tagsList: string[] = Array.isArray(profile.tags)
-    ? profile.tags
+  const tagsList: { id?: string | number; name: string; color?: string }[] = Array.isArray(profile.tags)
+    ? (profile.tags as any[]).map((t: any) =>
+        typeof t === 'object' && t !== null && t.name
+          ? t
+          : { id: t, name: String(t), color: serviceTags.getColorByName(String(t)) }
+      )
     : typeof profile.tags === 'string' && profile.tags
-      ? profile.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
+      ? (profile.tags as string)
+          .split(',')
+          .map((t: string) => ({
+            id: t.trim(),
+            name: t.trim(),
+            color: serviceTags.getColorByName(t.trim()),
+          }))
+          .filter((t) => t.name)
       : [];
 
   return (
@@ -339,11 +350,11 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
         <div className="flex items-center justify-between gap-1.5 overflow-hidden">
           {tagsList.length > 0 ? (
             <div className="flex items-center gap-1.5 overflow-hidden max-w-[145px]">
-              {tagsList.map((t: string) => (
+              {tagsList.map((tag, idx) => (
                 <TagBadge
-                  key={t}
-                  name={t}
-                  color={serviceTags.getColorByName(t)}
+                  key={tag.id ?? `${tag.name}-${idx}`}
+                  name={tag.name}
+                  color={tag.color}
                 />
               ))}
             </div>

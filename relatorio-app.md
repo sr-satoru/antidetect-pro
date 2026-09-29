@@ -82,7 +82,7 @@
 
 | Linha | Severidade | Regra Violada | O que foi encontrado | Ação Recomendada |
 | :---: | :---: | :--- | :--- | :--- |
-| 234 | 🟡 MÉDIO | Geração de ID no Frontend | Geração de identificador sintético via crypto.randomUUID() ou Date.now() no frontend. | O ID do perfil ou recurso deve ser gerado pelo backend Rust (usando o id_generator.rs atômico em Base62). |
+| 250 | 🟡 MÉDIO | Geração de ID no Frontend | Geração de identificador sintético via crypto.randomUUID() ou Date.now() no frontend. | O ID do perfil ou recurso deve ser gerado pelo backend Rust (usando o id_generator.rs atômico em Base62). |
 
 
 ### 📁 `app/services/extensoes/service.categorias.ts`

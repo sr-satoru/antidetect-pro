@@ -224,15 +224,32 @@ export const impressaoDigitalService = {
   montarPayloadPerfil: (formData: any) => {
     const impressao = extrairImpressaoDigitalLimpa(formData);
 
-    let tagsString = '';
+    let tagsArray: string[] = [];
     if (Array.isArray(formData.tags)) {
-      tagsString = formData.tags.join(',');
-    } else if (formData.tags) {
-      tagsString = String(formData.tags);
+      tagsArray = formData.tags
+        .map((t: any) => (typeof t === 'string' ? t : t?.name || ''))
+        .map((t: string) => t.trim())
+        .filter(Boolean);
+    } else if (typeof formData.tags === 'string' && formData.tags.trim()) {
+      tagsArray = formData.tags
+        .split(',')
+        .map((t: string) => t.trim())
+        .filter(Boolean);
+    }
+
+    let tagIds: number[] = [];
+    if (Array.isArray(formData.tags)) {
+      tagIds = formData.tags
+        .map((t: any) => (typeof t === 'object' && t?.id ? Number(t.id) : null))
+        .filter((id: number | null): id is number => typeof id === 'number' && !isNaN(id) && id > 0);
+    }
+    if (Array.isArray(formData.tagIds)) {
+      tagIds = Array.from(new Set([...tagIds, ...formData.tagIds.map(Number).filter((n: number) => !isNaN(n))]));
     }
 
     const profileId = (formData.id && String(formData.id).trim()) || crypto.randomUUID();
     const nowSecs = Math.floor(Date.now() / 1000);
+    const proxyPort = formData.proxyPort ? Number(formData.proxyPort) : undefined;
 
     return {
       // 1. Identificador Universal Único (UUID v4) e Marcadores Temporais (LWW)
@@ -243,27 +260,28 @@ export const impressaoDigitalService = {
       // 2. Dados cadastrais do Perfil
       name: (formData.name && formData.name.trim()) || 'NOVO PERFIL',
       group: formData.group || 'Desagrupado',
-      tags: tagsString,
+      tags: tagsArray,
+      tag_ids: tagIds.length > 0 ? tagIds : undefined,
       notes: formData.notes || '',
       status: 'ready',
 
       // 3. Atalhos diretos para a tabela de listagem
-      kernel: impressao.kernel,
-      browser_version: impressao.kernel_version,
-      os: impressao.os,
-      proxy_type: impressao.proxy_type,
-      proxy_host: impressao.proxy_host,
-      proxy_port: impressao.proxy_port,
-      proxy_username: impressao.proxy_username,
-      proxy_password: impressao.proxy_password,
+      kernel: formData.kernel || 'Camoufox',
+      browser_version: formData.kernelVersion || '150',
+      os: (formData.os || 'windows').toLowerCase(),
+      proxy_type: formData.proxyType || 'none',
+      proxy_host: formData.proxyHost || undefined,
+      proxy_port: proxyPort && !isNaN(proxyPort) ? proxyPort : undefined,
+      proxy_username: formData.proxyUser || undefined,
+      proxy_password: formData.proxyPass || undefined,
 
       // Configuração de extensões para o launcher instalar no Camoufox
-      extension_mode: impressao.extension_mode,
-      extension_category: impressao.extension_category,
-      extensions: impressao.extensions,
+      extension_mode: formData.extensionMode || 'team',
+      extension_category: formData.extensionCategory || 'kit_basico',
+      extensions: Array.isArray(formData.extensions) ? formData.extensions : [],
 
-      // 4. Objeto de Impressão Digital estruturado (sem lixo duplicado)
-      fingerprint_json: JSON.stringify(impressao),
+      // 4. Objeto de Impressão Digital nativo estruturado (sem JSON.stringify escapado)
+      fingerprint_json: impressao,
     };
   },
 

@@ -51,7 +51,7 @@ pub async fn list_profiles(State(state): State<McpState>) -> impl IntoResponse {
             id: p.id,
             name: p.name,
             group: p.group,
-            tags: p.tags,
+            tags: p.tags.into_iter().map(|t| t.name).collect(),
             status: p.status,
         })
         .collect();

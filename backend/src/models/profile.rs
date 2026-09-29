@@ -42,15 +42,54 @@ impl Default for ProfileProxyConfig {
     }
 }
 
-/// Metadados e dados completos do Perfil (salvo em metadata.json)
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TagRef {
+    #[serde(default)]
+    pub id: i64,
+    pub name: String,
+    #[serde(default = "default_tag_color")]
+    pub color: String,
+}
+
+fn default_tag_color() -> String {
+    "#1677FF".to_string()
+}
+
+fn deserialize_tags<'de, D>(deserializer: D) -> Result<Vec<TagRef>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    use serde::de::Deserialize;
+    let value = serde_json::Value::deserialize(deserializer)?;
+    match value {
+        serde_json::Value::Array(arr) => {
+            let mut result = Vec::new();
+            for item in arr {
+                if let Ok(tag_ref) = serde_json::from_value::<TagRef>(item.clone()) {
+                    result.push(tag_ref);
+                } else if let Some(s) = item.as_str() {
+                    result.push(TagRef {
+                        id: 0,
+                        name: s.to_string(),
+                        color: default_tag_color(),
+                    });
+                }
+            }
+            Ok(result)
+        }
+        _ => Ok(Vec::new()),
+    }
+}
+
+/// Metadados e dados completos do Perfil
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Profile {
     pub id: String, // UUID v4
     pub name: String,
     #[serde(default = "default_group")]
     pub group: String,
-    #[serde(default)]
-    pub tags: Vec<String>,
+    #[serde(default, deserialize_with = "deserialize_tags")]
+    pub tags: Vec<TagRef>,
     #[serde(default)]
     pub notes: String,
     #[serde(default = "default_status")]
@@ -115,7 +154,8 @@ pub struct CreateProfileDto {
     pub id: Option<String>,
     pub name: Option<String>,
     pub group: Option<String>,
-    pub tags: Option<serde_json::Value>, // pode ser string "a,b" ou array ["a", "b"]
+    pub tags: Option<Vec<String>>,
+    pub tag_ids: Option<Vec<i64>>,
     pub notes: Option<String>,
     pub status: Option<String>,
     pub kernel: Option<String>,
@@ -124,7 +164,7 @@ pub struct CreateProfileDto {
 
     pub proxy_type: Option<String>,
     pub proxy_host: Option<String>,
-    pub proxy_port: Option<serde_json::Value>,
+    pub proxy_port: Option<u16>,
     pub proxy_username: Option<String>,
     pub proxy_password: Option<String>,
 
@@ -140,7 +180,8 @@ pub struct CreateProfileDto {
 pub struct UpdateProfileDto {
     pub name: Option<String>,
     pub group: Option<String>,
-    pub tags: Option<serde_json::Value>,
+    pub tags: Option<Vec<String>>,
+    pub tag_ids: Option<Vec<i64>>,
     pub notes: Option<String>,
     pub status: Option<String>,
     pub kernel: Option<String>,
@@ -149,7 +190,7 @@ pub struct UpdateProfileDto {
 
     pub proxy_type: Option<String>,
     pub proxy_host: Option<String>,
-    pub proxy_port: Option<serde_json::Value>,
+    pub proxy_port: Option<u16>,
     pub proxy_username: Option<String>,
     pub proxy_password: Option<String>,
 

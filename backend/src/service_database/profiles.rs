@@ -52,6 +52,112 @@ impl ProfileService {
         }
     }
 
+    fn resolve_tags(
+        conn: &rusqlite::Connection,
+        tag_names: Option<&[String]>,
+        tag_ids: Option<&[i64]>,
+    ) -> Vec<crate::models::TagRef> {
+        let mut result = Vec::new();
+
+        // 1. Resolver por IDs diretos
+        if let Some(ids) = tag_ids {
+            for &id in ids {
+                let mut stmt = match conn.prepare("SELECT id, name, color FROM tags WHERE id = ?1 LIMIT 1") {
+                    Ok(s) => s,
+                    Err(_) => continue,
+                };
+                if let Ok(mut rows) = stmt.query(params![id]) {
+                    if let Ok(Some(row)) = rows.next() {
+                        if let (Ok(tid), Ok(name), Ok(color)) = (
+                            row.get::<_, i64>(0),
+                            row.get::<_, String>(1),
+                            row.get::<_, String>(2),
+                        ) {
+                            result.push(crate::models::TagRef { id: tid, name, color });
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Resolver por nomes (buscando ou inserindo com cor padrão)
+        if let Some(names) = tag_names {
+            let now = now_secs();
+            for raw_name in names {
+                let name = raw_name.trim();
+                if name.is_empty() {
+                    continue;
+                }
+                if result.iter().any(|t| t.name.eq_ignore_ascii_case(name)) {
+                    continue;
+                }
+
+                let mut stmt = match conn.prepare("SELECT id, name, color FROM tags WHERE LOWER(name) = LOWER(?1) LIMIT 1") {
+                    Ok(s) => s,
+                    Err(_) => continue,
+                };
+                let existing = stmt.query_row(params![name], |row| {
+                    Ok(crate::models::TagRef {
+                        id: row.get(0)?,
+                        name: row.get(1)?,
+                        color: row.get(2)?,
+                    })
+                });
+
+                match existing {
+                    Ok(t) => result.push(t),
+                    Err(_) => {
+                        let default_color = crate::models::tag::default_tag_color();
+                        let inserted = conn.execute(
+                            "INSERT INTO tags (name, color, created_at) VALUES (?1, ?2, ?3)",
+                            params![name, default_color, now],
+                        );
+                        if inserted.is_ok() {
+                            let new_id = conn.last_insert_rowid();
+                            result.push(crate::models::TagRef {
+                                id: new_id,
+                                name: name.to_string(),
+                                color: default_color,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        result
+    }
+
+    fn load_profile_tags(conn: &rusqlite::Connection, profile_id: &str) -> Vec<crate::models::TagRef> {
+        let mut stmt = match conn.prepare(
+            "SELECT t.id, t.name, t.color
+             FROM tags t
+             JOIN profile_tags pt ON pt.tag_id = t.id
+             WHERE pt.profile_id = ?1
+             ORDER BY t.name ASC"
+        ) {
+            Ok(s) => s,
+            Err(_) => return Vec::new(),
+        };
+
+        let mut rows = match stmt.query(params![profile_id]) {
+            Ok(r) => r,
+            Err(_) => return Vec::new(),
+        };
+
+        let mut tags = Vec::new();
+        while let Ok(Some(row)) = rows.next() {
+            if let (Ok(id), Ok(name), Ok(color)) = (
+                row.get::<_, i64>(0),
+                row.get::<_, String>(1),
+                row.get::<_, String>(2),
+            ) {
+                tags.push(crate::models::TagRef { id, name, color });
+            }
+        }
+        tags
+    }
+
     fn save_to_db(&self, profile: &Profile) -> Result<(), String> {
         let conn = self.vault.conn();
         let conn_guard = conn.lock().map_err(|e| e.to_string())?;
@@ -94,6 +200,20 @@ impl ProfileService {
                 ],
             )
             .map_err(|e| format!("Erro ao salvar perfil no banco de dados: {e}"))?;
+
+        // Sincroniza vínculos na tabela relacional profile_tags
+        let _ = conn_guard.execute(
+            "DELETE FROM profile_tags WHERE profile_id = ?1",
+            params![profile.id],
+        );
+        for tag in &profile.tags {
+            if tag.id > 0 {
+                let _ = conn_guard.execute(
+                    "INSERT OR IGNORE INTO profile_tags (profile_id, tag_id) VALUES (?1, ?2)",
+                    params![profile.id, tag.id],
+                );
+            }
+        }
 
         Ok(())
     }
@@ -142,6 +262,11 @@ impl ProfileService {
             if let Ok(payload_enc) = row.get::<_, Vec<u8>>(0) {
                 if let Ok(decrypted) = decrypt_payload(self.vault.key().as_ref(), &payload_enc) {
                     if let Ok(mut profile) = serde_json::from_slice::<Profile>(&decrypted) {
+                        let dynamic_tags = Self::load_profile_tags(&conn_guard, &profile.id);
+                        if !dynamic_tags.is_empty() {
+                            profile.tags = dynamic_tags;
+                        }
+
                         let profile_dir = self.data_dir.join(&profile.id).join("profile");
                         let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
                         if is_alive && profile.status != "running" {
@@ -160,7 +285,7 @@ impl ProfileService {
                                 .as_deref()
                                 .map(|h| h.to_lowercase().contains(&term))
                                 .unwrap_or(false);
-                            let matches_tags = profile.tags.iter().any(|t| t.to_lowercase().contains(&term));
+                            let matches_tags = profile.tags.iter().any(|t| t.name.to_lowercase().contains(&term));
                             if !(matches_name || matches_notes || matches_proxy || matches_tags) {
                                 continue;
                             }
@@ -196,7 +321,11 @@ impl ProfileService {
         while let Ok(Some(row)) = rows.next() {
             if let Ok(payload_enc) = row.get::<_, Vec<u8>>(0) {
                 if let Ok(decrypted) = decrypt_payload(self.vault.key().as_ref(), &payload_enc) {
-                    if let Ok(profile) = serde_json::from_slice::<Profile>(&decrypted) {
+                    if let Ok(mut profile) = serde_json::from_slice::<Profile>(&decrypted) {
+                        let dynamic_tags = Self::load_profile_tags(&conn_guard, &profile.id);
+                        if !dynamic_tags.is_empty() {
+                            profile.tags = dynamic_tags;
+                        }
                         profiles.push(profile);
                     }
                 }
@@ -220,6 +349,11 @@ impl ProfileService {
             let decrypted = decrypt_payload(self.vault.key().as_ref(), &payload_enc).ok()?;
             let mut profile = serde_json::from_slice::<Profile>(&decrypted).ok()?;
 
+            let dynamic_tags = Self::load_profile_tags(&conn_guard, &profile.id);
+            if !dynamic_tags.is_empty() {
+                profile.tags = dynamic_tags;
+            }
+
             let profile_dir = self.data_dir.join(id).join("profile");
             let is_alive = self.process_manager.is_running_with_dir(&profile.id, Some(&profile_dir));
             if is_alive && profile.status != "running" {
@@ -242,32 +376,20 @@ impl ProfileService {
 
         let now = now_secs();
 
-        let tags: Vec<String> = match dto.tags {
-            Some(serde_json::Value::Array(arr)) => arr
-                .into_iter()
-                .filter_map(|v| v.as_str().map(|s| s.to_string()))
-                .collect(),
-            Some(serde_json::Value::String(s)) => {
-                s.split(',').map(|t| t.trim().to_string()).filter(|t| !t.is_empty()).collect()
-            }
-            _ => Vec::new(),
-        };
-
-        let port_u16 = dto.proxy_port.and_then(|v| {
-            if let Some(n) = v.as_u64() {
-                Some(n as u16)
-            } else if let Some(s) = v.as_str() {
-                s.parse::<u16>().ok()
-            } else {
-                None
-            }
-        });
+        let conn = self.vault.conn();
+        let conn_guard = conn.lock().map_err(|e| e.to_string())?;
+        let tags = Self::resolve_tags(
+            &conn_guard,
+            dto.tags.as_deref(),
+            dto.tag_ids.as_deref(),
+        );
+        drop(conn_guard);
 
         let proxy = ProfileProxyConfig {
             mode: "custom".to_string(),
             proxy_type: dto.proxy_type.unwrap_or_else(|| "none".to_string()),
             host: dto.proxy_host,
-            port: port_u16,
+            port: dto.proxy_port,
             username: dto.proxy_username,
             password: dto.proxy_password,
             rotation_url: None,
@@ -308,9 +430,8 @@ impl ProfileService {
             extensions,
         };
 
-        let profile_dir = self.data_dir.join(&id);
-        fs::create_dir_all(&profile_dir).map_err(|e| e.to_string())?;
-
+        // Persistência EXCLUSIVA no Star Vault (.db).
+        // NENHUMA pasta em disco é criada na criação do cadastro.
         self.save_to_db(&profile)?;
         self.trigger_auto_sync(&id);
 
@@ -337,17 +458,16 @@ impl ProfileService {
             }
             profile.status = status;
         }
-        if let Some(tags_val) = dto.tags {
-            profile.tags = match tags_val {
-                serde_json::Value::Array(arr) => arr
-                    .into_iter()
-                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
-                    .collect(),
-                serde_json::Value::String(s) => {
-                    s.split(',').map(|t| t.trim().to_string()).filter(|t| !t.is_empty()).collect()
-                }
-                _ => profile.tags,
-            };
+
+        if dto.tags.is_some() || dto.tag_ids.is_some() {
+            let conn = self.vault.conn();
+            if let Ok(conn_guard) = conn.lock() {
+                profile.tags = Self::resolve_tags(
+                    &conn_guard,
+                    dto.tags.as_deref(),
+                    dto.tag_ids.as_deref(),
+                );
+            }
         }
 
         if let Some(os) = dto.os {
@@ -366,15 +486,8 @@ impl ProfileService {
         if let Some(proxy_host) = dto.proxy_host {
             profile.proxy.host = Some(proxy_host);
         }
-        if let Some(ref p_val) = dto.proxy_port {
-            let port_u16 = if let Some(n) = p_val.as_u64() {
-                Some(n as u16)
-            } else if let Some(s) = p_val.as_str() {
-                s.parse::<u16>().ok()
-            } else {
-                None
-            };
-            profile.proxy.port = port_u16;
+        if let Some(port) = dto.proxy_port {
+            profile.proxy.port = Some(port);
         }
         if let Some(proxy_user) = dto.proxy_username {
             profile.proxy.username = Some(proxy_user);

@@ -8,7 +8,7 @@ import { TagItem } from '../../services/tags/service.tags';
 interface ModalNovaEtiquetaProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: { id?: string; name: string; color: string }) => Promise<void>;
+  onSave: (data: { id?: string | number; name: string; color: string }) => Promise<void>;
   tagParaEditar?: TagItem | null;
 }
 

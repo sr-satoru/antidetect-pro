@@ -49,7 +49,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
 
       // Normaliza as tags atuais do perfil
       const currentTags = Array.isArray(profile.tags)
-        ? [...profile.tags]
+        ? (profile.tags as any[]).map((t: any) => typeof t === 'string' ? t : t?.name || '').filter(Boolean)
         : typeof profile.tags === 'string'
           ? profile.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
           : [];
@@ -67,7 +67,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
   };
 
   // Salvar nova tag ou edição no catálogo do sistema
-  const handleSaveTag = async (data: { id?: string; name: string; color: string }) => {
+  const handleSaveTag = async (data: { id?: string | number; name: string; color: string }) => {
     if (data.id) {
       await serviceTags.update(data.id, { name: data.name, color: data.color });
     } else {

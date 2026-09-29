@@ -25,9 +25,9 @@ pub async fn list_tags(
 
 pub async fn get_tag(
     State(storage): State<Arc<TagStorage>>,
-    Path(id): Path<String>,
+    Path(id): Path<i64>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    match storage.get(&id) {
+    match storage.get(id) {
         Some(tag) => Ok(Json(serde_json::to_value(tag).unwrap())),
         None => Err((
             StatusCode::NOT_FOUND,
@@ -51,10 +51,10 @@ pub async fn create_tag(
 
 pub async fn update_tag(
     State(storage): State<Arc<TagStorage>>,
-    Path(id): Path<String>,
+    Path(id): Path<i64>,
     Json(payload): Json<UpdateTagDto>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    match storage.update(&id, payload) {
+    match storage.update(id, payload) {
         Ok(tag) => Ok(Json(serde_json::to_value(tag).unwrap())),
         Err(err) => Err((
             StatusCode::BAD_REQUEST,
@@ -65,9 +65,9 @@ pub async fn update_tag(
 
 pub async fn delete_tag(
     State(storage): State<Arc<TagStorage>>,
-    Path(id): Path<String>,
+    Path(id): Path<i64>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    match storage.delete(&id) {
+    match storage.delete(id) {
         Ok(true) => Ok(StatusCode::NO_CONTENT),
         Ok(false) => Err((
             StatusCode::NOT_FOUND,

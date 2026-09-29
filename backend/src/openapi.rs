@@ -25,6 +25,16 @@ pub struct ProfileProxyConfigDoc {
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
+pub struct ProfileTagRefDoc {
+    #[schema(example = 1)]
+    pub id: i64,
+    #[schema(example = "Google Ads")]
+    pub name: String,
+    #[schema(example = "#1677FF")]
+    pub color: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct ProfileDoc {
     #[schema(example = "e87f1390-1c32-4e4f-b644-8cb312d471ac")]
     pub id: String,
@@ -32,8 +42,7 @@ pub struct ProfileDoc {
     pub name: String,
     #[schema(example = "Facebook Ads")]
     pub group: String,
-    #[schema(example = json!(["ads", "farming"]))]
-    pub tags: Vec<String>,
+    pub tags: Vec<ProfileTagRefDoc>,
     #[schema(example = "Conta matriz")]
     pub notes: String,
     #[schema(example = "ready")]
@@ -63,8 +72,10 @@ pub struct CreateProfileDtoDoc {
     pub name: Option<String>,
     #[schema(example = "Vendas")]
     pub group: Option<String>,
-    #[schema(example = "ads,google")]
-    pub tags: Option<String>,
+    #[schema(example = json!(["ads", "google"]))]
+    pub tags: Option<Vec<String>>,
+    #[schema(example = json!([1, 2]))]
+    pub tag_ids: Option<Vec<i64>>,
     pub notes: Option<String>,
     #[schema(example = "FlowerBrowser")]
     pub kernel: Option<String>,
@@ -84,6 +95,10 @@ pub struct UpdateProfileDtoDoc {
     #[schema(example = "Meu Perfil Atualizado")]
     pub name: Option<String>,
     pub group: Option<String>,
+    #[schema(example = json!(["ads", "google"]))]
+    pub tags: Option<Vec<String>>,
+    #[schema(example = json!([1, 2]))]
+    pub tag_ids: Option<Vec<i64>>,
     pub notes: Option<String>,
     pub proxy_type: Option<String>,
     pub proxy_host: Option<String>,
@@ -236,8 +251,8 @@ pub struct ProxyValidationResultDoc {
 
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct TagDoc {
-    #[schema(example = "tag-1")]
-    pub id: String,
+    #[schema(example = 1)]
+    pub id: i64,
     #[schema(example = "Campanha Black Friday")]
     pub name: String,
     #[schema(example = "#1677FF")]
@@ -256,8 +271,8 @@ pub struct CreateTagDtoDoc {
 
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct BatchDeleteTagsDtoDoc {
-    #[schema(example = json!(["tag-1", "tag-2"]))]
-    pub ids: Vec<String>,
+    #[schema(example = json!([1, 2]))]
+    pub ids: Vec<i64>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
@@ -871,6 +886,7 @@ pub async fn doc_app_check_update() {}
     ),
     components(
         schemas(
+            ProfileTagRefDoc,
             ProfileDoc,
             ProfileProxyConfigDoc,
             CreateProfileDtoDoc,

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Tag {
-    pub id: String,
+    pub id: i64,
     pub name: String,
     #[serde(default = "default_tag_color")]
     pub color: String,
@@ -10,7 +10,7 @@ pub struct Tag {
     pub updated_at: i64,
 }
 
-fn default_tag_color() -> String {
+pub fn default_tag_color() -> String {
     "#1677FF".to_string()
 }
 
@@ -28,5 +28,5 @@ pub struct UpdateTagDto {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct BatchDeleteTagsDto {
-    pub ids: Vec<String>,
+    pub ids: Vec<i64>,
 }

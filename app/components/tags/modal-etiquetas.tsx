@@ -23,7 +23,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
 }) => {
   const [tags, setTags] = useState<TagItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // Submodal para criar/editar
@@ -70,14 +70,14 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
     }
   };
 
-  const handleToggleSelectOne = (id: string) => {
+  const handleToggleSelectOne = (id: string | number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
   // Salvar nova tag ou edição
-  const handleSaveTag = async (data: { id?: string; name: string; color: string }) => {
+  const handleSaveTag = async (data: { id?: string | number; name: string; color: string }) => {
     if (data.id) {
       await serviceTags.update(data.id, { name: data.name, color: data.color });
     } else {

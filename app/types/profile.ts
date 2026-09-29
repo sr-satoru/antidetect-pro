@@ -79,7 +79,7 @@ export interface Profile {
   id: string; // UUID v4
   name: string;
   group: string;
-  tags: string[];
+  tags: TagItem[];
   notes: string;
   status: ProfileStatus | string;
   kernel: KernelType | string;
@@ -105,7 +105,8 @@ export interface CreateProfileDto {
   id?: string;
   name?: string;
   group?: string;
-  tags?: string | string[];
+  tags?: string[];
+  tag_ids?: number[];
   notes?: string;
   status?: string;
   kernel?: string;
@@ -114,11 +115,11 @@ export interface CreateProfileDto {
 
   proxy_type?: string;
   proxy_host?: string;
-  proxy_port?: string | number;
+  proxy_port?: number;
   proxy_username?: string;
   proxy_password?: string;
 
-  fingerprint_json?: any;
+  fingerprint_json?: Record<string, any>;
 
   extension_mode?: string;
   extension_category?: string;
@@ -128,7 +129,8 @@ export interface CreateProfileDto {
 export interface UpdateProfileDto {
   name?: string;
   group?: string;
-  tags?: string | string[];
+  tags?: string[];
+  tag_ids?: number[];
   notes?: string;
   status?: string;
   kernel?: string;
@@ -137,11 +139,11 @@ export interface UpdateProfileDto {
 
   proxy_type?: string;
   proxy_host?: string;
-  proxy_port?: string | number;
+  proxy_port?: number;
   proxy_username?: string;
   proxy_password?: string;
 
-  fingerprint_json?: any;
+  fingerprint_json?: Record<string, any>;
 
   extension_mode?: string;
   extension_category?: string;
@@ -153,7 +155,7 @@ export interface UpdateProfileDto {
 // ==========================================
 
 export interface TagItem {
-  id: string;
+  id: number | string;
   name: string;
   color: string;
   created_at?: number;
@@ -172,5 +174,5 @@ export interface UpdateTagDto {
 }
 
 export interface BatchDeleteTagsDto {
-  ids: string[];
+  ids: (number | string)[];
 }

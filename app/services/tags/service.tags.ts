@@ -20,7 +20,7 @@ export const serviceTags = {
     return list;
   },
 
-  get: (id: string) => http.get<TagItem>(`/api/tags/${id}`),
+  get: (id: string | number) => http.get<TagItem>(`/api/tags/${id}`),
 
   getColorByName: (name?: string): string | undefined => {
     if (!name) return undefined;
@@ -35,7 +35,7 @@ export const serviceTags = {
     return res;
   },
 
-  update: async (id: string, data: { name?: string; color?: string }) => {
+  update: async (id: string | number, data: { name?: string; color?: string }) => {
     const res = await http.put<TagItem>(`/api/tags/${id}`, data);
     if (res?.name && res?.color) {
       tagColorCache[res.name.toLowerCase()] = res.color;
@@ -43,12 +43,12 @@ export const serviceTags = {
     return res;
   },
 
-  delete: async (id: string) => {
+  delete: async (id: string | number) => {
     const res = await http.delete<any>(`/api/tags/${id}`);
     return res;
   },
 
-  deleteMany: async (ids: string[]) => {
+  deleteMany: async (ids: (string | number)[]) => {
     const res = await http.post<any>('/api/tags/batch-delete', { ids });
     return res;
   },
