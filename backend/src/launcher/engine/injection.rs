@@ -64,8 +64,6 @@ pub fn inject_cookies(
         .map_err(|e| format!("Falha ao conectar no banco para escrita: {e}"))?;
 
     let now_micros = chrono::Utc::now().timestamp_micros();
-    let now_secs = chrono::Utc::now().timestamp();
-    let far_future = now_secs + 315360000; // 10 anos padrão se não especificado
 
     let tx = conn
         .transaction()
@@ -76,7 +74,7 @@ pub fn inject_cookies(
     let mut errors = Vec::new();
 
     for cookie in cookies {
-        let expiry = cookie.expiry.unwrap_or(far_future);
+        let expiry = cookie.expiry.unwrap_or(0);
         let same_site_int = match cookie.same_site.to_lowercase().as_str() {
             "lax" => 1,
             "strict" => 2,

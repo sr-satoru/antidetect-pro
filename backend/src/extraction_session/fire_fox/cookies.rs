@@ -56,12 +56,18 @@ pub fn extract_cookies(profile_dir: &Path) -> Result<CookieStats, String> {
                 _ => "None",
             };
 
+            let raw_expiry: Option<i64> = row.get(4).ok();
+            let expiry = match raw_expiry {
+                Some(0) => None,
+                other => other,
+            };
+
             Ok(UnifiedCookie {
                 name: row.get(0).unwrap_or_default(),
                 value: row.get(1).unwrap_or_default(),
                 domain: row.get(2).unwrap_or_default(),
                 path: row.get(3).unwrap_or_default(),
-                expiry: row.get(4).ok(),
+                expiry,
                 is_secure: row.get::<_, i32>(5).unwrap_or(0) == 1,
                 is_http_only: row.get::<_, i32>(6).unwrap_or(0) == 1,
                 same_site: same_site_str.to_string(),
