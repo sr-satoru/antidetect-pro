@@ -8,8 +8,8 @@ use tower_http::cors::{Any, CorsLayer};
 use utoipa::OpenApi;
 
 pub mod browser_downloader;
-pub mod cookie_manager;
 pub mod extensions;
+pub mod extraction_session;
 pub mod fingerprint;
 pub mod id_generator;
 pub mod launcher;
@@ -88,6 +88,15 @@ pub fn build_app_router(
             get(routes::cookies::get_profile_cookies)
                 .post(routes::cookies::import_profile_cookies)
                 .delete(routes::cookies::clear_profile_cookies),
+        )
+        .route(
+            "/{id}/storage",
+            get(routes::cookies::get_profile_storage)
+                .delete(routes::cookies::clear_profile_storage),
+        )
+        .route(
+            "/{id}/session",
+            get(routes::cookies::get_profile_session),
         )
         .with_state(profile_storage.clone());
 

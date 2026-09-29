@@ -12,10 +12,10 @@ Este relatório demonstra o fluxo completo de **Edição de Perfil** entre o **F
 
 ## 1. O que o Frontend envia na Edição (HTTP PUT Interceptado)
 
-**Endpoint:** `PUT /api/profiles/prf_GvvQEoC`  
+**Endpoint:** `PUT /api/profiles/prf_Gw0DPLk`  
 **Headers:**
 ```http
-PUT /api/profiles/prf_GvvQEoC HTTP/1.1
+PUT /api/profiles/prf_Gw0DPLk HTTP/1.1
 Host: 127.0.0.1:3000
 Content-Type: application/json
 Accept: application/json
@@ -91,7 +91,7 @@ No método `ProfileStorage::update(id, dto)`:
        ...
    ```
 3. **Sincronização Relacional em `profile_tags`**:
-   - Executa `DELETE FROM profile_tags WHERE profile_id = 'prf_GvvQEoC'` (desvinculando a tag antiga `"Vendas"`).
+   - Executa `DELETE FROM profile_tags WHERE profile_id = 'prf_Gw0DPLk'` (desvinculando a tag antiga `"Vendas"`).
    - Executa `INSERT OR IGNORE INTO profile_tags (profile_id, tag_id)` para cada uma das novas tags vinculadas (IDs `1` e `3`).
 
 ---
@@ -102,7 +102,7 @@ No método `ProfileStorage::update(id, dto)`:
 **JSON retornado ao Frontend:**
 ```json
 {
-  "id": "prf_GvvQEoC",
+  "id": "prf_Gw0DPLk",
   "name": "Perfil VIP MercadoLivre #01 (EDITADO)",
   "group": "Contas VIPs Atualizadas",
   "tags": [
@@ -122,8 +122,8 @@ No método `ProfileStorage::update(id, dto)`:
   "kernel": "Camoufox",
   "browser_version": "150",
   "os": "windows",
-  "created_at": 1790708799,
-  "updated_at": 1790708800,
+  "created_at": 1790710528,
+  "updated_at": 1790710529,
   "last_launch": null,
   "is_deleted": false,
   "deleted_at": null,
@@ -156,19 +156,19 @@ Foi feita uma inspeção direta nas tabelas do arquivo `star_vault.db`:
 - **Tabela `profiles`**:
   - `name`: `Perfil VIP MercadoLivre #01 (EDITADO)`
   - `group_name`: `Contas VIPs Atualizadas`
-  - `updated_at`: `1790708800` (Maior que `created_at`: `1790708799`)
+  - `updated_at`: `1790710529` (Maior que `created_at`: `1790710528`)
 - **Tabela `profile_tags`**:
   - Vínculos ativos: **Tags [1, 3]**
   - A Tag 2 (`Vendas`) foi **removida com sucesso** da tabela de junção!
 
 ---
 
-## 5. Consulta via API (`GET /api/profiles/prf_GvvQEoC`)
+## 5. Consulta via API (`GET /api/profiles/prf_Gw0DPLk`)
 
 Quando o usuário recarrega a tela de detalhes ou a listagem após a edição:
 ```json
 {
-  "id": "prf_GvvQEoC",
+  "id": "prf_Gw0DPLk",
   "name": "Perfil VIP MercadoLivre #01 (EDITADO)",
   "group": "Contas VIPs Atualizadas",
   "tags": [
@@ -188,8 +188,8 @@ Quando o usuário recarrega a tela de detalhes ou a listagem após a edição:
   "kernel": "Camoufox",
   "browser_version": "150",
   "os": "windows",
-  "created_at": 1790708799,
-  "updated_at": 1790708800,
+  "created_at": 1790710528,
+  "updated_at": 1790710529,
   "last_launch": null,
   "is_deleted": false,
   "deleted_at": null,
