@@ -108,12 +108,12 @@ export function useExtensionCategories() {
     const updated = current.map((c) =>
       c.id === id
         ? {
-            ...c,
-            name: data.name.trim(),
-            description: data.description?.trim() || '',
-            extensionIds: data.extensions.map((e) => e.id),
-            extensions: data.extensions,
-          }
+          ...c,
+          name: data.name.trim(),
+          description: data.description?.trim() || '',
+          extensionIds: data.extensions.map((e) => e.id),
+          extensions: data.extensions,
+        }
         : c,
     );
     save(updated);
@@ -126,50 +126,11 @@ export function useExtensionCategories() {
     save(current.filter((c) => c.id !== id));
   };
 
-  /**
-   * Enriquecimento retroativo automático para categorias salvas anteriormente sem providerUrl
-   */
-  const enrichCategoriesWithTeam = (teamExtensions: any[] = []) => {
-    if (!teamExtensions || teamExtensions.length === 0) return;
-    let modified = false;
-    const updated = categories.map((cat) => {
-      let catModified = false;
-      const enrichedExts = (cat.extensions || []).map((ext) => {
-        let url = ext.providerUrl;
-        if (!url) {
-          const match = teamExtensions.find(
-            (t) => String(t.id) === String(ext.id) || t.name?.toLowerCase() === ext.name?.toLowerCase()
-          );
-          url = match?.providerUrl || match?.provider_url;
-        }
-        if (!url && ext.id && !String(ext.id).includes('/') && !String(ext.id).startsWith('local_') && isNaN(Number(ext.id))) {
-          url = `https://addons.mozilla.org/firefox/addon/${ext.id}/`;
-        }
-        if (url && url !== ext.providerUrl) {
-          catModified = true;
-          return { ...ext, providerUrl: url };
-        }
-        return ext;
-      });
-
-      if (catModified) {
-        modified = true;
-        return { ...cat, extensions: enrichedExts };
-      }
-      return cat;
-    });
-
-    if (modified) {
-      save(updated);
-    }
-  };
-
   return {
     categories,
     addCategory,
     updateCategory,
     removeCategory,
-    enrichCategoriesWithTeam,
   };
 }
 
@@ -220,7 +181,7 @@ export async function searchExtensionsForCategory(
         ),
       ];
     }
-  } catch {}
+  } catch { }
 
   return filteredTeam;
 }

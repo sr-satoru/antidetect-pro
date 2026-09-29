@@ -27,46 +27,10 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
 
   const { extensions: teamExtensions, loading: loadingExtensions } =
     useRegisteredExtensions({ onlyEnabled: true });
-  const { categories, enrichCategoriesWithTeam } = useExtensionCategories();
+  const { categories } = useExtensionCategories();
 
   const currentMode = formData.extensionMode || 'team';
   const selectedCategory = formData.extensionCategory || 'kit_basico';
-
-  const enrichExtension = React.useCallback(
-    (ext: any) => {
-      let url = ext.providerUrl || ext.provider_url;
-      if (!url) {
-        const match = teamExtensions.find(
-          (t) =>
-            String(t.id) === String(ext.id) ||
-            t.name?.toLowerCase() === ext.name?.toLowerCase()
-        );
-        url = match?.providerUrl || match?.provider_url;
-      }
-      if (
-        !url &&
-        ext.id &&
-        !String(ext.id).includes('/') &&
-        !String(ext.id).startsWith('local_') &&
-        isNaN(Number(ext.id))
-      ) {
-        url = `https://addons.mozilla.org/firefox/addon/${ext.id}/`;
-      }
-      return {
-        ...ext,
-        providerUrl: url || undefined,
-        provider_url: url || undefined,
-      };
-    },
-    [teamExtensions]
-  );
-
-  // Auto-enriquece categorias salvas que possam estar sem providerUrl
-  React.useEffect(() => {
-    if (teamExtensions.length > 0) {
-      enrichCategoriesWithTeam(teamExtensions);
-    }
-  }, [teamExtensions, enrichCategoriesWithTeam]);
 
   // Sincroniza extensões padrão quando carregadas
   React.useEffect(() => {
@@ -75,7 +39,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
       (!formData.extensions || formData.extensions.length === 0) &&
       teamExtensions.length > 0
     ) {
-      onChange('extensions', teamExtensions.map(enrichExtension));
+      onChange('extensions', teamExtensions);
     } else if (currentMode === 'category' && selectedCategory) {
       const found = categories.find((c) => c.id === selectedCategory);
       const exts =
@@ -85,22 +49,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
           : found?.extensions || [];
 
       if ((!formData.extensions || formData.extensions.length === 0) && exts.length > 0) {
-        onChange('extensions', exts.map(enrichExtension));
-      } else if (Array.isArray(formData.extensions) && formData.extensions.length > 0) {
-        let needsEnrichment = false;
-        const enriched = formData.extensions.map((e: any) => {
-          if (!e.providerUrl && !e.provider_url) {
-            const updated = enrichExtension(e);
-            if (updated.providerUrl) {
-              needsEnrichment = true;
-              return updated;
-            }
-          }
-          return e;
-        });
-        if (needsEnrichment) {
-          onChange('extensions', enriched);
-        }
+        onChange('extensions', exts);
       }
     }
   }, [
@@ -110,7 +59,6 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
     teamExtensions,
     formData.extensions,
     onChange,
-    enrichExtension,
   ]);
 
   const handleSelectMode = (
@@ -129,11 +77,10 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
           (!found.extensions || found.extensions.length === 0)
             ? teamExtensions
             : found.extensions || [];
-        const enriched = exts.map(enrichExtension);
-        onChange('extensions', enriched);
+        onChange('extensions', exts);
       }
     } else if (mode === 'team') {
-      onChange('extensions', teamExtensions.map(enrichExtension));
+      onChange('extensions', teamExtensions);
     } else if (mode === 'none') {
       onChange('extensions', []);
     }

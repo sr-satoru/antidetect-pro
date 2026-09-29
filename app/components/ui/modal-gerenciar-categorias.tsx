@@ -5,7 +5,6 @@ import {
   ExtensionCategory,
   useExtensionCategories,
 } from '@/utils/extension-categories';
-import { useRegisteredExtensions } from '@/utils/extensions';
 import { ModalCriarCategoria } from '@/components/ui/modal-criar-categoria';
 
 interface ModalGerenciarCategoriasProps {
@@ -16,21 +15,12 @@ interface ModalGerenciarCategoriasProps {
 export const ModalGerenciarCategorias: React.FC<
   ModalGerenciarCategoriasProps
 > = ({ isOpen, onClose }) => {
-  const { categories, removeCategory, enrichCategoriesWithTeam } =
-    useExtensionCategories();
-  const { extensions: teamExtensions } = useRegisteredExtensions();
+  const { categories, removeCategory } = useExtensionCategories();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] =
     useState<ExtensionCategory | null>(null);
-
-  // Auto-enriquece categorias salvas que possam estar sem providerUrl
-  React.useEffect(() => {
-    if (isOpen && teamExtensions.length > 0) {
-      enrichCategoriesWithTeam(teamExtensions);
-    }
-  }, [isOpen, teamExtensions]);
 
   // Filtra as categorias criadas pelo usuário (não exibe o kit_basico padrão como "dado criado")
   const filteredCategories = useMemo(() => {
