@@ -9,8 +9,8 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
 use tracing::{debug, warn};
 
-const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
-const HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(8);
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(20);
+const HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(15);
 
 #[derive(Clone)]
 pub struct Credentials {
@@ -159,7 +159,7 @@ async fn handle_client(mut client: TcpStream, config: Arc<RelayConfig>) -> Resul
         Err(e) => {
             warn!("⚠️ Upstream proxy falhou para {}:{} ({}) - Acionando Kill-Switch (502)", host, port, e);
             let _ = client
-                .write_all(b"HTTP/1.1 502 Bad Gateway\r\nConnection: close\r\n\r\n")
+                .write_all(b"HTTP/1.1 502 Bad Gateway\r\nContent-Type: text/plain\r\nX-Kill-Switch: active\r\nConnection: close\r\n\r\nUpstream proxy connection failed (Kill-Switch Active)\r\n")
                 .await;
             return Ok(());
         }

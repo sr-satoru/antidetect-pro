@@ -48,6 +48,12 @@ pub fn build_proxy_prefs(
     prefs.push_str("user_pref(\"network.http.http3.enable\", false);\n");
     prefs.push_str("user_pref(\"network.http.http3.alt-svc-mapping-for-testing\", false);\n");
 
+    // Desativa prefetching de DNS e páginas para evitar vazamentos de DNS antes do clique do usuário
+    prefs.push_str("user_pref(\"network.dns.disablePrefetch\", true);\n");
+    prefs.push_str("user_pref(\"network.dns.disablePrefetchFromHTTPS\", true);\n");
+    prefs.push_str("user_pref(\"network.prefetch-next\", false);\n");
+    prefs.push_str("user_pref(\"network.proxy.socks_remote_dns\", true);\n");
+
     // Com o ProxyRelay em loopback, o Firefox sempre envia CONNECT para 127.0.0.1:<port>
     prefs.push_str(&format!("user_pref(\"network.proxy.http\", \"{host}\");\n"));
     prefs.push_str(&format!("user_pref(\"network.proxy.http_port\", {port});\n"));
