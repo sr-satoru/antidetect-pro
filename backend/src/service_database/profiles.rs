@@ -20,7 +20,7 @@ pub struct ProfileService {
     vault: Arc<Vault>,
     data_dir: PathBuf,
     process_manager: Arc<ProcessManager>,
-    auto_sync: Arc<Mutex<Option<Arc<crate::cloud_sync::AutoSyncEngine>>>>,
+    auto_sync: Arc<Mutex<Option<Arc<crate::server_sync::AutoSyncEngine>>>>,
 }
 
 pub type ProfileStorage = ProfileService;
@@ -37,7 +37,7 @@ impl ProfileService {
         }
     }
 
-    pub fn set_auto_sync(&self, auto_sync: Arc<crate::cloud_sync::AutoSyncEngine>) {
+    pub fn set_auto_sync(&self, auto_sync: Arc<crate::server_sync::AutoSyncEngine>) {
         let mut lock = self.auto_sync.lock().unwrap();
         *lock = Some(auto_sync.clone());
         self.process_manager.set_auto_sync(auto_sync.clone());

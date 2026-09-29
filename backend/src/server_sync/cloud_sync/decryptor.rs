@@ -5,12 +5,12 @@ use tracing::{info, warn};
 use uuid::Uuid;
 use zip::ZipArchive;
 
-pub const MAGIC_HEADER_V1: &[u8; 8] = crate::cloud_sync::crypto::MAGIC_HEADER_V1;
-pub const MAGIC_HEADER_V2: &[u8; 8] = crate::cloud_sync::crypto::MAGIC_HEADER_V2;
-pub const MAGIC_HEADER: &[u8; 8] = crate::cloud_sync::crypto::MAGIC_HEADER;
-pub const SALT_LEN: usize = crate::cloud_sync::crypto::SALT_LEN;
-pub const NONCE_LEN: usize = crate::cloud_sync::crypto::NONCE_LEN;
-pub const MIN_PAYLOAD_LEN: usize = crate::cloud_sync::crypto::MIN_PAYLOAD_LEN;
+pub const MAGIC_HEADER_V1: &[u8; 8] = super::crypto::MAGIC_HEADER_V1;
+pub const MAGIC_HEADER_V2: &[u8; 8] = super::crypto::MAGIC_HEADER_V2;
+pub const MAGIC_HEADER: &[u8; 8] = super::crypto::MAGIC_HEADER;
+pub const SALT_LEN: usize = super::crypto::SALT_LEN;
+pub const NONCE_LEN: usize = super::crypto::NONCE_LEN;
+pub const MIN_PAYLOAD_LEN: usize = super::crypto::MIN_PAYLOAD_LEN;
 
 /// Módulo dedicado à decriptação Zero-Knowledge (E2EE) e restauração atômica de perfis
 pub struct ProfileDecryptor;
@@ -18,12 +18,12 @@ pub struct ProfileDecryptor;
 impl ProfileDecryptor {
     /// Deriva a chave de decriptação de 256 bits a partir da chave do usuário e do salt da cápsula (V2 padrão)
     pub fn derive_key(user_key: &str, salt: &[u8; SALT_LEN]) -> [u8; 32] {
-        crate::cloud_sync::crypto::derive_key_v2(user_key, salt)
+        super::crypto::derive_key_v2(user_key, salt)
     }
 
     /// Descriptografa uma cápsula binária cifrada .enc com suporte a STARENC2 e retrocompatibilidade com STARENC1
     pub fn decrypt_capsule(encrypted_data: &[u8], user_key: &str) -> Result<Vec<u8>, String> {
-        crate::cloud_sync::crypto::decrypt_capsule(encrypted_data, user_key)
+        super::crypto::decrypt_capsule(encrypted_data, user_key)
     }
 
     /// Descompacta com máxima segurança contra Zip-Slip e de forma atômica
@@ -166,7 +166,7 @@ impl ProfileDecryptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::cloud_sync::crypto::encrypt_capsule;
+    use super::super::crypto::encrypt_capsule;
 
     #[test]
     fn test_decrypt_and_unpack() {

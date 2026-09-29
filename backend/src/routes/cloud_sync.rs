@@ -7,7 +7,7 @@ use axum::{
 use serde::Deserialize;
 use std::sync::Arc;
 
-use crate::cloud_sync::CloudSyncService;
+use crate::server_sync::CloudSyncService;
 
 #[derive(Debug, Deserialize)]
 pub struct PullQuery {

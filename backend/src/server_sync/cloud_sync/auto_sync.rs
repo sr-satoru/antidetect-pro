@@ -3,8 +3,8 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tracing::{debug, info, warn};
 
-use crate::cloud_auth::CloudAuthService;
-use crate::cloud_sync::CloudSyncService;
+use crate::server_sync::cloud_auth::CloudAuthService;
+use crate::server_sync::cloud_sync::CloudSyncService;
 use crate::ws::{WsEvent, WsState};
 
 type RunningChecker = Arc<dyn Fn(&str) -> bool + Send + Sync>;

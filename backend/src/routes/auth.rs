@@ -1,4 +1,4 @@
-use crate::cloud_auth::CloudAuthService;
+use crate::server_sync::CloudAuthService;
 use axum::{
     extract::{Path, Query, State},
     http::{header, HeaderMap, StatusCode},

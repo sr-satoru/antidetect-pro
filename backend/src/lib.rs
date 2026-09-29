@@ -7,8 +7,8 @@ use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 
 pub mod browser_downloader;
-pub mod cloud_auth;
-pub mod cloud_sync;
+pub mod server_sync;
+pub use server_sync::{cloud_auth, cloud_sync};
 pub mod cookie_manager;
 pub mod extensions;
 pub mod fingerprint;

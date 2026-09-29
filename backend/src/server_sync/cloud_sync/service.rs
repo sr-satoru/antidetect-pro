@@ -4,11 +4,11 @@ use base64::Engine;
 use serde::{Deserialize, Serialize};
 use tracing::{error, info};
 
-use crate::cloud_auth::CloudAuthService;
-use crate::cloud_sync::{
+use crate::server_sync::cloud_auth::CloudAuthService;
+use super::{
     crypto,
     decryptor::ProfileDecryptor,
-    downloader::CloudDownloader,
+    downloader::{self, CloudDownloader},
     filter,
 };
 use crate::ws::{WsEvent, WsState};
@@ -586,7 +586,7 @@ impl CloudSyncService {
     async fn resolve_remote_timestamp(
         &self,
         profile_id: &str,
-        capsule: &crate::cloud_sync::downloader::RemoteCapsuleInfo,
+        capsule: &downloader::RemoteCapsuleInfo,
         token: &str,
     ) -> i64 {
         if let Ok(stat) = self.stat_profile_with_fallback(profile_id, Some(token)).await {
@@ -620,7 +620,7 @@ impl CloudSyncService {
 
         // 1. Obtém lista de cápsulas remotas na nuvem
         let remote_capsules = self.downloader.list_remote_capsules(&token).await?;
-        let remote_map: std::collections::HashMap<String, &crate::cloud_sync::downloader::RemoteCapsuleInfo> =
+        let remote_map: std::collections::HashMap<String, &downloader::RemoteCapsuleInfo> =
             remote_capsules.iter().map(|c| (c.profile_id.clone(), c)).collect();
 
         // 2. Obtém lista de perfis locais com seus timestamps

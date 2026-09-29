@@ -17,7 +17,7 @@ pub struct ProcessManager {
     relays: Arc<Mutex<HashMap<String, crate::network::relay::ProxyRelay>>>,
     client: reqwest::Client,
     ws: WsState,
-    auto_sync: Arc<Mutex<Option<Arc<crate::cloud_sync::AutoSyncEngine>>>>,
+    auto_sync: Arc<Mutex<Option<Arc<crate::server_sync::AutoSyncEngine>>>>,
 }
 
 impl ProcessManager {
@@ -39,7 +39,7 @@ impl ProcessManager {
         }
     }
 
-    pub fn set_auto_sync(&self, auto_sync: Arc<crate::cloud_sync::AutoSyncEngine>) {
+    pub fn set_auto_sync(&self, auto_sync: Arc<crate::server_sync::AutoSyncEngine>) {
         let mut lock = self.auto_sync.lock().unwrap();
         *lock = Some(auto_sync);
     }
