@@ -2,6 +2,7 @@ use axum::{
     routing::{delete, get, post, put},
     Router,
 };
+use utoipa::OpenApi;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
@@ -22,6 +23,7 @@ pub mod routes;
 pub mod security;
 pub mod service_database;
 pub mod tab_manager;
+pub mod openapi;
 pub mod version_app;
 pub mod ws;
 
@@ -211,6 +213,10 @@ pub async fn start_star_server(
     );
 
     let app = Router::new()
+        .merge(
+            utoipa_swagger_ui::SwaggerUi::new("/docs")
+                .url("/docs/openapi.json", openapi::ApiDoc::openapi()),
+        )
         .nest("/api/profiles", profile_routes)
         .nest("/api/cloud-sync", cloud_sync_routes)
         .nest("/api/proxies", proxy_routes)
@@ -228,6 +234,7 @@ pub async fn start_star_server(
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
     tracing::info!("🚀 Star Multlogin Backend Rust iniciado com sucesso em http://{}", addr);
+    tracing::info!("📑 Documentação Swagger UI disponível em http://{}/docs", addr);
 
     let listener = tokio::net::TcpListener::bind(addr)
         .await
