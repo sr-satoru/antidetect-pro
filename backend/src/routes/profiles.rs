@@ -117,11 +117,13 @@ pub async fn launch_profile(
     State(storage): State<Arc<ProfileStorage>>,
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
-    match storage.launch(&id).await {
-        Ok((profile, pid)) => Ok(Json(serde_json::json!({
+    match storage.launch_with_cdp(&id, true).await {
+        Ok((profile, pid, debug_port, ws_endpoint)) => Ok(Json(serde_json::json!({
             "status": "launched",
             "profile_id": profile.id,
             "pid": pid,
+            "debug_port": debug_port,
+            "ws_endpoint": ws_endpoint,
             "kernel": profile.kernel,
             "message": format!("Navegador {} iniciado com sucesso (PID: {pid}).", profile.kernel)
         }))),

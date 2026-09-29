@@ -69,8 +69,8 @@ impl ProxyValidator {
 
         let client = match reqwest::Client::builder()
             .proxy(reqwest_proxy)
-            .timeout(Duration::from_secs(8))
-            .connect_timeout(Duration::from_secs(5))
+            .timeout(Duration::from_secs(15))
+            .connect_timeout(Duration::from_secs(10))
             .build()
         {
             Ok(c) => c,
