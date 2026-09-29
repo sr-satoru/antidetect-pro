@@ -23,6 +23,10 @@ pub struct TokenState {
 
 impl TokenState {
     pub fn new(initial_token: String, vault: Arc<Vault>, data_dir: PathBuf) -> Self {
+        // Garante a existência do diretório e grava o api-token no disco para uso offline
+        let _ = std::fs::create_dir_all(&data_dir);
+        let _ = std::fs::write(data_dir.join("api-token"), &initial_token);
+
         Self {
             token: Arc::new(RwLock::new(initial_token)),
             vault,
@@ -41,9 +45,10 @@ impl TokenState {
         constant_time_eq(current.as_bytes(), candidate.as_bytes())
     }
 
-    /// Rotaciona o token gravando no cofre e atualizando a memória RAM
+    /// Rotaciona o token gravando no cofre e atualizando a memória RAM e arquivo api-token
     pub async fn refresh_token(&self) -> Result<String, std::io::Error> {
         let new_token = rotate_token(self.vault.clone())?;
+        let _ = std::fs::write(self.data_dir.join("api-token"), &new_token);
         let mut lock = self.token.write().await;
         *lock = new_token.clone();
         Ok(new_token)
@@ -56,7 +61,7 @@ pub fn ensure_token(vault: Arc<Vault>) -> Result<String, std::io::Error> {
     if let Ok(conn_guard) = conn.lock() {
         let token_enc_opt: Option<Vec<u8>> = conn_guard
             .query_row(
-                "SELECT token_enc FROM mcp_tokens WHERE id = 'active' LIMIT 1",
+                "SELECT token_enc FROM mcp_tokens WHERE id = 'active' OR id = 'primary' ORDER BY created_at DESC LIMIT 1",
                 [],
                 |row| row.get(0),
             )

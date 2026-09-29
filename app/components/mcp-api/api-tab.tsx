@@ -12,6 +12,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
+import { BACKEND_PORT, http } from '@/services/http';
 
 interface ApiTabProps {
   apiPort?: number;
@@ -31,9 +32,24 @@ interface EndpointItem {
 }
 
 export const ApiTab: React.FC<ApiTabProps> = ({
-  apiPort = 18922,
-  token = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
+  apiPort = BACKEND_PORT,
+  token: initialToken,
 }) => {
+  const [token, setToken] = useState(initialToken || localStorage.getItem('star_mcp_token') || 'star_sec_loading');
+
+  React.useEffect(() => {
+    if (!initialToken || initialToken.includes('8f92a10b48c34791')) {
+      http.get<{ token: string }>('/mcp/info')
+        .then((res) => {
+          if (res?.token) {
+            setToken(res.token);
+            localStorage.setItem('star_mcp_token', res.token);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [initialToken]);
+
   const baseUrl = `http://127.0.0.1:${apiPort}`;
   const sandboxUrl = `http://127.0.0.1:${apiPort}/api-sandbox`;
 

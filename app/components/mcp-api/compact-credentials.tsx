@@ -24,6 +24,7 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
         .then((res) => {
           if (res?.token) {
             setToken(res.token);
+            localStorage.setItem('star_mcp_token', res.token);
           }
         })
         .catch(() => {});

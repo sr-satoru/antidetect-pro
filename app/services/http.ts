@@ -33,14 +33,19 @@ async function request<T>(
     }
   }
 
-  const token = localStorage.getItem('star_auth_token');
+  let token = localStorage.getItem('star_auth_token');
+  if (endpoint.startsWith('/api/v1') || endpoint.startsWith('/v1') || endpoint.startsWith('/mcp')) {
+    token = localStorage.getItem('star_mcp_token') || token;
+  } else if (!token) {
+    token = localStorage.getItem('star_mcp_token');
+  }
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
 
-  if (token) {
+  if (!headers['Authorization'] && token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
