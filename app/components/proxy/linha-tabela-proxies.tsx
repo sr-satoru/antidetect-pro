@@ -24,26 +24,26 @@ const renderProtocolBadge = (type: string) => {
     case 'mobile':
     case 'movel':
       return (
-        <span className="inline-flex items-center rounded border border-[#00FF66]/40 bg-[#00FF66]/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#00FF66] uppercase">
+        <span className="inline-flex items-center rounded border border-[#00FF66]/30 bg-[#00FF66]/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#00FF66] uppercase">
           MÓVEL 4G
         </span>
       );
     case 'socks5':
       return (
-        <span className="inline-flex items-center rounded border border-[#4cc9f0]/30 bg-[#1d3557]/60 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#4cc9f0] uppercase">
+        <span className="inline-flex items-center rounded border border-white/20 bg-white/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-white uppercase">
           SOCKS5
         </span>
       );
     case 'https':
       return (
-        <span className="inline-flex items-center rounded border border-[#c77dff]/30 bg-[#3c096c]/60 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#c77dff] uppercase">
+        <span className="inline-flex items-center rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-emerald-400 uppercase">
           HTTPS
         </span>
       );
     case 'http':
     default:
       return (
-        <span className="inline-flex items-center rounded border border-[#9ef01a]/30 bg-[#143601]/60 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#9ef01a] uppercase">
+        <span className="inline-flex items-center rounded border border-white/10 bg-white/5 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#C8CBD4] uppercase">
           HTTP
         </span>
       );
@@ -62,23 +62,24 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const isStriped = index % 2 === 1;
 
+  // Cores do Zebrado e Seleção Minimalista Cinza / Meio-Branco
   const rowBg = isSelected
-    ? 'bg-[#00FF66]/16 border-l-2 border-l-[#00FF66]'
+    ? 'bg-white/[0.08] border-l-2 border-l-white/70'
     : isStriped
-      ? 'bg-[#2C2D33] hover:bg-[#484848]'
-      : 'bg-[#383838] hover:bg-[#484848]';
+      ? 'bg-[#1F2027] hover:bg-white/[0.04]'
+      : 'bg-[#181920] hover:bg-white/[0.04]';
 
   const stickyBg = isSelected
-    ? 'bg-[#171c20]'
+    ? 'bg-[#262832]'
     : isStriped
-      ? 'bg-[#2C2D33] group-hover:bg-[#484848]'
-      : 'bg-[#383838] group-hover:bg-[#484848]';
+      ? 'bg-[#1F2027] group-hover:bg-[#262832]'
+      : 'bg-[#181920] group-hover:bg-[#262832]';
 
   const isOnline = proxy.status === 'active';
 
   return (
     <tr
-      className={`group h-[60px] border-b border-[#44444C] transition-colors ${rowBg}`}
+      className={`group h-[60px] border-b border-white/[0.07] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td className="w-[38px] max-w-[38px] min-w-[38px] px-3.5 py-2.5 text-center">
@@ -112,7 +113,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
               e.stopPropagation();
               onEdit(proxy);
             }}
-            className="ml-auto flex h-[22px] w-[22px] cursor-pointer items-center justify-center rounded text-[#71717a] opacity-0 transition-all group-hover:opacity-100 hover:bg-[#383A44] hover:text-white"
+            className="ml-auto flex h-[22px] w-[22px] cursor-pointer items-center justify-center rounded text-[#8E92A2] opacity-0 transition-all group-hover:opacity-100 hover:bg-white/10 hover:text-white"
           >
             <Pencil size={11} />
           </button>
@@ -223,7 +224,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
           <button
             type="button"
             onClick={() => onEdit(proxy)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-[#9EA2AE] transition-all hover:bg-[#383A44] hover:text-white"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-[#9EA2AE] transition-all hover:bg-white/10 hover:text-white"
             title="Editar Proxy"
           >
             <Pencil size={13} />

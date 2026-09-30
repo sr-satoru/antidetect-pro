@@ -271,12 +271,17 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       </td>
 
       {/* 4. Nome + OS */}
-      <td className="w-[220px] min-w-[220px] px-3.5 py-2.5 whitespace-nowrap">
-        <div className="flex items-center gap-2">
-          <OsIcon os={osKey} size={14} className="shrink-0 text-[#9EA2AE]" />
-          <span className="text-xs font-semibold tracking-wide text-white uppercase">
-            {(profile.name || 'Sem nome').toUpperCase()}
-          </span>
+      <td className="w-[220px] min-w-[220px] max-w-[220px] px-3.5 py-2.5 whitespace-nowrap">
+        <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
+          <div className="flex min-w-0 items-center gap-2 flex-1">
+            <OsIcon os={osKey} size={14} className="shrink-0 text-[#9EA2AE]" />
+            <span
+              className="truncate text-xs font-semibold tracking-wide text-white uppercase"
+              title={profile.name || 'Sem nome'}
+            >
+              {(profile.name || 'Sem nome').toUpperCase()}
+            </span>
+          </div>
 
           <button
             type="button"
@@ -284,7 +289,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEdit(profile);
             }}
-            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
             title="Editar nome"
           >
             <EditIcon size={13} />
@@ -346,8 +351,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       </td>
 
       {/* 8. Tags */}
-      <td className="w-[190px] min-w-[190px] px-3.5 py-2.5 whitespace-nowrap">
-        <div className="flex items-center justify-between gap-1.5 overflow-hidden">
+      <td className="w-[190px] min-w-[190px] max-w-[190px] px-3.5 py-2.5 whitespace-nowrap">
+        <div className="flex w-full items-center justify-between gap-1.5 overflow-hidden">
           {tagsList.length > 0 ? (
             <div className="flex items-center gap-1.5 overflow-hidden max-w-[145px]">
               {tagsList.map((tag, idx) => (
@@ -368,7 +373,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEditTags && onEditTags(profile);
             }}
-            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
             title="Editar etiquetas"
           >
             <EditIcon size={13} />
@@ -377,9 +382,12 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       </td>
 
       {/* 9. Observação */}
-      <td className="w-[170px] min-w-[170px] px-3.5 py-2.5 whitespace-nowrap">
-        <div className="flex items-center justify-between gap-2 overflow-hidden">
-          <span className="truncate text-xs text-[#C8CBD4] max-w-[125px]">
+      <td className="w-[170px] min-w-[170px] max-w-[170px] px-3.5 py-2.5 whitespace-nowrap">
+        <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
+          <span
+            className="truncate text-xs text-[#C8CBD4] max-w-[125px]"
+            title={profile.notes || undefined}
+          >
             {profile.notes || '-'}
           </span>
 
@@ -389,7 +397,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEditNotes && onEditNotes(profile);
             }}
-            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
             title="Editar observação"
           >
             <EditIcon size={13} />

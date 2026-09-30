@@ -42,16 +42,16 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
   const errorCount = proxies.filter((p) => p.status === 'error').length;
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-[#3E404D] bg-[#24252B] shadow-xs">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#181920] shadow-xs">
       {isAddingOrEditing ? (
         <CadastroProxies onClose={onCloseCadastro} onSave={onSaveCadastro} />
       ) : (
         <>
           {/* Scrollable Table Area */}
-          <div className="flex-1 [scrollbar-width:thin] [scrollbar-color:#44444C_#141418] overflow-x-auto overflow-y-visible [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-[#44444C] [&::-webkit-scrollbar-thumb:hover]:bg-[#00FF66] [&::-webkit-scrollbar-track]:bg-[#141418]">
+          <div className="flex-1 [scrollbar-width:thin] [scrollbar-color:#3E4150_#14151B] overflow-x-auto overflow-y-visible [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-[#3E4150] [&::-webkit-scrollbar-thumb:hover]:bg-white/40 [&::-webkit-scrollbar-track]:bg-[#14151B]">
             <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
               {/* Header */}
-              <thead className="sticky top-0 z-20 border-b border-[#3E404D] bg-[#24252B] text-[11px] font-semibold tracking-wider text-[#C8CBD4] uppercase select-none">
+              <thead className="sticky top-0 z-20 border-b border-white/10 bg-[#14151B] text-[11px] font-semibold tracking-wider text-[#A6ABB9] uppercase select-none">
                 <tr className="h-11">
                   <th className="w-[38px] max-w-[38px] min-w-[38px] px-3.5 py-2.5 text-center">
                     <input
@@ -87,7 +87,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
                   <th className="w-[130px] min-w-[130px] px-3.5 py-2.5">
                     Última Checagem
                   </th>
-                  <th className="sticky right-0 z-20 w-[120px] max-w-[120px] min-w-[120px] bg-[#24252B] px-3 py-2.5 text-center">
+                  <th className="sticky right-0 z-20 w-[120px] max-w-[120px] min-w-[120px] bg-[#14151B] px-3 py-2.5 text-center">
                     Ações
                   </th>
                 </tr>
@@ -115,7 +115,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
                       className="py-16 text-center text-[#8E92A2]"
                     >
                       <div className="flex flex-col items-center justify-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#333541] bg-[#1C1D24] text-[#7E8294]">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[#181920] text-[#7E8294]">
                           <Globe size={22} />
                         </div>
                         <div>
@@ -136,7 +136,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
           </div>
 
           {/* Footer com Estatísticas Rápidas */}
-          <div className="flex h-10 shrink-0 items-center justify-between border-t border-[#3E404D] bg-[#1E1F26] px-4 text-xs text-[#9EA2AE] select-none">
+          <div className="flex h-10 shrink-0 items-center justify-between border-t border-white/10 bg-[#14151B] px-4 text-xs text-[#9EA2AE] select-none">
             <div className="flex items-center gap-4">
               <span>
                 Total: <strong className="text-white">{proxies.length}</strong>{' '}
