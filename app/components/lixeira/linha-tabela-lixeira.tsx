@@ -76,18 +76,19 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
 }) => {
   const isStriped = index % 2 === 1;
 
+  // Cores do Zebrado e Seleção Minimalista Cinza / Meio-Branco
   const rowBg = isSelected
-    ? 'bg-[#00FF66]/14 border-l-2 border-l-[#00FF66]'
+    ? 'bg-white/[0.08] border-l-2 border-l-white/70'
     : isStriped
-      ? 'bg-[#24252B] hover:bg-[#32343D]'
-      : 'bg-[#1E1F26] hover:bg-[#32343D]';
+      ? 'bg-[#1F2027] hover:bg-white/[0.04]'
+      : 'bg-[#181920] hover:bg-white/[0.04]';
 
   const deletedDate = getDeletedDate(item);
   const expiration = getExpirationDetails(deletedDate);
 
   return (
     <tr
-      className={`group h-[56px] border-b border-[#363847] transition-colors ${rowBg}`}
+      className={`group h-[56px] border-b border-white/[0.07] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td className="w-[38px] max-w-[38px] min-w-[38px] px-3.5 py-2.5 text-center">

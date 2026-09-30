@@ -69,15 +69,15 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
             onClick={() => setStoreType('chrome')}
             className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
               storeType === 'chrome'
-                ? 'border-[#2F80ED] bg-[#2F80ED]/15 text-[#70A9FF] shadow-xs'
-                : 'border-[#333543] bg-[#161720] text-[#8E92A2] hover:border-[#444758] hover:text-white'
+                ? 'border-white/30 bg-white/10 text-white shadow-xs'
+                : 'border-white/10 bg-[#14151B] text-[#8E92A2] hover:border-white/20 hover:text-white'
             }`}
           >
             <div className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-tr from-[#EA4335] via-[#FBBC05] to-[#34A853] p-0.5">
               <div className="h-full w-full rounded-full bg-[#161720]" />
             </div>
             <span>Chrome Web Store</span>
-            <span className="rounded-sm bg-[#2F80ED]/20 px-1.5 py-0.2 text-[10px] font-medium text-[#2F80ED]">
+            <span className="rounded-sm bg-white/10 px-1.5 py-0.2 text-[10px] font-medium text-white/80">
               Chromium
             </span>
           </button>
@@ -100,7 +100,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
             }
             value={values.url}
             onChange={(e) => onChange('url', e.target.value)}
-            className="w-full rounded-lg border border-[#363847] bg-[#181920] px-3.5 py-2.5 font-mono text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-[#2F80ED] focus:outline-hidden"
+            className="w-full rounded-lg border border-white/10 bg-[#14151B] px-3.5 py-2.5 font-mono text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/15 focus:outline-hidden"
           />
         </div>
       </div>
@@ -108,7 +108,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
       {/* 3. Box de Notas e Instruções Contextuais */}
       <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-12">
         <div className="hidden sm:col-span-3 sm:block" />
-        <div className="space-y-4 rounded-xl border border-[#2D303E] bg-[#161720] p-4 text-xs leading-relaxed text-[#989BAA] sm:col-span-9">
+        <div className="space-y-4 rounded-xl border border-white/10 bg-[#14151B] p-4 text-xs leading-relaxed text-[#989BAA] sm:col-span-9">
           {storeType === 'firefox' ? (
             <div className="space-y-2">
               <span className="block font-semibold text-white">
@@ -155,7 +155,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
                     href="https://chromewebstore.google.com"
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 font-medium text-[#2F80ED] underline underline-offset-2 hover:text-[#5BA0FF]"
+                    className="inline-flex items-center gap-1 font-medium text-emerald-400/80 underline underline-offset-2 hover:text-emerald-300"
                   >
                     Chrome Web Store
                     <ExternalLink size={11} />
@@ -167,16 +167,16 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
           )}
 
           {/* Mockup visual dinâmico */}
-          <div className="overflow-hidden rounded-lg border border-[#2B2D38] bg-[#0E0F14] shadow-inner select-none">
+          <div className="overflow-hidden rounded-lg border border-white/10 bg-[#0C0D12] shadow-inner select-none">
             {/* Barra de URL do Navegador */}
-            <div className="flex items-center gap-2 border-b border-[#242632] bg-[#181A22] px-3 py-1.5">
+            <div className="flex items-center gap-2 border-b border-white/10 bg-[#14151B] px-3 py-1.5">
               <div className="flex items-center gap-1.5 text-[#5C6070]">
                 <ArrowLeft size={12} />
                 <ArrowRight size={12} />
                 <RotateCw size={11} />
               </div>
-              <div className="flex flex-1 items-center gap-1.5 rounded-md border border-[#2C2E3B] bg-[#111218] px-2.5 py-1 font-mono text-[11px] text-[#A6ABB9]">
-                <Lock size={10} className="shrink-0 text-[#10B981]" />
+              <div className="flex flex-1 items-center gap-1.5 rounded-md border border-white/10 bg-[#08090C] px-2.5 py-1 font-mono text-[11px] text-[#A6ABB9]">
+                <Lock size={10} className="shrink-0 text-emerald-400" />
                 <span className="truncate">
                   {storeType === 'firefox'
                     ? 'addons.mozilla.org/pt-BR/firefox/addon/ublock-origin/'
@@ -216,7 +216,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
                 </div>
                 <div className="flex items-center gap-3 text-[11px] text-[#7E8294]">
                   <span>Discover</span>
-                  <span className="border-b-2 border-[#2F80ED] font-semibold text-white">
+                  <span className="border-b-2 border-white font-semibold text-white">
                     Extensions
                   </span>
                   <span>Themes</span>

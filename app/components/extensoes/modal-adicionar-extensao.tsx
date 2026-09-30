@@ -65,7 +65,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
             ? 'Extensão nativa do Firefox (.xpi) carregada manualmente.'
             : 'Extensão carregada manualmente por arquivo.'),
         iconType: isXpi ? 'firefox' : 'custom',
-        iconBg: '#2F80ED',
+        iconBg: '#00FF66',
         provider: isXpi ? 'Firefox Add-on (.xpi)' : 'Pacote Local',
         providerUrl: '#',
         tab: 'team',
@@ -117,7 +117,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
           name: cleanName || 'Nova Extensão Chrome',
           description: 'Extensão importada diretamente da Chrome Web Store.',
           iconType: 'chrome',
-          iconBg: '#2F80ED',
+          iconBg: '#00FF66',
           provider: 'Chrome Web Store',
           providerUrl: url,
           tab: 'team',
@@ -139,16 +139,16 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 w-full max-w-xl overflow-hidden rounded-2xl border border-[#333543] bg-[#22242C] shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative z-10 w-full max-w-xl overflow-hidden rounded-2xl border border-white/10 bg-[#14151B] shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex h-14 items-center justify-between border-b border-[#2F3240] px-6 select-none">
+        <div className="flex h-14 items-center justify-between border-b border-white/10 px-6 select-none">
           <span className="text-base font-semibold text-white">
             Adicionar extensão
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg p-1.5 text-[#8E92A2] transition-colors hover:bg-[#2C2E38] hover:text-white"
+            className="cursor-pointer rounded-lg p-1.5 text-[#8E92A2] transition-colors hover:bg-white/10 hover:text-white"
             title="Fechar"
           >
             <X size={18} />
@@ -163,13 +163,13 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
               Tipo
             </label>
             <div className="sm:col-span-9">
-              <div className="inline-flex rounded-lg border border-[#333543] bg-[#161720] p-1">
+              <div className="inline-flex rounded-lg border border-white/10 bg-[#0C0D12] p-1">
                 <button
                   type="button"
                   onClick={() => setActiveTab('file')}
                   className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
                     activeTab === 'file'
-                      ? 'bg-[#3A3D4D] text-white shadow-xs'
+                      ? 'bg-[#1F212D] text-white border border-white/15 shadow-xs'
                       : 'text-[#8E92A2] hover:text-white'
                   }`}
                 >
@@ -180,7 +180,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
                   onClick={() => setActiveTab('web')}
                   className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
                     activeTab === 'web'
-                      ? 'bg-[#3A3D4D] text-white shadow-xs'
+                      ? 'bg-[#1F212D] text-white border border-white/15 shadow-xs'
                       : 'text-[#8E92A2] hover:text-white'
                   }`}
                 >
@@ -205,11 +205,11 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex h-16 items-center justify-start gap-4 border-t border-[#2F3240] bg-[#1C1D24] px-6 select-none sm:pl-36">
+        <div className="flex h-16 items-center justify-start gap-4 border-t border-white/10 bg-[#14151B] px-6 select-none sm:pl-36">
           <button
             type="button"
             onClick={handleConfirm}
-            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#2F80ED] px-6 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#256fd1] active:scale-[0.98]"
+            className="flex cursor-pointer items-center justify-center rounded-lg bg-white px-6 py-2 text-xs font-bold text-black shadow-sm transition-all hover:bg-white/90 active:scale-[0.98]"
           >
             OK
           </button>

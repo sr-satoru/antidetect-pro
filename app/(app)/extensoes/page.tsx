@@ -71,7 +71,7 @@ export const ExtensoesPage: React.FC = () => {
     const payload = {
       name: data.name || 'Nova Extensão',
       iconType: data.iconType || 'custom',
-      iconBg: data.iconBg || '#2F80ED',
+      iconBg: data.iconBg || '#00FF66',
       enabled: true,
       status: 'available',
       description:
@@ -122,7 +122,7 @@ export const ExtensoesPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-1 flex-col overflow-hidden rounded-2xl border border-[#272935] bg-[#14151B]">
+    <div className="flex h-full w-full flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#14151B]">
       <TabelaExtensoes
         extensions={extensions}
         isLoadingTeam={isLoadingTeam}

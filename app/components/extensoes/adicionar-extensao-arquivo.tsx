@@ -56,13 +56,13 @@ export const AdicionarExtensaoArquivo: React.FC<
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-[#44475A] bg-[#161720] px-4 py-2 text-xs font-medium text-[#00FF66] transition-colors hover:border-[#00FF66] hover:bg-[#1E1F2A]"
+            className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-white/20 bg-[#14151B] px-4 py-2 text-xs font-medium text-white transition-colors hover:border-white/40 hover:bg-[#181920]"
           >
-            <CloudUpload size={16} className="text-[#2F80ED]" />
+            <CloudUpload size={16} className="text-[#00FF66]" />
             <span>
               {values.fileName ? (
                 <span className="flex items-center gap-1.5 text-white">
-                  <FileArchive size={14} className="text-[#2F80ED]" />
+                  <FileArchive size={14} className="text-[#00FF66]" />
                   {values.fileName}
                 </span>
               ) : (
@@ -70,7 +70,7 @@ export const AdicionarExtensaoArquivo: React.FC<
               )}
             </span>
           </button>
-            <div className="flex items-center gap-2 rounded-md border border-[#2F80ED]/30 bg-[#2F80ED]/10 p-2 text-[11px] text-[#A8C7FA]">
+            <div className="flex items-center gap-2 rounded-md border border-white/10 bg-white/5 p-2 text-[11px] text-[#C8CBD4]">
               <span>🔒 <strong>Armazenamento Local Seguro:</strong> Arquivos carregados manualmente permanecem 100% no seu dispositivo físico e nunca são transmitidos para servidores externos, garantindo privacidade e proteção total.</span>
             </div>
           </div>
@@ -91,18 +91,18 @@ export const AdicionarExtensaoArquivo: React.FC<
           />
           <div
             onClick={() => iconInputRef.current?.click()}
-            className="flex h-24 w-36 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#44475A] bg-[#161720] p-3 text-center transition-colors hover:border-[#2F80ED] hover:bg-[#1C1E2A]"
+            className="flex h-24 w-36 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-white/20 bg-[#14151B] p-3 text-center transition-colors hover:border-white/40 hover:bg-[#181920]"
           >
             {values.iconName ? (
               <div className="flex flex-col items-center text-xs text-white">
-                <ImageIcon size={20} className="mb-1 text-[#2F80ED]" />
+                <ImageIcon size={20} className="mb-1 text-white/80" />
                 <span className="max-w-[120px] truncate text-[11px]">
                   {values.iconName}
                 </span>
               </div>
             ) : (
               <>
-                <CloudUpload size={22} className="text-[#2F80ED]" />
+                <CloudUpload size={22} className="text-white/80" />
                 <span className="text-[10.5px] leading-tight text-[#8E92A2]">
                   Arraste e solte imagens ou clique para carregar
                 </span>
@@ -129,7 +129,7 @@ export const AdicionarExtensaoArquivo: React.FC<
             placeholder="Obrigatório, por favor preencha o nome da extensão"
             value={values.name}
             onChange={(e) => onChange('name', e.target.value.slice(0, 20))}
-            className="w-full rounded-lg border border-[#363847] bg-[#181920] px-3.5 py-2.5 pr-14 text-[13px] text-white placeholder-[#5C6070] transition-colors focus:border-[#2F80ED] focus:outline-hidden"
+            className="w-full rounded-lg border border-white/10 bg-[#14151B] px-3.5 py-2.5 pr-14 text-[13px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/15 focus:outline-hidden"
           />
           <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 font-mono text-[11px] text-[#6E7284]">
             {values.name.length} / 20
@@ -149,7 +149,7 @@ export const AdicionarExtensaoArquivo: React.FC<
             placeholder="Opcional, preencha a breve descrição da extensão"
             value={values.intro}
             onChange={(e) => onChange('intro', e.target.value.slice(0, 200))}
-            className="w-full rounded-lg border border-[#363847] bg-[#181920] px-3.5 py-2.5 pr-16 text-[13px] text-white placeholder-[#5C6070] transition-colors focus:border-[#2F80ED] focus:outline-hidden"
+            className="w-full rounded-lg border border-white/10 bg-[#14151B] px-3.5 py-2.5 pr-16 text-[13px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/15 focus:outline-hidden"
           />
           <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 font-mono text-[11px] text-[#6E7284]">
             {values.intro.length} / 200

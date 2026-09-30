@@ -101,7 +101,7 @@ export const ModalGerenciarCategorias: React.FC<
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search"
-                className="h-8.5 w-full rounded-lg border border-[#3A3D4B] bg-[#1A1C24] pr-3 pl-9 text-xs text-white placeholder-[#686C7E] transition-colors focus:border-[#2F80ED] focus:outline-hidden"
+                className="h-8.5 w-full rounded-lg border border-white/10 bg-[#14151B] pr-3 pl-9 text-xs text-white placeholder-[#686C7E] transition-colors focus:border-white/40 focus:outline-hidden"
               />
             </div>
           </div>
@@ -155,7 +155,7 @@ export const ModalGerenciarCategorias: React.FC<
                                     className="h-full w-full object-contain"
                                   />
                                 ) : (
-                                  <span className="text-[10px] font-bold text-[#2F80ED]">
+                                  <span className="text-[10px] font-bold text-[#00FF66]">
                                     {ext.name.charAt(0).toUpperCase()}
                                   </span>
                                 )}

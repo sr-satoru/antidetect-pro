@@ -171,7 +171,7 @@ export const LixeiraPage: React.FC = () => {
       {/* Cabeçalho da Página */}
       <div className="flex items-center justify-between shrink-0 select-none">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#3E404D] bg-[#24252B] text-[#00FF66] shadow-xs">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-[#14151B] text-[#00FF66] shadow-xs">
             <Trash2 size={20} />
           </div>
           <div>
@@ -179,7 +179,7 @@ export const LixeiraPage: React.FC = () => {
               <h1 className="text-base font-bold text-white tracking-tight">
                 Lixeira de Perfis
               </h1>
-              <span className="rounded-full bg-[#24252B] border border-[#3E404D] px-2 py-0.5 text-[11px] font-semibold text-[#A9ACB9]">
+              <span className="rounded-full bg-[#14151B] border border-white/10 px-2 py-0.5 text-[11px] font-semibold text-[#A9ACB9]">
                 {items.length} {items.length === 1 ? 'item' : 'itens'}
               </span>
             </div>
@@ -223,7 +223,7 @@ export const LixeiraPage: React.FC = () => {
 
       {/* Tabela de Itens Excluídos ou Loader */}
       {loading ? (
-        <div className="flex flex-1 items-center justify-center rounded-2xl border border-[#3E404D] bg-[#24252B]">
+        <div className="flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-[#181920]">
           <div className="flex flex-col items-center gap-2 text-xs text-[#8E92A2]">
             <Loader2 className="animate-spin text-[#00FF66]" size={24} />
             <span>Carregando itens da lixeira...</span>

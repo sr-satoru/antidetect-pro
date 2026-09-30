@@ -45,7 +45,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             <select
               value={selectedGroup}
               onChange={(e) => onGroupChange(e.target.value)}
-              className="h-9 pl-3.5 pr-8 rounded-md bg-[#14151B] border border-[#2C2E38] hover:border-[#3E4150] text-[13px] text-[#A9ACB9] appearance-none cursor-pointer focus:outline-hidden transition-colors"
+              className="h-9 pl-3.5 pr-8 rounded-md bg-[#14151B] border border-white/10 hover:border-white/20 text-[13px] text-[#A9ACB9] appearance-none cursor-pointer focus:outline-hidden transition-colors"
             >
               <option value="Todos os grupos">Todos os grupos</option>
               {groups.map((group) => (
@@ -71,7 +71,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Pesquisar por nome, ID ou IP..."
-              className="w-full h-9 rounded-md border border-[#2C2E38] bg-[#14151B] pl-9 pr-3 text-[13px] text-[#E1E4EE] placeholder-[#585B6A] focus:border-[#3E4150] focus:outline-hidden transition-colors"
+              className="w-full h-9 rounded-md border border-white/10 bg-[#14151B] pl-9 pr-3 text-[13px] text-[#E1E4EE] placeholder-[#585B6A] focus:border-white/30 focus:outline-hidden transition-colors"
             />
           </div>
 
@@ -79,7 +79,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             <button
               onClick={onRefresh}
               title="Atualizar lista"
-              className="flex h-9 w-9 items-center justify-center rounded-md border border-[#2C2E38] bg-[#14151B] text-[#8E92A2] hover:border-[#3E4150] hover:text-white transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-[#14151B] text-[#8E92A2] hover:border-white/20 hover:text-white transition-colors"
             >
               <RotateCw size={14} />
             </button>
@@ -95,7 +95,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             className={`flex h-9 items-center gap-1.5 rounded-md px-3 text-[13px] font-medium transition-all ${
               selectedCount > 0
                 ? 'border border-[#00FF66]/40 bg-[#00FF66]/10 text-[#00FF66] hover:bg-[#00FF66]/20 hover:border-[#00FF66]/70 shadow-xs'
-                : 'border border-[#2C2E38] bg-[#181920] text-[#555866] opacity-50 cursor-not-allowed'
+                : 'border border-white/10 bg-[#14151B] text-[#555866] opacity-50 cursor-not-allowed'
             }`}
           >
             <RotateCcw size={14} />
@@ -114,7 +114,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             className={`flex h-9 items-center gap-1.5 rounded-md px-3 text-[13px] font-medium transition-all ${
               selectedCount > 0
                 ? 'border border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:border-red-500/70 shadow-xs'
-                : 'border border-[#2C2E38] bg-[#181920] text-[#555866] opacity-50 cursor-not-allowed'
+                : 'border border-white/10 bg-[#14151B] text-[#555866] opacity-50 cursor-not-allowed'
             }`}
           >
             <Trash2 size={14} />
@@ -128,8 +128,8 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             title="Excluir permanentemente todos os itens da lixeira"
             className={`flex h-9 items-center gap-1.5 rounded-md border px-3 text-[13px] font-medium transition-all ${
               totalCount > 0
-                ? 'border-[#3E404D] bg-[#24252B] text-[#9EA2AE] hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400'
-                : 'border-[#2C2E38] bg-[#181920] text-[#555866] opacity-40 cursor-not-allowed'
+                ? 'border-white/10 bg-[#181920] text-[#9EA2AE] hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400'
+                : 'border border-white/10 bg-[#14151B] text-[#555866] opacity-40 cursor-not-allowed'
             }`}
           >
             <AlertTriangle size={14} />

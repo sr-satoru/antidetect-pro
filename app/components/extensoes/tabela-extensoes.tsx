@@ -32,8 +32,8 @@ const LoadingSpinner: React.FC<{ message?: string; subMessage?: string }> = ({
 }) => (
   <div className="flex h-72 flex-col items-center justify-center gap-3.5 text-center select-none animate-in fade-in duration-200">
     <div className="relative flex items-center justify-center">
-      <div className="absolute h-10 w-10 rounded-full bg-[#2F80ED]/15 blur-sm" />
-      <Loader2 size={32} className="animate-spin text-[#2F80ED]" />
+      <div className="absolute h-10 w-10 rounded-full bg-[#00FF66]/15 blur-sm" />
+      <Loader2 size={32} className="animate-spin text-[#00FF66]" />
     </div>
     <div className="flex flex-col items-center gap-1">
       <p className="text-sm font-medium text-white">{message}</p>
@@ -98,7 +98,7 @@ const renderExtensionIcon = (ext: ExtensionItem) => {
       <img
         src={ext.iconUrl}
         alt={ext.name}
-        className="h-11 w-11 shrink-0 rounded-xl object-contain bg-[#191B22] p-1.5 border border-[#2D303E] shadow-xs"
+        className="h-11 w-11 shrink-0 rounded-xl object-contain bg-[#181920] p-1.5 border border-white/10 shadow-xs"
       />
     );
   }
@@ -106,8 +106,8 @@ const renderExtensionIcon = (ext: ExtensionItem) => {
   const initial = ext.name ? ext.name.trim().charAt(0).toUpperCase() : '';
 
   return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#2D303E] bg-[#1E2028] text-base font-bold text-[#2F80ED] shadow-xs">
-      {initial || <Puzzle size={22} className="text-[#2F80ED]" />}
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[#181920] text-base font-bold text-[#00FF66] shadow-xs">
+      {initial || <Puzzle size={22} className="text-[#00FF66]" />}
     </div>
   );
 };
@@ -118,7 +118,7 @@ const renderRecommendedIcon = (ext: RecommendedExtension) => {
       <img
         src={ext.iconUrl}
         alt={ext.name}
-        className="h-10 w-10 shrink-0 rounded-xl object-contain bg-[#191B22] p-1 border border-[#2D303E] shadow-xs"
+        className="h-10 w-10 shrink-0 rounded-xl object-contain bg-[#181920] p-1 border border-white/10 shadow-xs"
       />
     );
   }
@@ -126,8 +126,8 @@ const renderRecommendedIcon = (ext: RecommendedExtension) => {
   const initial = ext.name ? ext.name.trim().charAt(0).toUpperCase() : '';
 
   return (
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#2D303E] bg-[#1E2028] text-sm font-bold text-[#2F80ED] shadow-xs">
-      {initial || <Puzzle size={19} className="text-[#2F80ED]" />}
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[#181920] text-sm font-bold text-[#00FF66] shadow-xs">
+      {initial || <Puzzle size={19} className="text-[#00FF66]" />}
     </div>
   );
 };
@@ -198,7 +198,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
   return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-[#14151B] text-[#D2D5DF]">
       {/* 1. Abas Superiores */}
-      <div className="flex h-12 shrink-0 items-center border-b border-[#2C2E3B] px-6 select-none">
+      <div className="flex h-12 shrink-0 items-center border-b border-white/10 px-6 select-none">
         <div className="flex items-center gap-8">
           <button
             type="button"
@@ -210,7 +210,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           >
             <span>Extensões da equipe</span>
             {activeTab === 'team' && (
-              <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-white" />
+              <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-[#00FF66]" />
             )}
           </button>
 
@@ -224,7 +224,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           >
             <span>Recomendado para você</span>
             {activeTab === 'recommended' && (
-              <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-white" />
+              <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-[#00FF66]" />
             )}
           </button>
         </div>
@@ -240,7 +240,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
               <button
                 type="button"
                 onClick={onAddClick}
-                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#2F80ED] px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#256fd1] active:scale-[0.98]"
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-white px-4 py-2 text-xs font-bold text-black shadow-sm transition-all hover:bg-white/90 active:scale-95"
               >
                 <ArrowUpCircle size={16} />
                 <span>Adicionar extensão</span>
@@ -256,7 +256,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   placeholder="Procurar"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-[#2D303E] bg-[#1A1C24] pr-3 pl-9 text-xs text-white placeholder-[#686C7E] transition-colors focus:border-[#2F80ED] focus:outline-hidden"
+                  className="h-9 w-full rounded-lg border border-white/10 bg-[#181920] pr-3 pl-9 text-xs text-white placeholder-[#686C7E] transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/15 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -264,7 +264,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
             <button
               type="button"
               onClick={() => setIsCategoryModalOpen(true)}
-              className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#2D303E] bg-[#1A1C24] px-3.5 py-2 text-xs font-medium text-[#C8CBD4] transition-colors hover:border-[#3E4256] hover:text-white"
+              className="flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-[#181920] px-3.5 py-2 text-xs font-medium text-[#C8CBD4] transition-colors hover:border-white/20 hover:text-white"
             >
               <LayoutGrid size={15} />
               <span>Categoria</span>
@@ -278,7 +278,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 {teamExtensions.map((ext) => (
                   <div
                     key={ext.id}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-[#2D303E] bg-[#1B1D25] p-5 shadow-xs transition-all hover:border-[#3F4358] hover:bg-[#20222B]"
+                    className="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#181920] p-5 shadow-xs transition-all hover:border-white/20 hover:bg-[#1E2028]"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-3">
@@ -309,9 +309,9 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                                 }`}
                             />
                           </button>
-                          <span className="flex items-center gap-1 text-[11px] font-medium text-[#52C41A]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#52C41A]" />
-                            <span>Available</span>
+                          <span className="flex items-center gap-1 text-[11px] font-medium text-[#00FF66]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#00FF66]" />
+                            <span>Ativo</span>
                           </span>
                         </div>
                       </div>
@@ -322,7 +322,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                     </div>
 
                     {/* Provedor e Opções */}
-                    <div className="flex items-center justify-between border-t border-[#272935] pt-3 text-xs">
+                    <div className="flex items-center justify-between border-t border-white/10 pt-3 text-xs">
                       <div className="flex items-center gap-1.5 text-[11.5px] text-[#7C8092]">
                         <span>Provedor :</span>
                         <a
@@ -335,7 +335,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           }
                           target="_blank"
                           rel="noreferrer"
-                          className="font-medium text-[#2F80ED] hover:underline hover:text-[#5BA0FF]"
+                          className="font-medium text-emerald-400/80 hover:underline hover:text-emerald-300"
                         >
                           {ext.provider}
                         </a>
@@ -347,25 +347,25 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           onClick={() =>
                             setOpenMenuId(openMenuId === ext.id ? null : ext.id)
                           }
-                          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#7C8092] transition-colors hover:bg-[#2A2C38] hover:text-white"
+                          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#7C8092] transition-colors hover:bg-white/10 hover:text-white"
                           title="Mais opções"
                         >
                           <MoreHorizontal size={15} />
                         </button>
 
                         {openMenuId === ext.id && (
-                          <div className="absolute right-0 bottom-8 z-20 w-44 rounded-xl border border-[#333646] bg-[#1E202A] p-1 shadow-xl animate-in fade-in zoom-in-95 duration-150">
+                          <div className="absolute right-0 bottom-8 z-20 w-44 rounded-xl border border-white/10 bg-[#181920] p-1 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                             <a
                               href={
                                 ext.providerUrl && ext.providerUrl !== '#'
-                                  ? ext.providerUrl
-                                  : ext.provider?.includes('Firefox')
-                                    ? 'https://addons.mozilla.org/pt-BR/firefox/'
-                                    : 'https://chromewebstore.google.com'
+                              ? ext.providerUrl
+                              : ext.provider?.includes('Firefox')
+                                ? 'https://addons.mozilla.org/pt-BR/firefox/'
+                                : 'https://chromewebstore.google.com'
                               }
                               target="_blank"
                               rel="noreferrer"
-                              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-[#C8CBD4] transition-colors hover:bg-[#2B2D3B] hover:text-white"
+                              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-[#C8CBD4] transition-colors hover:bg-white/[0.06] hover:text-white"
                               onClick={() => setOpenMenuId(null)}
                             >
                               <ExternalLink size={13} />
@@ -381,7 +381,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                                 onDelete(ext.id);
                                 setOpenMenuId(null);
                               }}
-                              className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-xs text-[#FF6B6B] transition-colors hover:bg-[#34181E]"
+                              className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-xs text-red-400 transition-colors hover:bg-red-500/10"
                             >
                               <Trash2 size={13} />
                               <span>Remover extensão</span>
@@ -400,7 +400,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
               />
             ) : (
               <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-[#8E92A2]">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#2D303E] bg-[#1A1C24] text-[#717586]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[#181920] text-[#717586]">
                   <Puzzle size={22} />
                 </div>
                 <div>
@@ -431,12 +431,12 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 placeholder="Procurar"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-full rounded-lg border border-[#2D303E] bg-[#1A1C24] pr-3 pl-9 text-xs text-white placeholder-[#686C7E] transition-colors focus:border-[#2F80ED] focus:outline-hidden"
+                className="h-9 w-full rounded-lg border border-white/10 bg-[#181920] pr-3 pl-9 text-xs text-white placeholder-[#686C7E] transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/15 focus:outline-hidden"
               />
               {isLoadingSearch && (
                 <Loader2
                   size={13}
-                  className="absolute top-1/2 right-3 -translate-y-1/2 animate-spin text-[#2F80ED]"
+                  className="absolute top-1/2 right-3 -translate-y-1/2 animate-spin text-[#00FF66]"
                 />
               )}
             </div>
@@ -447,7 +447,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 href="https://addons.mozilla.org/pt-BR/firefox/"
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium text-[#2F80ED] underline underline-offset-2 hover:text-[#5BA0FF]"
+                className="font-medium text-emerald-400/80 underline underline-offset-2 hover:text-emerald-300"
               >
                 Procure no Firefox AMO
               </a>{' '}
@@ -456,7 +456,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 href="https://chromewebstore.google.com"
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium text-[#2F80ED] underline underline-offset-2 hover:text-[#5BA0FF]"
+                className="font-medium text-emerald-400/80 underline underline-offset-2 hover:text-emerald-300"
               >
                 Chrome Web Store
               </a>
@@ -473,8 +473,8 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${selectedCategory === cat
-                    ? 'bg-[#2F80ED] text-white shadow-xs'
-                    : 'text-[#8E92A2] hover:bg-[#1E202B] hover:text-white'
+                    ? 'bg-white/10 border border-white/20 text-[#00FF66] font-bold shadow-xs'
+                    : 'text-[#8E92A2] hover:bg-white/[0.04] hover:text-white'
                     }`}
                 >
                   {cat}
@@ -483,12 +483,12 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
             </div>
 
             {/* Filtro rápido por loja */}
-            <div className="hidden shrink-0 items-center gap-1 rounded-lg border border-[#2A2C38] bg-[#161720] p-0.5 sm:flex">
+            <div className="hidden shrink-0 items-center gap-1 rounded-lg border border-white/10 bg-[#14151B] p-0.5 sm:flex">
               <button
                 type="button"
                 onClick={() => setStoreFilter('all')}
                 className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'all'
-                  ? 'bg-[#2F80ED] text-white'
+                  ? 'bg-[#1F212D] text-[#00FF66] border border-white/15'
                   : 'text-[#7C8092] hover:text-white'
                   }`}
               >
@@ -498,7 +498,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 type="button"
                 onClick={() => setStoreFilter('firefox')}
                 className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'firefox'
-                  ? 'bg-[#2F80ED] text-white'
+                  ? 'bg-[#1F212D] text-[#00FF66] border border-white/15'
                   : 'text-[#7C8092] hover:text-white'
                   }`}
               >
@@ -508,7 +508,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 type="button"
                 onClick={() => setStoreFilter('chrome')}
                 className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'chrome'
-                  ? 'bg-[#2F80ED] text-white'
+                  ? 'bg-[#1F212D] text-[#00FF66] border border-white/15'
                   : 'text-[#7C8092] hover:text-white'
                   }`}
               >
@@ -533,7 +533,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   return (
                     <div
                       key={recExt.id}
-                      className="group relative flex flex-col justify-between rounded-2xl border border-[#2D303E] bg-[#1B1D25] p-5 shadow-xs transition-all hover:border-[#3F4358] hover:bg-[#20222B]"
+                      className="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-[#181920] p-5 shadow-xs transition-all hover:border-white/20 hover:bg-[#1E2028]"
                     >
                       <div>
                         {/* Linha Superior: Ícone, Título e Botão Adicionar/Adicionado */}
@@ -553,7 +553,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           {/* Botão de Ação AdsPower */}
                           <div className="shrink-0">
                             {isAlreadyAdded ? (
-                              <span className="inline-flex select-none items-center rounded-md border border-[#2D303E] bg-[#161720] px-3 py-1.5 text-[11px] font-medium text-[#65697B]">
+                              <span className="inline-flex select-none items-center rounded-md border border-white/10 bg-[#14151B] px-3 py-1.5 text-[11px] font-medium text-[#7E8294]">
                                 Adicionado
                               </span>
                             ) : (
@@ -562,7 +562,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                                 onClick={() =>
                                   onAddRecommended && onAddRecommended(recExt)
                                 }
-                                className="cursor-pointer rounded-md border border-[#3E4256] bg-[#161720] px-3.5 py-1.5 text-[11.5px] font-semibold text-white transition-all hover:border-[#2F80ED] hover:bg-[#2F80ED] active:scale-95"
+                                className="cursor-pointer rounded-md border border-white/20 bg-white/10 px-3.5 py-1.5 text-[11.5px] font-semibold text-white transition-all hover:bg-white hover:text-black active:scale-95 shadow-xs"
                               >
                                 Adicionar
                               </button>
@@ -577,14 +577,14 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                       </div>
 
                       {/* Rodapé: Provedor */}
-                      <div className="flex items-center justify-between border-t border-[#272935] pt-3 text-xs">
+                      <div className="flex items-center justify-between border-t border-white/10 pt-3 text-xs">
                         <div className="flex items-center gap-1.5 text-[11.5px] text-[#7C8092]">
                           <span>Provedor :</span>
                           <a
                             href={recExt.providerUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="font-medium text-[#2F80ED] hover:underline hover:text-[#5BA0FF]"
+                            className="font-medium text-emerald-400/80 hover:underline hover:text-emerald-300"
                           >
                             {recExt.provider}
                           </a>
@@ -601,7 +601,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
               />
             ) : (
               <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-[#8E92A2]">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#2D303E] bg-[#1A1C24] text-[#717586]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[#181920] text-[#717586]">
                   <Sparkles size={22} />
                 </div>
                 <div>
