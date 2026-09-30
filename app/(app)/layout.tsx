@@ -5,7 +5,7 @@ import { Header } from '@/components/ui/header';
 
 export const AppLayout: React.FC = () => {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#08090C] text-[#F4F4F6]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F5F6F8] dark:bg-[#08090C] text-[#111216] dark:text-[#F4F4F6] transition-colors duration-150">
       {/* Sidebar global */}
       <Sidebar />
 
@@ -15,7 +15,7 @@ export const AppLayout: React.FC = () => {
         <Header />
 
         {/* Content area */}
-        <main className="flex-1 overflow-hidden p-3.5 sm:p-5 bg-[#08090C]">
+        <main className="flex-1 overflow-hidden p-3.5 sm:p-5 bg-transparent">
           <Outlet />
         </main>
       </div>

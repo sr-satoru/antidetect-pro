@@ -27,11 +27,11 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-6 backdrop-blur-xs select-none"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-black/85 p-6 backdrop-blur-xs select-none"
       onClick={onClose}
     >
       <div
-        className={`animate-in zoom-in-95 w-full ${maxWidth} rounded-2xl border border-[#343644] bg-[#1C1E26] p-7 shadow-2xl shadow-black/95 duration-150`}
+        className={`animate-in zoom-in-95 w-full ${maxWidth} rounded-2xl border border-slate-200 dark:border-[#343644] bg-white dark:bg-[#1C1E26] p-7 shadow-2xl shadow-slate-900/15 dark:shadow-black/95 duration-150`}
         onClick={(e) => e.stopPropagation()}
       >
         <form
@@ -48,17 +48,17 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
               type="button"
               onClick={onClose}
               disabled={isSaving}
-              className="cursor-pointer rounded-xl px-5 py-2.5 text-sm font-medium text-[#9EA2AE] transition-colors hover:bg-white/5 hover:text-white disabled:opacity-50"
+              className="cursor-pointer rounded-xl px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-[#9EA2AE] dark:hover:bg-white/5 dark:hover:text-white transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSaving || isSaveDisabled}
-              className="flex cursor-pointer items-center gap-2 rounded-xl bg-[#00FF66] px-6 py-2.5 text-sm font-bold text-black transition-all hover:bg-[#00D655] active:scale-[0.98] shadow-md shadow-[#00FF66]/15 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-[#00D655] hover:brightness-105 text-white dark:bg-[#00FF66] dark:text-black dark:hover:bg-[#00D655] px-6 py-2.5 text-sm font-bold transition-all active:scale-[0.98] shadow-md shadow-emerald-500/20 dark:shadow-[#00FF66]/15 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isSaving ? (
-                <Loader2 size={16} className="animate-spin text-black" />
+                <Loader2 size={16} className="animate-spin text-white dark:text-black" />
               ) : (
                 <Check size={16} strokeWidth={2.5} />
               )}

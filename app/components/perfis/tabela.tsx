@@ -59,11 +59,11 @@ export const Tabela: React.FC<TabelaProps> = ({
   }, [isPageDropdownOpen]);
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#181920] shadow-xs">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] shadow-sm shadow-slate-200/50 dark:shadow-none">
       <div className="flex-1 custom-scrollbar overflow-x-auto overflow-y-visible">
         <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
           {/* Header */}
-          <thead className="sticky top-0 z-20 border-b border-white/10 bg-[#14151B] text-[11px] font-semibold tracking-wider text-[#A6ABB9] uppercase select-none">
+          <thead className="sticky top-0 z-20 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] text-[11px] font-semibold tracking-wider text-slate-500 dark:text-[#A6ABB9] uppercase select-none">
             <tr className="h-11">
               <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center">
                 <div className="flex items-center justify-center">
@@ -94,13 +94,13 @@ export const Tabela: React.FC<TabelaProps> = ({
                 Observação
               </th>
               <th className="w-[120px] min-w-[120px] px-3.5 py-2.5">Criação</th>
-              <th className="sticky right-[48px] z-20 w-[124px] max-w-[124px] min-w-[124px] bg-[#14151B] px-3 py-2.5 text-center">
+              <th className="sticky right-[48px] z-20 w-[124px] max-w-[124px] min-w-[124px] bg-slate-50 dark:bg-[#14151B] px-3 py-2.5 text-center">
                 Ação
               </th>
-              <th className="sticky right-0 z-20 w-[48px] max-w-[48px] min-w-[48px] bg-[#14151B] px-2 py-2.5 text-center">
+              <th className="sticky right-0 z-20 w-[48px] max-w-[48px] min-w-[48px] bg-slate-50 dark:bg-[#14151B] px-2 py-2.5 text-center">
                 <SlidersHorizontal
                   size={13}
-                  className="mx-auto text-[#9EA2AE]"
+                  className="mx-auto text-slate-400 dark:text-[#9EA2AE]"
                 />
               </th>
             </tr>
@@ -126,17 +126,17 @@ export const Tabela: React.FC<TabelaProps> = ({
               ))
             ) : (
               <tr>
-                <td colSpan={12} className="py-16 text-center text-[#5E6172]">
+                <td colSpan={12} className="py-16 text-center text-slate-400 dark:text-[#5E6172]">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <Layers
                       size={32}
                       strokeWidth={1.5}
-                      className="text-[#353849]"
+                      className="text-slate-300 dark:text-[#353849]"
                     />
-                    <p className="text-sm font-medium text-[#8e92a4]">
+                    <p className="text-sm font-medium text-slate-600 dark:text-[#8e92a4]">
                       Nenhum perfil encontrado
                     </p>
-                    <p className="text-xs text-[#5E6172]">
+                    <p className="text-xs text-slate-400 dark:text-[#5E6172]">
                       Ajuste os filtros de pesquisa ou crie um novo perfil.
                     </p>
                   </div>
@@ -148,40 +148,40 @@ export const Tabela: React.FC<TabelaProps> = ({
       </div>
 
       {/* Paginação no Rodapé Minimalista */}
-      <div className="relative z-20 mt-auto flex h-12 shrink-0 items-center justify-between border-t border-white/10 bg-[#14151B] px-4 text-xs text-[#C8CBD4]">
+      <div className="relative z-20 mt-auto flex h-12 shrink-0 items-center justify-between border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] px-4 text-xs text-slate-600 dark:text-[#C8CBD4]">
         <div className="flex items-center gap-4">
           <span>
-            Total: <strong className="text-white">{profiles.length}</strong>{' '}
+            Total: <strong className="text-slate-900 dark:text-white">{profiles.length}</strong>{' '}
             perfis
           </span>
           <span>
             Executando:{' '}
-            <strong className="text-[#4ade80]">{runningCount}</strong>
+            <strong className="text-emerald-600 dark:text-[#4ade80]">{runningCount}</strong>
           </span>
           {selectedIds.length > 0 && (
-            <span className="rounded border border-[#00FF66]/20 bg-[#00FF66]/10 px-2 py-0.5 text-[11px] font-medium text-[#00FF66]">
+            <span className="rounded border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-[#00FF66]/20 dark:bg-[#00FF66]/10 dark:text-[#00FF66] px-2 py-0.5 text-[11px] font-medium">
               {selectedIds.length} marcado{selectedIds.length > 1 ? 's' : ''}
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-[#9EA2AE]">1 / 1</span>
+          <span className="font-mono text-xs text-slate-400 dark:text-[#9EA2AE]">1 / 1</span>
           <div className="relative" ref={pageDropdownRef}>
             <button
               type="button"
               onClick={() => setIsPageDropdownOpen(!isPageDropdownOpen)}
-              className="flex h-[26px] items-center gap-1.5 rounded-md border border-white/15 bg-[#1A1B22] px-2.5 text-[11px] text-[#C8CBD4] hover:border-white/30 hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden"
+              className="flex h-[26px] items-center gap-1.5 rounded-md border border-slate-200 dark:border-white/15 bg-white dark:bg-[#1A1B22] px-2.5 text-[11px] text-slate-700 dark:text-[#C8CBD4] hover:border-slate-300 dark:hover:border-white/30 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden shadow-2xs"
             >
               <span>{pageSize} / pág</span>
               <ChevronDown
                 size={12}
-                className={`text-[#8E92A2] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#00FF66]' : ''}`}
+                className={`text-slate-400 dark:text-[#8E92A2] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-emerald-600 dark:text-[#00FF66]' : ''}`}
               />
             </button>
 
             {isPageDropdownOpen && (
-              <div className="absolute bottom-full right-0 mb-1.5 z-50 min-w-[95px] overflow-hidden rounded-md border border-[#3E404D] bg-[#1A1B21] py-1 shadow-2xl animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute bottom-full right-0 mb-1.5 z-50 min-w-[95px] overflow-hidden rounded-md border border-slate-200 dark:border-[#3E404D] bg-white dark:bg-[#1A1B21] py-1 shadow-lg shadow-slate-200/60 dark:shadow-2xl animate-in fade-in zoom-in-95 duration-100">
                 {['10', '20', '50', '100'].map((size) => (
                   <button
                     key={size}
@@ -192,8 +192,8 @@ export const Tabela: React.FC<TabelaProps> = ({
                     }}
                     className={`flex w-full items-center px-3 py-1 text-[11px] transition-colors cursor-pointer select-none text-left ${
                       pageSize === size
-                        ? 'bg-[#00FF66]/10 text-[#00FF66] font-medium'
-                        : 'text-[#C8CBD4] hover:bg-[#2A2C38] hover:text-white'
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-[#00FF66]/10 dark:text-[#00FF66] font-medium'
+                        : 'text-slate-700 dark:text-[#C8CBD4] hover:bg-slate-100 dark:hover:bg-[#2A2C38] hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     {size} / pág
@@ -207,7 +207,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             <button
               type="button"
               disabled
-              className="flex h-[26px] w-[26px] cursor-not-allowed items-center justify-center rounded border border-[#3E404D] bg-[#1A1B21] text-[#C8CBD4] disabled:opacity-40"
+              className="flex h-[26px] w-[26px] cursor-not-allowed items-center justify-center rounded border border-slate-200 dark:border-[#3E404D] bg-white dark:bg-[#1A1B21] text-slate-400 dark:text-[#C8CBD4] disabled:opacity-40"
               title="Página anterior"
             >
               <ChevronLeft size={13} />
@@ -215,7 +215,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             <button
               type="button"
               disabled
-              className="flex h-[26px] w-[26px] cursor-not-allowed items-center justify-center rounded border border-[#3E404D] bg-[#1A1B21] text-[#C8CBD4] disabled:opacity-40"
+              className="flex h-[26px] w-[26px] cursor-not-allowed items-center justify-center rounded border border-slate-200 dark:border-[#3E404D] bg-white dark:bg-[#1A1B21] text-slate-400 dark:text-[#C8CBD4] disabled:opacity-40"
               title="Próxima página"
             >
               <ChevronRight size={13} />

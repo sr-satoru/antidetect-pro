@@ -8,10 +8,48 @@
 @source "./App.tsx";
 @source "./index.html";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-kinetic: #FF334B;
   --color-kinetic-hover: #E0243C;
   --color-kinetic-dark: #38080E;
+  --color-bg-base: var(--color-bg-base);
+  --color-bg-surface: var(--color-bg-surface);
+  --color-bg-card: var(--color-bg-card);
+  --color-bg-input: var(--color-bg-input);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-hover: var(--color-border-hover);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+}
+
+:root {
+  color-scheme: light;
+  --color-bg-base: #F5F6F8;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-card: #FFFFFF;
+  --color-bg-input: #EEF0F4;
+  --color-border-subtle: #E2E4E9;
+  --color-border-hover: #CBD0D8;
+  --color-text-primary: #111216;
+  --color-text-secondary: #585B6A;
+  --color-text-muted: #8E92A2;
+  --scrollbar-thumb: #D1D5DB;
+  --scrollbar-thumb-hover: #9CA3AF;
+  --scrollbar-track: transparent;
+  --selection-bg: #00D655;
+  --selection-color: #FFFFFF;
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 6px 16px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+  --shadow-dropdown: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --shadow-modal: 0 20px 45px -10px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  --backdrop-overlay: rgba(15, 23, 42, 0.35);
+}
+
+.dark {
+  color-scheme: dark;
   --color-bg-base: #08090C;
   --color-bg-surface: #101116;
   --color-bg-card: #15161C;
@@ -21,10 +59,16 @@
   --color-text-primary: #F4F4F6;
   --color-text-secondary: #9093A2;
   --color-text-muted: #5E6172;
-}
-
-:root {
-  color-scheme: dark;
+  --scrollbar-thumb: #252833;
+  --scrollbar-thumb-hover: #363a4a;
+  --scrollbar-track: transparent;
+  --selection-bg: #00FF66;
+  --selection-color: #000000;
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 6px 18px -2px rgba(0, 0, 0, 0.7);
+  --shadow-dropdown: 0 14px 30px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-modal: 0 25px 60px -12px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --backdrop-overlay: rgba(0, 0, 0, 0.75);
 }
 
 @layer base {
@@ -35,9 +79,8 @@
   }
 
   html, body {
-    color-scheme: dark;
-    background-color: #08090C;
-    color: #F4F4F6;
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-size: 13px;
     line-height: 1.5;
@@ -50,29 +93,29 @@
 
   select,
   select option {
-    background-color: #14151B;
-    color: #F4F4F6;
+    background-color: var(--color-bg-card);
+    color: var(--color-text-primary);
   }
 
   ::selection {
-    background-color: #00FF66;
-    color: #000000;
+    background-color: var(--selection-bg);
+    color: var(--selection-color);
   }
 
-  /* Custom sleek scrollbar global */
+  /* Custom sleek scrollbar global adaptativo */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--scrollbar-track);
   }
   ::-webkit-scrollbar-thumb {
-    background: #252833;
+    background: var(--scrollbar-thumb);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #363a4a;
+    background: var(--scrollbar-thumb-hover);
   }
 }
 
@@ -129,19 +172,35 @@
 
 @utility custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #3E4150 #14151B;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
   &::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
   &::-webkit-scrollbar-track {
-    background: #14151B;
+    background: var(--scrollbar-track);
   }
   &::-webkit-scrollbar-thumb {
-    background: #3E4150;
+    background: var(--scrollbar-thumb);
     border-radius: 9999px;
   }
   &::-webkit-scrollbar-thumb:hover {
-    background: #5A5E73;
+    background: var(--scrollbar-thumb-hover);
   }
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-card);
+}
+
+@utility shadow-soft-hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+@utility shadow-dropdown {
+  box-shadow: var(--shadow-dropdown);
+}
+
+@utility shadow-modal {
+  box-shadow: var(--shadow-modal);
 }

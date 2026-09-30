@@ -73,8 +73,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
             maxWidth: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
           }}
         >
-          {/* Balãozinho cinza claro idêntico à imagem de referência do AdsPower */}
-          <div className="bg-[#D1D4DC] text-[#1E2028] text-[11.5px] font-normal leading-[1.4] px-3.5 py-2 rounded-[5px] shadow-[0_6px_20px_rgba(0,0,0,0.35)] select-none text-left">
+          {/* Balão com alto contraste e acabamento de luxo */}
+          <div className="bg-slate-900 text-slate-100 dark:bg-[#1E2028] dark:text-[#E1E4EE] border border-slate-800 dark:border-white/15 text-[11.5px] font-normal leading-[1.4] px-3.5 py-2 rounded-lg shadow-xl shadow-slate-900/20 dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)] select-none text-left">
             {content}
           </div>
 
@@ -82,8 +82,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
           <div
             className={`absolute w-0 h-0 border-solid ${arrowAlignClass} ${
               position === 'top'
-                ? 'top-full border-t-[#D1D4DC] border-t-[6px] border-x-[6px] border-x-transparent border-b-0'
-                : 'bottom-full border-b-[#D1D4DC] border-b-[6px] border-x-[6px] border-x-transparent border-t-0'
+                ? 'top-full border-t-slate-900 dark:border-t-[#1E2028] border-t-[6px] border-x-[6px] border-x-transparent border-b-0'
+                : 'bottom-full border-b-slate-900 dark:border-b-[#1E2028] border-b-[6px] border-x-[6px] border-x-transparent border-t-0'
             }`}
           />
         </div>
@@ -113,7 +113,7 @@ export const InfoBalloon: React.FC<InfoBalloonProps> = ({
 }) => {
   return (
     <Tooltip content={content} position={position} align={align} maxWidth={maxWidth} className={className}>
-      <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-[#525565] text-[#8C90A4] hover:text-white hover:border-[#8C90A4] text-[10px] font-semibold leading-none cursor-help select-none transition-colors ml-1">
+      <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-slate-300 dark:border-[#525565] text-slate-500 dark:text-[#8C90A4] hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-[#8C90A4] text-[10px] font-semibold leading-none cursor-help select-none transition-colors ml-1">
         ?
       </span>
     </Tooltip>

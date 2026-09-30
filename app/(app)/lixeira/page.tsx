@@ -167,23 +167,23 @@ export const LixeiraPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-1 flex-col overflow-hidden bg-[#181920] p-4 gap-3">
+    <div className="flex h-full w-full flex-1 flex-col overflow-hidden p-4 gap-3">
       {/* Cabeçalho da Página */}
       <div className="flex items-center justify-between shrink-0 select-none">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-[#14151B] text-[#00FF66] shadow-xs">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] text-emerald-600 dark:text-[#00FF66] shadow-xs">
             <Trash2 size={20} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold text-white tracking-tight">
+              <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
                 Lixeira de Perfis
               </h1>
-              <span className="rounded-full bg-[#14151B] border border-white/10 px-2 py-0.5 text-[11px] font-semibold text-[#A9ACB9]">
+              <span className="rounded-full bg-slate-100 dark:bg-[#14151B] border border-slate-200 dark:border-white/10 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:text-[#A9ACB9]">
                 {items.length} {items.length === 1 ? 'item' : 'itens'}
               </span>
             </div>
-            <p className="text-xs text-[#8E92A2]">
+            <p className="text-xs text-slate-500 dark:text-[#8E92A2]">
               Gerencie e restaure perfis excluídos recentemente para o painel principal.
             </p>
           </div>
@@ -192,14 +192,14 @@ export const LixeiraPage: React.FC = () => {
 
       {/* Erro de conexão se houver */}
       {error && (
-        <div className="flex items-center justify-between rounded-lg border border-[#EF4444]/40 bg-[#EF4444]/10 p-3 text-xs text-[#FF6B6B]">
+        <div className="flex items-center justify-between rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-600 dark:text-[#FF6B6B]">
           <div className="flex items-center gap-2">
             <AlertTriangle size={15} />
             <span>{error}</span>
           </div>
           <button
             onClick={fetchTrash}
-            className="rounded bg-[#EF4444]/20 px-2 py-1 font-semibold hover:bg-[#EF4444]/30 text-white"
+            className="rounded bg-red-500/20 px-2 py-1 font-semibold hover:bg-red-500/30 text-white"
           >
             Tentar novamente
           </button>
@@ -223,9 +223,9 @@ export const LixeiraPage: React.FC = () => {
 
       {/* Tabela de Itens Excluídos ou Loader */}
       {loading ? (
-        <div className="flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-[#181920]">
-          <div className="flex flex-col items-center gap-2 text-xs text-[#8E92A2]">
-            <Loader2 className="animate-spin text-[#00FF66]" size={24} />
+        <div className="flex flex-1 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920]">
+          <div className="flex flex-col items-center gap-2 text-xs text-slate-400 dark:text-[#8E92A2]">
+            <Loader2 className="animate-spin text-emerald-500 dark:text-[#00FF66]" size={24} />
             <span>Carregando itens da lixeira...</span>
           </div>
         </div>

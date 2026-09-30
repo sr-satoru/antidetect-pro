@@ -45,7 +45,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             <select
               value={selectedGroup}
               onChange={(e) => onGroupChange(e.target.value)}
-              className="h-9 pl-3.5 pr-8 rounded-md bg-[#14151B] border border-white/10 hover:border-white/20 text-[13px] text-[#A9ACB9] appearance-none cursor-pointer focus:outline-hidden transition-colors"
+              className="h-9 pl-3.5 pr-8 rounded-md bg-white dark:bg-[#14151B] border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 text-[13px] text-slate-700 dark:text-[#A9ACB9] appearance-none cursor-pointer focus:outline-hidden transition-colors shadow-2xs"
             >
               <option value="Todos os grupos">Todos os grupos</option>
               {groups.map((group) => (
@@ -56,7 +56,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             </select>
             <ChevronDown
               size={14}
-              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6C6F7E]"
+              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6C6F7E]"
             />
           </div>
 
@@ -64,14 +64,14 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
           <div className="relative w-80 sm:w-96">
             <Search
               size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6C6F7E]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6C6F7E]"
             />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Pesquisar por nome, ID ou IP..."
-              className="w-full h-9 rounded-md border border-white/10 bg-[#14151B] pl-9 pr-3 text-[13px] text-[#E1E4EE] placeholder-[#585B6A] focus:border-white/30 focus:outline-hidden transition-colors"
+              className="w-full h-9 rounded-md border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] pl-9 pr-3 text-[13px] text-slate-900 dark:text-[#E1E4EE] placeholder-slate-400 dark:placeholder-[#585B6A] focus:border-emerald-500 dark:focus:border-white/30 focus:outline-hidden transition-colors shadow-2xs"
             />
           </div>
 
@@ -79,7 +79,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             <button
               onClick={onRefresh}
               title="Atualizar lista"
-              className="flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-[#14151B] text-[#8E92A2] hover:border-white/20 hover:text-white transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] hover:border-slate-300 dark:hover:border-white/20 dark:hover:text-white transition-colors shadow-2xs"
             >
               <RotateCw size={14} />
             </button>
@@ -94,14 +94,14 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             disabled={selectedCount === 0}
             className={`flex h-9 items-center gap-1.5 rounded-md px-3 text-[13px] font-medium transition-all ${
               selectedCount > 0
-                ? 'border border-[#00FF66]/40 bg-[#00FF66]/10 text-[#00FF66] hover:bg-[#00FF66]/20 hover:border-[#00FF66]/70 shadow-xs'
-                : 'border border-white/10 bg-[#14151B] text-[#555866] opacity-50 cursor-not-allowed'
+                ? 'border border-emerald-500/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-[#00FF66]/40 dark:bg-[#00FF66]/10 dark:text-[#00FF66] dark:hover:bg-[#00FF66]/20 shadow-xs'
+                : 'border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#14151B] text-slate-400 dark:text-[#555866] opacity-50 cursor-not-allowed'
             }`}
           >
             <RotateCcw size={14} />
             <span>Restaurar Selecionados</span>
             {selectedCount > 0 && (
-              <span className="ml-1 rounded-full bg-[#00FF66]/20 px-1.5 py-0.5 text-[11px] font-bold text-[#00FF66]">
+              <span className="ml-1 rounded-full bg-emerald-500/20 dark:bg-[#00FF66]/20 px-1.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-[#00FF66]">
                 {selectedCount}
               </span>
             )}
@@ -113,8 +113,8 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             disabled={selectedCount === 0}
             className={`flex h-9 items-center gap-1.5 rounded-md px-3 text-[13px] font-medium transition-all ${
               selectedCount > 0
-                ? 'border border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:border-red-500/70 shadow-xs'
-                : 'border border-white/10 bg-[#14151B] text-[#555866] opacity-50 cursor-not-allowed'
+                ? 'border border-red-500/30 bg-red-50 text-red-600 hover:bg-red-100 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 shadow-xs'
+                : 'border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#14151B] text-slate-400 dark:text-[#555866] opacity-50 cursor-not-allowed'
             }`}
           >
             <Trash2 size={14} />
@@ -128,8 +128,8 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             title="Excluir permanentemente todos os itens da lixeira"
             className={`flex h-9 items-center gap-1.5 rounded-md border px-3 text-[13px] font-medium transition-all ${
               totalCount > 0
-                ? 'border-white/10 bg-[#181920] text-[#9EA2AE] hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400'
-                : 'border border-white/10 bg-[#14151B] text-[#555866] opacity-40 cursor-not-allowed'
+                ? 'border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] text-slate-700 dark:text-[#9EA2AE] hover:border-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:border-red-500/50 dark:hover:bg-red-500/10 dark:hover:text-red-400 shadow-2xs'
+                : 'border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#14151B] text-slate-400 dark:text-[#555866] opacity-40 cursor-not-allowed'
             }`}
           >
             <AlertTriangle size={14} />

@@ -170,21 +170,21 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 flex w-full max-w-[540px] max-h-[90vh] flex-col rounded-2xl border border-[#333543] bg-[#22242C] shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+      <div className="relative z-10 flex w-full max-w-[540px] max-h-[90vh] flex-col rounded-2xl border border-slate-200 dark:border-[#333543] bg-white dark:bg-[#22242C] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex h-14 shrink-0 items-center justify-between border-b border-[#2F3240] px-6 select-none">
-          <span className="text-base font-semibold text-white">
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#2F3240] px-6 select-none">
+          <span className="text-base font-semibold text-slate-900 dark:text-white">
             {categoryToEdit ? 'Editar categoria' : 'Nova categoria'}
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg p-1.5 text-[#8E92A2] transition-colors hover:bg-[#2C2E38] hover:text-white"
+            className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#8E92A2] transition-colors dark:hover:bg-[#2C2E38] dark:hover:text-white"
             title="Fechar"
           >
             <X size={18} />
@@ -195,8 +195,8 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
         <div className="flex-1 overflow-y-auto space-y-5 p-6 custom-scrollbar">
           {/* Campo Nome */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <label className="shrink-0 text-left text-[13px] text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
-              <span className="mr-1 text-[#EB5757] font-semibold">*</span>
+            <label className="shrink-0 text-left text-[13px] text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
+              <span className="mr-1 text-red-500 font-semibold">*</span>
               Nome
             </label>
             <div className="relative flex-1">
@@ -205,10 +205,10 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                 value={nome}
                 maxLength={50}
                 onChange={(e) => setNome(e.target.value)}
-                placeholder="Por favor, insira."
-                className="w-full rounded-lg border border-white/10 bg-[#1E2028] px-3.5 py-2.5 pr-16 text-[13px] text-white placeholder-[#5A5E70] transition-colors focus:border-white/40 focus:outline-none"
+                placeholder="Por favor, insira o nome da categoria."
+                className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E2028] px-3.5 py-2.5 pr-16 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5A5E70] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:outline-none"
               />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-[#6E7385] select-none">
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 dark:text-[#6E7385] select-none">
                 {nome.length} / 50
               </span>
             </div>
@@ -216,7 +216,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
 
           {/* Campo Observação */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
-            <label className="shrink-0 pt-2 text-left text-[13px] text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
+            <label className="shrink-0 pt-2 text-left text-[13px] text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
               Observação
             </label>
             <div className="relative flex-1">
@@ -225,10 +225,10 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                 maxLength={500}
                 rows={2}
                 onChange={(e) => setObservacao(e.target.value)}
-                placeholder="Por favor, insira."
-                className="w-full resize-none rounded-lg border border-white/10 bg-[#1E2028] px-3.5 py-2.5 pb-6 text-[13px] text-white placeholder-[#5A5E70] transition-colors focus:border-white/40 focus:outline-none"
+                placeholder="Por favor, insira uma observação."
+                className="w-full resize-none rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E2028] px-3.5 py-2.5 pb-6 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5A5E70] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:outline-none"
               />
-              <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] text-[#6E7385] select-none">
+              <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] text-slate-400 dark:text-[#6E7385] select-none">
                 {observacao.length} / 500
               </span>
             </div>
@@ -236,7 +236,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
 
           {/* Campo Extensão */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
-            <label className="shrink-0 pt-2 text-left text-[13px] text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
+            <label className="shrink-0 pt-2 text-left text-[13px] text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
               Extensão
             </label>
 
@@ -247,12 +247,12 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed px-4 py-2.5 text-[13px] font-medium transition-all active:scale-[0.99] ${
                   isDropdownOpen
-                    ? 'border-white/40 bg-white/10 text-white'
-                    : 'border-white/20 bg-[#1E2028]/70 text-white hover:border-white/40 hover:bg-[#252732]'
+                    ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:border-white/40 dark:bg-white/10 dark:text-white'
+                    : 'border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-[#1E2028]/70 text-slate-700 dark:text-white hover:border-slate-400 dark:hover:border-white/40 hover:bg-slate-100 dark:hover:bg-[#252732]'
                 }`}
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/60">
-                  <Plus size={12} className="text-white" />
+                <div className="flex h-5 w-5 items-center justify-center rounded-full border border-slate-400 dark:border-white/60">
+                  <Plus size={12} className="text-slate-600 dark:text-white" />
                 </div>
                 <span>Selecionar Extensão</span>
               </button>
@@ -263,7 +263,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                   {selectedExtensions.map((ext) => (
                     <div
                       key={ext.id}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-[#3B3E4F] bg-[#181920] px-2 py-1 text-xs text-[#D2D5DF]"
+                      className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 dark:border-[#3B3E4F] bg-slate-100 dark:bg-[#181920] px-2 py-1 text-xs text-slate-800 dark:text-[#D2D5DF]"
                     >
                       {ext.iconUrl ? (
                         <img
@@ -272,7 +272,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                           className="h-3.5 w-3.5 object-contain"
                         />
                       ) : (
-                        <span className="text-[10px] font-bold text-[#00FF66]">
+                        <span className="text-[10px] font-bold text-emerald-600 dark:text-[#00FF66]">
                           {ext.name.charAt(0).toUpperCase()}
                         </span>
                       )}
@@ -285,7 +285,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                           e.stopPropagation();
                           toggleExtension(ext);
                         }}
-                        className="cursor-pointer text-[#7B8092] transition-colors hover:text-white"
+                        className="cursor-pointer text-slate-400 hover:text-slate-700 dark:text-[#7B8092] transition-colors dark:hover:text-white"
                       >
                         <X size={12} />
                       </button>
@@ -296,25 +296,25 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
 
               {/* Painel com Busca e Lista de Extensões */}
               {isDropdownOpen && (
-                <div className="mt-2.5 w-full rounded-xl border border-[#383A49] bg-[#1C1E26] p-2.5 shadow-2xl animate-in fade-in duration-100">
+                <div className="mt-2.5 w-full rounded-xl border border-slate-200 dark:border-[#383A49] bg-white dark:bg-[#1C1E26] p-2.5 shadow-xl shadow-slate-900/10 dark:shadow-2xl animate-in fade-in duration-100">
                   {/* Campo de Busca */}
                   <div className="relative mb-2">
                     <Search
                       size={14}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8E92A2]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#8E92A2]"
                     />
                     <input
                       ref={searchInputRef}
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search"
-                      className="w-full rounded-lg border border-white/10 bg-[#13141C] py-2 pl-9 pr-8 text-[12.5px] text-white placeholder-[#5D6274] transition-colors focus:border-white/40 focus:outline-none"
+                      placeholder="Pesquisar..."
+                      className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#13141C] py-2 pl-9 pr-8 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5D6274] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:outline-none"
                     />
                     {searching && (
                       <Loader2
                         size={14}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-[#00FF66]"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-emerald-600 dark:text-[#00FF66]"
                       />
                     )}
                   </div>
@@ -330,12 +330,12 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                             onClick={() => toggleExtension(ext)}
                             className={`flex cursor-pointer items-center justify-between rounded-lg px-2.5 py-2 transition-colors ${
                               selected
-                                ? 'bg-white/10 text-white'
-                                : 'hover:bg-white/[0.04] text-[#D8DBE5]'
+                                ? 'bg-blue-50 dark:bg-white/10 text-blue-700 dark:text-white'
+                                : 'hover:bg-slate-50 dark:hover:bg-white/[0.04] text-slate-700 dark:text-[#D8DBE5]'
                             }`}
                           >
                             <div className="flex min-w-0 items-center gap-2.5">
-                              <div className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] border border-white/10 bg-[#14151C] p-0.5">
+                              <div className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#14151C] p-0.5">
                                 {ext.iconUrl ? (
                                   <img
                                     src={ext.iconUrl}
@@ -343,11 +343,11 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                                     className="h-full w-full rounded-[3px] object-contain"
                                   />
                                 ) : (
-                                  <span className="text-[10px] font-bold text-[#00FF66]">
+                                  <span className="text-[10px] font-bold text-emerald-600 dark:text-[#00FF66]">
                                     {ext.name.charAt(0).toUpperCase()}
                                   </span>
                                 )}
-                                <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#00FF66] ring-1 ring-[#14151C]" />
+                                <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-[#00FF66] ring-1 ring-white dark:ring-[#14151C]" />
                               </div>
 
                               <span className="truncate text-[12.5px]">
@@ -360,8 +360,8 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                                 size={14}
                                 className={
                                   selected
-                                    ? 'text-[#00FF66]'
-                                    : 'text-[#484C5E]'
+                                    ? 'text-emerald-600 dark:text-[#00FF66]'
+                                    : 'text-slate-300 dark:text-[#484C5E]'
                                 }
                               />
                             </div>
@@ -369,7 +369,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                         );
                       })
                     ) : (
-                      <div className="py-4 text-center text-xs text-[#7B8092]">
+                      <div className="py-4 text-center text-xs text-slate-400 dark:text-[#7B8092]">
                         {searching
                           ? 'Buscando extensões...'
                           : 'Nenhuma extensão encontrada'}
@@ -383,11 +383,11 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
         </div>
 
         {/* Footer fixo e sempre visível */}
-        <div className="flex h-16 shrink-0 items-center justify-end gap-3 border-t border-[#2F3240] bg-[#1C1D24] px-6 select-none rounded-b-2xl">
+        <div className="flex h-16 shrink-0 items-center justify-end gap-3 border-t border-slate-200 dark:border-[#2F3240] bg-slate-50 dark:bg-[#1C1D24] px-6 select-none rounded-b-2xl">
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg px-4 py-2 text-xs font-medium text-[#8E92A2] transition-colors hover:bg-[#2C2E38] hover:text-white"
+            className="cursor-pointer rounded-lg px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-[#8E92A2] transition-colors dark:hover:bg-[#2C2E38] dark:hover:text-white"
           >
             Cancelar
           </button>
@@ -395,7 +395,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
             type="button"
             onClick={handleConfirm}
             disabled={!nome.trim()}
-            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#1C1D24] border border-white/30 hover:border-white px-6 py-2 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#252834] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex cursor-pointer items-center justify-center rounded-lg bg-slate-900 hover:bg-slate-800 text-white dark:bg-[#1C1D24] dark:border dark:border-white/30 dark:hover:border-white dark:text-white px-6 py-2 text-xs font-semibold shadow-xs transition-all dark:hover:bg-[#252834] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Confirmar
           </button>

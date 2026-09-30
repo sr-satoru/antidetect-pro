@@ -190,17 +190,17 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   ];
 
   return (
-    <div className="flex w-full shrink-0 flex-col justify-between rounded-xl border border-[#333540] bg-[#212228] p-5 shadow-lg lg:sticky lg:top-0 lg:w-[370px]">
+    <div className="flex w-full shrink-0 flex-col justify-between rounded-xl border border-slate-200 dark:border-[#333540] bg-slate-50 dark:bg-[#212228] p-5 shadow-sm shadow-slate-200/50 dark:shadow-lg lg:sticky lg:top-0 lg:w-[370px]">
       <div>
         {/* Header do card com título e botão New fingerprint */}
-        <div className="mb-3.5 flex items-center justify-between border-b border-[#2C2E38] pb-3.5">
-          <h3 className="text-[14px] font-semibold tracking-wide text-[#E5E7EB]">
+        <div className="mb-3.5 flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E38] pb-3.5">
+          <h3 className="text-[14px] font-semibold tracking-wide text-slate-900 dark:text-[#E5E7EB]">
             Visão Geral
           </h3>
           <button
             type="button"
             onClick={handleRegenerateFingerprint}
-            className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-medium text-[#00FF66] transition-colors hover:text-[#00FF66]/80"
+            className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-medium text-emerald-600 hover:text-emerald-700 dark:text-[#00FF66] transition-colors dark:hover:text-[#00FF66]/80"
             title="Gerar nova impressão digital aleatória"
           >
             {/* Ícone Shuffle */}
@@ -230,11 +230,11 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
               key={idx}
               className="grid grid-cols-[125px_1fr] items-start gap-2 leading-[1.35]"
             >
-              <span className="font-normal text-[#8E92A2] select-none">
+              <span className="font-normal text-slate-500 dark:text-[#8E92A2] select-none">
                 {row.label}
               </span>
               <span
-                className={`text-right leading-tight font-normal break-words text-[#D3D6E0] ${
+                className={`text-right leading-tight font-normal break-words text-slate-800 dark:text-[#D3D6E0] ${
                   row.isMono ? 'font-mono text-[10.5px] opacity-90' : ''
                 }`}
               >
@@ -246,9 +246,9 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       </div>
 
       {/* Rodapé da prévia */}
-      <div className="mt-6 border-t border-[#2C2E38] pt-4 text-[11px] text-[#8E92A2]">
+      <div className="mt-6 border-t border-slate-200 dark:border-[#2C2E38] pt-4 text-[11px] text-slate-500 dark:text-[#8E92A2]">
         Definir valores padrão em{' '}
-        <span className="cursor-pointer text-[#00FF66] hover:underline">
+        <span className="cursor-pointer text-emerald-600 dark:text-[#00FF66] hover:underline">
           Preferências
         </span>
         .

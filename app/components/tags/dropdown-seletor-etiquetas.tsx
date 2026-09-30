@@ -159,11 +159,11 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
   return (
     <div
       ref={containerRef}
-      className="animate-in fade-in zoom-in-95 absolute right-0 top-full z-50 mt-1.5 w-[330px] rounded-lg border border-[#303241] bg-[#1E2028] shadow-2xl shadow-black/80 select-none overflow-hidden duration-100"
+      className="animate-in fade-in zoom-in-95 absolute right-0 top-full z-50 mt-1.5 w-[330px] rounded-lg border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#1E2028] shadow-xl shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/80 select-none overflow-hidden duration-100"
     >
       {/* 1. Barra de Busca / Criação */}
-      <div className="flex items-center gap-2.5 px-3 py-2.5 border-b border-[#2C2E3B]">
-        <Search size={15} className="text-[#1677FF] shrink-0" />
+      <div className="flex items-center gap-2.5 px-3 py-2.5 border-b border-slate-100 dark:border-[#2C2E3B]">
+        <Search size={15} className="text-blue-500 dark:text-[#1677FF] shrink-0" />
         <input
           ref={inputRef}
           type="text"
@@ -179,7 +179,7 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
             }
           }}
           placeholder="Encontrar uma etiqueta / Criar uma etiqueta"
-          className="w-full bg-transparent text-xs text-[#E1E4EE] placeholder-[#6C7082] focus:outline-hidden"
+          className="w-full bg-transparent text-xs text-slate-900 dark:text-[#E1E4EE] placeholder-slate-400 dark:placeholder-[#6C7082] focus:outline-hidden"
         />
       </div>
 
@@ -187,13 +187,13 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
       {searchTerm.trim().length > 0 && (
         <div
           onClick={() => handleCreateNewTag()}
-          className="relative border-b border-[#2C2E3B] px-3 py-2 bg-[#17181F]/50 cursor-pointer hover:bg-[#252733] transition-colors"
+          className="relative border-b border-slate-100 dark:border-[#2C2E3B] px-3 py-2 bg-slate-50 dark:bg-[#17181F]/50 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#252733] transition-colors"
         >
-          {/* Seletor flutuante de cor (estilo popover com triângulo na imagem 3) */}
+          {/* Seletor flutuante de cor */}
           {showColorPicker && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="animate-in fade-in zoom-in-95 absolute bottom-full left-4 mb-2 z-60 rounded-md border border-[#383A49] bg-[#14151B] p-2 shadow-xl shadow-black/90 duration-100"
+              className="animate-in fade-in zoom-in-95 absolute bottom-full left-4 mb-2 z-60 rounded-md border border-slate-200 dark:border-[#383A49] bg-white dark:bg-[#14151B] p-2 shadow-xl shadow-slate-900/15 dark:shadow-black/90 duration-100"
             >
               <div className="flex items-center gap-2">
                 {TAG_COLORS.map((c) => {
@@ -217,13 +217,13 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
                 })}
               </div>
               {/* Setinha apontando para baixo */}
-              <div className="absolute -bottom-1.5 left-10 h-3 w-3 rotate-45 border-b border-r border-[#383A49] bg-[#14151B]" />
+              <div className="absolute -bottom-1.5 left-10 h-3 w-3 rotate-45 border-b border-r border-slate-200 dark:border-[#383A49] bg-white dark:bg-[#14151B]" />
             </div>
           )}
 
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-[#8E92A2]">{exactMatch ? 'Selecionar' : 'Criar'}</span>
+              <span className="text-slate-500 dark:text-[#8E92A2]">{exactMatch ? 'Selecionar' : 'Criar'}</span>
               <button
                 type="button"
                 onClick={(e) => {
@@ -258,7 +258,7 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
                 handleCreateNewTag();
               }}
               disabled={isCreating}
-              className="flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[#8E92A2] hover:bg-[#2C2E3B] hover:text-white transition-colors"
+              className="flex h-5 w-5 cursor-pointer items-center justify-center rounded text-slate-400 hover:bg-slate-200 hover:text-slate-800 dark:text-[#8E92A2] dark:hover:bg-[#2C2E3B] dark:hover:text-white transition-colors"
               title={exactMatch ? 'Pressione Enter para selecionar' : 'Pressione Enter ou clique para criar'}
             >
               <CornerDownLeft size={13} />
@@ -268,9 +268,9 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
       )}
 
       {/* 3. Lista de Etiquetas Existentes */}
-      <div className="max-h-56 overflow-y-auto divide-y divide-[#2C2E3B]/40">
+      <div className="max-h-56 overflow-y-auto divide-y divide-slate-100 dark:divide-[#2C2E3B]/40">
         {filteredTags.length === 0 ? (
-          <div className="py-6 text-center text-xs text-[#6C7082] select-none">
+          <div className="py-6 text-center text-xs text-slate-400 dark:text-[#6C7082] select-none">
             Sem dados
           </div>
         ) : (
@@ -282,8 +282,8 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
               <div
                 key={tag.id}
                 onClick={() => onToggleTag(tag.name)}
-                className={`flex cursor-pointer items-center justify-between px-3 py-2 text-xs transition-colors hover:bg-[#252733] ${
-                  isSelected ? 'bg-[#1677FF]/8' : ''
+                className={`flex cursor-pointer items-center justify-between px-3 py-2 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#252733] ${
+                  isSelected ? 'bg-blue-500/10 dark:bg-[#1677FF]/8' : ''
                 }`}
               >
                 {/* Badge da Etiqueta com sua cor */}
@@ -304,7 +304,7 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
 
                 {/* Checkmark no lado direito se selecionado */}
                 {isSelected && (
-                  <Check size={14} className="text-[#8E92A2]" />
+                  <Check size={14} className="text-slate-500 dark:text-[#8E92A2]" />
                 )}
               </div>
             );

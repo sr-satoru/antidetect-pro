@@ -15,12 +15,12 @@ export const McpApiPage: React.FC = () => {
       {/* Top Executive Header with Compact Credentials in One Line */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 shrink-0">
         <div>
-          <div className="flex items-center gap-2 text-[12px] text-[#A6A6A6]">
+          <div className="flex items-center gap-2 text-[12px] text-slate-500 dark:text-[#A6A6A6]">
             <span>Automação</span>
-            <span className="text-[#666666]">/</span>
-            <span className="text-[#00FF66] font-semibold">API & MCP</span>
+            <span className="text-slate-300 dark:text-[#666666]">/</span>
+            <span className="text-emerald-600 dark:text-[#00FF66] font-semibold">API & MCP</span>
           </div>
-          <h1 className="text-[20px] font-extrabold text-white tracking-tight mt-0.5 flex items-center gap-2">
+          <h1 className="text-[20px] font-extrabold text-slate-900 dark:text-white tracking-tight mt-0.5 flex items-center gap-2">
             Central de Automação & IA
             <span className="relative flex h-2 w-2 ml-1">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -34,30 +34,30 @@ export const McpApiPage: React.FC = () => {
       </div>
 
       {/* Modern Segmented Navigation Pill (2 Tabs) */}
-      <div className="flex items-center gap-1.5 p-1 bg-[#13141B] border border-white/10 rounded-2xl w-fit shrink-0 shadow-lg">
+      <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-[#13141B] border border-slate-200 dark:border-white/10 rounded-2xl w-fit shrink-0 shadow-sm dark:shadow-lg">
         <button
           type="button"
           onClick={() => setActiveTab('mcp')}
-          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all cursor-pointer ${
             activeTab === 'mcp'
-              ? 'text-[#00FF66] bg-[#222430] border border-white/15 shadow-sm'
-              : 'text-[#9EA2AE] hover:text-white hover:bg-white/[0.04]'
+              ? 'text-emerald-700 dark:text-[#00FF66] bg-emerald-50 dark:bg-[#222430] border border-emerald-200 dark:border-white/15 shadow-xs'
+              : 'text-slate-600 dark:text-[#9EA2AE] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]'
           }`}
         >
-          <Bot size={15} className={activeTab === 'mcp' ? 'text-[#00FF66]' : 'text-[#7E8294]'} />
+          <Bot size={15} className={activeTab === 'mcp' ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#7E8294]'} />
           <span>Agentes de IA (MCP)</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('api')}
-          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all cursor-pointer ${
             activeTab === 'api'
-              ? 'text-[#00FF66] bg-[#222430] border border-white/15 shadow-sm'
-              : 'text-[#9EA2AE] hover:text-white hover:bg-white/[0.04]'
+              ? 'text-emerald-700 dark:text-[#00FF66] bg-emerald-50 dark:bg-[#222430] border border-emerald-200 dark:border-white/15 shadow-xs'
+              : 'text-slate-600 dark:text-[#9EA2AE] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]'
           }`}
         >
-          <Terminal size={15} className={activeTab === 'api' ? 'text-[#00FF66]' : 'text-[#7E8294]'} />
+          <Terminal size={15} className={activeTab === 'api' ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#7E8294]'} />
           <span>API REST & Playwright</span>
         </button>
       </div>

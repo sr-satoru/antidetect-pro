@@ -34,18 +34,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
 
   const navItemClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group relative select-none ${isActive
-      ? 'bg-white/[0.08] text-white font-semibold shadow-xs'
-      : 'text-[#8E92A2] hover:bg-white/[0.04] hover:text-white'
+      ? 'bg-slate-100 text-slate-900 dark:bg-white/[0.08] dark:text-white font-semibold shadow-xs'
+      : 'text-slate-500 hover:bg-slate-100/70 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:bg-white/[0.04] dark:hover:text-white'
     } ${isCollapsed ? 'justify-center px-2' : ''}`;
 
   return (
     <aside
-      className={`h-screen bg-[#0E0F14] border-r border-white/10 flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[68px]' : 'w-[230px]'
+      className={`h-screen bg-white dark:bg-[#0E0F14] border-r border-slate-200 dark:border-white/10 flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[68px]' : 'w-[230px]'
         }`}
     >
       {/* Header / Brand */}
       <div
-        className={`h-14 flex items-center border-b border-white/10 shrink-0 transition-all ${isCollapsed ? 'justify-center px-2' : 'justify-between px-3.5'
+        className={`h-14 flex items-center border-b border-slate-200 dark:border-white/10 shrink-0 transition-all ${isCollapsed ? 'justify-center px-2' : 'justify-between px-3.5'
           }`}
       >
         {!isCollapsed ? (
@@ -54,14 +54,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
               to="/perfis"
               className="flex items-center gap-2.5 overflow-hidden transition-all group min-w-0"
             >
-              <div className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/10 text-white flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-inner">
+              <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-inner">
                 <FirefoxIcon size={20} />
               </div>
               <div className="flex flex-col leading-tight min-w-0">
-                <span className="font-bold text-[14px] tracking-tight text-white truncate">
+                <span className="font-bold text-[14px] tracking-tight text-slate-900 dark:text-white truncate">
                   AstroFox888
                 </span>
-                <span className="text-[9.5px] uppercase tracking-wider font-semibold text-[#7C8092] truncate">
+                <span className="text-[9.5px] uppercase tracking-wider font-semibold text-slate-400 dark:text-[#7C8092] truncate">
                   Multilogin
                 </span>
               </div>
@@ -70,7 +70,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             <button
               type="button"
               onClick={() => setIsCollapsed(true)}
-              className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-white/10 bg-white/[0.06] text-white/90 hover:text-white hover:bg-white/15 hover:border-white/25 transition-all shadow-2xs"
+              className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-white/90 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/15 hover:border-slate-300 dark:hover:border-white/25 transition-all shadow-2xs"
               title="Recolher menu"
             >
               <ChevronLeft size={16} strokeWidth={2} />
@@ -80,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
           <button
             type="button"
             onClick={() => setIsCollapsed(false)}
-            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-white/15 bg-white/10 text-white hover:bg-white/20 hover:border-white/30 transition-all shadow-xs"
+            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-slate-200 dark:border-white/15 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-white/20 transition-all shadow-xs"
             title="Expandir menu"
           >
             <ChevronRight size={17} strokeWidth={2.5} />
@@ -93,7 +93,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         <button
           type="button"
           onClick={handleNewProfile}
-          className={`w-full flex cursor-pointer items-center justify-center gap-2 bg-white hover:bg-white/90 text-black font-bold text-[12.5px] rounded-xl transition-all shadow-xs active:scale-[0.98] ${isCollapsed ? 'h-9 px-0' : 'h-9 px-3.5'
+          className={`w-full flex cursor-pointer items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-white/90 dark:text-black font-bold text-[12.5px] rounded-xl transition-all shadow-xs active:scale-[0.98] ${isCollapsed ? 'h-9 px-0' : 'h-9 px-3.5'
             }`}
           title="Criar Novo Perfil"
         >
@@ -110,11 +110,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
                 )}
                 <Layers
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-[#00FF66]' : 'text-[#8E92A2] group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Perfis</span>}
@@ -126,11 +126,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
                 )}
                 <Globe
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-[#00FF66]' : 'text-[#8E92A2] group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Proxies</span>}
@@ -142,11 +142,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
                 )}
                 <Puzzle
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-[#00FF66]' : 'text-[#8E92A2] group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Extensões</span>}
@@ -158,11 +158,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
                 )}
                 <Trash2
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-[#00FF66]' : 'text-[#8E92A2] group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Lixeira</span>}
@@ -174,7 +174,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         {/* Automação Section */}
         <div className="space-y-1">
           {!isCollapsed && (
-            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-[#686C7E]">
+            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#686C7E]">
               Automação
             </div>
           )}
@@ -183,11 +183,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
                 )}
                 <Repeat
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-[#00FF66]' : 'text-[#8E92A2] group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Sincronizador</span>}
@@ -199,11 +199,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
                 )}
                 <Code
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-[#00FF66]' : 'text-[#8E92A2] group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">API & MCP</span>}
@@ -215,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         {/* Gerenciamento Section */}
         <div className="space-y-1">
           {!isCollapsed && (
-            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-[#686C7E]">
+            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#686C7E]">
               Gerenciamento
             </div>
           )}
@@ -224,11 +224,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
                 )}
                 <Users
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-[#00FF66]' : 'text-[#8E92A2] group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Membros</span>}
@@ -240,11 +240,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
                 )}
                 <FileText
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-[#00FF66]' : 'text-[#8E92A2] group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Logs de Ações</span>}
@@ -256,11 +256,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
                 )}
                 <Settings
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-[#00FF66]' : 'text-[#8E92A2] group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Configurações</span>}

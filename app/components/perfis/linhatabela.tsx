@@ -184,16 +184,16 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   // Cores do Zebrado e Seleção Minimalista Cinza / Meio-Branco
   const rowBg = isSelected
-    ? 'bg-white/[0.08] border-l-2 border-l-white/70'
+    ? 'bg-slate-100 dark:bg-white/[0.08] border-l-2 border-l-slate-400 dark:border-l-white/70'
     : isStriped
-      ? 'bg-[#1F2027] hover:bg-white/[0.04]'
-      : 'bg-[#181920] hover:bg-white/[0.04]';
+      ? 'bg-slate-50/60 dark:bg-[#1F2027] hover:bg-slate-100/70 dark:hover:bg-white/[0.04]'
+      : 'bg-white dark:bg-[#181920] hover:bg-slate-100/70 dark:hover:bg-white/[0.04]';
 
   const stickyBg = isSelected
-    ? 'bg-[#262832]'
+    ? 'bg-slate-100 dark:bg-[#262832]'
     : isStriped
-      ? 'bg-[#1F2027] group-hover:bg-[#262832]'
-      : 'bg-[#181920] group-hover:bg-[#262832]';
+      ? 'bg-slate-50/90 dark:bg-[#1F2027] group-hover:bg-slate-100 dark:group-hover:bg-[#262832]'
+      : 'bg-white dark:bg-[#181920] group-hover:bg-slate-100 dark:group-hover:bg-[#262832]';
 
   const osKey = (profile.os || 'linux').toLowerCase();
 
@@ -246,7 +246,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   return (
     <tr
-      className={`group h-[60px] border-b border-white/[0.07] transition-colors ${rowBg}`}
+      className={`group h-[60px] border-b border-slate-200/80 dark:border-white/[0.07] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td
@@ -264,14 +264,14 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
       {/* 2. Nº / ID */}
       <td
-        className="w-[85px] min-w-[85px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-white"
+        className="w-[85px] min-w-[85px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-slate-800 dark:text-white"
         title={idStr}
       >
         #{idDisplay}
       </td>
 
       {/* 3. Grupo */}
-      <td className="w-[115px] min-w-[115px] px-3.5 py-2.5 text-[11px] font-medium whitespace-nowrap text-[#C8CBD4] uppercase">
+      <td className="w-[115px] min-w-[115px] px-3.5 py-2.5 text-[11px] font-medium whitespace-nowrap text-slate-600 dark:text-[#C8CBD4] uppercase">
         {(profile.group || 'Desagrupado').toUpperCase()}
       </td>
 
@@ -279,9 +279,9 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       <td className="w-[220px] min-w-[220px] max-w-[220px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
           <div className="flex min-w-0 items-center gap-2 flex-1">
-            <OsIcon os={osKey} size={14} className="shrink-0 text-[#9EA2AE]" />
+            <OsIcon os={osKey} size={14} className="shrink-0 text-slate-400 dark:text-[#9EA2AE]" />
             <span
-              className="truncate text-xs font-semibold tracking-wide text-white uppercase"
+              className="truncate text-xs font-semibold tracking-wide text-slate-900 dark:text-white uppercase"
               title={profile.name || 'Sem nome'}
             >
               {(profile.name || 'Sem nome').toUpperCase()}
@@ -294,7 +294,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEdit(profile);
             }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-[#8E92A2] hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-all active:scale-95"
             title="Editar nome"
           >
             <EditIcon size={13} />
@@ -305,17 +305,17 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       {/* 5. Proxy / IP */}
       <td className="w-[220px] min-w-[220px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex items-center gap-2">
-          <ArrowLeftRight size={12} className="shrink-0 text-[#9EA2AE]" />
+          <ArrowLeftRight size={12} className="shrink-0 text-slate-400 dark:text-[#9EA2AE]" />
           <span
             className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-              isProxyConnected ? 'bg-[#10b981]' : 'bg-[#52525b]'
+              isProxyConnected ? 'bg-emerald-500' : 'bg-slate-400 dark:bg-[#52525b]'
             }`}
           />
           <div className="flex flex-col leading-tight">
-            <span className="font-mono text-[11px] font-semibold text-white">
+            <span className="font-mono text-[11px] font-semibold text-slate-900 dark:text-white">
               {proxyHost}
             </span>
-            <span className="text-[10px] text-[#9EA2AE] uppercase">
+            <span className="text-[10px] text-slate-400 dark:text-[#9EA2AE] uppercase">
               {proxyTypeDesc}
             </span>
           </div>
@@ -326,11 +326,11 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       <td className="w-[120px] min-w-[120px] px-3.5 py-2.5 whitespace-nowrap">
         {lastOpened ? (
           <div className="flex flex-col font-mono leading-tight">
-            <span className="text-[11px] text-[#C8CBD4]">{lastOpened.date}</span>
-            <span className="text-[10px] text-[#9EA2AE]">{lastOpened.time}</span>
+            <span className="text-[11px] text-slate-700 dark:text-[#C8CBD4]">{lastOpened.date}</span>
+            <span className="text-[10px] text-slate-400 dark:text-[#9EA2AE]">{lastOpened.time}</span>
           </div>
         ) : (
-          <span className="text-[#9EA2AE]">-</span>
+          <span className="text-slate-400 dark:text-[#9EA2AE]">-</span>
         )}
       </td>
 
@@ -340,18 +340,18 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           <div className="flex items-center gap-2">
             {renderPlatformBadge(profile.platform.name || '')}
             <div className="flex flex-col leading-tight">
-              <span className="text-[11px] font-medium text-white uppercase">
+              <span className="text-[11px] font-medium text-slate-900 dark:text-white uppercase">
                 {String(profile.platform.handle).toUpperCase()}
               </span>
-              <span className="text-[10px] text-[#9EA2AE]">
+              <span className="text-[10px] text-slate-400 dark:text-[#9EA2AE]">
                 @{profile.platform.handle}
               </span>
             </div>
           </div>
         ) : typeof profile.platform === 'string' && profile.platform ? (
-          <span className="text-[11px] text-white uppercase">{profile.platform}</span>
+          <span className="text-[11px] text-slate-900 dark:text-white uppercase">{profile.platform}</span>
         ) : (
-          <span className="text-[#9EA2AE]">-</span>
+          <span className="text-slate-400 dark:text-[#9EA2AE]">-</span>
         )}
       </td>
 
@@ -369,7 +369,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               ))}
             </div>
           ) : (
-            <span className="text-[#9EA2AE]">-</span>
+            <span className="text-slate-400 dark:text-[#9EA2AE]">-</span>
           )}
 
           <button
@@ -378,7 +378,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEditTags && onEditTags(profile);
             }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-[#8E92A2] hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-all active:scale-95"
             title="Editar etiquetas"
           >
             <EditIcon size={13} />
@@ -390,7 +390,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       <td className="w-[170px] min-w-[170px] max-w-[170px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
           <span
-            className="truncate text-xs text-[#C8CBD4] max-w-[125px]"
+            className="truncate text-xs text-slate-700 dark:text-[#C8CBD4] max-w-[125px]"
             title={profile.notes || undefined}
           >
             {profile.notes || '-'}
@@ -402,7 +402,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEditNotes && onEditNotes(profile);
             }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-[#8E92A2] hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-all active:scale-95"
             title="Editar observação"
           >
             <EditIcon size={13} />
@@ -413,8 +413,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       {/* 10. Criação */}
       <td className="w-[120px] min-w-[120px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex flex-col font-mono leading-tight">
-          <span className="text-[11px] text-[#C8CBD4]">{createdAt.date}</span>
-          <span className="text-[10px] text-[#9EA2AE]">{createdAt.time}</span>
+          <span className="text-[11px] text-slate-700 dark:text-[#C8CBD4]">{createdAt.date}</span>
+          <span className="text-[10px] text-slate-400 dark:text-[#9EA2AE]">{createdAt.time}</span>
         </div>
       </td>
 
@@ -429,10 +429,10 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           title={isSyncing ? 'Sincronizando perfil com a nuvem...' : undefined}
           className={`inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-md px-3.5 text-xs font-bold transition-all active:scale-[0.98] ${
             isBusy
-              ? 'cursor-not-allowed opacity-60 border border-zinc-700 bg-zinc-800/50 text-zinc-400'
+              ? 'cursor-not-allowed opacity-60 border border-slate-300 bg-slate-200/50 text-slate-400 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-400'
               : isRunning
-                ? 'cursor-pointer border border-[#ff334b]/35 bg-[#ff334b]/12 text-[#ff334b] hover:bg-[#ff334b] hover:text-black'
-                : 'cursor-pointer border border-[#00FF66]/35 bg-[#00FF66]/12 text-[#00FF66] hover:bg-[#00FF66] hover:text-black'
+                ? 'cursor-pointer border border-[#ff334b]/35 bg-red-50 text-red-600 hover:bg-[#ff334b] hover:text-white dark:bg-[#ff334b]/12 dark:text-[#ff334b] dark:hover:text-black'
+                : 'cursor-pointer border border-emerald-500/35 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white dark:border-[#00FF66]/35 dark:bg-[#00FF66]/12 dark:text-[#00FF66] dark:hover:bg-[#00FF66] dark:hover:text-black shadow-xs'
           }`}
         >
           {isBusy ? (
@@ -462,15 +462,15 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           onClick={handleToggleMenu}
           className={`mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-all ${
             isMenuOpen
-              ? 'bg-[#383A44] text-white shadow-md'
-              : 'text-[#9EA2AE] hover:bg-[#383A44] hover:text-white'
+              ? 'bg-slate-200 text-slate-900 dark:bg-[#383A44] dark:text-white shadow-xs'
+              : 'text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#9EA2AE] dark:hover:bg-[#383A44] dark:hover:text-white'
           }`}
           title="Opções do perfil"
         >
           <MoreVertical size={14} />
         </button>
 
-        {/* Mini Modal de Ações Estilo AdsPower */}
+        {/* Mini Modal de Ações */}
         <MenuAcoesPerfil
           isOpen={isMenuOpen}
           anchorRect={anchorRect}

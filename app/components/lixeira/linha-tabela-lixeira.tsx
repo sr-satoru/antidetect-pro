@@ -77,19 +77,19 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
 }) => {
   const isStriped = index % 2 === 1;
 
-  // Cores do Zebrado e Seleção Minimalista Cinza / Meio-Branco
+  // Cores do Zebrado e Seleção Minimalista
   const rowBg = isSelected
-    ? 'bg-white/[0.08] border-l-2 border-l-white/70'
+    ? 'bg-blue-500/10 dark:bg-white/[0.08] border-l-2 border-l-blue-600 dark:border-l-white/70'
     : isStriped
-      ? 'bg-[#1F2027] hover:bg-white/[0.04]'
-      : 'bg-[#181920] hover:bg-white/[0.04]';
+      ? 'bg-slate-50/70 dark:bg-[#1F2027] hover:bg-slate-100/80 dark:hover:bg-white/[0.04]'
+      : 'bg-white dark:bg-[#181920] hover:bg-slate-100/80 dark:hover:bg-white/[0.04]';
 
   const deletedDate = getDeletedDate(item);
   const expiration = getExpirationDetails(deletedDate);
 
   return (
     <tr
-      className={`group h-[56px] border-b border-white/[0.07] transition-colors ${rowBg}`}
+      className={`group h-[56px] border-b border-slate-200/80 dark:border-white/[0.07] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td
@@ -106,7 +106,7 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
       </td>
 
       {/* 2. ID Original */}
-      <td className="w-[75px] min-w-[75px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-white">
+      <td className="w-[75px] min-w-[75px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-slate-900 dark:text-white">
         #{!isNaN(Number(item.originalId)) && Number(item.originalId) < 10 ? `0${Number(item.originalId)}` : item.originalId}
       </td>
 
@@ -114,7 +114,7 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
       <td className="w-[230px] min-w-[230px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex items-center gap-2">
           {renderOsIcon(item.os)}
-          <span className="max-w-[190px] truncate text-xs font-semibold text-white">
+          <span className="max-w-[190px] truncate text-xs font-semibold text-slate-900 dark:text-white">
             {item.name}
           </span>
         </div>
@@ -122,8 +122,8 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
 
       {/* 4. Grupo */}
       <td className="w-[150px] min-w-[150px] px-3.5 py-2.5 whitespace-nowrap">
-        <div className="flex items-center gap-1.5 text-xs text-[#A6ABB9]">
-          <Folder size={13} className="shrink-0 text-[#717586]" />
+        <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-[#A6ABB9]">
+          <Folder size={13} className="shrink-0 text-slate-400 dark:text-[#717586]" />
           <span className="truncate">{item.group}</span>
         </div>
       </td>
@@ -131,33 +131,33 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
       {/* 5. IP & País */}
       <td className="w-[180px] min-w-[180px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex flex-col leading-tight">
-          <span className="font-mono text-xs font-semibold text-[#00FF66]">
+          <span className="font-mono text-xs font-semibold text-emerald-600 dark:text-[#00FF66]">
             {item.ip || 'Sem Proxy'}
           </span>
-          <span className="text-[10.5px] text-[#8E92A2]">
+          <span className="text-[10.5px] text-slate-500 dark:text-[#8E92A2]">
             {item.country || 'Direto'}
           </span>
         </div>
       </td>
 
       {/* 6. Data e Hora de Exclusão */}
-      <td className="w-[180px] min-w-[180px] px-3.5 py-2.5 font-mono text-xs whitespace-nowrap text-[#C8CBD4]">
+      <td className="w-[180px] min-w-[180px] px-3.5 py-2.5 font-mono text-xs whitespace-nowrap text-slate-700 dark:text-[#C8CBD4]">
         {formatDateTime(deletedDate)}
       </td>
 
       {/* 7. Exclusão Definitiva (30 dias) */}
       <td className="w-[190px] min-w-[190px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex flex-col leading-tight">
-          <span className="font-mono text-xs font-semibold text-white">
+          <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white">
             {expiration.formattedExpiration}
           </span>
           <span
             className={`text-[10.5px] font-medium mt-0.5 ${
               expiration.daysRemaining <= 3
-                ? 'text-[#FF6B6B]'
+                ? 'text-red-500 dark:text-[#FF6B6B]'
                 : expiration.daysRemaining <= 7
-                  ? 'text-[#00FF66]'
-                  : 'text-[#10B981]'
+                  ? 'text-emerald-600 dark:text-[#00FF66]'
+                  : 'text-emerald-600 dark:text-[#10B981]'
             }`}
           >
             {expiration.daysRemaining === 0

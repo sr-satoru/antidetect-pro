@@ -75,22 +75,22 @@ export const EditarPerfilPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#171923] text-white">
-        <Loader2 size={24} className="animate-spin text-[#00FF66]" />
-        <span className="text-xs text-[#9EA2AE]">Carregando configurações do perfil...</span>
+      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-white dark:bg-[#171923] text-slate-800 dark:text-white">
+        <Loader2 size={24} className="animate-spin text-emerald-600 dark:text-[#00FF66]" />
+        <span className="text-xs text-slate-500 dark:text-[#9EA2AE]">Carregando configurações do perfil...</span>
       </div>
     );
   }
 
   if (error || !formData) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-[#171923] p-6 text-white">
-        <AlertCircle size={32} className="text-[#ff5a6e]" />
-        <p className="text-sm text-[#F4F4F6]">{error || 'Perfil não encontrado.'}</p>
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-white dark:bg-[#171923] p-6 text-slate-800 dark:text-white">
+        <AlertCircle size={32} className="text-red-500 dark:text-[#ff5a6e]" />
+        <p className="text-sm text-slate-700 dark:text-[#F4F4F6]">{error || 'Perfil não encontrado.'}</p>
         <button
           type="button"
           onClick={() => navigate('/perfis')}
-          className="rounded-lg bg-[#2A2B36] px-4 py-2 text-xs font-medium text-white hover:bg-[#343644]"
+          className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-[#2A2B36] dark:text-white dark:hover:bg-[#343644] px-4 py-2 text-xs font-medium transition-colors"
         >
           Voltar para Perfis
         </button>
@@ -99,7 +99,7 @@ export const EditarPerfilPage: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-[#353744] bg-[#24252D] shadow-xl">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] shadow-sm shadow-slate-200/50 dark:shadow-xl">
       {/* Abas Superiores Modulares */}
       <PerfilTabsHeader activeTab={activeTab} onTabChange={setActiveTab} />
 

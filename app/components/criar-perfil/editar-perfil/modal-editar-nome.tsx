@@ -48,7 +48,7 @@ export const ModalEditarNome: React.FC<ModalEditarNomeProps> = ({
       isSaving={isSaving}
       isSaveDisabled={!nameInput.trim()}
     >
-      <label className="mb-2 block text-sm font-semibold text-[#B0B4C3]">
+      <label className="mb-2 block text-sm font-semibold text-slate-800 dark:text-[#B0B4C3]">
         Nome do Perfil
       </label>
       <input
@@ -58,7 +58,7 @@ export const ModalEditarNome: React.FC<ModalEditarNomeProps> = ({
         autoFocus
         disabled={isSaving}
         placeholder="Digite o novo nome do perfil..."
-        className="h-11 w-full rounded-xl border border-[#363948] bg-[#14151C] px-4 text-sm text-[#F0F2F8] placeholder-[#5E6274] transition-all hover:border-[#4B5065] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-hidden disabled:opacity-50"
+        className="h-11 w-full rounded-xl border border-slate-200 dark:border-[#363948] bg-slate-50 dark:bg-[#14151C] px-4 text-sm text-slate-900 dark:text-[#F0F2F8] placeholder-slate-400 dark:placeholder-[#5E6274] transition-all hover:border-slate-300 dark:hover:border-[#4B5065] focus:border-emerald-500 dark:focus:border-white/60 focus:ring-2 focus:ring-emerald-500/15 dark:focus:ring-white/15 focus:outline-hidden disabled:opacity-50"
       />
     </ModalBase>
   );

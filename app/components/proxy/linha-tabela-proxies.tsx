@@ -25,26 +25,26 @@ const renderProtocolBadge = (type: string) => {
     case 'mobile':
     case 'movel':
       return (
-        <span className="inline-flex items-center rounded border border-[#00FF66]/30 bg-[#00FF66]/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#00FF66] uppercase">
+        <span className="inline-flex items-center rounded border border-emerald-500/30 bg-emerald-50 text-emerald-700 dark:border-[#00FF66]/30 dark:bg-[#00FF66]/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide dark:text-[#00FF66] uppercase">
           MÓVEL 4G
         </span>
       );
     case 'socks5':
       return (
-        <span className="inline-flex items-center rounded border border-white/20 bg-white/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-white uppercase">
+        <span className="inline-flex items-center rounded border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-slate-800 dark:text-white uppercase">
           SOCKS5
         </span>
       );
     case 'https':
       return (
-        <span className="inline-flex items-center rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-emerald-400 uppercase">
+        <span className="inline-flex items-center rounded border border-emerald-500/30 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide dark:text-emerald-400 uppercase">
           HTTPS
         </span>
       );
     case 'http':
     default:
       return (
-        <span className="inline-flex items-center rounded border border-white/10 bg-white/5 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#C8CBD4] uppercase">
+        <span className="inline-flex items-center rounded border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-slate-600 dark:text-[#C8CBD4] uppercase">
           HTTP
         </span>
       );
@@ -63,24 +63,24 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const isStriped = index % 2 === 1;
 
-  // Cores do Zebrado e Seleção Minimalista Cinza / Meio-Branco
+  // Cores do Zebrado e Seleção Adaptativas
   const rowBg = isSelected
-    ? 'bg-white/[0.08] border-l-2 border-l-white/70'
+    ? 'bg-blue-500/10 dark:bg-white/[0.08] border-l-2 border-l-blue-600 dark:border-l-white/70'
     : isStriped
-      ? 'bg-[#1F2027] hover:bg-white/[0.04]'
-      : 'bg-[#181920] hover:bg-white/[0.04]';
+      ? 'bg-slate-50/70 dark:bg-[#1F2027] hover:bg-slate-100/80 dark:hover:bg-white/[0.04]'
+      : 'bg-white dark:bg-[#181920] hover:bg-slate-100/80 dark:hover:bg-white/[0.04]';
 
   const stickyBg = isSelected
-    ? 'bg-[#262832]'
+    ? 'bg-slate-100 dark:bg-[#262832]'
     : isStriped
-      ? 'bg-[#1F2027] group-hover:bg-[#262832]'
-      : 'bg-[#181920] group-hover:bg-[#262832]';
+      ? 'bg-slate-50/70 dark:bg-[#1F2027] group-hover:bg-slate-100 dark:group-hover:bg-[#262832]'
+      : 'bg-white dark:bg-[#181920] group-hover:bg-slate-100 dark:group-hover:bg-[#262832]';
 
   const isOnline = proxy.status === 'active';
 
   return (
     <tr
-      className={`group h-[60px] border-b border-white/[0.07] transition-colors ${rowBg}`}
+      className={`group h-[60px] border-b border-slate-100 dark:border-white/[0.07] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td
@@ -97,7 +97,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
       </td>
 
       {/* 2. Nº / ID */}
-      <td className="w-[70px] min-w-[70px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-white">
+      <td className="w-[70px] min-w-[70px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-slate-900 dark:text-white">
         #{String((index ?? 0) + 1).padStart(2, '0')}
       </td>
 
@@ -108,8 +108,8 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
         title="Editar proxy"
       >
         <div className="flex items-center gap-2">
-          <Globe size={14} className="shrink-0 text-[#9EA2AE]" />
-          <span className="max-w-[150px] truncate text-xs font-semibold tracking-wide text-white">
+          <Globe size={14} className="shrink-0 text-slate-400 dark:text-[#9EA2AE]" />
+          <span className="max-w-[150px] truncate text-xs font-semibold tracking-wide text-slate-900 dark:text-white">
             {proxy.name}
           </span>
           <button
@@ -118,7 +118,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
               e.stopPropagation();
               onEdit(proxy);
             }}
-            className="ml-auto flex h-[22px] w-[22px] cursor-pointer items-center justify-center rounded text-[#8E92A2] opacity-0 transition-all group-hover:opacity-100 hover:bg-white/10 hover:text-white"
+            className="ml-auto flex h-[22px] w-[22px] cursor-pointer items-center justify-center rounded text-slate-400 dark:text-[#8E92A2] opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-800 dark:hover:text-white"
           >
             <Pencil size={11} />
           </button>
@@ -133,11 +133,11 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
       {/* 5. Host & Porta */}
       <td className="w-[210px] min-w-[210px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex items-center gap-1.5 font-mono">
-          <span className="text-[12px] font-semibold text-white">
+          <span className="text-[12px] font-semibold text-slate-900 dark:text-white">
             {proxy.host}
           </span>
-          <span className="text-[#8E92A2]">:</span>
-          <span className="text-[12px] text-[#C8CBD4]">{proxy.port}</span>
+          <span className="text-slate-400 dark:text-[#8E92A2]">:</span>
+          <span className="text-[12px] text-slate-600 dark:text-[#C8CBD4]">{proxy.port}</span>
         </div>
       </td>
 
@@ -146,20 +146,20 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
         {proxy.user ? (
           <div className="flex items-center gap-2 font-mono text-[11px]">
             <span
-              className="max-w-[70px] truncate text-[#C8CBD4]"
+              className="max-w-[70px] truncate text-slate-700 dark:text-[#C8CBD4]"
               title={proxy.user}
             >
               {proxy.user}
             </span>
-            <span className="text-[#6C6F7E]">:</span>
+            <span className="text-slate-400 dark:text-[#6C6F7E]">:</span>
             <div className="flex items-center gap-1">
-              <span className="text-[#9EA2AE]">
+              <span className="text-slate-500 dark:text-[#9EA2AE]">
                 {showPassword ? proxy.pass : '••••••'}
               </span>
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="cursor-pointer text-[#6C6F7E] transition-colors hover:text-white"
+                className="cursor-pointer text-slate-400 dark:text-[#6C6F7E] transition-colors hover:text-slate-700 dark:hover:text-white"
                 title={showPassword ? 'Ocultar senha' : 'Ver senha'}
               >
                 {showPassword ? <EyeOff size={11} /> : <Eye size={11} />}
@@ -167,7 +167,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
             </div>
           </div>
         ) : (
-          <span className="text-[11px] text-[#717482] italic">
+          <span className="text-[11px] text-slate-400 dark:text-[#717482] italic">
             Sem autenticação
           </span>
         )}
@@ -176,10 +176,10 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
       {/* 7. Localização / IP */}
       <td className="w-[180px] min-w-[180px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex flex-col leading-tight">
-          <span className="text-[11.5px] font-medium text-white">
+          <span className="text-[11.5px] font-medium text-slate-900 dark:text-white">
             {proxy.country || 'Desconhecido'}
           </span>
-          <span className="font-mono text-[10px] text-[#9EA2AE]">
+          <span className="font-mono text-[10px] text-slate-500 dark:text-[#9EA2AE]">
             {proxy.city ? `${proxy.city} • ` : ''}
             {proxy.ip || proxy.host}
           </span>
@@ -207,15 +207,15 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
 
       {/* 9. Perfis Vinculados */}
       <td className="w-[120px] min-w-[120px] px-3.5 py-2.5 whitespace-nowrap">
-        <div className="flex items-center gap-1.5 text-xs text-[#C8CBD4]">
-          <Layers size={13} className="text-[#8E92A2]" />
+        <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-[#C8CBD4]">
+          <Layers size={13} className="text-slate-400 dark:text-[#8E92A2]" />
           <span>{proxy.usageCount || 0} perfis</span>
         </div>
       </td>
 
       {/* 10. Última Checagem */}
       <td className="w-[130px] min-w-[130px] px-3.5 py-2.5 whitespace-nowrap">
-        <span className="font-mono text-[11px] text-[#9EA2AE]">
+        <span className="font-mono text-[11px] text-slate-500 dark:text-[#9EA2AE]">
           {proxy.lastChecked || '-'}
         </span>
       </td>
@@ -229,7 +229,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
           <button
             type="button"
             onClick={() => onEdit(proxy)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-[#9EA2AE] transition-all hover:bg-white/10 hover:text-white"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-slate-400 dark:text-[#9EA2AE] transition-all hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-800 dark:hover:text-white"
             title="Editar Proxy"
           >
             <Pencil size={13} />
@@ -239,7 +239,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
           <button
             type="button"
             onClick={() => onDelete(proxy.id)}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-[#9EA2AE] transition-all hover:bg-[#ef4444]/15 hover:text-[#ef4444]"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-slate-400 dark:text-[#9EA2AE] transition-all hover:bg-red-50 hover:text-red-500 dark:hover:bg-[#ef4444]/15 dark:hover:text-[#ef4444]"
             title="Excluir Proxy"
           >
             <Trash2 size={13} />

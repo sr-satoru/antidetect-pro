@@ -63,17 +63,17 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-[460px] rounded-2xl border border-[#303241]/90 bg-[#1A1C24] shadow-2xl shadow-black/90 overflow-hidden">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-[460px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/90 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2C2E3B]/80 px-6 py-4">
-          <h3 className="text-[15px] font-semibold text-[#E1E4EE]">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E3B]/80 px-6 py-4">
+          <h3 className="text-[15px] font-semibold text-slate-900 dark:text-[#E1E4EE]">
             {tagParaEditar ? 'Editar Etiqueta' : 'Nova Etiqueta'}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-[#8E92A2] hover:bg-[#2A2C38] hover:text-white transition-colors"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:bg-[#2A2C38] dark:hover:text-white transition-colors"
           >
             <X size={16} />
           </button>
@@ -93,7 +93,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
                   onClick={() => setSelectedColor(c.hex)}
                   style={{ backgroundColor: c.hex }}
                   className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-all hover:scale-110 active:scale-95 shadow-sm ${
-                    isSelected ? 'ring-2 ring-white/50 ring-offset-2 ring-offset-[#1A1C24]' : ''
+                    isSelected ? 'ring-2 ring-emerald-500/70 dark:ring-white/50 ring-offset-2 ring-offset-white dark:ring-offset-[#1A1C24]' : ''
                   }`}
                   title={c.name}
                 >
@@ -106,7 +106,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
           {/* Campo de Nome da Etiqueta */}
           <div className="space-y-1.5">
             <div className="flex items-center gap-3">
-              <label className="text-[13px] text-[#A6ABB9] select-none whitespace-nowrap">
+              <label className="text-[13px] text-slate-700 dark:text-[#A6ABB9] select-none whitespace-nowrap">
                 <span className="text-[#FF4D4F] mr-1">*</span>Etiqueta
               </label>
               <div className="relative flex-1">
@@ -118,22 +118,22 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
                     setNome(e.target.value);
                     if (erro && e.target.value.trim()) setErro(false);
                   }}
-                  placeholder="Por favor, insira."
-                  className={`w-full rounded-lg border bg-[#14151B] px-3.5 py-2.5 pr-14 text-[13px] text-white placeholder-[#585B6A] focus:outline-hidden transition-all ${
+                  placeholder="Por favor, insira o nome da etiqueta."
+                  className={`w-full rounded-lg border bg-slate-50 dark:bg-[#14151B] px-3.5 py-2.5 pr-14 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#585B6A] focus:outline-hidden transition-all ${
                     erro
-                      ? 'border-[#FF4D4F] focus:ring-1 focus:ring-[#FF4D4F]'
-                      : 'border-[#303241]/80 focus:border-white/50 focus:ring-1 focus:ring-white/20'
+                      ? 'border-red-500 focus:ring-1 focus:ring-red-500'
+                      : 'border-slate-200 dark:border-[#303241]/80 focus:border-emerald-500 dark:focus:border-white/50 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/20'
                   }`}
                   autoFocus
                 />
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-[#6C7082] select-none">
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 dark:text-[#6C7082] select-none">
                   {nome.length} / 50
                 </span>
               </div>
             </div>
             {erro && (
-              <p className="text-[11px] text-[#FF4D4F] pl-20 animate-in fade-in duration-100">
-                Por favor, insira.
+              <p className="text-[11px] text-red-500 dark:text-[#FF4D4F] pl-20 animate-in fade-in duration-100">
+                Por favor, insira o nome da etiqueta.
               </p>
             )}
           </div>
@@ -143,14 +143,14 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-8.5 min-w-[80px] cursor-pointer rounded-lg bg-[#1C1D24] border border-white/30 hover:border-white px-4 text-xs font-semibold text-white shadow-md transition-all hover:bg-[#252834] active:scale-[0.98] disabled:opacity-50"
+              className="h-8.5 min-w-[80px] cursor-pointer rounded-lg bg-slate-900 hover:bg-slate-800 text-white dark:bg-[#1C1D24] dark:border dark:border-white/30 dark:hover:border-white dark:text-white px-4 text-xs font-semibold shadow-xs dark:shadow-md transition-all dark:hover:bg-[#252834] active:scale-[0.98] disabled:opacity-50"
             >
               {isSubmitting ? 'Salvando...' : 'OK'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="h-8.5 cursor-pointer rounded-lg px-4 text-xs font-medium text-[#8E92A2] transition-colors hover:bg-[#2A2C38] hover:text-white"
+              className="h-8.5 cursor-pointer rounded-lg px-4 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-[#8E92A2] transition-colors dark:hover:bg-[#2A2C38] dark:hover:text-white"
             >
               Cancelar
             </button>

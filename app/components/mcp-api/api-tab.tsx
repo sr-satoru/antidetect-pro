@@ -394,10 +394,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   };
 
   return (
-    <div className="bg-[#13141C] border border-white/10 rounded-2xl overflow-hidden shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col md:flex-row min-h-[580px]">
+    <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm shadow-slate-200/50 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col md:flex-row min-h-[580px]">
       {/* PAINEL ESQUERDO: Lista de Endpoints para Navegação */}
-      <div className="w-full md:w-[260px] bg-[#101117] border-b md:border-b-0 md:border-r border-white/10 p-3.5 flex flex-col shrink-0 space-y-3">
-        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#8E92A2] px-2 block">
+      <div className="w-full md:w-[260px] bg-slate-50 dark:bg-[#101117] border-b md:border-b-0 md:border-r border-slate-200 dark:border-white/10 p-3.5 flex flex-col shrink-0 space-y-3">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-[#8E92A2] px-2 block">
           Catálogo de Rotas
         </span>
 
@@ -412,25 +412,25 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   setSelectedEndpoint(ep);
                   setApiResponse(null);
                 }}
-                className={`w-full text-left px-3 py-2 rounded-xl text-[12px] font-medium transition-all flex items-center justify-between gap-2 ${
+                className={`w-full text-left px-3 py-2 rounded-xl text-[12px] font-medium transition-all flex items-center justify-between gap-2 cursor-pointer ${
                   isSelected
-                    ? 'bg-[#1F212D] text-[#00FF66] font-bold shadow-xs border border-white/15'
-                    : 'text-[#C4C7D5] hover:bg-white/[0.05] hover:text-white'
+                    ? 'bg-emerald-50 text-emerald-700 dark:bg-[#1F212D] dark:text-[#00FF66] font-bold shadow-2xs border border-emerald-200 dark:border-white/15'
+                    : 'text-slate-600 dark:text-[#C4C7D5] hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.05] dark:hover:text-white'
                 }`}
               >
                 <div className="flex items-center gap-2 truncate">
                   <span
                     className={`text-[9px] font-bold font-mono px-1.5 py-0.5 rounded ${
                       ep.method === 'GET'
-                        ? 'bg-emerald-500/15 text-emerald-400'
-                        : 'bg-amber-500/15 text-amber-400'
+                        ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400'
+                        : 'bg-amber-500/15 text-amber-700 dark:text-amber-400'
                     }`}
                   >
                     {ep.method}
                   </span>
                   <span className="truncate">{ep.name}</span>
                 </div>
-                {isSelected && <ChevronRight size={13} className="text-[#00FF66] shrink-0" />}
+                {isSelected && <ChevronRight size={13} className="text-emerald-600 dark:text-[#00FF66] shrink-0" />}
               </button>
             );
           })}
@@ -438,28 +438,28 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       </div>
 
       {/* PAINEL DIREITO: IDÊNTICO À IMAGEM DO USUÁRIO (3 CARDS VERTICAIS) */}
-      <div className="flex-1 p-5 md:p-6 flex flex-col space-y-5 overflow-y-auto bg-[#151620]">
+      <div className="flex-1 p-5 md:p-6 flex flex-col space-y-5 overflow-y-auto bg-slate-50/50 dark:bg-[#151620]">
         {/* ========================================================================= */}
         {/* CARD 1: Base URL                                                          */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#121319] shadow-lg">
+        <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121319] shadow-sm">
           {/* Header Bar */}
-          <div className="bg-[#181922] px-5 py-3 border-b border-white/10">
-            <h3 className="text-[13px] font-bold text-white tracking-wide">Base URL</h3>
+          <div className="bg-slate-100 dark:bg-[#181922] px-5 py-3 border-b border-slate-200 dark:border-white/10">
+            <h3 className="text-[13px] font-bold text-slate-900 dark:text-white tracking-wide">Base URL</h3>
           </div>
 
           {/* Body */}
-          <div className="bg-[#121319] p-5 space-y-3.5 text-xs">
+          <div className="p-5 space-y-3.5 text-xs bg-white dark:bg-[#121319]">
             <div>
-              <span className="text-[#8E92A2] font-medium block mb-1">Produção:</span>
-              <span className="text-white font-mono text-[13px] select-all block">
+              <span className="text-slate-500 dark:text-[#8E92A2] font-medium block mb-1">Produção:</span>
+              <span className="text-slate-800 dark:text-white font-mono text-[13px] select-all block">
                 {baseUrl}
               </span>
             </div>
 
             <div>
-              <span className="text-[#8E92A2] font-medium block mb-1">SandBox (Homolog):</span>
-              <span className="text-white font-mono text-[13px] select-all block">
+              <span className="text-slate-500 dark:text-[#8E92A2] font-medium block mb-1">SandBox (Homolog):</span>
+              <span className="text-slate-800 dark:text-white font-mono text-[13px] select-all block">
                 {sandboxUrl}
               </span>
             </div>
@@ -469,14 +469,14 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         {/* ========================================================================= */}
         {/* CARD 2: Language Box (Tabs com Ícones em Cima e Texto Embaixo)              */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#121319] shadow-lg">
+        <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121319] shadow-sm">
           {/* Header Bar */}
-          <div className="bg-[#181922] px-5 py-3 border-b border-white/10">
-            <h3 className="text-[13px] font-bold text-white tracking-wide">Language Box</h3>
+          <div className="bg-slate-100 dark:bg-[#181922] px-5 py-3 border-b border-slate-200 dark:border-white/10">
+            <h3 className="text-[13px] font-bold text-slate-900 dark:text-white tracking-wide">Language Box</h3>
           </div>
 
           {/* Body: Horizontal Language Selector */}
-          <div className="bg-[#121319] px-4 pt-4 pb-0 overflow-x-auto">
+          <div className="bg-white dark:bg-[#121319] px-4 pt-4 pb-0 overflow-x-auto">
             <div className="flex items-center gap-2 min-w-max">
               {languages.map((lang) => {
                 const isSelected = selectedLang === lang.id;
@@ -485,14 +485,14 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                     key={lang.id}
                     type="button"
                     onClick={() => setSelectedLang(lang.id)}
-                    className="flex flex-col items-center gap-1.5 pb-2.5 px-3 min-w-[62px] relative transition-all group"
+                    className="flex flex-col items-center gap-1.5 pb-2.5 px-3 min-w-[62px] relative transition-all group cursor-pointer"
                   >
                     <div className="h-6 flex items-center justify-center transition-transform group-hover:scale-110">
                       {lang.icon}
                     </div>
                     <span
                       className={`text-[12px] font-medium transition-colors ${
-                        isSelected ? 'text-white font-bold' : 'text-[#9E9E9E] group-hover:text-white'
+                        isSelected ? 'text-blue-600 dark:text-white font-bold' : 'text-slate-500 dark:text-[#9E9E9E] group-hover:text-slate-900 dark:group-hover:text-white'
                       }`}
                     >
                       {lang.name}
@@ -512,11 +512,11 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         {/* ========================================================================= */}
         {/* CARD 3: Code Box com Linhas Numeradas e Botão 'Try in API Explorer'         */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#0C0D12] shadow-2xl relative">
+        <div className="rounded-2xl overflow-hidden border border-slate-800 dark:border-white/10 bg-slate-950 dark:bg-[#0C0D12] shadow-2xl relative">
           {/* Code Header Inside */}
-          <div className="px-5 py-3.5 flex items-center justify-between border-b border-white/10 bg-[#161722]/80">
+          <div className="px-5 py-3.5 flex items-center justify-between border-b border-slate-800 dark:border-white/10 bg-slate-900/90 dark:bg-[#161722]/80">
             <div className="flex items-center gap-2.5 font-mono text-[13px]">
-              <span className="text-[#05c46b] font-bold tracking-wide">
+              <span className="text-emerald-400 dark:text-[#05c46b] font-bold tracking-wide">
                 {selectedEndpoint.method}
               </span>
               <span className="text-white font-medium">{selectedEndpoint.path}</span>
@@ -533,7 +533,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
               <button
                 type="button"
                 onClick={handleCopy}
-                className="text-[#9E9E9E] hover:text-white p-1 transition-colors"
+                className="text-[#9E9E9E] hover:text-white p-1 transition-colors cursor-pointer"
                 title="Copiar código"
               >
                 {copied ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
@@ -543,7 +543,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
               <button
                 type="button"
                 onClick={() => setIsFullscreen(!isFullscreen)}
-                className="text-[#9E9E9E] hover:text-white p-1 transition-colors"
+                className="text-[#9E9E9E] hover:text-white p-1 transition-colors cursor-pointer"
                 title={isFullscreen ? 'Restaurar' : 'Expandir'}
               >
                 {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
@@ -554,7 +554,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
           {/* Numbered Code Content */}
           <div className="p-4 overflow-x-auto text-[13px] font-mono leading-relaxed flex min-h-[220px]">
             {/* Line numbers gutter */}
-            <div className="select-none text-[#555555] pr-4 text-right border-r border-white/10 mr-4 flex flex-col font-mono text-[12px]">
+            <div className="select-none text-slate-500 dark:text-[#555555] pr-4 text-right border-r border-slate-800 dark:border-white/10 mr-4 flex flex-col font-mono text-[12px]">
               {lines.map((_, i) => (
                 <span key={i}>{i + 1}</span>
               ))}
@@ -579,9 +579,9 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                     key={idx}
                     className={
                       isComment
-                        ? 'text-[#666]'
+                        ? 'text-slate-500 dark:text-[#666]'
                         : isKeyword
-                          ? 'text-[#00e5ff]'
+                          ? 'text-sky-400 dark:text-[#00e5ff]'
                           : line.includes(':')
                             ? 'text-[#D4D4D8]'
                             : 'text-[#E0E0E0]'
@@ -599,7 +599,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             <button
               type="button"
               onClick={() => setShowExplorer(!showExplorer)}
-              className="bg-[#181922] hover:bg-[#202230] active:scale-95 text-white text-[12px] font-bold px-4 py-2 rounded-xl border border-white/10 shadow-md transition-all flex items-center gap-1.5"
+              className="bg-slate-800 hover:bg-slate-700 active:scale-95 text-white text-[12px] font-bold px-4 py-2 rounded-xl border border-slate-700 dark:bg-[#181922] dark:hover:bg-[#202230] dark:border-white/10 shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <span>Try in API Explorer</span>
             </button>
@@ -608,19 +608,19 @@ export const ApiTab: React.FC<ApiTabProps> = ({
 
         {/* EXPANSÃO DO "API EXPLORER" (Quando clica no botão Try in API Explorer) */}
         {showExplorer && (
-          <div className="rounded-2xl border border-white/10 bg-[#121319] p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.8)] space-y-4 animate-fadeIn">
-            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121319] p-5 shadow-xl shadow-slate-900/10 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.8)] space-y-4 animate-fadeIn">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/[0.08]">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
                   {selectedEndpoint.method}
                 </span>
-                <span className="text-[13px] font-bold text-white font-mono">
+                <span className="text-[13px] font-bold text-slate-900 dark:text-white font-mono">
                   {selectedEndpoint.path}
                 </span>
               </div>
               <button
                 onClick={() => setShowExplorer(false)}
-                className="text-[#8E8E93] hover:text-white p-1"
+                className="text-slate-400 hover:text-slate-700 dark:text-[#8E8E93] dark:hover:text-white p-1 cursor-pointer"
               >
                 <X size={15} />
               </button>
@@ -629,14 +629,14 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             {/* Parameter Input */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="flex-1">
-                <label className="text-[11px] text-[#A6A6A6] block mb-1 font-medium">
+                <label className="text-[11px] text-slate-600 dark:text-[#A6A6A6] block mb-1 font-medium">
                   ID do Perfil AstroFox:
                 </label>
                 <input
                   type="text"
                   value={testParamId}
                   onChange={(e) => setTestParamId(e.target.value)}
-                  className="w-full bg-[#0C0D12] border border-white/10 rounded-xl px-3 py-1.5 text-[12px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
+                  className="w-full bg-slate-50 dark:bg-[#0C0D12] border border-slate-300 dark:border-white/10 rounded-xl px-3 py-1.5 text-[12px] font-mono text-slate-900 dark:text-white outline-none focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15"
                 />
               </div>
 
@@ -645,7 +645,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   type="button"
                   onClick={handleExecuteInExplorer}
                   disabled={isExecuting}
-                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-[#00FF66] to-[#00D655] text-black font-extrabold text-[12px] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white dark:bg-gradient-to-r dark:from-[#00FF66] dark:to-[#00D655] dark:text-black font-extrabold text-[12px] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
                 >
                   <Send size={13} className={isExecuting ? 'animate-spin' : ''} />
                   <span>{isExecuting ? 'Executando...' : 'Enviar Chamada'}</span>
@@ -656,13 +656,13 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             {/* Live Response Box */}
             {apiResponse && (
               <div className="space-y-1.5 pt-2 animate-fadeIn">
-                <div className="flex items-center justify-between text-[11px] font-mono text-emerald-400">
+                <div className="flex items-center justify-between text-[11px] font-mono text-emerald-600 dark:text-emerald-400">
                   <span className="flex items-center gap-1.5 font-bold">
                     <CheckCircle2 size={13} /> Status: 200 OK
                   </span>
-                  <span className="text-[#8E8E93]">18ms</span>
+                  <span className="text-slate-400 dark:text-[#8E8E93]">18ms</span>
                 </div>
-                <pre className="bg-[#08090C] border border-white/10 rounded-xl p-3.5 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto shadow-inner">
+                <pre className="bg-slate-900 dark:bg-[#08090C] border border-slate-800 dark:border-white/10 rounded-xl p-3.5 text-[11px] font-mono text-slate-200 dark:text-[#DCDCDC] overflow-x-auto shadow-inner">
                   {JSON.stringify(apiResponse, null, 2)}
                 </pre>
               </div>

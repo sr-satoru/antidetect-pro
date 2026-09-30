@@ -137,27 +137,27 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
   if (!isOpen) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-[680px] rounded-2xl border border-[#303241]/90 bg-[#1A1C24] shadow-2xl shadow-black/90 overflow-hidden flex flex-col max-h-[85vh]">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-[680px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/90 overflow-hidden flex flex-col max-h-[85vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2C2E3B]/80 px-6 py-4 shrink-0">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E3B]/80 px-6 py-4 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00FF66]/15 text-[#00FF66]">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 dark:bg-[#00FF66]/15 text-emerald-600 dark:text-[#00FF66]">
               <TagIcon size={15} />
             </div>
-            <h2 className="text-[16px] font-semibold text-[#E1E4EE] tracking-tight">Gerenciar Etiquetas</h2>
+            <h2 className="text-[16px] font-semibold text-slate-900 dark:text-[#E1E4EE] tracking-tight">Gerenciar Etiquetas</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-[#8E92A2] hover:bg-[#2A2C38] hover:text-white transition-colors"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:bg-[#2A2C38] dark:hover:text-white transition-colors"
           >
             <X size={16} />
           </button>
         </div>
 
         {/* Toolbar de Ações */}
-        <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-[#2C2E3B]/70 bg-[#16171E]/60 shrink-0">
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-slate-200 dark:border-[#2C2E3B]/70 bg-slate-50/70 dark:bg-[#16171E]/60 shrink-0">
           <div className="flex items-center gap-3 w-full">
             {/* Botão Nova Etiqueta */}
             <button
@@ -166,7 +166,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                 setTagEmEdicao(null);
                 setIsSubmodalOpen(true);
               }}
-              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-[#1C1D24] border border-white/30 hover:border-white px-4 text-xs font-medium text-white shadow-md transition-all hover:bg-[#252834] active:scale-[0.98] shrink-0"
+              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white dark:bg-[#1C1D24] dark:border dark:border-white/30 dark:hover:border-white dark:text-white px-4 text-xs font-medium shadow-xs dark:shadow-md transition-all dark:hover:bg-[#252834] active:scale-[0.98] shrink-0"
             >
               <TagIcon size={13} className="text-white/90" />
               <span>Nova Etiqueta</span>
@@ -176,14 +176,14 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
             <div className="relative flex-1 max-w-sm">
               <Search
                 size={14}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6C7082] pointer-events-none"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6C7082] pointer-events-none"
               />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar etiqueta..."
-                className="h-9 w-full rounded-lg border border-[#303241]/80 bg-[#14151B] pl-9 pr-3 text-xs text-[#E1E4EE] placeholder-[#585B6A] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-hidden transition-all"
+                className="h-9 w-full rounded-lg border border-slate-200 dark:border-[#303241]/80 bg-white dark:bg-[#14151C] pl-9 pr-3 text-xs text-slate-900 dark:text-[#E1E4EE] placeholder-slate-400 dark:placeholder-[#585B6A] focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/15 dark:focus:ring-white/15 focus:outline-hidden transition-all shadow-2xs"
               />
             </div>
 
@@ -191,7 +191,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
               <button
                 type="button"
                 onClick={handleDeleteSelected}
-                className="flex h-9 items-center gap-1.5 px-3 rounded-lg border border-[#FF4D4F]/30 bg-[#FF4D4F]/10 text-xs font-medium text-[#FF4D4F] hover:bg-[#FF4D4F]/20 transition-all cursor-pointer ml-auto"
+                className="flex h-9 items-center gap-1.5 px-3 rounded-lg border border-red-500/30 bg-red-500/10 text-xs font-medium text-red-600 dark:text-[#FF4D4F] hover:bg-red-500/20 transition-all cursor-pointer ml-auto"
               >
                 <Trash2 size={13} />
                 <span>Excluir ({selectedIds.length})</span>
@@ -203,7 +203,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         {/* Tabela de Etiquetas */}
         <div className="flex-1 overflow-y-auto">
           {/* Cabeçalho da Tabela */}
-          <div className="flex items-center border-b border-[#2C2E3B]/70 bg-[#171821]/80 px-6 py-2.5 text-xs font-semibold text-[#8E92A2] select-none sticky top-0 z-10 backdrop-blur-xs">
+          <div className="flex items-center border-b border-slate-200 dark:border-[#2C2E3B]/70 bg-slate-100/90 dark:bg-[#171821]/80 px-6 py-2.5 text-xs font-semibold text-slate-600 dark:text-[#8E92A2] select-none sticky top-0 z-10 backdrop-blur-xs">
             <div className="w-9 flex items-center justify-center">
               <Checkbox
                 checked={isAllSelected}
@@ -212,20 +212,20 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                 aria-label="Selecionar todas as etiquetas"
               />
             </div>
-            <div className="flex-1 tracking-wider uppercase text-[11px] text-[#717585]">Etiqueta</div>
-            <div className="w-24 text-right pr-2 tracking-wider uppercase text-[11px] text-[#717585]">Ações</div>
+            <div className="flex-1 tracking-wider uppercase text-[11px] text-slate-500 dark:text-[#717585]">Etiqueta</div>
+            <div className="w-24 text-right pr-2 tracking-wider uppercase text-[11px] text-slate-500 dark:text-[#717585]">Ações</div>
           </div>
 
           {/* Linhas ou Estado Vazio */}
           {filteredTags.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-[#6C7082] select-none">
-              <TagIcon size={28} className="text-[#363847] mb-2" />
+            <div className="flex flex-col items-center justify-center py-20 text-slate-400 dark:text-[#6C7082] select-none">
+              <TagIcon size={28} className="text-slate-300 dark:text-[#363847] mb-2" />
               <p className="text-xs">
                 {isLoading ? 'Carregando etiquetas...' : 'Nenhuma etiqueta encontrada'}
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-[#2C2E3B]/40">
+            <div className="divide-y divide-slate-100 dark:divide-[#2C2E3B]/40">
               {filteredTags.map((tag) => {
                 const isSelected = selectedIds.includes(tag.id);
                 const isFilteringThis = selectedTagFilter === tag.name;
@@ -235,10 +235,10 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                     key={tag.id}
                     className={`flex items-center px-6 py-3 text-xs transition-colors group ${
                       isSelected
-                        ? 'bg-[#1677FF]/10'
+                        ? 'bg-blue-500/10 dark:bg-[#1677FF]/10'
                         : isFilteringThis
-                        ? 'bg-[#1D2436]'
-                        : 'hover:bg-[#232532]/70'
+                        ? 'bg-slate-100 dark:bg-[#1D2436]'
+                        : 'hover:bg-slate-50 dark:hover:bg-[#232532]/70'
                     }`}
                   >
                     {/* Checkbox */}
@@ -262,7 +262,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                     >
                       <TagBadge name={tag.name} color={tag.color} />
                       {isFilteringThis && (
-                        <span className="flex items-center gap-1 rounded-md bg-[#1677FF]/20 px-2 py-0.5 text-[10px] text-[#64B5F6] font-medium border border-[#1677FF]/30">
+                        <span className="flex items-center gap-1 rounded-md bg-blue-500/15 dark:bg-[#1677FF]/20 px-2 py-0.5 text-[10px] text-blue-600 dark:text-[#64B5F6] font-medium border border-blue-500/25 dark:border-[#1677FF]/30">
                           <Check size={10} /> Filtro Ativo
                         </span>
                       )}
@@ -276,7 +276,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                           setTagEmEdicao(tag);
                           setIsSubmodalOpen(true);
                         }}
-                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:bg-[#2C2E3B] hover:text-[#1677FF] transition-colors"
+                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-blue-600 dark:text-[#8E92A2] dark:hover:bg-[#2C2E3B] dark:hover:text-[#1677FF] transition-colors"
                         title="Editar"
                       >
                         <Pencil size={13} />
@@ -284,7 +284,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                       <button
                         type="button"
                         onClick={() => handleDeleteSingle(tag)}
-                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:bg-[#FF4D4F]/15 hover:text-[#FF4D4F] transition-colors"
+                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-red-50 hover:text-red-500 dark:text-[#8E92A2] dark:hover:bg-[#FF4D4F]/15 dark:hover:text-[#FF4D4F] transition-colors"
                         title="Excluir"
                       >
                         <Trash2 size={13} />

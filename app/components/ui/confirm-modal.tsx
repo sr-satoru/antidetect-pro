@@ -57,13 +57,13 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
     switch (variant) {
       case 'danger':
         return (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FF4D4F]/15 text-[#FF4D4F] border border-[#FF4D4F]/25 shadow-lg shadow-red-500/10">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-500/10 dark:bg-[#FF4D4F]/15 text-red-600 dark:text-[#FF4D4F] border border-red-500/20 dark:border-[#FF4D4F]/25 shadow-sm shadow-red-500/10">
             <Trash2 size={20} />
           </div>
         );
       case 'warning':
         return (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FAAD14]/15 text-[#FAAD14] border border-[#FAAD14]/25 shadow-lg shadow-amber-500/10">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 dark:bg-[#FAAD14]/15 text-amber-600 dark:text-[#FAAD14] border border-amber-500/20 dark:border-[#FAAD14]/25 shadow-sm shadow-amber-500/10">
             <AlertTriangle size={20} />
           </div>
         );
@@ -71,7 +71,7 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
       case 'primary':
       default:
         return (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/25 shadow-lg shadow-[#00FF66]/10">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 dark:bg-[#00FF66]/10 text-emerald-600 dark:text-[#00FF66] border border-emerald-500/20 dark:border-[#00FF66]/25 shadow-sm shadow-emerald-500/10">
             <HelpCircle size={20} />
           </div>
         );
@@ -81,13 +81,13 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
   const getConfirmButtonClasses = (variant?: ConfirmVariant) => {
     switch (variant) {
       case 'danger':
-        return 'bg-gradient-to-r from-[#FF4D4F] to-[#D9363E] hover:brightness-110 text-white shadow-md shadow-red-500/20';
+        return 'bg-gradient-to-r from-red-500 to-red-600 hover:brightness-110 text-white shadow-md shadow-red-500/25';
       case 'warning':
-        return 'bg-gradient-to-r from-[#FAAD14] to-[#D48806] hover:brightness-110 text-white shadow-md shadow-amber-500/20';
+        return 'bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-white shadow-md shadow-amber-500/25';
       case 'info':
       case 'primary':
       default:
-        return 'bg-[#1E2028] border border-white/30 hover:border-white text-white hover:bg-[#252834] shadow-md';
+        return 'bg-slate-900 hover:bg-slate-800 text-white dark:bg-[#1E2028] dark:border dark:border-white/30 dark:hover:border-white dark:hover:bg-[#252834] shadow-sm';
     }
   };
 
@@ -96,32 +96,32 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
       {dialogState?.isOpen &&
         createPortal(
-          <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="w-full max-w-[440px] rounded-2xl border border-[#303241]/90 bg-[#1A1C24] shadow-2xl shadow-black/95 overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
+          <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-slate-900/40 dark:bg-black/80 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+            <div className="w-full max-w-[440px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
               <div className="flex items-start gap-4 p-6">
                 {renderIcon(dialogState.options.variant)}
                 <div className="flex-1 space-y-1.5 pt-0.5">
-                  <h3 className="text-[15px] font-semibold text-[#E1E4EE] tracking-tight">
+                  <h3 className="text-[15px] font-semibold text-slate-900 dark:text-[#E1E4EE] tracking-tight">
                     {dialogState.options.title}
                   </h3>
-                  <p className="text-xs text-[#8E92A2] leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-[#8E92A2] leading-relaxed">
                     {dialogState.options.description}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleClose(false)}
-                  className="text-[#6C7082] hover:text-white transition-colors cursor-pointer p-1"
+                  className="text-slate-400 hover:text-slate-700 dark:text-[#6C7082] dark:hover:text-white transition-colors cursor-pointer p-1"
                 >
                   <X size={16} />
                 </button>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 bg-[#14151B]/80 border-t border-[#2C2E3B]/70">
+              <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 bg-slate-50 dark:bg-[#14151B]/80 border-t border-slate-200 dark:border-[#2C2E3B]/70">
                 <button
                   type="button"
                   onClick={() => handleClose(false)}
-                  className="h-8.5 px-4 rounded-lg text-xs font-medium text-[#8E92A2] hover:bg-[#252733] hover:text-white transition-colors cursor-pointer"
+                  className="h-8.5 px-4 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-[#8E92A2] dark:hover:bg-[#252733] dark:hover:text-white transition-colors cursor-pointer"
                 >
                   {dialogState.options.cancelText}
                 </button>
