@@ -63,11 +63,48 @@ pub struct AppUpdateService {
 
 impl AppUpdateService {
     pub fn new(data_dir: &Path, ws: WsState) -> Self {
+        let updates_dir = data_dir.join("updates");
+        tokio::spawn(async move {
+            Self::cleanup_update_residuals(&updates_dir);
+        });
+
         Self {
             data_dir: data_dir.to_path_buf(),
             ws,
             status: Arc::new(Mutex::new(AppDownloadStatus::default())),
             cancel_tx: Arc::new(Mutex::new(None)),
+        }
+    }
+
+    /// Limpa resíduos de atualizações antigas (.deb, .msi, .exe, .dmg, .part)
+    /// preservando apenas o .AppImage atual caso o aplicativo esteja executando diretamente dele.
+    fn cleanup_update_residuals(dir: &Path) {
+        if !dir.is_dir() {
+            return;
+        }
+
+        let running_appimage = std::env::var("APPIMAGE").ok().map(PathBuf::from);
+
+        if let Ok(entries) = std::fs::read_dir(dir) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                if !path.is_file() {
+                    continue;
+                }
+
+                // Não remove o próprio executável se estiver rodando como o AppImage atual
+                if let Some(ref current) = running_appimage {
+                    if &path == current {
+                        continue;
+                    }
+                }
+
+                if let Err(e) = std::fs::remove_file(&path) {
+                    tracing::debug!("Aviso ao remover resíduo de update {:?}: {}", path, e);
+                } else {
+                    tracing::info!("🧹 Resíduo de atualização removido com sucesso: {:?}", path.file_name().unwrap_or_default());
+                }
+            }
         }
     }
 
@@ -120,6 +157,7 @@ impl AppUpdateService {
             let total = resp.content_length().unwrap_or(0);
             let dir = data_dir.join("updates");
             let _ = tokio::fs::create_dir_all(&dir).await;
+            Self::cleanup_update_residuals(&dir);
             let dest = dir.join(&name);
             let part = dir.join(format!("{name}.part"));
 
