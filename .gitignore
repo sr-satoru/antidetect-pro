@@ -7,20 +7,11 @@ venv
 
 dist
 __pycache__
-reserva-giit
 
 target
-donutsbrowsers
 vps
-donutbrowser/
-donutbrowser
-ramos
-tes
-star-antidetect-browser
-star-antidetect-browser/
 
 
-navegador
 comandos-utils.md
-.prisma
+
 
