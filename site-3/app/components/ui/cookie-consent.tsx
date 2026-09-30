@@ -6,25 +6,45 @@ import { Cookie, Shield, Check, X } from "lucide-react";
 import { useI18n } from "@/app/contexts/i18n-context";
 
 const COOKIE_STORAGE_KEY = "star_multlogin_cookie_consent";
+const TWO_MONTHS_MS = 60 * 24 * 60 * 60 * 1000; // 60 dias (~2 meses)
 
 export function CookieConsent() {
   const { t } = useI18n();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Check if user has already made a choice
-    const saved = localStorage.getItem(COOKIE_STORAGE_KEY);
-    if (!saved) {
-      // Small timeout to give smooth entrance animation
-      const timer = setTimeout(() => {
-        setVisible(true);
-      }, 750);
-      return () => clearTimeout(timer);
+    try {
+      const saved = localStorage.getItem(COOKIE_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const consentDate = new Date(parsed.timestamp).getTime();
+        const now = Date.now();
+
+        // Se ainda estiver dentro do prazo de 60 dias (2 meses), mantém oculto
+        if (!isNaN(consentDate) && now - consentDate < TWO_MONTHS_MS) {
+          return;
+        }
+      }
+    } catch {
+      // Se houver erro de parsing ou armazenamento, prossegue para solicitar consentimento
     }
+
+    // Se não há consentimento ou se já passou de 2 meses, exibe suavemente
+    const timer = setTimeout(() => {
+      setVisible(true);
+    }, 750);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleChoice = (type: "all" | "essential") => {
-    localStorage.setItem(COOKIE_STORAGE_KEY, JSON.stringify({ type, timestamp: new Date().toISOString() }));
+    try {
+      localStorage.setItem(
+        COOKIE_STORAGE_KEY,
+        JSON.stringify({ type, timestamp: new Date().toISOString() })
+      );
+    } catch {
+      // Ignora falhas em navegadores com storage desabilitado
+    }
     setVisible(false);
   };
 
