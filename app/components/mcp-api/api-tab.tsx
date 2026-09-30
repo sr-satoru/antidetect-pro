@@ -414,7 +414,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                 }}
                 className={`w-full text-left px-3 py-2 rounded-xl text-[12px] font-medium transition-all flex items-center justify-between gap-2 ${
                   isSelected
-                    ? 'bg-[#3b3b3b] text-[#DFE104] font-bold shadow-xs border border-white/[0.08]'
+                    ? 'bg-[#3b3b3b] text-[#00FF66] font-bold shadow-xs border border-white/[0.08]'
                     : 'text-[#D4D4D8] hover:bg-[#2c2c2c] hover:text-white'
                 }`}
               >
@@ -430,7 +430,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   </span>
                   <span className="truncate">{ep.name}</span>
                 </div>
-                {isSelected && <ChevronRight size={13} className="text-[#DFE104] shrink-0" />}
+                {isSelected && <ChevronRight size={13} className="text-[#00FF66] shrink-0" />}
               </button>
             );
           })}
@@ -636,7 +636,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   type="text"
                   value={testParamId}
                   onChange={(e) => setTestParamId(e.target.value)}
-                  className="w-full bg-[#262626] border border-white/[0.1] rounded-xl px-3 py-1.5 text-[12px] font-mono text-white outline-none focus:border-[#DFE104]/70"
+                  className="w-full bg-[#262626] border border-white/[0.1] rounded-xl px-3 py-1.5 text-[12px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
                 />
               </div>
 
@@ -645,7 +645,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   type="button"
                   onClick={handleExecuteInExplorer}
                   disabled={isExecuting}
-                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-[#DFE104] to-[#B5B802] text-black font-extrabold text-[12px] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-[#00FF66] to-[#00D655] text-black font-extrabold text-[12px] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
                 >
                   <Send size={13} className={isExecuting ? 'animate-spin' : ''} />
                   <span>{isExecuting ? 'Executando...' : 'Enviar Chamada'}</span>

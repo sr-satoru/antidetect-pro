@@ -58,7 +58,7 @@ export const Tabela: React.FC<TabelaProps> = ({
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-[#3E404D] bg-[#24252B] shadow-xs">
       {/* Scrollable Table Area */}
-      <div className="flex-1 [scrollbar-width:thin] [scrollbar-color:#44444C_#141418] overflow-x-auto overflow-y-visible [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-[#44444C] [&::-webkit-scrollbar-thumb:hover]:bg-[#DFE104] [&::-webkit-scrollbar-track]:bg-[#141418]">
+      <div className="flex-1 [scrollbar-width:thin] [scrollbar-color:#44444C_#141418] overflow-x-auto overflow-y-visible [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-[#44444C] [&::-webkit-scrollbar-thumb:hover]:bg-[#00FF66] [&::-webkit-scrollbar-track]:bg-[#141418]">
         <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
           {/* Header */}
           <thead className="sticky top-0 z-20 border-b border-[#3E404D] bg-[#24252B] text-[11px] font-semibold tracking-wider text-[#C8CBD4] uppercase select-none">
@@ -69,7 +69,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                   checked={isAllSelected}
                   onChange={onSelectAll}
                   aria-label="Selecionar todos"
-                  className="h-3.5 w-3.5 cursor-pointer rounded accent-[#DFE104]"
+                  className="h-3.5 w-3.5 cursor-pointer rounded accent-[#00FF66]"
                 />
               </th>
               <th className="w-[85px] min-w-[85px] px-3.5 py-2.5">ID</th>
@@ -156,7 +156,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             <strong className="text-[#4ade80]">{runningCount}</strong>
           </span>
           {selectedIds.length > 0 && (
-            <span className="rounded border border-[#DFE104]/20 bg-[#DFE104]/10 px-2 py-0.5 text-[11px] font-medium text-[#DFE104]">
+            <span className="rounded border border-[#00FF66]/20 bg-[#00FF66]/10 px-2 py-0.5 text-[11px] font-medium text-[#00FF66]">
               {selectedIds.length} marcado{selectedIds.length > 1 ? 's' : ''}
             </span>
           )}
@@ -168,12 +168,12 @@ export const Tabela: React.FC<TabelaProps> = ({
             <button
               type="button"
               onClick={() => setIsPageDropdownOpen(!isPageDropdownOpen)}
-              className="flex h-[26px] items-center gap-1.5 rounded border border-[#3E404D] bg-[#1A1B21] px-2.5 text-[11px] text-[#C8CBD4] hover:border-[#DFE104]/50 hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden"
+              className="flex h-[26px] items-center gap-1.5 rounded border border-[#3E404D] bg-[#1A1B21] px-2.5 text-[11px] text-[#C8CBD4] hover:border-[#00FF66]/50 hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden"
             >
               <span>{pageSize} / pág</span>
               <ChevronDown
                 size={12}
-                className={`text-[#8E92A2] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#DFE104]' : ''}`}
+                className={`text-[#8E92A2] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#00FF66]' : ''}`}
               />
             </button>
 
@@ -189,7 +189,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                     }}
                     className={`flex w-full items-center px-3 py-1 text-[11px] transition-colors cursor-pointer select-none text-left ${
                       pageSize === size
-                        ? 'bg-[#DFE104]/10 text-[#DFE104] font-medium'
+                        ? 'bg-[#00FF66]/10 text-[#00FF66] font-medium'
                         : 'text-[#C8CBD4] hover:bg-[#2A2C38] hover:text-white'
                     }`}
                   >

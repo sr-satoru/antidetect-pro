@@ -86,7 +86,7 @@ export const BrowserDownloadModal: React.FC = () => {
         {/* Top Header */}
         <div className="px-5 py-4 border-b border-[#1E202B] flex items-center justify-between bg-[#13151D]/60">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-[#DFE104]/10 text-[#DFE104] border border-[#DFE104]/20">
+            <div className="p-2 rounded-xl bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/20">
               <Zap size={18} />
             </div>
             <div>
@@ -126,7 +126,7 @@ export const BrowserDownloadModal: React.FC = () => {
           {/* Platform Info Banner */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[#151720] border border-[#1E202C]">
             <div className="flex items-center gap-2.5">
-              <Cpu size={16} className="text-[#DFE104]" />
+              <Cpu size={16} className="text-[#00FF66]" />
               <div>
                 <div className="text-xs font-medium text-[#F4F4F6]">
                   {status?.os_name ?? 'Sistema Operacional'}
@@ -159,10 +159,10 @@ export const BrowserDownloadModal: React.FC = () => {
             <div className="space-y-4 py-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-medium text-[#F4F4F6] flex items-center gap-2">
-                  <RefreshCw size={13} className="animate-spin text-[#DFE104]" />
+                  <RefreshCw size={13} className="animate-spin text-[#00FF66]" />
                   {getStageTitle(stage)}
                 </span>
-                <span className="font-mono font-bold text-[#DFE104]">
+                <span className="font-mono font-bold text-[#00FF66]">
                   {Math.round(progress)}%
                 </span>
               </div>
@@ -170,7 +170,7 @@ export const BrowserDownloadModal: React.FC = () => {
               {/* Progress Bar with glowing neon fill */}
               <div className="relative w-full h-2.5 bg-[#181A24] rounded-full overflow-hidden border border-[#272A3B]">
                 <div
-                  className="h-full bg-gradient-to-r from-[#DFE104] to-[#f5f749] transition-all duration-300 ease-out shadow-[0_0_12px_rgba(223,225,4,0.4)]"
+                  className="h-full bg-gradient-to-r from-[#00FF66] to-[#00D655] transition-all duration-300 ease-out shadow-[0_0_12px_rgba(0,255,102,0.4)]"
                   style={{ width: `${Math.max(2, Math.min(100, progress))}%` }}
                 />
               </div>
@@ -211,7 +211,7 @@ export const BrowserDownloadModal: React.FC = () => {
                     {currentStep > s.num ? (
                       <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
                     ) : currentStep === s.num ? (
-                      <div className="w-3.5 h-3.5 rounded-full border-2 border-[#DFE104] border-t-transparent animate-spin shrink-0" />
+                      <div className="w-3.5 h-3.5 rounded-full border-2 border-[#00FF66] border-t-transparent animate-spin shrink-0" />
                     ) : (
                       <div className="w-3.5 h-3.5 rounded-full border border-[#343747] shrink-0" />
                     )}
@@ -242,7 +242,7 @@ export const BrowserDownloadModal: React.FC = () => {
               <button
                 type="button"
                 onClick={startDownload}
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#DFE104] hover:bg-[#c9cb04] text-black font-semibold text-xs transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#00FF66] hover:bg-[#00D655] text-black font-semibold text-xs transition-colors cursor-pointer"
               >
                 <RefreshCw size={14} />
                 <span>Tentar Novamente</span>
@@ -293,7 +293,7 @@ export const BrowserDownloadModal: React.FC = () => {
                 <button
                   type="button"
                   onClick={startDownload}
-                  className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#151720] hover:bg-[#1E202C] text-[#DFE104] text-xs font-medium border border-[#DFE104]/30 hover:border-[#DFE104] transition-colors cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#151720] hover:bg-[#1E202C] text-[#00FF66] text-xs font-medium border border-[#00FF66]/30 hover:border-[#00FF66] transition-colors cursor-pointer"
                 >
                   <RefreshCw size={13} />
                   <span>Reinstalar / Reparar</span>
@@ -320,7 +320,7 @@ export const BrowserDownloadModal: React.FC = () => {
               <button
                 type="button"
                 onClick={startDownload}
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#DFE104] hover:bg-[#c9cb04] text-black font-semibold text-xs shadow-lg shadow-[#DFE104]/10 transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#00FF66] hover:bg-[#00D655] text-black font-semibold text-xs shadow-lg shadow-[#00FF66]/10 transition-colors cursor-pointer"
               >
                 <Download size={14} />
                 <span>

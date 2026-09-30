@@ -27,7 +27,7 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-[#3E404D] bg-[#24252B] shadow-xs">
       {/* Scrollable Table Area */}
-      <div className="flex-1 [scrollbar-width:thin] [scrollbar-color:#44444C_#141418] overflow-x-auto overflow-y-visible [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-[#44444C] [&::-webkit-scrollbar-thumb:hover]:bg-[#DFE104] [&::-webkit-scrollbar-track]:bg-[#141418]">
+      <div className="flex-1 [scrollbar-width:thin] [scrollbar-color:#44444C_#141418] overflow-x-auto overflow-y-visible [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-[#44444C] [&::-webkit-scrollbar-thumb:hover]:bg-[#00FF66] [&::-webkit-scrollbar-track]:bg-[#141418]">
         <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
           {/* Header */}
           <thead className="sticky top-0 z-20 border-b border-[#3E404D] bg-[#24252B] text-[11px] font-semibold tracking-wider text-[#C8CBD4] uppercase select-none">
@@ -38,7 +38,7 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
                   checked={isAllSelected}
                   onChange={onSelectAll}
                   aria-label="Selecionar todos"
-                  className="h-3.5 w-3.5 cursor-pointer rounded accent-[#DFE104]"
+                  className="h-3.5 w-3.5 cursor-pointer rounded accent-[#00FF66]"
                 />
               </th>
               <th className="w-[75px] min-w-[75px] px-3.5 py-2.5">ID Original</th>
@@ -92,13 +92,13 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
             Total na lixeira: <strong className="text-white">{items.length}</strong> perfis
           </span>
           <span className="hidden items-center gap-1.5 sm:inline-flex text-[11px] text-[#7E8294]">
-            <AlertCircle size={13} className="text-[#DFE104]" />
+            <AlertCircle size={13} className="text-[#00FF66]" />
             <span>Itens excluídos são removidos automaticamente após 30 dias de retenção.</span>
           </span>
         </div>
 
         {selectedIds.length > 0 && (
-          <div className="font-semibold text-[#DFE104]">
+          <div className="font-semibold text-[#00FF66]">
             {selectedIds.length} selecionado{selectedIds.length > 1 ? 's' : ''}
           </div>
         )}

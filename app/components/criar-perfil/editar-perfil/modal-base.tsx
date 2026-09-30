@@ -55,7 +55,7 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
             <button
               type="submit"
               disabled={isSaving || isSaveDisabled}
-              className="flex cursor-pointer items-center gap-2 rounded-xl bg-[#DFE104] px-6 py-2.5 text-sm font-bold text-black transition-all hover:bg-[#c8ca03] active:scale-[0.98] shadow-md shadow-[#DFE104]/15 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex cursor-pointer items-center gap-2 rounded-xl bg-[#00FF66] px-6 py-2.5 text-sm font-bold text-black transition-all hover:bg-[#00D655] active:scale-[0.98] shadow-md shadow-[#00FF66]/15 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isSaving ? (
                 <Loader2 size={16} className="animate-spin text-black" />

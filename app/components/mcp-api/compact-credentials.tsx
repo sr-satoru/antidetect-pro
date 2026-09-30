@@ -62,22 +62,22 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
       <button
         type="button"
         onClick={handleCopyMcpUrl}
-        className="flex items-center gap-2 bg-[#2D2E12]/80 hover:bg-[#3E4015] border border-[#DFE104]/30 rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-xs cursor-pointer text-[#DFE104]"
+        className="flex items-center gap-2 bg-[#122A1E] hover:bg-[#183627] border border-[#00FF66]/30 rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-xs cursor-pointer text-[#00FF66]"
         title="Clique para copiar a URL direta do MCP (Server-Sent Events) para Claude Desktop, Cursor ou Antigravity"
       >
-        <Bot size={13} className="text-[#DFE104] shrink-0" />
+        <Bot size={13} className="text-[#00FF66] shrink-0" />
         <span className="font-semibold text-[11px]">URL MCP Nativa</span>
         {copiedMcpUrl ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
       </button>
 
       {/* Base URL Pill */}
       <div className="flex items-center gap-2 bg-[#383838]/80 hover:bg-[#383838] border border-white/[0.08] rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-xs">
-        <Globe size={13} className="text-[#DFE104] shrink-0" />
+        <Globe size={13} className="text-[#00FF66] shrink-0" />
         <span className="text-[#D4D4D8] select-all">{baseUrl}</span>
         <button
           type="button"
           onClick={handleCopyUrl}
-          className="text-[#8E8E93] hover:text-[#DFE104] p-0.5 transition-colors cursor-pointer"
+          className="text-[#8E8E93] hover:text-[#00FF66] p-0.5 transition-colors cursor-pointer"
           title="Copiar URL Base"
         >
           {copiedUrl ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
@@ -94,7 +94,7 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
           <button
             type="button"
             onClick={() => setShowToken(!showToken)}
-            className="text-[#8E8E93] hover:text-white p-0.5 transition-colors cursor-pointer"
+            className="text-[#8E92A2] hover:text-white p-0.5 transition-colors cursor-pointer"
             title={showToken ? 'Ocultar' : 'Visualizar'}
           >
             {showToken ? <EyeOff size={13} /> : <Eye size={13} />}
@@ -102,7 +102,7 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
           <button
             type="button"
             onClick={handleCopyToken}
-            className="text-[#8E8E93] hover:text-[#DFE104] p-0.5 transition-colors cursor-pointer"
+            className="text-[#8E8E93] hover:text-[#00FF66] p-0.5 transition-colors cursor-pointer"
             title="Copiar Token"
           >
             {copiedToken ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}

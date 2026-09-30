@@ -18,7 +18,7 @@ export const McpApiPage: React.FC = () => {
           <div className="flex items-center gap-2 text-[12px] text-[#A6A6A6]">
             <span>Automação</span>
             <span className="text-[#666666]">/</span>
-            <span className="text-[#DFE104] font-semibold">API & MCP</span>
+            <span className="text-[#00FF66] font-semibold">API & MCP</span>
           </div>
           <h1 className="text-[20px] font-extrabold text-white tracking-tight mt-0.5 flex items-center gap-2">
             Central de Automação & IA
@@ -40,11 +40,11 @@ export const McpApiPage: React.FC = () => {
           onClick={() => setActiveTab('mcp')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all ${
             activeTab === 'mcp'
-              ? 'text-[#DFE104] bg-[#484848] border border-white/[0.08] shadow-xs'
+              ? 'text-[#00FF66] bg-[#484848] border border-white/[0.08] shadow-xs'
               : 'text-[#A0A0A0] hover:text-white'
           }`}
         >
-          <Bot size={15} className={activeTab === 'mcp' ? 'text-[#DFE104]' : 'text-[#8E8E93]'} />
+          <Bot size={15} className={activeTab === 'mcp' ? 'text-[#00FF66]' : 'text-[#8E8E93]'} />
           <span>Agentes de IA (MCP)</span>
         </button>
 
@@ -53,11 +53,11 @@ export const McpApiPage: React.FC = () => {
           onClick={() => setActiveTab('api')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all ${
             activeTab === 'api'
-              ? 'text-[#DFE104] bg-[#484848] border border-white/[0.08] shadow-xs'
+              ? 'text-[#00FF66] bg-[#484848] border border-white/[0.08] shadow-xs'
               : 'text-[#A0A0A0] hover:text-white'
           }`}
         >
-          <Terminal size={15} className={activeTab === 'api' ? 'text-[#DFE104]' : 'text-[#8E8E93]'} />
+          <Terminal size={15} className={activeTab === 'api' ? 'text-[#00FF66]' : 'text-[#8E8E93]'} />
           <span>API REST & Playwright</span>
         </button>
       </div>

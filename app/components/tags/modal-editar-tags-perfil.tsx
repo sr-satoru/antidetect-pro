@@ -142,7 +142,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                 setTagEmEdicao(null);
                 setIsSubmodalOpen(true);
               }}
-              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-[#DFE104] hover:bg-[#C5C702] px-4 text-xs font-bold text-black shadow-md shadow-[#DFE104]/10 transition-all active:scale-[0.98] shrink-0"
+              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-[#00FF66] hover:bg-[#00D655] px-4 text-xs font-bold text-black shadow-md shadow-[#00FF66]/10 transition-all active:scale-[0.98] shrink-0"
             >
               <TagIcon size={13} className="text-black" />
               <span>Nova Etiqueta</span>
@@ -159,7 +159,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar etiqueta..."
-                className="h-9 w-full rounded-lg border border-[#303241]/80 bg-[#14151B] pl-9 pr-3 text-xs text-[#E1E4EE] placeholder-[#585B6A] focus:border-[#DFE104] focus:ring-1 focus:ring-[#DFE104]/40 focus:outline-hidden transition-all"
+                className="h-9 w-full rounded-lg border border-[#303241]/80 bg-[#14151B] pl-9 pr-3 text-xs text-[#E1E4EE] placeholder-[#585B6A] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-hidden transition-all"
               />
             </div>
           </div>
@@ -234,7 +234,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                     key={tag.id}
                     onClick={() => handleToggleTag(tag.name)}
                     className={`flex items-center px-6 py-3 text-xs transition-colors cursor-pointer select-none group ${isAssigned
-                        ? 'bg-[#DFE104]/10 hover:bg-[#DFE104]/15'
+                        ? 'bg-[#00FF66]/10 hover:bg-[#00FF66]/15'
                         : 'hover:bg-[#232532]/70'
                       }`}
                   >
@@ -244,7 +244,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                         type="checkbox"
                         checked={isAssigned}
                         onChange={() => handleToggleTag(tag.name)}
-                        className="h-4 w-4 rounded border-[#3A3D4D] bg-[#14151B] text-[#DFE104] focus:ring-0 cursor-pointer accent-[#DFE104]"
+                        className="h-4 w-4 rounded border-[#3A3D4D] bg-[#14151B] text-[#00FF66] focus:ring-0 cursor-pointer accent-[#00FF66]"
                       />
                     </div>
 
@@ -256,7 +256,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                     {/* Status no Perfil */}
                     <div className="w-36 flex items-center justify-center">
                       {isAssigned ? (
-                        <span className="flex items-center gap-1 rounded-md bg-[#DFE104]/20 px-2 py-0.5 text-[10px] text-[#DFE104] font-bold border border-[#DFE104]/40">
+                        <span className="flex items-center gap-1 rounded-md bg-[#00FF66]/20 px-2 py-0.5 text-[10px] text-[#00FF66] font-bold border border-[#00FF66]/40">
                           <Check size={10} strokeWidth={3} /> Atribuída
                         </span>
                       ) : (
@@ -277,7 +277,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                           setTagEmEdicao(tag);
                           setIsSubmodalOpen(true);
                         }}
-                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:bg-[#2C2E3B] hover:text-[#DFE104] transition-colors"
+                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:bg-[#2C2E3B] hover:text-[#00FF66] transition-colors"
                         title="Editar etiqueta no sistema"
                       >
                         <Pencil size={13} />
@@ -315,7 +315,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
               type="button"
               disabled={isSaving}
               onClick={handleSaveProfileTags}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#DFE104] hover:bg-[#C5C702] text-xs font-bold text-black transition-all cursor-pointer shadow-md shadow-[#DFE104]/10 active:scale-[0.98]"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-xs font-bold text-black transition-all cursor-pointer shadow-md shadow-[#00FF66]/10 active:scale-[0.98]"
             >
               {isSaving ? (
                 <Loader2 size={13} className="animate-spin" />

@@ -50,7 +50,7 @@ export const ModalEditarObservacao: React.FC<ModalEditarObservacaoProps> = ({
     >
       <div className="mb-2 flex items-center justify-between">
         <label className="text-sm font-semibold text-[#B0B4C3]">
-          Observação do perfil: <span className="font-bold text-[#DFE104]">{profile?.name}</span>
+          Observação do perfil: <span className="font-bold text-[#00FF66]">{profile?.name}</span>
         </label>
         <span className="text-xs text-[#7C8092]">
           {notesInput.length} caracteres
@@ -69,7 +69,7 @@ export const ModalEditarObservacao: React.FC<ModalEditarObservacaoProps> = ({
         disabled={isSaving}
         rows={4}
         placeholder="Escreva uma observação, anotação ou nota para este perfil..."
-        className="w-full rounded-xl border border-[#363948] bg-[#14151C] p-4 text-sm text-[#F0F2F8] placeholder-[#5E6274] transition-all hover:border-[#4B5065] focus:border-[#DFE104] focus:ring-2 focus:ring-[#DFE104]/25 focus:outline-hidden resize-none leading-relaxed disabled:opacity-50"
+        className="w-full rounded-xl border border-[#363948] bg-[#14151C] p-4 text-sm text-[#F0F2F8] placeholder-[#5E6274] transition-all hover:border-[#4B5065] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-hidden resize-none leading-relaxed disabled:opacity-50"
       />
     </ModalBase>
   );

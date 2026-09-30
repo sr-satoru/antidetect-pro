@@ -56,7 +56,7 @@ export const AdicionarExtensaoArquivo: React.FC<
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-[#44475A] bg-[#161720] px-4 py-2 text-xs font-medium text-[#DFE104] transition-colors hover:border-[#DFE104] hover:bg-[#1E1F2A]"
+            className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-[#44475A] bg-[#161720] px-4 py-2 text-xs font-medium text-[#00FF66] transition-colors hover:border-[#00FF66] hover:bg-[#1E1F2A]"
           >
             <CloudUpload size={16} className="text-[#2F80ED]" />
             <span>

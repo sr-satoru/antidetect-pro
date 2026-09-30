@@ -10,7 +10,7 @@ interface EditarProxiesProps {
 }
 
 const baseInputCls =
-  'h-10 rounded-xl border border-[#363948] bg-[#14151C] px-4 text-sm text-[#F0F2F8] placeholder-[#5E6274] transition-all hover:border-[#4B5065] focus:border-[#DFE104] focus:ring-2 focus:ring-[#DFE104]/25 focus:outline-hidden';
+  'h-10 rounded-xl border border-[#363948] bg-[#14151C] px-4 text-sm text-[#F0F2F8] placeholder-[#5E6274] transition-all hover:border-[#4B5065] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-hidden';
 
 const inputCls = `w-full ${baseInputCls}`;
 
@@ -196,10 +196,10 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
                 type="button"
                 onClick={handleTest}
                 disabled={isTesting || !form.host.trim() || !form.port.trim()}
-                className="h-10 flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-[#3C3F4F] bg-[#161720] px-4 text-xs font-semibold text-[#DFE104] transition-all hover:border-[#DFE104]/50 hover:bg-[#DFE104]/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#161720] disabled:hover:border-[#3C3F4F] disabled:text-[#7C8092] active:scale-[0.98]"
+                className="h-10 flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-[#3C3F4F] bg-[#161720] px-4 text-xs font-semibold text-[#00FF66] transition-all hover:border-[#00FF66]/50 hover:bg-[#00FF66]/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#161720] disabled:hover:border-[#3C3F4F] disabled:text-[#7C8092] active:scale-[0.98]"
               >
                 {isTesting ? (
-                  <Loader2 size={14} className="animate-spin text-[#DFE104]" />
+                  <Loader2 size={14} className="animate-spin text-[#00FF66]" />
                 ) : (
                   <RotateCw size={14} />
                 )}
@@ -280,7 +280,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
           <button
             type="button"
             onClick={handleSave}
-            className="flex cursor-pointer items-center justify-center rounded-xl bg-[#DFE104] px-7 py-2.5 text-sm font-bold text-black transition-all hover:bg-[#c8ca03] active:scale-[0.98] shadow-md shadow-[#DFE104]/15"
+            className="flex cursor-pointer items-center justify-center rounded-xl bg-[#00FF66] px-7 py-2.5 text-sm font-bold text-black transition-all hover:bg-[#00D655] active:scale-[0.98] shadow-md shadow-[#00FF66]/15"
           >
             Salvar Alterações
           </button>

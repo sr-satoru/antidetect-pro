@@ -137,7 +137,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#2C2E3B]/80 px-6 py-4 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#DFE104]/15 text-[#DFE104]">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00FF66]/15 text-[#00FF66]">
               <TagIcon size={15} />
             </div>
             <h2 className="text-[16px] font-semibold text-[#E1E4EE] tracking-tight">Gerenciar Etiquetas</h2>
@@ -178,7 +178,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar etiqueta..."
-                className="h-9 w-full rounded-lg border border-[#303241]/80 bg-[#14151B] pl-9 pr-3 text-xs text-[#E1E4EE] placeholder-[#585B6A] focus:border-[#1677FF] focus:ring-1 focus:ring-[#1677FF]/40 focus:outline-hidden transition-all"
+                className="h-9 w-full rounded-lg border border-[#303241]/80 bg-[#14151B] pl-9 pr-3 text-xs text-[#E1E4EE] placeholder-[#585B6A] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-hidden transition-all"
               />
             </div>
 

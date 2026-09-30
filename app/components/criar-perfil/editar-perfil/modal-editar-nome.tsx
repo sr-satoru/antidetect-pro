@@ -58,7 +58,7 @@ export const ModalEditarNome: React.FC<ModalEditarNomeProps> = ({
         autoFocus
         disabled={isSaving}
         placeholder="Digite o novo nome do perfil..."
-        className="h-11 w-full rounded-xl border border-[#363948] bg-[#14151C] px-4 text-sm text-[#F0F2F8] placeholder-[#5E6274] transition-all hover:border-[#4B5065] focus:border-[#DFE104] focus:ring-2 focus:ring-[#DFE104]/25 focus:outline-hidden disabled:opacity-50"
+        className="h-11 w-full rounded-xl border border-[#363948] bg-[#14151C] px-4 text-sm text-[#F0F2F8] placeholder-[#5E6274] transition-all hover:border-[#4B5065] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-hidden disabled:opacity-50"
       />
     </ModalBase>
   );

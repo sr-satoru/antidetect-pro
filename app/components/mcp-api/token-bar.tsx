@@ -38,7 +38,7 @@ export const TokenBar: React.FC<TokenBarProps> = ({
       {/* Top row: Title and Security Badges */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#4d4d4d]/60">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#DFE104]/15 border border-[#DFE104]/30 flex items-center justify-center text-[#DFE104] shadow-[0_0_16px_rgba(223,225,4,0.18)]">
+          <div className="w-9 h-9 rounded-xl bg-[#00FF66]/15 border border-[#00FF66]/30 flex items-center justify-center text-[#00FF66] shadow-[0_0_16px_rgba(0,255,102,0.18)]">
             <Lock size={17} />
           </div>
           <div>
@@ -58,7 +58,7 @@ export const TokenBar: React.FC<TokenBarProps> = ({
         {/* Security tags */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-medium bg-[#454545]/70 text-[#E0E0E0] border border-[#5a5a5a]/70 backdrop-blur-sm shadow-xs">
-            <Globe size={12} className="text-[#DFE104]" />
+            <Globe size={12} className="text-[#00FF66]" />
             Loopback 127.0.0.1
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-medium bg-[#454545]/70 text-[#E0E0E0] border border-[#5a5a5a]/70 backdrop-blur-sm shadow-xs">
@@ -76,12 +76,12 @@ export const TokenBar: React.FC<TokenBarProps> = ({
             <span>Endereço Base da API</span>
             <span className="text-emerald-400 font-medium lowercase">porta: {apiPort}</span>
           </label>
-          <div className="flex items-center bg-[#2c2c2c]/90 backdrop-blur-md border border-[#4d4d4d]/80 hover:border-[#606060] focus-within:border-[#DFE104]/70 rounded-xl px-3.5 py-2.5 text-[13px] text-white font-mono transition-colors shadow-inner">
+          <div className="flex items-center bg-[#2c2c2c]/90 backdrop-blur-md border border-[#4d4d4d]/80 hover:border-[#606060] focus-within:border-white/60 focus-within:ring-1 focus-within:ring-white/15 rounded-xl px-3.5 py-2.5 text-[13px] text-white font-mono transition-colors shadow-inner">
             <span className="flex-1 truncate select-all">{baseUrl}</span>
             <button
               type="button"
               onClick={handleCopyUrl}
-              className="ml-2 p-1.5 text-[#B0B0B0] hover:text-[#DFE104] hover:bg-[#454545] rounded-lg transition-all"
+              className="ml-2 p-1.5 text-[#B0B0B0] hover:text-[#00FF66] hover:bg-[#454545] rounded-lg transition-all"
               title="Copiar URL"
             >
               {copiedUrl ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
@@ -93,10 +93,10 @@ export const TokenBar: React.FC<TokenBarProps> = ({
         <div className="lg:col-span-8 space-y-1.5">
           <label className="text-[11px] font-semibold uppercase tracking-wider text-[#B5B5B5] flex items-center justify-between">
             <span>Bearer Token Secreto</span>
-            <span className="text-[#DFE104] font-medium lowercase">anti-CSRF blindado</span>
+            <span className="text-[#00FF66] font-medium lowercase">anti-CSRF blindado</span>
           </label>
-          <div className="flex items-center bg-[#2c2c2c]/90 backdrop-blur-md border border-[#4d4d4d]/80 hover:border-[#606060] focus-within:border-[#DFE104]/70 rounded-xl px-3.5 py-2 text-[13px] text-white font-mono gap-2 transition-colors shadow-inner">
-            <Key size={15} className="text-[#DFE104] shrink-0" />
+          <div className="flex items-center bg-[#2c2c2c]/90 backdrop-blur-md border border-[#4d4d4d]/80 hover:border-[#606060] focus-within:border-white/60 focus-within:ring-1 focus-within:ring-white/15 rounded-xl px-3.5 py-2 text-[13px] text-white font-mono gap-2 transition-colors shadow-inner">
+            <Key size={15} className="text-[#00FF66] shrink-0" />
             <input
               type={showToken ? 'text' : 'password'}
               readOnly
@@ -115,7 +115,7 @@ export const TokenBar: React.FC<TokenBarProps> = ({
               <button
                 type="button"
                 onClick={handleCopyToken}
-                className="p-1.5 text-[#B0B0B0] hover:text-[#DFE104] hover:bg-[#454545] rounded-lg transition-all"
+                className="p-1.5 text-[#B0B0B0] hover:text-[#00FF66] hover:bg-[#454545] rounded-lg transition-all"
                 title="Copiar token"
               >
                 {copiedToken ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}

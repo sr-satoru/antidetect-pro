@@ -171,7 +171,7 @@ export const LixeiraPage: React.FC = () => {
       {/* Cabeçalho da Página */}
       <div className="flex items-center justify-between shrink-0 select-none">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#3E404D] bg-[#24252B] text-[#DFE104] shadow-xs">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#3E404D] bg-[#24252B] text-[#00FF66] shadow-xs">
             <Trash2 size={20} />
           </div>
           <div>
@@ -225,7 +225,7 @@ export const LixeiraPage: React.FC = () => {
       {loading ? (
         <div className="flex flex-1 items-center justify-center rounded-2xl border border-[#3E404D] bg-[#24252B]">
           <div className="flex flex-col items-center gap-2 text-xs text-[#8E92A2]">
-            <Loader2 className="animate-spin text-[#DFE104]" size={24} />
+            <Loader2 className="animate-spin text-[#00FF66]" size={24} />
             <span>Carregando itens da lixeira...</span>
           </div>
         </div>

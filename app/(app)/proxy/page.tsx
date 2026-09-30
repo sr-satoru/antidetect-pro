@@ -253,7 +253,7 @@ export const ProxyPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleOpenAdd}
-                className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-[#DFE104] px-3.5 text-xs font-semibold text-black shadow-[0_2px_10px_rgba(223,225,4,0.15)] transition-all hover:bg-[#C5C702] active:scale-[0.98]"
+                className="flex h-9 cursor-pointer items-center gap-1.5 rounded-lg bg-[#00FF66] px-3.5 text-xs font-semibold text-black shadow-[0_2px_10px_rgba(0,255,102,0.15)] transition-all hover:bg-[#00D655] active:scale-[0.98]"
               >
                 <Plus size={15} strokeWidth={2.5} />
                 <span>Cadastrar Proxy</span>
@@ -290,7 +290,7 @@ export const ProxyPage: React.FC = () => {
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center rounded-2xl border border-[#2C2E38] bg-[#14151B]">
           <div className="flex flex-col items-center gap-2 text-[#9093A2]">
-            <Loader2 size={28} className="animate-spin text-[#DFE104]" />
+            <Loader2 size={28} className="animate-spin text-[#00FF66]" />
             <span className="text-xs">Carregando proxies...</span>
           </div>
         </div>

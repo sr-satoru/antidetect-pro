@@ -55,7 +55,7 @@ const PROTOCOLS = [
     badge: '4G / 5G',
     desc: 'Com rotação de IP',
     icon: Smartphone,
-    accent: '#DFE104',
+    accent: '#00FF66',
   },
 ];
 
@@ -93,7 +93,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
                   </span>
                   <Icon
                     size={15}
-                    style={{ color: isSelected ? '#DFE104' : '#6E7282' }}
+                    style={{ color: isSelected ? '#00FF66' : '#6E7282' }}
                   />
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -441,8 +441,8 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
           ======================================================== */}
       {(values.type === 'mobile' || values.type === 'movel') && (
         <div className="space-y-5 animate-in fade-in duration-150">
-          <div className="flex items-center gap-2 rounded-lg border border-[#DFE104]/30 bg-[#242414] px-3.5 py-2 text-xs text-[#EBEF66]">
-            <Smartphone size={14} className="shrink-0 text-[#DFE104]" />
+          <div className="flex items-center gap-2 rounded-lg border border-[#00FF66]/30 bg-[#122A1E] px-3.5 py-2 text-xs text-[#00FF66]">
+            <Smartphone size={14} className="shrink-0 text-[#00FF66]" />
             <span>
               Configuração exclusiva de <strong>Proxy Móvel 4G/5G</strong> (Dedicado a modems móveis com link de troca de IP).
             </span>
@@ -543,13 +543,13 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
           </div>
 
           {/* Campo Principal e Exclusivo: Link de Rotação de IP */}
-          <div className="rounded-xl border border-[#DFE104]/30 bg-[#17181D] p-4.5 ring-1 ring-[#DFE104]/10">
+          <div className="rounded-xl border border-[#00FF66]/30 bg-[#17181D] p-4.5 ring-1 ring-[#00FF66]/10">
             <div className="mb-2 flex items-center justify-between">
               <label className="flex items-center gap-2 text-[12.5px] font-bold text-white select-none">
-                <RefreshCw size={14} className="text-[#DFE104]" />
+                <RefreshCw size={14} className="text-[#00FF66]" />
                 <span>Link de Rotação de IP (Webhook / URL de Troca)</span>
               </label>
-              <span className="rounded bg-[#DFE104]/15 px-2 py-0.5 text-[10px] font-bold text-[#DFE104] uppercase">
+              <span className="rounded bg-[#00FF66]/15 px-2 py-0.5 text-[10px] font-bold text-[#00FF66] uppercase">
                 Exclusivo Móvel
               </span>
             </div>
@@ -558,7 +558,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
               placeholder="https://api.proxymobile.net/change-ip?key=seutoken123"
               value={values.rotationLink}
               onChange={(e) => onChange('rotationLink', e.target.value)}
-              className="w-full rounded-lg border border-[#3E4152] bg-[#111216] px-3.5 py-2.5 font-mono text-[12.5px] text-[#DFE104] placeholder-[#5C6070] transition-colors focus:border-[#DFE104] focus:outline-hidden"
+              className="w-full rounded-lg border border-[#3E4152] bg-[#111216] px-3.5 py-2.5 font-mono text-[12.5px] text-[#00FF66] placeholder-[#5C6070] transition-colors focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-hidden"
             />
             <p className="mt-2 text-[11px] leading-relaxed text-[#9EA2AE]">
               Insira a URL que o modem móvel ou fornecedor de 4G/5G disponibiliza para resetar a conexão e obter um novo IP público.

@@ -338,7 +338,7 @@ runPuppeteer();
       {/* Prerequisites Banner */}
       <div className="bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#DFE104]/15 border border-[#DFE104]/30 flex items-center justify-center text-[#DFE104] shrink-0 shadow-[0_0_15px_rgba(223,225,4,0.18)]">
+          <div className="w-10 h-10 rounded-xl bg-[#00FF66]/15 border border-[#00FF66]/30 flex items-center justify-center text-[#00FF66] shrink-0 shadow-[0_0_15px_rgba(0,255,102,0.18)]">
             <Zap size={20} />
           </div>
           <div>
@@ -349,7 +349,7 @@ runPuppeteer();
               </span>
             </h3>
             <p className="text-[12px] text-[#B5B5B5] mt-0.5 max-w-2xl leading-relaxed">
-              Você <strong>não</strong> precisa baixar Chromium ou Firefox adicionais (<code className="text-[#DFE104]">playwright install</code> é desnecessário). O Playwright se acopla diretamente ao processo do Camoufox que já está configurado com seu proxy e perfil anti-detect.
+              Você <strong>não</strong> precisa baixar Chromium ou Firefox adicionais (<code className="text-[#00FF66]">playwright install</code> é desnecessário). O Playwright se acopla diretamente ao processo do Camoufox que já está configurado com seu proxy e perfil anti-detect.
             </p>
           </div>
         </div>
@@ -368,7 +368,7 @@ runPuppeteer();
         {/* Left Column: Recipe Selector */}
         <div className="lg:col-span-4 bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-4 shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] space-y-3">
           <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-[#A0A0A0] px-1 flex items-center gap-1.5">
-            <Boxes size={14} className="text-[#DFE104]" />
+            <Boxes size={14} className="text-[#00FF66]" />
             Cenários de Automação
           </h4>
 
@@ -381,7 +381,7 @@ runPuppeteer();
                   onClick={() => setSelectedRecipe(r.id)}
                   className={`p-3 rounded-xl border cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-[#484848] border-[#DFE104]/80 shadow-[0_4px_20px_rgba(0,0,0,0.25)]'
+                      ? 'bg-[#484848] border-[#00FF66]/80 shadow-[0_4px_20px_rgba(0,0,0,0.25)]'
                       : 'bg-[#2c2c2c]/75 border-[#484848] hover:bg-[#353535] hover:border-[#5c5c5c]'
                   }`}
                 >
@@ -407,7 +407,7 @@ runPuppeteer();
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#4d4d4d]/60">
             <div>
               <h4 className="text-[14px] font-bold text-white flex items-center gap-2">
-                <FileCode size={16} className="text-[#DFE104]" />
+                <FileCode size={16} className="text-[#00FF66]" />
                 {recipes.find((r) => r.id === selectedRecipe)?.title}
               </h4>
               <p className="text-[12px] text-[#B5B5B5]">
@@ -422,7 +422,7 @@ runPuppeteer();
                 onClick={() => setSelectedLang('python')}
                 className={`py-1.5 px-3 rounded-lg text-[12px] font-bold transition-all ${
                   selectedLang === 'python'
-                    ? 'bg-[#484848] text-[#DFE104] font-bold shadow-sm border border-[#606060]'
+                    ? 'bg-[#484848] text-[#00FF66] font-bold shadow-sm border border-[#606060]'
                     : 'text-[#A6A6A6] hover:text-white hover:bg-[#383838]/60'
                 }`}
               >
@@ -433,7 +433,7 @@ runPuppeteer();
                 onClick={() => setSelectedLang('node')}
                 className={`py-1.5 px-3 rounded-lg text-[12px] font-bold transition-all ${
                   selectedLang === 'node'
-                    ? 'bg-[#484848] text-[#DFE104] font-bold shadow-sm border border-[#606060]'
+                    ? 'bg-[#484848] text-[#00FF66] font-bold shadow-sm border border-[#606060]'
                     : 'text-[#A6A6A6] hover:text-white hover:bg-[#383838]/60'
                 }`}
               >
@@ -450,7 +450,7 @@ runPuppeteer();
             <button
               type="button"
               onClick={handleCopyCode}
-              className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#424242] hover:bg-[#4e4e4e] text-[#DFE104] text-[12px] font-bold border border-[#585858] transition-all shadow-sm"
+              className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#424242] hover:bg-[#4e4e4e] text-[#00FF66] text-[12px] font-bold border border-[#585858] transition-all shadow-sm"
             >
               {copiedCode ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
               <span>{copiedCode ? 'Copiado!' : 'Copiar Script'}</span>

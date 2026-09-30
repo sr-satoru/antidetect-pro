@@ -24,7 +24,7 @@ const renderProtocolBadge = (type: string) => {
     case 'mobile':
     case 'movel':
       return (
-        <span className="inline-flex items-center rounded border border-[#DFE104]/40 bg-[#DFE104]/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#DFE104] uppercase">
+        <span className="inline-flex items-center rounded border border-[#00FF66]/40 bg-[#00FF66]/10 px-2 py-0.5 text-[10.5px] font-bold tracking-wide text-[#00FF66] uppercase">
           MÓVEL 4G
         </span>
       );
@@ -63,7 +63,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
   const isStriped = index % 2 === 1;
 
   const rowBg = isSelected
-    ? 'bg-[#DFE104]/16 border-l-2 border-l-[#DFE104]'
+    ? 'bg-[#00FF66]/16 border-l-2 border-l-[#00FF66]'
     : isStriped
       ? 'bg-[#2C2D33] hover:bg-[#484848]'
       : 'bg-[#383838] hover:bg-[#484848]';
@@ -86,7 +86,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
           type="checkbox"
           checked={isSelected}
           onChange={() => onSelect(proxy.id)}
-          className="h-3.5 w-3.5 cursor-pointer rounded accent-[#DFE104]"
+          className="h-3.5 w-3.5 cursor-pointer rounded accent-[#00FF66]"
         />
       </td>
 

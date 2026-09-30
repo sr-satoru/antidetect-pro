@@ -77,7 +77,7 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
   const isStriped = index % 2 === 1;
 
   const rowBg = isSelected
-    ? 'bg-[#DFE104]/14 border-l-2 border-l-[#DFE104]'
+    ? 'bg-[#00FF66]/14 border-l-2 border-l-[#00FF66]'
     : isStriped
       ? 'bg-[#24252B] hover:bg-[#32343D]'
       : 'bg-[#1E1F26] hover:bg-[#32343D]';
@@ -95,7 +95,7 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
           type="checkbox"
           checked={isSelected}
           onChange={() => onSelect(item.id)}
-          className="h-3.5 w-3.5 cursor-pointer rounded accent-[#DFE104]"
+          className="h-3.5 w-3.5 cursor-pointer rounded accent-[#00FF66]"
         />
       </td>
 
@@ -125,7 +125,7 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
       {/* 5. IP & País */}
       <td className="w-[180px] min-w-[180px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex flex-col leading-tight">
-          <span className="font-mono text-xs font-semibold text-[#DFE104]">
+          <span className="font-mono text-xs font-semibold text-[#00FF66]">
             {item.ip || 'Sem Proxy'}
           </span>
           <span className="text-[10.5px] text-[#8E92A2]">
@@ -150,7 +150,7 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
               expiration.daysRemaining <= 3
                 ? 'text-[#FF6B6B]'
                 : expiration.daysRemaining <= 7
-                  ? 'text-[#DFE104]'
+                  ? 'text-[#00FF66]'
                   : 'text-[#10B981]'
             }`}
           >

@@ -10,7 +10,7 @@ export const ProtectedRoute: React.FC = () => {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[#08090C] text-white">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 size={32} className="animate-spin text-[#DFE104]" />
+          <Loader2 size={32} className="animate-spin text-[#00FF66]" />
           <span className="text-xs text-[#8E92A2]">Iniciando One Star Multilogin...</span>
         </div>
       </div>

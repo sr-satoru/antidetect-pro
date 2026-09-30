@@ -94,14 +94,14 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             disabled={selectedCount === 0}
             className={`flex h-9 items-center gap-1.5 rounded-md px-3 text-[13px] font-medium transition-all ${
               selectedCount > 0
-                ? 'border border-[#DFE104]/40 bg-[#DFE104]/10 text-[#DFE104] hover:bg-[#DFE104]/20 hover:border-[#DFE104]/70 shadow-xs'
+                ? 'border border-[#00FF66]/40 bg-[#00FF66]/10 text-[#00FF66] hover:bg-[#00FF66]/20 hover:border-[#00FF66]/70 shadow-xs'
                 : 'border border-[#2C2E38] bg-[#181920] text-[#555866] opacity-50 cursor-not-allowed'
             }`}
           >
             <RotateCcw size={14} />
             <span>Restaurar Selecionados</span>
             {selectedCount > 0 && (
-              <span className="ml-1 rounded-full bg-[#DFE104]/20 px-1.5 py-0.2 text-[11px] font-bold text-[#DFE104]">
+              <span className="ml-1 rounded-full bg-[#00FF66]/20 px-1.5 py-0.2 text-[11px] font-bold text-[#00FF66]">
                 {selectedCount}
               </span>
             )}

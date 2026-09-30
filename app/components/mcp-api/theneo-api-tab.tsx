@@ -441,7 +441,7 @@ await page.goto('${testParamUrl}');`;
       <div className="bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#DFE104]/15 text-[#DFE104] border border-[#DFE104]/30">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#00FF66]/15 text-[#00FF66] border border-[#00FF66]/30">
               Theneo Architecture
             </span>
             <span className="text-[12px] text-[#A6A6A6] font-mono">OpenAPI 3.1 & REST v1</span>
@@ -475,7 +475,7 @@ await page.goto('${testParamUrl}');`;
               placeholder="Buscar endpoints..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#2c2c2c]/90 border border-[#484848] rounded-xl pl-9 pr-3 py-1.5 text-[12px] text-white placeholder-[#8E8E93] outline-none focus:border-[#DFE104]/70 transition-all shadow-inner"
+              className="w-full bg-[#2c2c2c]/90 border border-[#484848] rounded-xl pl-9 pr-3 py-1.5 text-[12px] text-white placeholder-[#8E8E93] outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15 transition-all shadow-inner"
             />
           </div>
 
@@ -503,7 +503,7 @@ await page.goto('${testParamUrl}');`;
                           }}
                           className={`w-full text-left px-2.5 py-2 rounded-xl transition-all flex items-center justify-between gap-2 text-[12px] ${
                             isSelected
-                              ? 'bg-[#484848] text-[#DFE104] font-bold border border-[#606060] shadow-sm'
+                              ? 'bg-[#484848] text-[#00FF66] font-bold border border-[#606060] shadow-sm'
                               : 'text-[#D4D4D8] hover:bg-[#353535]/80 hover:text-white border border-transparent'
                           }`}
                         >
@@ -521,7 +521,7 @@ await page.goto('${testParamUrl}');`;
                           </div>
                           <ChevronRight
                             size={13}
-                            className={`shrink-0 transition-transform ${isSelected ? 'rotate-90 text-[#DFE104]' : 'text-[#707070]'}`}
+                            className={`shrink-0 transition-transform ${isSelected ? 'rotate-90 text-[#00FF66]' : 'text-[#707070]'}`}
                           />
                         </button>
                       );
@@ -590,7 +590,7 @@ await page.goto('${testParamUrl}');`;
                         </span>
                       )}
                     </div>
-                    <div className="col-span-3 font-mono text-[#DFE104] text-[10px]">
+                    <div className="col-span-3 font-mono text-[#00FF66] text-[10px]">
                       {p.type}
                     </div>
                     <div className="col-span-5 text-[#B0B0B0] text-[11px] leading-snug">
@@ -634,7 +634,7 @@ await page.goto('${testParamUrl}');`;
         <div className="lg:col-span-4 bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-[#4d4d4d]/60">
             <h4 className="text-[13px] font-bold text-white flex items-center gap-1.5">
-              <Terminal size={15} className="text-[#DFE104]" />
+              <Terminal size={15} className="text-[#00FF66]" />
               Playground & Snippets
             </h4>
             <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/25">
@@ -651,7 +651,7 @@ await page.goto('${testParamUrl}');`;
                 onClick={() => setSelectedLang(lang)}
                 className={`flex-1 py-1 px-2 rounded-lg text-[11px] font-bold transition-all text-center ${
                   selectedLang === lang
-                    ? 'bg-[#484848] text-[#DFE104] shadow-sm border border-[#606060]'
+                    ? 'bg-[#484848] text-[#00FF66] shadow-sm border border-[#606060]'
                     : 'text-[#A0A0A0] hover:text-white hover:bg-[#383838]/50'
                 }`}
               >
@@ -668,7 +668,7 @@ await page.goto('${testParamUrl}');`;
             <button
               type="button"
               onClick={handleCopyCode}
-              className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#424242] hover:bg-[#4e4e4e] text-[#DFE104] text-[10px] font-bold border border-[#585858] transition-all shadow-sm"
+              className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#424242] hover:bg-[#4e4e4e] text-[#00FF66] text-[10px] font-bold border border-[#585858] transition-all shadow-sm"
             >
               {copiedCode ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
               <span>{copiedCode ? 'Copiado!' : 'Copiar'}</span>
@@ -690,7 +690,7 @@ await page.goto('${testParamUrl}');`;
                   type="text"
                   value={testParamId}
                   onChange={(e) => setTestParamId(e.target.value)}
-                  className="w-full bg-[#202020] border border-[#424242] rounded-lg px-2.5 py-1 text-[11px] font-mono text-white outline-none focus:border-[#DFE104]/70"
+                  className="w-full bg-[#202020] border border-[#424242] rounded-lg px-2.5 py-1 text-[11px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
                 />
               </div>
 
@@ -703,7 +703,7 @@ await page.goto('${testParamUrl}');`;
                     type="text"
                     value={testParamUrl}
                     onChange={(e) => setTestParamUrl(e.target.value)}
-                    className="w-full bg-[#202020] border border-[#424242] rounded-lg px-2.5 py-1 text-[11px] font-mono text-white outline-none focus:border-[#DFE104]/70"
+                    className="w-full bg-[#202020] border border-[#424242] rounded-lg px-2.5 py-1 text-[11px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
                   />
                 </div>
               )}
@@ -714,7 +714,7 @@ await page.goto('${testParamUrl}');`;
               type="button"
               onClick={handleExecuteRequest}
               disabled={isExecuting}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-gradient-to-r from-[#DFE104] to-[#B5B802] text-black font-extrabold text-[12px] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 shadow-[0_0_15px_rgba(223,225,4,0.2)]"
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-gradient-to-r from-[#00FF66] to-[#00D655] text-black font-extrabold text-[12px] transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 shadow-[0_0_15px_rgba(0,255,102,0.2)]"
             >
               <Send size={13} className={isExecuting ? 'animate-spin' : ''} />
               <span>{isExecuting ? 'Enviando Requisição...' : 'Executar Requisição'}</span>
@@ -726,7 +726,7 @@ await page.goto('${testParamUrl}');`;
             <div className="space-y-2 animate-fadeIn pt-1">
               <div className="flex items-center justify-between text-[11px]">
                 <span className="font-bold text-white flex items-center gap-1.5">
-                  <FileJson size={13} className="text-[#DFE104]" />
+                  <FileJson size={13} className="text-[#00FF66]" />
                   Resposta da API:
                 </span>
                 <div className="flex items-center gap-2 font-mono">

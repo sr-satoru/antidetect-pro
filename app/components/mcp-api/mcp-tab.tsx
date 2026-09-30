@@ -162,7 +162,7 @@ export const McpTab: React.FC<McpTabProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-[16px] font-bold text-white flex items-center gap-2">
-              <Bot size={18} className="text-[#DFE104]" />
+              <Bot size={18} className="text-[#00FF66]" />
               Conectar Assistentes de IA (MCP)
             </h3>
             <p className="text-[12px] text-[#A6A6A6] mt-0.5">
@@ -174,7 +174,7 @@ export const McpTab: React.FC<McpTabProps> = ({
             type="button"
             onClick={handleRunTest}
             disabled={isTesting}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#484848] hover:bg-[#525252] border border-white/[0.08] text-[#DFE104] text-[12px] font-bold transition-all shrink-0 active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#484848] hover:bg-[#525252] border border-white/[0.08] text-[#00FF66] text-[12px] font-bold transition-all shrink-0 active:scale-95 disabled:opacity-50"
           >
             <Play size={13} className={isTesting ? 'animate-spin' : ''} />
             <span>{isTesting ? 'Testando...' : 'Testar Conexão MCP'}</span>
@@ -190,7 +190,7 @@ export const McpTab: React.FC<McpTabProps> = ({
               onClick={() => setSelectedClient(key)}
               className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all ${
                 selectedClient === key
-                  ? 'bg-[#484848] text-[#DFE104] shadow-xs'
+                  ? 'bg-[#484848] text-[#00FF66] shadow-xs'
                   : 'text-[#A0A0A0] hover:text-white'
               }`}
             >
@@ -207,7 +207,7 @@ export const McpTab: React.FC<McpTabProps> = ({
           <button
             type="button"
             onClick={handleCopySnippet}
-            className="absolute top-2.5 right-2.5 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#404040] hover:bg-[#4d4d4d] text-[#DFE104] text-[11px] font-bold border border-white/[0.08] transition-all"
+            className="absolute top-2.5 right-2.5 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#404040] hover:bg-[#4d4d4d] text-[#00FF66] text-[11px] font-bold border border-white/[0.08] transition-all"
           >
             {copiedSnippet ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
             <span>{copiedSnippet ? 'Copiado!' : 'Copiar JSON'}</span>
@@ -242,7 +242,7 @@ export const McpTab: React.FC<McpTabProps> = ({
         {/* Column 1: Prompts */}
         <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] space-y-3">
           <h4 className="text-[13px] font-bold text-white flex items-center gap-1.5">
-            <Sparkles size={15} className="text-[#DFE104]" />
+            <Sparkles size={15} className="text-[#00FF66]" />
             O Que Pedir Para a IA no Chat:
           </h4>
           <div className="space-y-2">
@@ -269,7 +269,7 @@ export const McpTab: React.FC<McpTabProps> = ({
         <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-[13px] font-bold text-white flex items-center gap-1.5">
-              <Code2 size={15} className="text-[#DFE104]" />
+              <Code2 size={15} className="text-[#00FF66]" />
               Ferramentas Expostas (MCP Tools):
             </h4>
             <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
@@ -284,7 +284,7 @@ export const McpTab: React.FC<McpTabProps> = ({
                 className="flex items-center justify-between bg-[#282828]/60 px-3 py-2 rounded-xl text-[12px] border border-white/[0.04]"
               >
                 <div>
-                  <code className="text-[#DFE104] font-mono font-bold block">{t.name}</code>
+                  <code className="text-[#00FF66] font-mono font-bold block">{t.name}</code>
                   <span className="text-[11px] text-[#A6A6A6]">{t.desc}</span>
                 </div>
                 <span className="text-[9px] font-mono text-[#A0A0A0] bg-white/[0.06] px-1.5 py-0.5 rounded shrink-0">

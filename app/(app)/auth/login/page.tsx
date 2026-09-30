@@ -125,13 +125,13 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="relative flex min-h-screen w-screen items-center justify-center bg-[#08090C] p-4 text-[#E1E4EA] select-none overflow-hidden font-sans">
       {/* Luzes de ambientação sutis */}
-      <div className="pointer-events-none absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#DFE104]/10 blur-[140px]" />
+      <div className="pointer-events-none absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#00FF66]/10 blur-[140px]" />
       <div className="pointer-events-none absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-white/5 blur-[140px]" />
 
       <div className="relative z-10 w-full max-w-[420px] rounded-2xl border border-white/20 bg-[#14151C]/95 p-8 shadow-2xl shadow-black/80 backdrop-blur-xl">
         {/* Cabeçalho */}
         <div className="text-center space-y-2 mb-8">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#DFE104] to-[#C5C702] shadow-lg shadow-[#DFE104]/25">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#00FF66] to-[#00D655] shadow-lg shadow-[#00FF66]/25">
             <Star size={28} className="fill-black stroke-black" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white">
