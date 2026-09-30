@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-kinetic: #DFE104;
-  --color-kinetic-hover: #C5C702;
-  --color-kinetic-dark: #2A2B0A;
+  --color-kinetic: #00FF66;
+  --color-kinetic-hover: #00D655;
+  --color-kinetic-dark: #0A2B18;
   --color-bg-base: #08090C;
   --color-bg-surface: #101116;
   --color-bg-card: #15161C;
@@ -36,7 +36,7 @@
   }
 
   ::selection {
-    background-color: #DFE104;
+    background-color: #00FF66;
     color: #000000;
   }
 

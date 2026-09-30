@@ -33,17 +33,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
   };
 
   const navItemClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group relative ${
-      isActive
-        ? 'bg-[#181a22] text-[#DFE104] font-semibold shadow-xs'
-        : 'text-[#9093A2] hover:bg-[#14161e] hover:text-[#F4F4F6]'
+    `flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group relative ${isActive
+      ? 'bg-[#181a22] text-[#DFE104] font-semibold shadow-xs'
+      : 'text-[#9093A2] hover:bg-[#14161e] hover:text-[#F4F4F6]'
     } ${isCollapsed ? 'justify-center px-2' : ''}`;
 
   return (
     <aside
-      className={`h-screen bg-[#0d0e13] border-r border-[#1c1e27] flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${
-        isCollapsed ? 'w-[68px]' : 'w-[230px]'
-      }`}
+      className={`h-screen bg-[#0d0e13] border-r border-[#1c1e27] flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[68px]' : 'w-[230px]'
+        }`}
     >
       {/* Header / Brand */}
       <div className="h-14 px-3.5 flex items-center justify-between border-b border-[#1c1e27]">
@@ -81,9 +79,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         <button
           type="button"
           onClick={handleNewProfile}
-          className={`w-full flex items-center justify-center gap-2 bg-[#DFE104] hover:bg-[#C5C702] text-black font-semibold text-[13px] rounded-lg transition-all shadow-[0_2px_10px_rgba(223,225,4,0.15)] active:scale-[0.98] ${
-            isCollapsed ? 'h-9 px-0' : 'h-9 px-3'
-          }`}
+          className={`w-full flex items-center justify-center gap-2 bg-[#DFE104] hover:bg-[#C5C702] text-black font-semibold text-[13px] rounded-lg transition-all shadow-[0_2px_10px_rgba(223,225,4,0.15)] active:scale-[0.98] ${isCollapsed ? 'h-9 px-0' : 'h-9 px-3'
+            }`}
           title="Criar Novo Perfil"
         >
           <Plus size={16} strokeWidth={2.5} />
