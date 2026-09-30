@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X } from 'lucide-react';
+import { X, Check, Network } from 'lucide-react';
 import { api } from '@/services/index.api';
 import { FormularioCadastroProxies } from './formulario-cadastro-proxies';
 import { TabelaPreviaProxies } from './tabela-previa-proxies';
@@ -52,6 +52,10 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
   // Verifica se há pelo menos um proxy com formato válido
   const hasValidProxies = useMemo(() => {
     return parsedList.some((p) => p.isValid);
+  }, [parsedList]);
+
+  const validCount = useMemo(() => {
+    return parsedList.filter((p) => p.isValid).length;
   }, [parsedList]);
 
   // Testar todos os proxies válidos em lote no backend Rust
@@ -152,14 +156,26 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
   };
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-[#1E1F24] text-[#D1D5DB]">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-[#181920] text-[#D1D5DB]">
       {/* Top Header */}
-      <div className="flex h-12 shrink-0 items-center justify-between border-b border-[#2C2E38] bg-[#17181D] px-6 select-none">
-        <span className="text-xs font-semibold text-white">Adicionar Proxy</span>
+      <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/10 bg-[#14151B] px-6 select-none">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-[#1E202A] text-[#00FF66]">
+            <Network size={16} />
+          </div>
+          <div>
+            <h2 className="text-[13.5px] font-semibold text-white">
+              Adicionar Proxies em Lote
+            </h2>
+            <p className="text-[11px] text-[#7E8294]">
+              Importe e valide múltiplos proxies para uso nos seus perfis
+            </p>
+          </div>
+        </div>
         <button
           type="button"
           onClick={onClose}
-          className="cursor-pointer rounded-md p-1.5 text-[#8E92A2] transition-colors hover:bg-[#282932] hover:text-white"
+          className="cursor-pointer rounded-lg p-2 text-[#8E92A2] transition-colors hover:bg-white/5 hover:text-white"
           title="Fechar"
         >
           <X size={16} />
@@ -167,7 +183,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
       </div>
 
       {/* Body: Formulário Superior e Tabela de Prévia Inferior */}
-      <div className="flex min-h-0 flex-1 flex-col space-y-4 overflow-y-auto p-5 select-text [scrollbar-color:#3E4150_#1E1F24] [scrollbar-width:thin]">
+      <div className="flex min-h-0 flex-1 flex-col space-y-5 overflow-y-auto p-6 select-text [scrollbar-color:#3E4150_#181920] [scrollbar-width:thin]">
         <FormularioCadastroProxies
           proxyType={proxyType}
           setProxyType={setProxyType}
@@ -191,22 +207,38 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
       </div>
 
       {/* Footer do Modal */}
-      <div className="flex h-14 shrink-0 items-center justify-start gap-3 border-t border-[#2C2E38] bg-[#17181D] px-6 select-none">
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!hasValidProxies}
-          className="flex cursor-pointer items-center justify-center rounded-md bg-[#1C1D24] border border-white/30 hover:border-white px-6 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#252834] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          OK
-        </button>
-        <button
-          type="button"
-          onClick={onClose}
-          className="cursor-pointer rounded-md px-4 py-1.5 text-xs font-medium text-[#8E92A2] transition-colors hover:bg-[#282932] hover:text-white"
-        >
-          Cancelar
-        </button>
+      <div className="flex h-16 shrink-0 items-center justify-between border-t border-white/10 bg-[#14151B] px-6 select-none">
+        <div className="text-[12px] text-[#7E8294]">
+          {hasValidProxies ? (
+            <span className="text-[#C4C7D5]">
+              Pronto para salvar{' '}
+              <strong className="text-white">
+                {validCount} {validCount === 1 ? 'proxy' : 'proxies'}
+              </strong>
+            </span>
+          ) : (
+            <span>Insira ao menos um formato válido para salvar</span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer rounded-lg border border-white/10 bg-[#20222B] px-4 py-2 text-xs font-medium text-[#A6ABB9] transition-all hover:border-white/20 hover:bg-[#282B36] hover:text-white"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!hasValidProxies}
+            className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#00FF66] px-5 py-2 text-xs font-bold text-[#090A0F] shadow-[0_0_12px_rgba(0,255,102,0.22)] transition-all hover:bg-[#00FF66]/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+          >
+            <Check size={14} strokeWidth={2.5} />
+            <span>Salvar Proxies</span>
+          </button>
+        </div>
       </div>
     </div>
   );
