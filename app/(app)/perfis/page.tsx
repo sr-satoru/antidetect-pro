@@ -4,11 +4,12 @@ import { HeaderTabela } from '@/components/perfis/headerTabela';
 import { Tabela } from '@/components/perfis/tabela';
 import { ModalEtiquetas } from '@/components/tags/modal-etiquetas';
 import { ModalEditarTagsPerfil } from '@/components/tags/modal-editar-tags-perfil';
+import { ModalEditarNome, ModalEditarObservacao } from '@/components/criar-perfil/editar-perfil';
 import { TagBadge } from '@/components/tags/tag-badge';
 import { serviceTags } from '@/services/tags/service.tags';
 import { api } from '@/services/index.api';
 import { servicePerfis } from '@/services/perfis/service.perfis';
-import { X, Check, Loader2, FileText } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import { useBrowser } from '@/contexts/browser-context';
 import { WS_BASE_URL } from '@/services/http';
@@ -27,13 +28,8 @@ export const PerfisPage: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<any | null>(null);
-  const [editNameInput, setEditNameInput] = useState('');
   const [editingTagsProfile, setEditingTagsProfile] = useState<any | null>(null);
-
-
-  // Quick edit notes modal state
   const [editingNotesProfile, setEditingNotesProfile] = useState<any | null>(null);
-  const [editNotesInput, setEditNotesInput] = useState('');
 
   // Carrega perfis reais do backend local
   const fetchProfiles = useCallback(async () => {
@@ -354,10 +350,9 @@ export const PerfisPage: React.FC = () => {
     }
   };
 
-  // Start edit modal (renomear rápido)
+  // Abrir modal de renomear rápido
   const handleOpenEdit = (profile: any) => {
     setEditingProfile(profile);
-    setEditNameInput(profile.name);
   };
 
   // Duplicar perfil (Copiar atômico no backend / disco)
@@ -374,56 +369,9 @@ export const PerfisPage: React.FC = () => {
     }
   };
 
-  // Save edit modal
-  const handleSaveEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingProfile || !editNameInput.trim()) return;
-
-    try {
-      await api.profiles.update(String(editingProfile.id), {
-        name: editNameInput.trim(),
-      });
-      setProfiles((prev) =>
-        prev.map((p) =>
-          p.id === editingProfile.id
-            ? { ...p, name: editNameInput.trim() }
-            : p,
-        ),
-      );
-      toast.success('Perfil renomeado com sucesso');
-      setEditingProfile(null);
-    } catch (err: any) {
-      toast.error('Erro ao renomear perfil');
-    }
-  };
-
-
-  // Quick edit notes handlers
+  // Abrir modal de edição rápida de observação
   const handleOpenEditNotes = (profile: any) => {
     setEditingNotesProfile(profile);
-    setEditNotesInput(profile.notes || '');
-  };
-
-  const handleSaveEditNotes = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingNotesProfile) return;
-
-    try {
-      await api.profiles.update(String(editingNotesProfile.id), {
-        notes: editNotesInput.trim(),
-      });
-      setProfiles((prev) =>
-        prev.map((p) =>
-          p.id === editingNotesProfile.id
-            ? { ...p, notes: editNotesInput.trim() }
-            : p,
-        ),
-      );
-      toast.success('Observação atualizada com sucesso');
-      setEditingNotesProfile(null);
-    } catch (err: any) {
-      toast.error('Erro ao salvar observação: ' + (err.message || 'Falha de comunicação'));
-    }
   };
 
   return (
@@ -495,128 +443,29 @@ export const PerfisPage: React.FC = () => {
         />
       )}
 
-      {/* Modal de Edição Rápida */}
-      {editingProfile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-          <div className="animate-in zoom-in-95 w-full max-w-md rounded-xl border border-[#262837] bg-[#12131b] p-5 shadow-2xl duration-150">
-            <div className="flex items-center justify-between border-b border-[#202230] pb-3">
-              <h3 className="text-sm font-semibold text-[#F4F4F6]">
-                Editar Nome do Perfil
-              </h3>
-              <button
-                type="button"
-                onClick={() => setEditingProfile(null)}
-                className="rounded-md p-1 text-[#6c7084] hover:bg-[#1a1c27] hover:text-[#F4F4F6]"
-              >
-                <X size={15} />
-              </button>
-            </div>
+      {/* Modal Dedicado de Edição Rápida de Nome */}
+      <ModalEditarNome
+        isOpen={Boolean(editingProfile)}
+        onClose={() => setEditingProfile(null)}
+        profile={editingProfile}
+        onProfileUpdated={(updatedProfile) => {
+          setProfiles((prev) =>
+            prev.map((p) => (p.id === updatedProfile.id ? { ...p, ...updatedProfile } : p))
+          );
+        }}
+      />
 
-            <form onSubmit={handleSaveEdit} className="mt-4 space-y-4">
-              <div>
-                <label className="mb-1.5 block text-xs font-medium text-[#9093A2]">
-                  Nome do Perfil
-                </label>
-                <input
-                  type="text"
-                  value={editNameInput}
-                  onChange={(e) => setEditNameInput(e.target.value)}
-                  autoFocus
-                  className="w-full rounded-lg border border-[#2a2d3e] bg-[#171923] px-3 py-2 text-xs text-[#F4F4F6] focus:border-[#DFE104] focus:ring-1 focus:ring-[#DFE104] focus:outline-hidden"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingProfile(null)}
-                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-[#9093A2] transition-colors hover:bg-[#1b1d28] hover:text-[#F4F4F6]"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="flex items-center gap-1.5 rounded-lg bg-[#DFE104] px-3 py-1.5 text-xs font-semibold text-black transition-colors hover:bg-[#C5C702]"
-                >
-                  <Check size={14} strokeWidth={2.5} />
-                  <span>Salvar Alteração</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-
-      {/* Modal de Edição de Observação */}
-      {editingNotesProfile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-          <div className="animate-in zoom-in-95 w-full max-w-md rounded-xl border border-[#262837] bg-[#12131b] p-5 shadow-2xl duration-150">
-            <div className="flex items-center justify-between border-b border-[#202230] pb-3">
-              <div className="flex items-center gap-2">
-                <FileText size={16} className="text-[#DFE104]" />
-                <h3 className="text-sm font-semibold text-[#F4F4F6]">
-                  Editar Observação
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setEditingNotesProfile(null)}
-                className="rounded-md p-1 text-[#6c7084] hover:bg-[#1a1c27] hover:text-[#F4F4F6]"
-              >
-                <X size={15} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveEditNotes} className="mt-4 space-y-4">
-              <div>
-                <div className="mb-1.5 flex items-center justify-between">
-                  <label className="text-xs font-medium text-[#9093A2]">
-                    Observação do perfil: <span className="font-semibold text-white">{editingNotesProfile.name}</span>
-                  </label>
-                  <span className="text-[11px] text-[#5C6070]">
-                    {editNotesInput.length} caracteres
-                  </span>
-                </div>
-                <textarea
-                  value={editNotesInput}
-                  onChange={(e) => setEditNotesInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                      e.preventDefault();
-                      handleSaveEditNotes(e);
-                    }
-                  }}
-                  autoFocus
-                  rows={4}
-                  placeholder="Escreva uma observação, anotação ou nota para este perfil..."
-                  className="w-full rounded-lg border border-[#2a2d3e] bg-[#171923] p-3 text-xs text-[#F4F4F6] placeholder-[#5C6070] focus:border-[#DFE104] focus:ring-1 focus:ring-[#DFE104] focus:outline-hidden resize-none"
-                />
-                <span className="mt-1 block text-[10px] text-[#5C6070]">
-                  Dica: Pressione Ctrl+Enter para salvar rapidamente.
-                </span>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#202230]">
-                <button
-                  type="button"
-                  onClick={() => setEditingNotesProfile(null)}
-                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-[#9093A2] transition-colors hover:bg-[#1b1d28] hover:text-[#F4F4F6]"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="flex items-center gap-1.5 rounded-lg bg-[#DFE104] px-3 py-1.5 text-xs font-semibold text-black transition-colors hover:bg-[#C5C702]"
-                >
-                  <Check size={14} strokeWidth={2.5} />
-                  <span>Salvar Alteração</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Modal Dedicado de Edição de Observação */}
+      <ModalEditarObservacao
+        isOpen={Boolean(editingNotesProfile)}
+        onClose={() => setEditingNotesProfile(null)}
+        profile={editingNotesProfile}
+        onProfileUpdated={(updatedProfile) => {
+          setProfiles((prev) =>
+            prev.map((p) => (p.id === updatedProfile.id ? { ...p, ...updatedProfile } : p))
+          );
+        }}
+      />
 
       {/* Modal Principal de Gestão e Filtro de Etiquetas */}
       <ModalEtiquetas
