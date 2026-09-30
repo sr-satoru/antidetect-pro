@@ -16,6 +16,7 @@ import {
   Plus,
   CheckCircle2,
   Lock,
+  User,
 } from "lucide-react";
 import { useI18n } from "@/app/contexts/i18n-context";
 

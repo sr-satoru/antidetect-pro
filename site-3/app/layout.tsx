@@ -3,6 +3,7 @@ import "./globals.css";
 import { ReactGrabDev } from "@/app/components/dev/react-grab";
 import { I18nProvider } from "@/app/contexts/i18n-context";
 import { JsonLd } from "@/app/components/seo/json-ld";
+import { CookieConsent } from "@/app/components/ui/cookie-consent";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://starmultlogin.com";
 
@@ -111,7 +112,10 @@ export default function RootLayout({
       <body className="bg-[#08090C] text-[#F4F4F6] antialiased selection:bg-[#00FF66] selection:text-black">
         <JsonLd />
         {process.env.NODE_ENV === "development" && <ReactGrabDev />}
-        <I18nProvider>{children}</I18nProvider>
+        <I18nProvider>
+          {children}
+          <CookieConsent />
+        </I18nProvider>
       </body>
     </html>
   );

@@ -110,13 +110,34 @@ export function Footer() {
               {t.footer.legalCol}
             </h4>
             <ul className="space-y-2.5 text-[13.5px]">
-              <li className="flex items-center gap-1.5 text-zinc-300">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#00FF66]" />
-                {t.hero.trustTelemetry}
+              <li>
+                <Link
+                  href="/terms"
+                  className="hover:text-[#00FF66] transition-colors flex items-center gap-1.5"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#00FF66]" />
+                  {t.footer.terms}
+                </Link>
               </li>
-              <li className="text-[#9093A2]">{t.hero.trustIsolation}</li>
-              <li className="text-[#9093A2]">E2E Cloud Backup</li>
-              <li className="text-[#9093A2]">GDPR & CCPA Ready</li>
+              <li>
+                <Link
+                  href="/privacy"
+                  className="hover:text-[#00FF66] transition-colors"
+                >
+                  {t.footer.privacy}
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="mailto:privacidade@starmultlogin.com"
+                  className="hover:text-[#00FF66] transition-colors text-[#9093A2]"
+                >
+                  Encarregado DPO / LGPD
+                </a>
+              </li>
+              <li className="text-[#9093A2] flex items-center gap-1 text-xs">
+                <span>LGPD · GDPR · Marco Civil</span>
+              </li>
             </ul>
           </div>
         </div>

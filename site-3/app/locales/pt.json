@@ -232,7 +232,27 @@
     "btnLogin": "Entrar na Conta",
     "btnRegister": "Criar Conta Gratuita",
     "privacyNotice": "Seus dados locais nunca são enviados para a nuvem sem você permitir.",
+    "agreeTermsPrefix": "Li e concordo com os",
+    "termsLink": "Termos de Uso",
+    "and": "e a",
+    "privacyLink": "Política de Privacidade",
+    "termsRequiredError": "Você precisa aceitar os Termos de Uso e a Política de Privacidade para criar sua conta.",
     "authErrorDefault": "Falha na conexão com o servidor."
+  },
+  "cookieConsent": {
+    "title": "Privacidade & Cookies",
+    "desc": "Utilizamos cookies essenciais para autenticação e segurança. Você pode autorizar cookies opcionais ou manter apenas os estritamente necessários para o funcionamento.",
+    "acceptAll": "Aceitar Todos",
+    "essentialOnly": "Apenas Essenciais",
+    "learnMore": "Política de Privacidade"
+  },
+  "legal": {
+    "badge": "Conformidade Jurídica & LGPD",
+    "lastUpdated": "Última atualização: Setembro de 2026",
+    "termsTitle": "Termos de Uso & Licença de Software",
+    "termsSubtitle": "Condições gerais de utilização da plataforma Star Multlogin, licença de uso gratuita e delimitação de responsabilidade.",
+    "privacyTitle": "Política de Privacidade & Proteção de Dados",
+    "privacySubtitle": "Como tratamos seus dados pessoais em estrita conformidade com a LGPD (Lei nº 13.709/2018) e o Marco Civil da Internet."
   },
   "authCallback": {
     "title": "Autenticação Concluída!",

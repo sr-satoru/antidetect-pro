@@ -3,7 +3,7 @@
 import React, { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Shield, Lock, Mail, User, AlertCircle, Loader2, ArrowRight, Star } from "lucide-react";
+import { Shield, Lock, Mail, User, AlertCircle, Loader2, ArrowRight, Star, Check } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { useI18n } from "@/app/contexts/i18n-context";
 
@@ -32,12 +32,19 @@ function AuthContent() {
 
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const CLOUD_API_URL = process.env.NEXT_PUBLIC_CLOUD_API_URL || "http://localhost:12342";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
+
+    if (activeTab === "register" && !acceptedTerms) {
+      setFormError(a.termsRequiredError || "Você precisa aceitar os Termos de Uso e a Política de Privacidade para criar sua conta.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -190,11 +197,53 @@ function AuthContent() {
           </div>
         </div>
 
+        {activeTab === "register" && (
+          <div className="pt-1 pb-1">
+            <label className="flex items-start gap-3 cursor-pointer group text-xs text-zinc-400 select-none">
+              <div className="relative flex items-center justify-center mt-0.5 shrink-0">
+                <input
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => {
+                    setAcceptedTerms(e.target.checked);
+                    if (e.target.checked) setFormError("");
+                  }}
+                  className="peer sr-only"
+                />
+                <div className="w-4 h-4 rounded border border-[#232530] bg-[#08090C] transition-all peer-checked:bg-[#00FF66] peer-checked:border-[#00FF66] peer-focus:ring-2 peer-focus:ring-[#00FF66]/30 flex items-center justify-center group-hover:border-zinc-500">
+                  <Check className="w-3 h-3 text-black stroke-[3] opacity-0 peer-checked:opacity-100 transition-opacity" />
+                </div>
+              </div>
+              <span className="leading-relaxed">
+                {a.agreeTermsPrefix}{" "}
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#00FF66] underline hover:text-[#00FF66]/80 font-medium"
+                >
+                  {a.termsLink}
+                </Link>{" "}
+                {a.and}{" "}
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#00FF66] underline hover:text-[#00FF66]/80 font-medium"
+                >
+                  {a.privacyLink}
+                </Link>
+                .
+              </span>
+            </label>
+          </div>
+        )}
+
         <Button
           type="submit"
-          disabled={loading}
+          disabled={loading || (activeTab === "register" && !acceptedTerms)}
           variant="star"
-          className="w-full gap-2 text-sm font-bold mt-2"
+          className="w-full gap-2 text-sm font-bold mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>
