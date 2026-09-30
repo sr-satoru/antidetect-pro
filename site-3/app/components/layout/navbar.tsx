@@ -87,12 +87,12 @@ export function Navbar() {
             {t.nav.login}
           </Link>
 
-          <a href="#download">
+          <Link href="/download">
             <Button size="sm" variant="star" className="gap-1.5 font-bold">
               <Download className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>{t.nav.download}</span>
             </Button>
-          </a>
+          </Link>
         </div>
 
         {/* Mobile menu trigger */}
@@ -129,13 +129,13 @@ export function Navbar() {
             >
               {t.nav.login}
             </Link>
-            <a
-              href="#download"
+            <Link
+              href="/download"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full text-center py-2 text-sm font-bold text-black bg-gradient-to-r from-[#00FF66] to-[#00D655] rounded-xl"
             >
               {t.hero.downloadBtn}
-            </a>
+            </Link>
           </div>
         </div>
       )}

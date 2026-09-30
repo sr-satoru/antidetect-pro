@@ -1,9 +1,14 @@
 import React from "react";
+import type { Metadata } from "next";
 import { AccountOverview } from "@/app/components/account/account-overview";
 
-export const metadata = {
-  title: "Minha Conta — Star Multlogin",
+export const metadata: Metadata = {
+  title: "Minha Conta",
   description: "Gerencie sua assinatura, backups em nuvem e chaves da API local do Star Multlogin.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function AccountPage() {

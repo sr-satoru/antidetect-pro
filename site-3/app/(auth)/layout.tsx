@@ -1,6 +1,16 @@
 import React from "react";
+import type { Metadata } from "next";
 import { Navbar } from "@/app/components/layout/navbar";
 import { Footer } from "@/app/components/layout/footer";
+
+export const metadata: Metadata = {
+  title: "Acessar Conta",
+  description: "Faça login ou crie sua conta no Star Multlogin para sincronizar perfis na nuvem.",
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
 
 export default function AuthLayout({
   children,
