@@ -222,7 +222,7 @@ export const UpdateCenterDropdown: React.FC = () => {
                   <div>
                     <span className="text-xs font-semibold text-white block">Nova versão {appRelease.tagName} disponível</span>
                     <span className="text-[11px] text-[#8E92A2] block mt-0.5">
-                      Atual: v{CURRENT_APP_VERSION} • Formato: <strong className="text-[#00FF66]">{appRelease.detectedFormat?.toUpperCase()}</strong>
+                      Versão atual: v{CURRENT_APP_VERSION}
                     </span>
                   </div>
 
@@ -245,7 +245,7 @@ export const UpdateCenterDropdown: React.FC = () => {
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all shadow-md cursor-pointer active:scale-95 disabled:opacity-50"
                     >
                       <CheckCircle2 size={12} strokeWidth={2.5} />
-                      <span>{isRestarting ? 'Reiniciando...' : appRelease.detectedFormat === 'deb' ? 'Instalar .deb' : 'Reiniciar App'}</span>
+                      <span>{isRestarting ? 'Reiniciando...' : 'Reiniciar App'}</span>
                     </button>
                   )}
                 </div>

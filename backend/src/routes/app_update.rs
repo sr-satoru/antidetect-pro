@@ -265,7 +265,7 @@ impl AppUpdateService {
                 info!("📦 Disparando instalação do pacote .deb: {}", deb_path);
                 
                 let install_cmd = format!(
-                    "pkexec dpkg -i '{deb_path}' && (/usr/bin/star-multlogin &)"
+                    "if pkexec dpkg -i '{deb_path}'; then (/usr/bin/star-multlogin &); else xdg-open '{deb_path}'; fi"
                 );
                 
                 let res = std::process::Command::new("sh")
