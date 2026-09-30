@@ -24,15 +24,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const applyTheme = (targetTheme: Theme) => {
     const root = document.documentElement;
-    if (targetTheme === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-      root.style.colorScheme = 'dark';
-    } else {
-      root.classList.remove('dark');
-      root.classList.add('light');
-      root.style.colorScheme = 'light';
-    }
+    root.classList.add('no-transitions');
+    root.classList.toggle('dark', targetTheme === 'dark');
+    root.classList.toggle('light', targetTheme === 'light');
+    root.style.colorScheme = targetTheme;
+    requestAnimationFrame(() => {
+      root.classList.remove('no-transitions');
+    });
   };
 
   useEffect(() => {
