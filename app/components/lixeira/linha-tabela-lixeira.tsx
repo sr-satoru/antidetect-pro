@@ -1,6 +1,7 @@
 import React from 'react';
 import { OsIcon } from '../ui/os-icon';
 import { Folder } from 'lucide-react';
+import { Checkbox } from '../ui/checkbox';
 
 export interface ItemLixeira {
   id: string | number;
@@ -91,13 +92,17 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
       className={`group h-[56px] border-b border-white/[0.07] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
-      <td className="w-[38px] max-w-[38px] min-w-[38px] px-3.5 py-2.5 text-center">
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => onSelect(item.id)}
-          className="h-3.5 w-3.5 cursor-pointer rounded accent-[#00FF66]"
-        />
+      <td
+        className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={isSelected}
+            onChange={() => onSelect(item.id)}
+            aria-label={`Selecionar item ${item.name || item.id}`}
+          />
+        </div>
       </td>
 
       {/* 2. ID Original */}

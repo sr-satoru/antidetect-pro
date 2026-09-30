@@ -7,6 +7,7 @@ import {
   ChevronRight,
   ChevronDown,
 } from 'lucide-react';
+import { Checkbox } from '../ui/checkbox';
 
 interface TabelaProps {
   profiles: any[];
@@ -35,6 +36,8 @@ export const Tabela: React.FC<TabelaProps> = ({
 }) => {
   const isAllSelected =
     profiles.length > 0 && selectedIds.length === profiles.length;
+  const isSomeSelected =
+    selectedIds.length > 0 && selectedIds.length < profiles.length;
   const runningCount = profiles.filter((p) => p.isRunning || p.status === 'running').length;
 
   const [pageSize, setPageSize] = useState('20');
@@ -62,14 +65,15 @@ export const Tabela: React.FC<TabelaProps> = ({
           {/* Header */}
           <thead className="sticky top-0 z-20 border-b border-white/10 bg-[#14151B] text-[11px] font-semibold tracking-wider text-[#A6ABB9] uppercase select-none">
             <tr className="h-11">
-              <th className="w-[38px] max-w-[38px] min-w-[38px] px-3.5 py-2.5 text-center">
-                <input
-                  type="checkbox"
-                  checked={isAllSelected}
-                  onChange={onSelectAll}
-                  aria-label="Selecionar todos"
-                  className="h-3.5 w-3.5 cursor-pointer rounded accent-[#00FF66]"
-                />
+              <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center">
+                <div className="flex items-center justify-center">
+                  <Checkbox
+                    checked={isAllSelected}
+                    indeterminate={isSomeSelected}
+                    onChange={onSelectAll}
+                    aria-label="Selecionar todos os perfis"
+                  />
+                </div>
               </th>
               <th className="w-[85px] min-w-[85px] px-3.5 py-2.5">ID</th>
               <th className="w-[115px] min-w-[115px] px-3.5 py-2.5">Grupo</th>

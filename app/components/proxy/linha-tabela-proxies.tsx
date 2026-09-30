@@ -7,6 +7,7 @@ import {
   Globe,
   Layers,
 } from 'lucide-react';
+import { Checkbox } from '../ui/checkbox';
 
 export interface LinhaTabelaProxiesProps {
   proxy: any;
@@ -82,13 +83,17 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
       className={`group h-[60px] border-b border-white/[0.07] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
-      <td className="w-[38px] max-w-[38px] min-w-[38px] px-3.5 py-2.5 text-center">
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => onSelect(proxy.id)}
-          className="h-3.5 w-3.5 cursor-pointer rounded accent-[#00FF66]"
-        />
+      <td
+        className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={isSelected}
+            onChange={() => onSelect(proxy.id)}
+            aria-label={`Selecionar proxy ${proxy.name || proxy.id}`}
+          />
+        </div>
       </td>
 
       {/* 2. Nº / ID */}

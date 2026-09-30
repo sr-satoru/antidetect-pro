@@ -5,6 +5,7 @@ import { toast } from '@/components/ui/notification';
 import { TagItem, serviceTags } from '../../services/tags/service.tags';
 import { ModalNovaEtiqueta } from './modal-nova-etiqueta';
 import { TagBadge } from './tag-badge';
+import { Checkbox } from '../ui/checkbox';
 import { api } from '@/services/index.api';
 
 interface ModalEditarTagsPerfilProps {
@@ -239,12 +240,10 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                       }`}
                   >
                     {/* Checkbox de seleção para o perfil */}
-                    <div className="w-9 flex items-center" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="checkbox"
+                    <div className="w-9 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
                         checked={isAssigned}
                         onChange={() => handleToggleTag(tag.name)}
-                        className="h-4 w-4 rounded border-[#3A3D4D] bg-[#14151B] text-[#00FF66] focus:ring-0 cursor-pointer accent-[#00FF66]"
                       />
                     </div>
 

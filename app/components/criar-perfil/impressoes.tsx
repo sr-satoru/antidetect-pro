@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
+import { Select } from '@/components/ui/select';
 import config from '@/config/perfil.json';
 import { Shuffle } from 'lucide-react';
 
@@ -436,17 +437,16 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
         />
         {formData.timezoneMode === 'custom' && (
           <div className="max-w-md">
-            <select
+            <Select
               value={formData.customTimezone}
               onChange={(e) => onChange('customTimezone', e.target.value)}
-              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.timezones.map((tz) => (
-                <option key={tz.value} value={tz.value}>
+                <option key={tz.value} value={tz.value} className="bg-[#14151B] text-[#C4C7D5]">
                   {tz.label}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         )}
       </FormRow>
@@ -579,17 +579,16 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
         />
         {formData.languageMode === 'custom' && (
           <div className="max-w-md">
-            <select
+            <Select
               value={formData.customLanguage}
               onChange={(e) => onChange('customLanguage', e.target.value)}
-              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.languages.map((lang) => (
-                <option key={lang.value} value={lang.value}>
+                <option key={lang.value} value={lang.value} className="bg-[#14151B] text-[#C4C7D5]">
                   {lang.label}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         )}
       </FormRow>
@@ -603,17 +602,16 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
         />
         {formData.screenResolutionMode === 'default' && (
           <div className="max-w-md">
-            <select
+            <Select
               value={formData.screenResolution}
               onChange={(e) => onChange('screenResolution', e.target.value)}
-              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.screenResolutions.map((res) => (
-                <option key={res} value={res}>
+                <option key={res} value={res} className="bg-[#14151B] text-[#C4C7D5]">
                   {res}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         )}
         {formData.screenResolutionMode === 'custom' && (
@@ -738,17 +736,16 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
         />
         {(formData.cpuMode || 'custom') === 'custom' && (
           <div className="w-48">
-            <select
+            <Select
               value={formData.cpuCores}
               onChange={(e) => onChange('cpuCores', Number(e.target.value))}
-              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.cpuCoresOptions.map((cores) => (
-                <option key={cores} value={cores}>
+                <option key={cores} value={cores} className="bg-[#14151B] text-[#C4C7D5]">
                   {cores} núcleos
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         )}
       </FormRow>
@@ -762,17 +759,16 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
         />
         {(formData.ramMode || 'custom') === 'custom' && (
           <div className="w-48">
-            <select
+            <Select
               value={formData.ramGb || 8}
               onChange={(e) => onChange('ramGb', Number(e.target.value))}
-              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.ramOptions.map((ram) => (
-                <option key={ram} value={ram}>
+                <option key={ram} value={ram} className="bg-[#14151B] text-[#C4C7D5]">
                   {ram} GB
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         )}
       </FormRow>

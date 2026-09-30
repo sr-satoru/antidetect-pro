@@ -5,6 +5,7 @@ import { toast } from '@/components/ui/notification';
 import { TagItem, serviceTags } from '../../services/tags/service.tags';
 import { ModalNovaEtiqueta } from './modal-nova-etiqueta';
 import { TagBadge } from './tag-badge';
+import { Checkbox } from '../ui/checkbox';
 
 interface ModalEtiquetasProps {
   isOpen: boolean;
@@ -61,6 +62,10 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
   const isAllSelected =
     filteredTags.length > 0 &&
     filteredTags.every((t) => selectedIds.includes(t.id));
+  const isSomeSelected =
+    filteredTags.length > 0 &&
+    !isAllSelected &&
+    filteredTags.some((t) => selectedIds.includes(t.id));
 
   const handleToggleSelectAll = () => {
     if (isAllSelected) {
@@ -199,12 +204,12 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         <div className="flex-1 overflow-y-auto">
           {/* Cabeçalho da Tabela */}
           <div className="flex items-center border-b border-[#2C2E3B]/70 bg-[#171821]/80 px-6 py-2.5 text-xs font-semibold text-[#8E92A2] select-none sticky top-0 z-10 backdrop-blur-xs">
-            <div className="w-9 flex items-center">
-              <input
-                type="checkbox"
+            <div className="w-9 flex items-center justify-center">
+              <Checkbox
                 checked={isAllSelected}
+                indeterminate={isSomeSelected}
                 onChange={handleToggleSelectAll}
-                className="h-4 w-4 rounded border-[#3A3D4D] bg-[#14151B] text-[#1677FF] focus:ring-0 cursor-pointer accent-[#1677FF]"
+                aria-label="Selecionar todas as etiquetas"
               />
             </div>
             <div className="flex-1 tracking-wider uppercase text-[11px] text-[#717585]">Etiqueta</div>
@@ -237,12 +242,11 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                     }`}
                   >
                     {/* Checkbox */}
-                    <div className="w-9 flex items-center">
-                      <input
-                        type="checkbox"
+                    <div className="w-9 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
                         checked={isSelected}
                         onChange={() => handleToggleSelectOne(tag.id)}
-                        className="h-4 w-4 rounded border-[#3A3D4D] bg-[#14151B] text-[#1677FF] focus:ring-0 cursor-pointer accent-[#1677FF]"
+                        aria-label={`Selecionar etiqueta ${tag.name}`}
                       />
                     </div>
 

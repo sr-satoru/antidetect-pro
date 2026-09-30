@@ -4,6 +4,7 @@ import {
   ItemLixeira,
 } from './linha-tabela-lixeira';
 import { Trash2, AlertCircle } from 'lucide-react';
+import { Checkbox } from '../ui/checkbox';
 
 interface TabelaLixeiraProps {
   items: ItemLixeira[];
@@ -23,6 +24,7 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
   onDeletePermanent,
 }) => {
   const isAllSelected = items.length > 0 && selectedIds.length === items.length;
+  const isSomeSelected = selectedIds.length > 0 && selectedIds.length < items.length;
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#181920] shadow-xs">
@@ -31,14 +33,15 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
           {/* Header */}
           <thead className="sticky top-0 z-20 border-b border-white/10 bg-[#14151B] text-[11px] font-semibold tracking-wider text-[#A6ABB9] uppercase select-none">
             <tr className="h-11">
-              <th className="w-[38px] max-w-[38px] min-w-[38px] px-3.5 py-2.5 text-center">
-                <input
-                  type="checkbox"
-                  checked={isAllSelected}
-                  onChange={onSelectAll}
-                  aria-label="Selecionar todos"
-                  className="h-3.5 w-3.5 cursor-pointer rounded accent-[#00FF66]"
-                />
+              <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center">
+                <div className="flex items-center justify-center">
+                  <Checkbox
+                    checked={isAllSelected}
+                    indeterminate={isSomeSelected}
+                    onChange={onSelectAll}
+                    aria-label="Selecionar todos os itens da lixeira"
+                  />
+                </div>
               </th>
               <th className="w-[75px] min-w-[75px] px-3.5 py-2.5">ID Original</th>
               <th className="w-[230px] min-w-[230px] px-3.5 py-2.5">Perfil</th>

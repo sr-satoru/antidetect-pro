@@ -168,9 +168,9 @@ jobs:
         with:
           projectPath: "./app"
           tagName: ${{ needs.tag-release.outputs.tag_name }}
-          releaseName: "One Star Multilogin ${{ needs.tag-release.outputs.tag_name }}"
+          releaseName: "Star Multilogin ${{ needs.tag-release.outputs.tag_name }}"
           releaseBody: |
-            🚀 **One Star Multilogin ${{ needs.tag-release.outputs.tag_name }}**
+            🚀 **Star Multilogin ${{ needs.tag-release.outputs.tag_name }}**
             
             Compilação nativa multiplataforma gerada automaticamente pelo GitHub Actions.
             

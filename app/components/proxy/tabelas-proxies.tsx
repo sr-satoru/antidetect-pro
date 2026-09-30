@@ -8,6 +8,7 @@ import {
   ShieldAlert,
   CheckCircle2,
 } from 'lucide-react';
+import { Checkbox } from '../ui/checkbox';
 
 interface TabelasProxiesProps {
   proxies: any[];
@@ -38,6 +39,8 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
 }) => {
   const isAllSelected =
     proxies.length > 0 && selectedIds.length === proxies.length;
+  const isSomeSelected =
+    selectedIds.length > 0 && selectedIds.length < proxies.length;
   const activeCount = proxies.filter((p) => p.status === 'active').length;
   const errorCount = proxies.filter((p) => p.status === 'error').length;
 
@@ -52,14 +55,15 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
               {/* Header */}
               <thead className="sticky top-0 z-20 border-b border-white/10 bg-[#14151B] text-[11px] font-semibold tracking-wider text-[#A6ABB9] uppercase select-none">
                 <tr className="h-11">
-                  <th className="w-[38px] max-w-[38px] min-w-[38px] px-3.5 py-2.5 text-center">
-                    <input
-                      type="checkbox"
-                      checked={isAllSelected}
-                      onChange={onSelectAll}
-                      aria-label="Selecionar todos"
-                      className="h-3.5 w-3.5 cursor-pointer rounded accent-[#00FF66]"
-                    />
+                  <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center">
+                    <div className="flex items-center justify-center">
+                      <Checkbox
+                        checked={isAllSelected}
+                        indeterminate={isSomeSelected}
+                        onChange={onSelectAll}
+                        aria-label="Selecionar todos os proxies"
+                      />
+                    </div>
                   </th>
                   <th className="w-[70px] min-w-[70px] px-3.5 py-2.5">ID</th>
                   <th className="w-[200px] min-w-[200px] px-3.5 py-2.5">

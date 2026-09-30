@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, Loader2, Trash2, Globe, ShieldCheck } from 'lucide-react';
+import { Checkbox } from '../../ui/checkbox';
 import { ParsedProxyItem } from '@/services/proxies/service.proxies';
 
 export interface TabelaPreviaProxiesProps {
@@ -46,11 +47,10 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
           </button>
 
           <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-[#A6ABB9] transition-colors select-none hover:text-white">
-            <input
-              type="checkbox"
+            <Checkbox
+              size="sm"
               checked={checkDuplicates}
               onChange={(e) => setCheckDuplicates(e.target.checked)}
-              className="h-3.5 w-3.5 cursor-pointer rounded border border-white/20 bg-[#16171D] accent-[#00FF66]"
             />
             <span className="flex items-center gap-1">
               <ShieldCheck size={13} className="text-[#00FF66]/80" />
