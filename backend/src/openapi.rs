@@ -356,24 +356,6 @@ pub struct UserMeDoc {
     pub is_offline: bool,
 }
 
-#[derive(Serialize, Deserialize, ToSchema)]
-pub struct AppVersionDoc {
-    #[schema(example = "1.0.5")]
-    pub version: String,
-}
-
-#[derive(Serialize, Deserialize, ToSchema)]
-pub struct CheckUpdateDoc {
-    #[schema(example = "1.0.5")]
-    pub current_version: String,
-    #[schema(example = "1.0.6")]
-    pub latest_version: String,
-    #[schema(example = true)]
-    pub has_update: bool,
-    pub download_url: Option<String>,
-    pub html_url: String,
-}
-
 // ============================================================================
 // DEFINIÇÕES DE ROTAS (PATHS) AUTO-DOCUMENTADAS PARA O SWAGGER UI
 // ============================================================================
@@ -832,27 +814,6 @@ pub async fn doc_auth_me() {}
 )]
 pub async fn doc_auth_logout() {}
 
-// --- APLICATIVO ---
-#[utoipa::path(
-    get,
-    path = "/api/app/version",
-    tag = "Aplicativo",
-    summary = "Versão do aplicativo",
-    description = "Obtém a versão instalada do Star Multlogin.",
-    responses((status = 200, description = "Versão atual", body = AppVersionDoc))
-)]
-pub async fn doc_app_version() {}
-
-#[utoipa::path(
-    get,
-    path = "/api/app/check-update",
-    tag = "Aplicativo",
-    summary = "Verificar atualizações",
-    description = "Consulta se existe uma versão mais recente publicada no GitHub Releases.",
-    responses((status = 200, description = "Resultado da verificação", body = CheckUpdateDoc))
-)]
-pub async fn doc_app_check_update() {}
-
 // ============================================================================
 // OPENAPI SPECIFICATION GENERATOR
 // ============================================================================
@@ -909,9 +870,6 @@ pub async fn doc_app_check_update() {}
         doc_auth_session_status,
         doc_auth_me,
         doc_auth_logout,
-        // App
-        doc_app_version,
-        doc_app_check_update,
     ),
     components(
         schemas(
@@ -941,8 +899,6 @@ pub async fn doc_app_check_update() {}
             BrowserStatusDoc,
             AuthSessionStatusDoc,
             UserMeDoc,
-            AppVersionDoc,
-            CheckUpdateDoc,
         )
     ),
     tags(
@@ -954,8 +910,7 @@ pub async fn doc_app_check_update() {}
         (name = "Extensões", description = "Gestão de extensões e add-ons Firefox e Chrome"),
         (name = "Motor do Navegador", description = "Monitoramento e download automatizado do FlowerBrowser/Camoufox"),
         (name = "Sincronização em Nuvem", description = "Backup bidirecional e reconciliação LWW com servidores Star"),
-        (name = "Autenticação", description = "Gerenciamento de credenciais, OAuth2 e sessões de usuário"),
-        (name = "Aplicativo", description = "Controle de versão e atualizações do sistema")
+        (name = "Autenticação", description = "Gerenciamento de credenciais, OAuth2 e sessões de usuário")
     ),
     info(
         title = "Star Multlogin API",

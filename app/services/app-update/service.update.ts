@@ -1,4 +1,3 @@
-import { http } from '../http';
 import packageInfo from '../../package.json';
 
 export interface AppReleaseInfo {
@@ -29,66 +28,104 @@ export interface AppUpdateStatus {
   readyToRestart: boolean;
 }
 
-export const CURRENT_APP_VERSION: string = packageInfo.version || '0.1.11';
+export const CURRENT_APP_VERSION: string = packageInfo.version || '0.1.14';
+
+/**
+ * Invoca comandos Tauri nativos implementados em Rust em `src-tauri`
+ * sem depender de nenhum pacote npm extra de Node.js.
+ */
+const tauriInvoke = async <T>(cmd: string, args?: Record<string, any>): Promise<T | null> => {
+  if (typeof window !== 'undefined' && (window as any).__TAURI__?.core?.invoke) {
+    return await (window as any).__TAURI__.core.invoke(cmd, args);
+  }
+  return null;
+};
+
+/**
+ * Registra listeners de eventos emitidos diretamente pelo backend Rust do Tauri
+ */
+const tauriListen = async <T>(event: string, handler: (payload: T) => void): Promise<(() => void) | null> => {
+  if (typeof window !== 'undefined' && (window as any).__TAURI__?.event?.listen) {
+    return await (window as any).__TAURI__.event.listen(event, (ev: any) => handler(ev.payload));
+  }
+  return null;
+};
 
 export const appUpdateService = {
   /**
-   * Consulta o backend Rust (/api/app/check-update) que gerencia nativamente
-   * a busca de releases no GitHub e detecção cirúrgica de SO/arquitetura.
+   * Invoca o comando Rust nativo `check_app_update` implementado em src-tauri
    */
   async checkForAppUpdate(): Promise<AppReleaseInfo | null> {
     try {
-      const data = await http.get<AppReleaseInfo>(
-        `/api/app/check-update?current_version=${encodeURIComponent(CURRENT_APP_VERSION)}`
-      );
-      return data;
+      const data = await tauriInvoke<any>('check_app_update');
+      if (data) {
+        return {
+          currentVersion: data.current_version || CURRENT_APP_VERSION,
+          latestVersion: data.latest_version || CURRENT_APP_VERSION,
+          tagName: `v${data.latest_version || CURRENT_APP_VERSION}`,
+          name: `Star Multlogin v${data.latest_version || CURRENT_APP_VERSION}`,
+          body: data.body || '',
+          publishedAt: data.date || '',
+          htmlUrl: 'https://github.com/sr-satoru/antidetect-pro/releases',
+          hasUpdate: !!data.has_update,
+          platform: 'desktop',
+          arch: 'rust-native',
+        };
+      }
     } catch (err) {
-      console.warn('[UpdateService] Não foi possível verificar atualização com o backend:', err);
-      return null;
+      console.warn('[Rust Updater] Erro ao invocar check_app_update no Tauri:', err);
     }
+
+    return {
+      currentVersion: CURRENT_APP_VERSION,
+      latestVersion: CURRENT_APP_VERSION,
+      tagName: `v${CURRENT_APP_VERSION}`,
+      name: `Star Multlogin v${CURRENT_APP_VERSION}`,
+      body: '',
+      publishedAt: '',
+      htmlUrl: '',
+      hasUpdate: false,
+      platform: 'web',
+      arch: 'web',
+    };
   },
 
   /**
-   * Inicia o download em segundo plano no backend Rust.
-   * O progresso é transmitido em tempo real pelo WebSocket dedicado (/api/app/ws).
+   * Invoca o comando Rust nativo `start_app_download` e monitora eventos nativos `app-update-progress`
    */
-  async startDownload(downloadUrl?: string): Promise<{ success: boolean; message: string }> {
+  async startDownload(
+    onProgress?: (progress: number, downloaded: number, total: number) => void
+  ): Promise<{ success: boolean; message: string }> {
     try {
-      const res = await http.post<{ success: boolean; message: string }>('/api/app/start-download', {
-        download_url: downloadUrl,
-      });
-      return res;
+      if (onProgress) {
+        await tauriListen<any>('app-update-progress', (payload) => {
+          onProgress(payload.progress, payload.downloaded_bytes, payload.total_bytes || 0);
+        });
+      }
+
+      await tauriInvoke('start_app_download');
+      return { success: true, message: 'Download e instalação iniciados pelo Rust nativo.' };
     } catch (err: any) {
+      console.error('[Rust Updater] Falha ao iniciar download no Rust:', err);
       return {
         success: false,
-        message: err?.message || 'Falha ao solicitar início de download no backend.',
+        message: err?.message || String(err) || 'Falha ao solicitar download nativo em Rust.',
       };
     }
   },
 
   /**
-   * Obtém o status atual do download mantido no backend Rust.
-   */
-  async getStatus(): Promise<AppUpdateStatus | null> {
-    try {
-      return await http.get<AppUpdateStatus>('/api/app/status');
-    } catch {
-      return null;
-    }
-  },
-
-  /**
-   * Solicita ao backend Rust aplicar a atualização substituindo o executável e reiniciando a aplicação.
+   * Invoca o comando Rust nativo `restart_app` para reiniciar e aplicar a nova versão
    */
   async applyRestart(): Promise<boolean> {
     try {
-      const res = await http.post<{ success: boolean; message: string }>('/api/app/apply-restart');
-      return res.success;
+      await tauriInvoke('restart_app');
+      return true;
     } catch (err) {
-      console.error('[UpdateService] Erro ao reiniciar aplicação via backend:', err);
+      console.error('[Rust Updater] Falha ao solicitar reinício no Rust:', err);
       return false;
     }
   },
 };
 
-
+export default appUpdateService;

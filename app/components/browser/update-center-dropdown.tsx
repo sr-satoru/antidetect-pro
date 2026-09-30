@@ -7,7 +7,6 @@ import {
 import { useBrowser } from '../../contexts/browser-context';
 import { appUpdateService, AppReleaseInfo, CURRENT_APP_VERSION } from '../../services/app-update/service.update';
 import { toast } from '../ui/notification';
-import { APP_UPDATE_WS_URL } from '../../services/http';
 
 export const UpdateCenterDropdown: React.FC = () => {
   const {
@@ -56,68 +55,6 @@ export const UpdateCenterDropdown: React.FC = () => {
     };
   }, [isOpen]);
 
-  // Conexão reativa com o WebSocket dedicado de atualização do backend Rust (/api/app/ws)
-  useEffect(() => {
-    let ws: WebSocket | null = null;
-    let isDisposed = false;
-    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
-
-    const connectWs = () => {
-      if (isDisposed) return;
-      try {
-        ws = new WebSocket(APP_UPDATE_WS_URL);
-
-        ws.onmessage = (event) => {
-          try {
-            const parsed = JSON.parse(event.data);
-            if (parsed.event === 'update_progress' && parsed.data) {
-              const d = parsed.data;
-              setAppStage(d.stage);
-              setAppProgress(d.progress ?? 0);
-              setAppSpeedMbS(d.speed_mb_s ?? 0);
-              setAppEtaSeconds(d.eta_seconds ?? 0);
-
-              if (d.stage === 'connecting' || d.stage === 'downloading') {
-                setIsAppDownloading(true);
-                setIsAppReadyToRestart(false);
-              } else if (d.stage === 'ready') {
-                setIsAppDownloading(false);
-                setAppProgress(100);
-                setIsAppReadyToRestart(true);
-                toast.success('Atualização baixada com sucesso! Clique em reiniciar para aplicar.');
-              } else if (d.stage === 'error') {
-                setIsAppDownloading(false);
-                toast.error(d.error || 'Falha ao baixar atualização.');
-              }
-            } else if (parsed.event === 'update_ready') {
-              setIsAppDownloading(false);
-              setAppProgress(100);
-              setIsAppReadyToRestart(true);
-            }
-          } catch (e) {
-            console.error('Erro ao ler WebSocket dedicado de atualização:', e);
-          }
-        };
-
-        ws.onclose = () => {
-          if (!isDisposed) {
-            reconnectTimeout = setTimeout(connectWs, 3000);
-          }
-        };
-      } catch (err) {
-        console.warn('Erro ao conectar ao WebSocket de atualização:', err);
-      }
-    };
-
-    connectWs();
-
-    return () => {
-      isDisposed = true;
-      if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      if (ws) ws.close();
-    };
-  }, []);
-
   // Checa versão do aplicativo quando abrir
   const handleCheckAppUpdate = async () => {
     setIsCheckingApp(true);
@@ -138,17 +75,25 @@ export const UpdateCenterDropdown: React.FC = () => {
   };
 
   const handleStartAppDownload = async () => {
-    if (!appRelease?.downloadUrl) return;
     setIsAppDownloading(true);
     setAppProgress(0);
-    setAppStage('connecting');
+    setAppStage('downloading');
 
-    const res = await appUpdateService.startDownload(appRelease.downloadUrl);
+    const res = await appUpdateService.startDownload((progressPercent) => {
+      setAppProgress(Math.round(progressPercent));
+      if (progressPercent >= 100) {
+        setAppStage('ready');
+        setIsAppDownloading(false);
+        setIsAppReadyToRestart(true);
+        toast.success('Atualização baixada com sucesso! Clique em reiniciar para aplicar.');
+      }
+    });
+
     if (!res.success) {
       setIsAppDownloading(false);
       toast.error(res.message);
     } else {
-      toast.info('Iniciando download automático no backend...');
+      toast.info('Iniciando download nativo pelo Tauri...');
     }
   };
 

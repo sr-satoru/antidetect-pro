@@ -21,7 +21,6 @@ pub mod routes;
 pub mod security;
 pub mod server_sync;
 pub mod service_database;
-pub mod version_app;
 pub mod ws;
 
 pub use server_sync::{cloud_auth, cloud_sync};
@@ -150,10 +149,6 @@ pub fn build_app_router(
         .route("/manifest", get(routes::browser::get_browser_manifest))
         .with_state(browser_state);
 
-    let version_ws_state = version_app::VersionWsState::new();
-    let app_version_service = Arc::new(version_app::AppVersionService::new(version_ws_state.clone()));
-    let app_version_routes = version_app::create_app_version_routes(app_version_service, version_ws_state);
-
     let ws_routes = Router::new()
         .route("/", get(ws::ws_handler))
         .with_state(ws_state);
@@ -175,7 +170,6 @@ pub fn build_app_router(
         .nest("/api/tags", tag_routes)
         .nest("/api/auth", auth_routes)
         .nest("/api/browser", browser_routes)
-        .nest("/api/app", app_version_routes)
         .nest("/api/ws", ws_routes)
         .nest("/api/v1", mcp_routes.clone())
         .nest("/v1", mcp_routes)
