@@ -159,6 +159,7 @@ pub fn build_app_router(
         .route("/download", post(routes::app_update::trigger_app_download_handler))
         .route("/download-status", get(routes::app_update::get_app_download_status_handler))
         .route("/cancel-download", post(routes::app_update::cancel_app_download_handler))
+        .route("/apply-update", post(routes::app_update::apply_app_update_handler))
         .with_state(app_update_service);
 
     let ws_routes = Router::new()

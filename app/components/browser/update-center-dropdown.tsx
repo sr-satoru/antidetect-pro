@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Download,
-  RefreshCw,
-  CheckCircle2,
-} from 'lucide-react';
+import { Download, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useBrowser } from '../../contexts/browser-context';
 import { appUpdateService, AppReleaseInfo, CURRENT_APP_VERSION } from '../../services/app-update/service.update';
 import { toast } from '../ui/notification';
@@ -11,486 +7,273 @@ import { toast } from '../ui/notification';
 export const UpdateCenterDropdown: React.FC = () => {
   const {
     status,
-    isDownloading,
-    progress,
-    stage,
-    speedMbS,
-    etaSeconds,
-    startDownload,
-    checkStatus,
+    isDownloading: isEngineDownloading,
+    progress: engineProgress,
+    speedMbS: engineSpeed,
+    startDownload: startEngineDownload,
+    checkStatus: checkEngineStatus,
   } = useBrowser();
 
   const [isOpen, setIsOpen] = useState(false);
   const [appRelease, setAppRelease] = useState<AppReleaseInfo | null>(null);
-  const [isCheckingApp, setIsCheckingApp] = useState(false);
-  const [hasCheckedApp, setHasCheckedApp] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Estados dedicados exclusivamente para a animação do progresso de atualização do app
+  // Estados de download do aplicativo
   const [appProgress, setAppProgress] = useState(0);
-  const [appSpeedMbS, setAppSpeedMbS] = useState(0);
-  const [appEtaSeconds, setAppEtaSeconds] = useState(0);
+  const [appSpeed, setAppSpeed] = useState(0);
   const [appDownloadedMb, setAppDownloadedMb] = useState(0);
   const [appTotalMb, setAppTotalMb] = useState(0);
-  const [appStage, setAppStage] = useState('idle');
   const [isAppDownloading, setIsAppDownloading] = useState(false);
-  const [isAppReadyToRestart, setIsAppReadyToRestart] = useState(false);
+  const [isAppReady, setIsAppReady] = useState(false);
   const [isRestarting, setIsRestarting] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<{ name: string; url: string; size?: number } | null>(null);
 
-  const isInstalled = status?.health.status === 'installed';
-  const isMissing = status?.health.status === 'missing' || status?.health.status === 'broken';
-  const installedVersion = isInstalled && 'version' in status.health ? status.health.version : '';
-  const availableEngineVersion = status?.available_version || 'v2.1.0';
+  const isEngineInstalled = status?.health.status === 'installed';
+  const isEngineMissing = status?.health.status === 'missing' || status?.health.status === 'broken';
   const isEngineUpdateAvailable = status?.has_update ?? false;
-  const hasAnyUpdatePending = isMissing || isEngineUpdateAvailable || !!appRelease?.hasUpdate || isAppReadyToRestart;
+  const hasPending = isEngineMissing || isEngineUpdateAvailable || !!appRelease?.hasUpdate || isAppReady;
 
-  // Fecha o dropdown ao clicar fora
+  // Fecha ao clicar fora
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  // Sempre que o dropdown for aberto, busca o status do motor e do app
+  // Consulta ao abrir
   useEffect(() => {
     if (isOpen) {
-      checkStatus();
-      handleCheckAppUpdate();
+      checkEngineStatus();
+      handleCheckApp();
     }
   }, [isOpen]);
 
-  // Checa versão do aplicativo quando abrir
-  const handleCheckAppUpdate = async (overrideFormat?: string) => {
-    setIsCheckingApp(true);
+  const handleCheckApp = async () => {
+    setIsChecking(true);
     try {
-      const release = await appUpdateService.checkForAppUpdate(overrideFormat);
+      const release = await appUpdateService.checkForAppUpdate();
       setAppRelease(release);
-      setHasCheckedApp(true);
-      if (release?.downloadUrl && release?.assetName) {
-        setSelectedAsset({
-          name: release.assetName,
-          url: release.downloadUrl,
-          size: release.assetSize,
-        });
-      }
       if (release?.hasUpdate) {
-        toast.info(`Nova versão do One Star Multilogin disponível: ${release.tagName}`);
+        toast.info(`Nova versão disponível: ${release.tagName}`);
       } else {
-        toast.success(`Você está utilizando a versão mais recente (v${CURRENT_APP_VERSION})`);
+        toast.success(`Star Multlogin está na versão mais recente (v${CURRENT_APP_VERSION})`);
       }
     } catch {
-      toast.error('Não foi possível verificar atualizações no momento.');
+      toast.error('Não foi possível verificar atualizações.');
     } finally {
-      setIsCheckingApp(false);
+      setIsChecking(false);
     }
   };
 
   const handleStartAppDownload = async () => {
-    const target = selectedAsset || (appRelease?.downloadUrl ? { url: appRelease.downloadUrl, name: appRelease.assetName || 'star-multlogin' } : null);
-    if (!target) {
-      toast.error('Nenhum pacote compatível selecionado para download.');
+    if (!appRelease?.downloadUrl || !appRelease?.assetName) {
+      toast.error('Nenhum pacote compatível encontrado para download.');
       return;
     }
 
     setIsAppDownloading(true);
     setAppProgress(0);
-    setAppStage('connecting');
 
     const res = await appUpdateService.startDownload(
-      (status) => {
-        setAppProgress(status.progress);
-        setAppSpeedMbS(status.speed_mb_s);
-        setAppEtaSeconds(status.eta_seconds);
-        setAppStage(status.stage);
-        setAppDownloadedMb(status.downloaded_bytes / (1024 * 1024));
-        setAppTotalMb(status.total_bytes / (1024 * 1024));
+      (st) => {
+        setAppProgress(st.progress);
+        setAppSpeed(st.speed_mb_s);
+        setAppDownloadedMb(st.downloaded_bytes / (1024 * 1024));
+        setAppTotalMb(st.total_bytes / (1024 * 1024));
 
-        if (status.stage === 'ready' || status.progress >= 100) {
+        if (st.stage === 'ready' || st.progress >= 100) {
           setIsAppDownloading(false);
-          setIsAppReadyToRestart(true);
-          toast.success('Atualização baixada com sucesso! Arquivo disponível para instalação.');
-        } else if (status.stage === 'error') {
+          setIsAppReady(true);
+          toast.success('Download da atualização concluído!');
+        } else if (st.stage === 'error') {
           setIsAppDownloading(false);
-          toast.error(status.error || 'Falha durante o download da atualização.');
+          toast.error(st.error || 'Erro no download.');
         }
       },
-      { url: target.url, name: target.name }
+      { url: appRelease.downloadUrl, name: appRelease.assetName }
     );
 
-    if (res.downloadedDirectly) {
-      setIsAppDownloading(false);
-      setAppStage('idle');
-      toast.success(res.message);
-    } else if (!res.success) {
+    if (!res.success) {
       setIsAppDownloading(false);
       toast.error(res.message);
-    } else {
-      toast.info(`Iniciando download de ${target.name}...`);
     }
   };
 
   const handleApplyRestart = async () => {
     setIsRestarting(true);
-    toast.info('Reiniciando aplicativo...');
-    await appUpdateService.applyRestart();
-  };
-
-  const handleDownloadAll = () => {
-    if (isMissing && !isDownloading) {
-      startDownload();
-      toast.info('Iniciando download do motor One Star...');
-    } else if (isDownloading) {
-      toast.info(`Download em andamento: ${Math.round(progress)}%`);
+    toast.info('Instalando atualização e reiniciando...');
+    const res = await appUpdateService.applyRestart();
+    if (res.success) {
+      toast.success(res.message);
     } else {
-      checkStatus();
-      handleCheckAppUpdate();
-    }
-  };
-
-  const getStageDisplay = () => {
-    switch (stage) {
-      case 'connecting':
-        return 'Conectando ao servidor...';
-      case 'downloading':
-        return `Baixando motor (${Math.round(progress)}%)`;
-      case 'extracting':
-        return `Extraindo arquivos (${Math.round(progress)}%)`;
-      case 'finalizing':
-        return 'Finalizando instalação...';
-      case 'ready':
-        return 'Instalação concluída!';
-      default:
-        return 'Processando...';
+      toast.error(res.message);
+      setIsRestarting(false);
     }
   };
 
   return (
     <div className={`relative inline-block text-left ${isOpen ? 'z-50' : ''}`} ref={dropdownRef}>
-      {/* Botão Principal no Header */}
+      {/* Botão no Header */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer select-none overflow-hidden ${isDownloading || isAppDownloading
-            ? 'bg-[#15161D] text-[#F4F4F6] border-emerald-500/40 shadow-xs shadow-emerald-500/10'
-            : isAppReadyToRestart
-              ? 'bg-[#15161D] hover:bg-[#1E2028] text-emerald-400 border-emerald-500/50 shadow-xs shadow-emerald-500/20'
-              : hasAnyUpdatePending
-                ? 'bg-[#15161D] hover:bg-[#1E2028] text-[#F4F4F6] border-amber-500/40 hover:border-amber-500/60'
-                : 'bg-[#15161D] hover:bg-[#1E2028] text-[#E5E7EB] hover:text-white border-[#2B2D38] hover:border-[#3E404D]'
-          }`}
-        title={
-          isAppDownloading
-            ? `Baixando atualização do Star Multlogin: ${Math.round(appProgress)}%`
-            : isDownloading
-              ? `Baixando motor: ${Math.round(progress)}%`
-              : isAppReadyToRestart
-                ? 'Atualização concluída! Clique para reiniciar.'
-                : hasAnyUpdatePending
-                  ? 'Atualização pendente. Clique para gerenciar.'
-                  : 'Atualização do sistema. Clique para gerenciar.'
-        }
+        className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer select-none ${
+          isEngineDownloading || isAppDownloading
+            ? 'bg-[#14151B] text-[#00FF66] border-[#00FF66]/40 shadow-xs'
+            : isAppReady
+              ? 'bg-[#14151B] text-[#00FF66] border-[#00FF66]/60 shadow-xs'
+              : hasPending
+                ? 'bg-[#14151B] text-[#F4F4F6] border-amber-500/40'
+                : 'bg-[#14151B] hover:bg-[#181920] text-[#E5E7EB] border-[#22242F]'
+        }`}
       >
-        {isDownloading || isAppDownloading ? (
+        {isEngineDownloading || isAppDownloading ? (
           <>
-            <RefreshCw size={13} className="text-emerald-400 animate-spin shrink-0" />
-            <span className="font-semibold text-emerald-400">
-              {isAppDownloading ? `Atualizando App (${Math.round(appProgress)}%)` : `Atualizando Motor (${Math.round(progress)}%)`}
+            <RefreshCw size={13} className="text-[#00FF66] animate-spin shrink-0" />
+            <span className="font-semibold text-[#00FF66]">
+              {isAppDownloading ? `Atualizando App (${Math.round(appProgress)}%)` : `Motor (${Math.round(engineProgress)}%)`}
             </span>
           </>
-        ) : isAppReadyToRestart ? (
+        ) : isAppReady ? (
           <>
-            <CheckCircle2 size={13} className="text-emerald-400 shrink-0" />
-            <span className="font-semibold text-emerald-400">Reiniciar App</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
-          </>
-        ) : hasAnyUpdatePending ? (
-          <>
-            <RefreshCw size={13} className="text-amber-400 shrink-0" />
-            <span>Atualização</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse ml-0.5" />
+            <CheckCircle2 size={13} className="text-[#00FF66] shrink-0" />
+            <span className="font-semibold text-[#00FF66]">Reiniciar App</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66] animate-pulse ml-0.5" />
           </>
         ) : (
           <>
-            <RefreshCw size={13} className="text-emerald-400 shrink-0" />
+            <RefreshCw size={13} className={hasPending ? 'text-amber-400 shrink-0' : 'text-[#8E92A2] shrink-0'} />
             <span>Atualização</span>
+            {hasPending && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse ml-0.5" />}
           </>
-        )}
-
-        {/* Linha discreta de progresso no botão ao baixar */}
-        {(isDownloading || isAppDownloading) && (
-          <div
-            className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-blue-500 to-emerald-400 transition-all duration-300"
-            style={{ width: `${isAppDownloading ? appProgress : progress}%` }}
-          />
         )}
       </button>
 
-      {/* Dropdown Popover: Central de Atualizações */}
+      {/* Popover */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-[420px] rounded-xl bg-[#1A1C24] border border-[#2B2D38] shadow-2xl shadow-black/80 z-50 overflow-visible animate-in fade-in zoom-in-95 duration-150">
-          {/* Seta indicadora (caret) apontando para o botão */}
-          <div className="absolute -top-1.5 right-6 w-3 h-3 bg-[#1A1C24] border-t border-l border-[#2B2D38] rotate-45 z-10" />
-
-          {/* Cabeçalho do Popover */}
-          <div className="flex items-center justify-between px-4.5 py-3.5 border-b border-[#2B2D38]/70">
-            <span className="text-[13px] font-semibold text-[#F4F4F6] tracking-tight">
-              Central de Atualizações
-            </span>
+        <div className="absolute right-0 top-full mt-2 w-[390px] rounded-xl bg-[#14151B] border border-[#22242F] shadow-2xl shadow-black/90 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          {/* Top Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#22242F]">
+            <span className="text-xs font-bold text-white tracking-wide">Central de Atualizações</span>
             <button
               type="button"
-              onClick={handleDownloadAll}
-              disabled={isCheckingApp || isAppDownloading}
-              className="flex items-center gap-1.5 text-xs text-[#3b82f6] hover:text-[#60a5fa] font-medium transition-colors cursor-pointer disabled:opacity-50"
+              onClick={() => { checkEngineStatus(); handleCheckApp(); }}
+              disabled={isChecking || isAppDownloading}
+              className="flex items-center gap-1.5 text-xs text-[#00FF66] hover:text-[#00D655] font-semibold transition-colors disabled:opacity-50 cursor-pointer"
             >
-              <RefreshCw size={11} className={isCheckingApp ? 'animate-spin' : ''} />
-              <span>{isMissing && !isDownloading ? 'Baixar motor' : isCheckingApp ? 'Verificando...' : 'Verificar'}</span>
+              <RefreshCw size={11} className={isChecking ? 'animate-spin' : ''} />
+              <span>{isChecking ? 'Verificando...' : 'Verificar'}</span>
             </button>
           </div>
 
-          {/* Corpo do Popover */}
-          <div className="p-4 space-y-3">
-            {/* Caso 1: Motor Baixando no momento */}
-            {isDownloading && (
-              <div className="rounded-xl bg-[#14151C] border border-[#2B2D38] p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <div>
-                      <span className="text-xs font-semibold text-[#F4F4F6] block">
-                        Motor One Star (v2.0.0)
-                      </span>
-                      <span className="text-[11px] text-[#8E92A2] block mt-0.5">
-                        {getStageDisplay()}
-                      </span>
-                    </div>
+          <div className="p-3.5 space-y-3">
+            {/* Bloco 1: Motor One Star */}
+            <div className="rounded-lg bg-[#0F1015] border border-[#22242F] p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${isEngineInstalled ? 'bg-[#00FF66]' : 'bg-amber-400'}`} />
+                  <span className="text-xs font-semibold text-white">Motor One Star</span>
+                </div>
+                <span className="text-[11px] text-[#8E92A2] font-mono">
+                  {status?.health.status === 'installed' && 'version' in status.health ? status.health.version : status?.available_version || 'v2.0.0'}
+                </span>
+              </div>
+
+              {isEngineDownloading ? (
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex justify-between text-[10.5px] text-[#8E92A2]">
+                    <span>Baixando motor ({Math.round(engineProgress)}%)</span>
+                    <span>{engineSpeed.toFixed(1)} MB/s</span>
                   </div>
-                  <span className="text-[11px] font-mono font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                    {Math.round(progress)}%
+                  <div className="w-full bg-[#1A1C24] h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-[#00FF66] h-full transition-all duration-200" style={{ width: `${engineProgress}%` }} />
+                  </div>
+                </div>
+              ) : isEngineMissing || isEngineUpdateAvailable ? (
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[11px] text-[#8E92A2]">
+                    {isEngineMissing ? 'Instalação pendente' : 'Nova versão disponível'}
                   </span>
-                </div>
-
-                <div className="w-full bg-[#2B2D38] h-2 rounded-full overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 h-full transition-all duration-300"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-
-                {speedMbS > 0 && (
-                  <div className="flex items-center justify-between text-[11px] text-[#8E92A2]">
-                    <span>Velocidade de transferência</span>
-                    <span className="font-mono text-[#D2D5DF]">{speedMbS.toFixed(1)} MB/s</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Caso 2: Motor Ausente ou Quebrado */}
-            {!isDownloading && isMissing && (
-              <div className="rounded-xl bg-[#14151C] border border-amber-500/20 p-4 space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 shrink-0 mt-0.5">
-                      <Download size={16} />
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-[#F4F4F6]">
-                        Motor One Star ({availableEngineVersion})
-                      </div>
-                      <div className="text-[11px] text-[#8E92A2] mt-0.5 leading-relaxed">
-                        Instalação pendente para navegação e inicialização de perfis.
-                      </div>
-                    </div>
-                  </div>
                   <button
                     type="button"
-                    onClick={() => startDownload()}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all cursor-pointer shadow-md shadow-[#00FF66]/20 active:scale-95"
+                    onClick={() => startEngineDownload()}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
                   >
-                    <Download size={13} strokeWidth={2.5} />
-                    <span>Baixar</span>
+                    <Download size={11} strokeWidth={2.5} />
+                    <span>{isEngineMissing ? 'Baixar Motor' : 'Atualizar'}</span>
                   </button>
                 </div>
-              </div>
-            )}
-
-            {/* Caso 2.1: Motor Instalado mas com Atualização Disponível */}
-            {!isDownloading && !isMissing && isEngineUpdateAvailable && (
-              <div className="rounded-xl bg-[#14151C] border border-emerald-500/30 p-4 space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0 mt-0.5">
-                      <RefreshCw size={16} />
-                    </div>
-                    <div>
-                      <div className="text-xs font-semibold text-white">
-                        Novo motor {availableEngineVersion} disponível!
-                      </div>
-                      <div className="text-[11px] text-[#8E92A2] mt-0.5 leading-relaxed">
-                        Versão instalada: {installedVersion || 'v2.0.0'} • Atualize para a versão mais recente.
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => startDownload()}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all cursor-pointer shadow-md shadow-[#00FF66]/20 active:scale-95"
-                  >
-                    <Download size={13} strokeWidth={2.5} />
-                    <span>Atualizar</span>
-                  </button>
+              ) : (
+                <div className="text-[10.5px] text-[#00FF66] flex items-center gap-1 pt-0.5">
+                  <CheckCircle2 size={11} />
+                  <span>Motor instalado e em dia.</span>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
-            {/* Caso 3: Motor Instalado e Sem Atualizações Pendentes */}
-            {!isDownloading && !isMissing && !isEngineUpdateAvailable && !appRelease?.hasUpdate && !isAppReadyToRestart && (
-              <div className="py-8 px-4 flex flex-col items-center justify-center text-center select-none space-y-2">
-                <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-1">
-                  <CheckCircle2 size={20} />
-                </div>
-                <span className="text-xs font-semibold text-[#F4F4F6]">
-                  Tudo atualizado
-                </span>
-                <span className="text-[11.5px] text-[#8E92A2] max-w-[280px]">
-                  Motor One Star ({installedVersion || availableEngineVersion}) e aplicativo (v{CURRENT_APP_VERSION}) em dia.
-                </span>
-                <button
-                  type="button"
-                  onClick={() => startDownload()}
-                  className="mt-2 text-[10.5px] text-[#8E92A2] hover:text-white underline transition-colors cursor-pointer"
-                >
-                  Forçar reinstalação do motor
-                </button>
-              </div>
-            )}
-
-            {/* Caso 4: Nova Versão do Aplicativo Star Multlogin */}
-            {appRelease?.hasUpdate && (
-              <div className="rounded-xl bg-[#14151C] border border-[#00FF66]/25 p-4 space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-start gap-3 min-w-0 flex-1">
-                    <div className="p-2 rounded-lg bg-[#00FF66]/10 border border-[#00FF66]/20 text-[#00FF66] shrink-0 mt-0.5">
-                      <RefreshCw size={16} className={isAppDownloading ? 'animate-spin' : ''} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs font-semibold text-white">
-                        Nova versão {appRelease.tagName} disponível!
-                      </div>
-                      <div className="text-[11px] text-[#8E92A2] mt-0.5 truncate">
-                        Versão atual: v{CURRENT_APP_VERSION} • {appRelease.detectionReason || appRelease.arch || appRelease.platform}
-                      </div>
-
-                      {/* Seletor de Formatos Compatíveis (ex: AppImage vs .deb no Linux) */}
-                      {appRelease.compatibleAssets && appRelease.compatibleAssets.length > 1 && !isAppDownloading && !isAppReadyToRestart && (
-                        <div className="flex flex-wrap items-center gap-1.5 pt-1.5">
-                          <span className="text-[10px] uppercase tracking-wider text-[#686C7D] font-semibold">Formato:</span>
-                          {appRelease.compatibleAssets.map((asset) => {
-                            const isSelected = (selectedAsset?.name || appRelease.assetName) === asset.name;
-                            const label = asset.name.endsWith('.AppImage')
-                              ? 'AppImage (Portátil)'
-                              : asset.name.endsWith('.deb')
-                              ? '.deb (Ubuntu/Debian/Mint)'
-                              : asset.name.endsWith('.rpm')
-                              ? '.rpm (Fedora/RHEL)'
-                              : asset.name.endsWith('.exe')
-                              ? '.exe (Instalador NSIS)'
-                              : asset.name.endsWith('.msi')
-                              ? '.msi (Windows Installer)'
-                              : asset.name.endsWith('.dmg')
-                              ? '.dmg (macOS)'
-                              : asset.name;
-
-                            return (
-                              <button
-                                key={asset.name}
-                                type="button"
-                                onClick={() => setSelectedAsset({ name: asset.name, url: asset.download_url, size: asset.size_bytes })}
-                                className={`px-2 py-0.5 rounded text-[10.5px] font-medium transition-all cursor-pointer ${
-                                  isSelected
-                                    ? 'bg-[#00FF66]/20 border border-[#00FF66]/40 text-[#00FF66] font-semibold shadow-xs'
-                                    : 'bg-[#181920] border border-white/10 text-[#8E92A2] hover:text-white hover:border-white/20'
-                                }`}
-                              >
-                                {label}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      <div className="text-[10.5px] font-mono text-[#00FF66] mt-1 truncate flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66] shrink-0" />
-                        <span>Pacote selecionado: {selectedAsset?.name || appRelease.assetName}</span>
-                      </div>
-                    </div>
+            {/* Bloco 2: Aplicativo Star Multlogin */}
+            {appRelease?.hasUpdate ? (
+              <div className="rounded-lg bg-[#0F1015] border border-[#00FF66]/30 p-3 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-semibold text-white block">Nova versão {appRelease.tagName} disponível</span>
+                    <span className="text-[11px] text-[#8E92A2] block mt-0.5">
+                      Atual: v{CURRENT_APP_VERSION} • Formato: <strong className="text-[#00FF66]">{appRelease.detectedFormat?.toUpperCase()}</strong>
+                    </span>
                   </div>
 
-                  {!isAppDownloading && !isAppReadyToRestart && (
+                  {!isAppDownloading && !isAppReady && (
                     <button
                       type="button"
                       onClick={handleStartAppDownload}
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all shadow-md shadow-[#00FF66]/20 active:scale-95 cursor-pointer"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all shadow-md cursor-pointer active:scale-95"
                     >
-                      <Download size={13} strokeWidth={2.5} />
-                      <span>Baixar Atualização</span>
+                      <Download size={12} strokeWidth={2.5} />
+                      <span>Baixar</span>
                     </button>
                   )}
 
-                  {isAppReadyToRestart && (
+                  {isAppReady && (
                     <button
                       type="button"
                       onClick={handleApplyRestart}
                       disabled={isRestarting}
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all shadow-md shadow-[#00FF66]/20 active:scale-95 cursor-pointer disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all shadow-md cursor-pointer active:scale-95 disabled:opacity-50"
                     >
-                      <RefreshCw size={13} className={isRestarting ? 'animate-spin' : ''} strokeWidth={2.5} />
-                      <span>{isRestarting ? 'Reiniciando...' : 'Reiniciar Agora'}</span>
+                      <CheckCircle2 size={12} strokeWidth={2.5} />
+                      <span>{isRestarting ? 'Reiniciando...' : appRelease.detectedFormat === 'deb' ? 'Instalar .deb' : 'Reiniciar App'}</span>
                     </button>
                   )}
                 </div>
 
-                {/* Animação e Barra de Progresso em Tempo Real (alimentada pelo streaming de chunks do Rust) */}
                 {isAppDownloading && (
-                  <div className="space-y-2 pt-2 border-t border-[#2B2D38]/60">
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-[#8E92A2]">
-                        {appStage === 'connecting'
-                          ? 'Conectando ao repositório GitHub...'
-                          : appSpeedMbS > 0
-                            ? `${appDownloadedMb.toFixed(1)} MB / ${appTotalMb.toFixed(1)} MB (${appSpeedMbS.toFixed(1)} MB/s • ${appEtaSeconds}s)`
-                            : `Baixando pacote (${appDownloadedMb.toFixed(1)} MB)...`}
-                      </span>
-                      <span className="font-mono font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                        {Math.round(appProgress)}%
-                      </span>
+                  <div className="space-y-1.5 pt-1.5 border-t border-[#22242F]">
+                    <div className="flex justify-between text-[10.5px] text-[#8E92A2]">
+                      <span>{appDownloadedMb.toFixed(1)} MB / {appTotalMb.toFixed(1)} MB ({appSpeed.toFixed(1)} MB/s)</span>
+                      <span className="text-[#00FF66] font-mono font-bold">{Math.round(appProgress)}%</span>
                     </div>
-
-                    <div className="w-full bg-[#2B2D38] h-2 rounded-full overflow-hidden">
-                      <div
-                        className="bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 h-full transition-all duration-300"
-                        style={{ width: `${appProgress}%` }}
-                      />
+                    <div className="w-full bg-[#1A1C24] h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-[#00FF66] h-full transition-all duration-200" style={{ width: `${appProgress}%` }} />
                     </div>
                   </div>
                 )}
 
-                {isAppReadyToRestart && (
-                  <div className="text-[11px] text-emerald-400 flex items-center gap-1.5 pt-1">
-                    <CheckCircle2 size={13} />
-                    <span>Download concluído! Clique em reiniciar para aplicar a nova versão.</span>
+                {isAppReady && (
+                  <div className="text-[10.5px] text-[#00FF66] flex items-center gap-1 pt-1 border-t border-[#22242F]">
+                    <CheckCircle2 size={11} />
+                    <span>Download concluído! Clique no botão para aplicar e reiniciar.</span>
                   </div>
                 )}
+              </div>
+            ) : (
+              <div className="rounded-lg bg-[#0F1015] border border-[#22242F] p-3 text-center py-4 space-y-1">
+                <CheckCircle2 size={18} className="text-[#00FF66] mx-auto mb-1" />
+                <span className="text-xs font-semibold text-white block">Aplicativo Atualizado</span>
+                <span className="text-[11px] text-[#8E92A2] block">Você está usando a versão v{CURRENT_APP_VERSION}.</span>
               </div>
             )}
           </div>
