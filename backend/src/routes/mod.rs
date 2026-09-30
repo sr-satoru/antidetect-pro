@@ -8,3 +8,4 @@ pub mod tabs;
 pub mod tags;
 pub mod cloud_sync;
 pub mod browser;
+pub mod app_update;

@@ -1,4 +1,5 @@
 import packageInfo from '../../package.json';
+import { http } from '../http';
 
 export interface AppReleaseInfo {
   currentVersion: string;
@@ -53,12 +54,40 @@ const tauriListen = async <T>(event: string, handler: (payload: T) => void): Pro
 
 export const appUpdateService = {
   /**
-   * Invoca o comando Rust nativo `check_app_update` implementado em src-tauri
+   * Verifica se há atualizações do aplicativo Star Multlogin consultando o daemon
+   * local Rust (/api/app/check-update), com fallback nativo.
    */
   async checkForAppUpdate(): Promise<AppReleaseInfo | null> {
+    // 1. Tenta o endpoint local do backend Rust (acesso direto, sem restrições de webview/CORS)
+    try {
+      const data = await http.get<any>('/api/app/check-update', {
+        params: { current_version: CURRENT_APP_VERSION },
+      });
+      if (data) {
+        return {
+          currentVersion: data.current_version || CURRENT_APP_VERSION,
+          latestVersion: data.latest_version || CURRENT_APP_VERSION,
+          tagName: data.tag_name || `v${CURRENT_APP_VERSION}`,
+          name: data.name || `Star Multlogin ${data.tag_name}`,
+          body: data.body || '',
+          publishedAt: data.published_at || '',
+          htmlUrl: data.html_url || 'https://github.com/sr-satoru/antidetect-pro/releases',
+          hasUpdate: !!data.has_update,
+          downloadUrl: data.assets?.[0]?.download_url,
+          assetName: data.assets?.[0]?.name,
+          assetSize: data.assets?.[0]?.size_bytes,
+          platform: 'desktop',
+          arch: 'rust-backend',
+        };
+      }
+    } catch (err) {
+      console.warn('[App Update] Erro ao consultar backend local /api/app/check-update:', err);
+    }
+
+    // 2. Fallback nativo do Tauri
     try {
       const data = await tauriInvoke<any>('check_app_update');
-      if (data) {
+      if (data && data.has_update) {
         return {
           currentVersion: data.current_version || CURRENT_APP_VERSION,
           latestVersion: data.latest_version || CURRENT_APP_VERSION,
@@ -67,13 +96,13 @@ export const appUpdateService = {
           body: data.body || '',
           publishedAt: data.date || '',
           htmlUrl: 'https://github.com/sr-satoru/antidetect-pro/releases',
-          hasUpdate: !!data.has_update,
+          hasUpdate: true,
           platform: 'desktop',
           arch: 'rust-native',
         };
       }
     } catch (err) {
-      console.warn('[Rust Updater] Erro ao invocar check_app_update no Tauri:', err);
+      console.warn('[Rust Updater] Falha no comando Tauri nativo:', err);
     }
 
     return {
@@ -85,8 +114,8 @@ export const appUpdateService = {
       publishedAt: '',
       htmlUrl: '',
       hasUpdate: false,
-      platform: 'web',
-      arch: 'web',
+      platform: 'desktop',
+      arch: 'none',
     };
   },
 

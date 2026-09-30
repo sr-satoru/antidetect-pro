@@ -149,6 +149,9 @@ pub fn build_app_router(
         .route("/manifest", get(routes::browser::get_browser_manifest))
         .with_state(browser_state);
 
+    let app_routes = Router::new()
+        .route("/check-update", get(routes::app_update::check_app_update_handler));
+
     let ws_routes = Router::new()
         .route("/", get(ws::ws_handler))
         .with_state(ws_state);
@@ -170,6 +173,7 @@ pub fn build_app_router(
         .nest("/api/tags", tag_routes)
         .nest("/api/auth", auth_routes)
         .nest("/api/browser", browser_routes)
+        .nest("/api/app", app_routes)
         .nest("/api/ws", ws_routes)
         .nest("/api/v1", mcp_routes.clone())
         .nest("/v1", mcp_routes)

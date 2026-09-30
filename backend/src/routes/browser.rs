@@ -23,6 +23,8 @@ pub struct BrowserStatusResponse {
     pub download: DownloadStatus,
     pub platform: String,
     pub os_name: String,
+    pub available_version: String,
+    pub has_update: bool,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -39,11 +41,29 @@ pub async fn get_browser_status(
     let platform = platform::get_current_platform_key().unwrap_or_else(|_| "unknown".to_string());
     let os_name = platform::get_os_display_name().to_string();
 
+    let manifest = BrowserManifest::load(&state.data_dir).ok();
+    let available_version = manifest
+        .as_ref()
+        .map(|m| m.version.clone())
+        .unwrap_or_else(|| "v2.1.0".to_string());
+
+    let installed_version = match &health {
+        EngineHealthStatus::Installed { version, .. } => Some(version.as_str()),
+        _ => None,
+    };
+
+    let has_update = match installed_version {
+        Some(inst) => inst != available_version.as_str(),
+        None => true,
+    };
+
     Json(BrowserStatusResponse {
         health,
         download,
         platform,
         os_name,
+        available_version,
+        has_update,
     })
 }
 

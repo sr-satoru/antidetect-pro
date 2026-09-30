@@ -37,7 +37,10 @@ export const UpdateCenterDropdown: React.FC = () => {
 
   const isInstalled = status?.health.status === 'installed';
   const isMissing = status?.health.status === 'missing' || status?.health.status === 'broken';
-  const hasAnyUpdatePending = isMissing || !!appRelease?.hasUpdate || isAppReadyToRestart;
+  const installedVersion = isInstalled && 'version' in status.health ? status.health.version : '';
+  const availableEngineVersion = status?.available_version || 'v2.1.0';
+  const isEngineUpdateAvailable = status?.has_update ?? false;
+  const hasAnyUpdatePending = isMissing || isEngineUpdateAvailable || !!appRelease?.hasUpdate || isAppReadyToRestart;
 
   // Fecha o dropdown ao clicar fora
   useEffect(() => {
@@ -53,6 +56,14 @@ export const UpdateCenterDropdown: React.FC = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+  }, [isOpen]);
+
+  // Sempre que o dropdown for aberto, busca o status do motor e do app
+  useEffect(() => {
+    if (isOpen) {
+      checkStatus();
+      handleCheckAppUpdate();
+    }
   }, [isOpen]);
 
   // Checa versão do aplicativo quando abrir
@@ -263,7 +274,7 @@ export const UpdateCenterDropdown: React.FC = () => {
                     </div>
                     <div>
                       <div className="text-xs font-semibold text-[#F4F4F6]">
-                        Motor One Star (v2.0.0)
+                        Motor One Star ({availableEngineVersion})
                       </div>
                       <div className="text-[11px] text-[#8E92A2] mt-0.5 leading-relaxed">
                         Instalação pendente para navegação e inicialização de perfis.
@@ -273,18 +284,47 @@ export const UpdateCenterDropdown: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => startDownload()}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1C1D24] border border-white/30 hover:border-white text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all cursor-pointer shadow-md shadow-[#00FF66]/20 active:scale-95"
                   >
-                    <Download size={13} />
+                    <Download size={13} strokeWidth={2.5} />
                     <span>Baixar</span>
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Caso 3: Motor Instalado e Sem Downloads Ativos */}
-            {!isDownloading && !isMissing && !appRelease?.hasUpdate && !isAppReadyToRestart && (
-              <div className="py-10 px-4 flex flex-col items-center justify-center text-center select-none space-y-2">
+            {/* Caso 2.1: Motor Instalado mas com Atualização Disponível */}
+            {!isDownloading && !isMissing && isEngineUpdateAvailable && (
+              <div className="rounded-xl bg-[#14151C] border border-emerald-500/30 p-4 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0 mt-0.5">
+                      <RefreshCw size={16} />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-white">
+                        Novo motor {availableEngineVersion} disponível!
+                      </div>
+                      <div className="text-[11px] text-[#8E92A2] mt-0.5 leading-relaxed">
+                        Versão instalada: {installedVersion || 'v2.0.0'} • Atualize para a versão mais recente.
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => startDownload()}
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all cursor-pointer shadow-md shadow-[#00FF66]/20 active:scale-95"
+                  >
+                    <Download size={13} strokeWidth={2.5} />
+                    <span>Atualizar</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Caso 3: Motor Instalado e Sem Atualizações Pendentes */}
+            {!isDownloading && !isMissing && !isEngineUpdateAvailable && !appRelease?.hasUpdate && !isAppReadyToRestart && (
+              <div className="py-8 px-4 flex flex-col items-center justify-center text-center select-none space-y-2">
                 <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-1">
                   <CheckCircle2 size={20} />
                 </div>
@@ -292,12 +332,19 @@ export const UpdateCenterDropdown: React.FC = () => {
                   Tudo atualizado
                 </span>
                 <span className="text-[11.5px] text-[#8E92A2] max-w-[280px]">
-                  O motor One Star e o aplicativo estão na versão mais recente.
+                  Motor One Star ({installedVersion || availableEngineVersion}) e aplicativo (v{CURRENT_APP_VERSION}) em dia.
                 </span>
+                <button
+                  type="button"
+                  onClick={() => startDownload()}
+                  className="mt-2 text-[10.5px] text-[#8E92A2] hover:text-white underline transition-colors cursor-pointer"
+                >
+                  Forçar reinstalação do motor
+                </button>
               </div>
             )}
 
-            {/* Caso 4: Nova Versão do Aplicativo Star Multlogin com Animação em Tempo Real */}
+            {/* Caso 4: Nova Versão do Aplicativo Star Multlogin */}
             {appRelease?.hasUpdate && (
               <div className="rounded-xl bg-[#14151C] border border-blue-500/30 p-4 space-y-3">
                 <div className="flex items-center justify-between gap-3">

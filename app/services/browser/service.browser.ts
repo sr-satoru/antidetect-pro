@@ -38,6 +38,8 @@ export interface BrowserStatusResponse {
   download: DownloadStatus;
   platform: string;
   os_name: string;
+  available_version?: string;
+  has_update?: boolean;
 }
 
 export interface PlatformConfig {
