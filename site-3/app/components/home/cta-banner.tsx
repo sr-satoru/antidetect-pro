@@ -25,30 +25,13 @@ export function CtaBanner() {
             {t.cta.subtitle}
           </p>
 
-          {/* Download buttons grid */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          {/* Direct Download Button */}
+          <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="#download-win"
-              className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white text-black font-bold text-sm hover:bg-neutral-200 transition-all shadow-md active:scale-95"
+              href="/download"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-[#00FF66] to-[#00D655] text-black font-extrabold text-base hover:brightness-110 transition-all shadow-xl shadow-[#00FF66]/25 active:scale-95 cursor-pointer"
             >
-              <Monitor className="w-4 h-4" />
-              <span>Windows (.exe)</span>
-            </a>
-
-            <a
-              href="#download-mac"
-              className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#00FF66] to-[#00D655] text-black font-bold text-sm hover:brightness-110 transition-all shadow-md shadow-[#00FF66]/20 active:scale-95"
-            >
-              <Apple className="w-4 h-4" />
-              <span>macOS (Apple Silicon / Intel)</span>
-            </a>
-
-            <a
-              href="#download-linux"
-              className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-[#15161C] text-zinc-200 border border-white/10 font-bold text-sm hover:bg-[#1E2028] hover:text-white transition-all active:scale-95"
-            >
-              <Terminal className="w-4 h-4 text-[#00FF66]" />
-              <span>Linux (AppImage / .deb)</span>
+              <span>{t.hero.downloadBtn}</span>
             </a>
           </div>
 

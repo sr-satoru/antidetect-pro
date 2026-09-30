@@ -65,9 +65,9 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#download" className="hover:text-[#00FF66] transition-colors">
+                <Link href="/download" className="hover:text-[#00FF66] transition-colors">
                   {t.nav.download}
-                </a>
+                </Link>
               </li>
               <li>
                 <Link href="/account" className="hover:text-[#00FF66] transition-colors">

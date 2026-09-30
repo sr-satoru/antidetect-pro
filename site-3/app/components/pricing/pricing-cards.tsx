@@ -26,7 +26,7 @@ export function PricingCards() {
       priceYearly: 0,
       highlight: false,
       ctaText: p.freePlan.cta,
-      ctaHref: "/#download",
+      ctaHref: "/download",
       ctaVariant: "secondary" as const,
       note: p.freePlan.note,
       features: p.freePlan.features,
