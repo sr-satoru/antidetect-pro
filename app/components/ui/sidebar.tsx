@@ -45,9 +45,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
     >
       {/* Header / Brand */}
       <div
-        className={`h-14 flex items-center border-b border-white/10 shrink-0 transition-all ${
-          isCollapsed ? 'justify-center px-2' : 'justify-between px-3.5'
-        }`}
+        className={`h-14 flex items-center border-b border-white/10 shrink-0 transition-all ${isCollapsed ? 'justify-center px-2' : 'justify-between px-3.5'
+          }`}
       >
         {!isCollapsed ? (
           <>
@@ -60,7 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
               </div>
               <div className="flex flex-col leading-tight min-w-0">
                 <span className="font-bold text-[14px] tracking-tight text-white truncate">
-                  AstroFox
+                  AstroFox999
                 </span>
                 <span className="text-[9.5px] uppercase tracking-wider font-semibold text-[#7C8092] truncate">
                   Multilogin
