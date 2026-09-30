@@ -30,10 +30,13 @@ export const UpdateCenterDropdown: React.FC = () => {
   const [appProgress, setAppProgress] = useState(0);
   const [appSpeedMbS, setAppSpeedMbS] = useState(0);
   const [appEtaSeconds, setAppEtaSeconds] = useState(0);
+  const [appDownloadedMb, setAppDownloadedMb] = useState(0);
+  const [appTotalMb, setAppTotalMb] = useState(0);
   const [appStage, setAppStage] = useState('idle');
   const [isAppDownloading, setIsAppDownloading] = useState(false);
   const [isAppReadyToRestart, setIsAppReadyToRestart] = useState(false);
   const [isRestarting, setIsRestarting] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<{ name: string; url: string; size?: number } | null>(null);
 
   const isInstalled = status?.health.status === 'installed';
   const isMissing = status?.health.status === 'missing' || status?.health.status === 'broken';
@@ -67,12 +70,19 @@ export const UpdateCenterDropdown: React.FC = () => {
   }, [isOpen]);
 
   // Checa versão do aplicativo quando abrir
-  const handleCheckAppUpdate = async () => {
+  const handleCheckAppUpdate = async (overrideFormat?: string) => {
     setIsCheckingApp(true);
     try {
-      const release = await appUpdateService.checkForAppUpdate();
+      const release = await appUpdateService.checkForAppUpdate(overrideFormat);
       setAppRelease(release);
       setHasCheckedApp(true);
+      if (release?.downloadUrl && release?.assetName) {
+        setSelectedAsset({
+          name: release.assetName,
+          url: release.downloadUrl,
+          size: release.assetSize,
+        });
+      }
       if (release?.hasUpdate) {
         toast.info(`Nova versão do One Star Multilogin disponível: ${release.tagName}`);
       } else {
@@ -86,19 +96,36 @@ export const UpdateCenterDropdown: React.FC = () => {
   };
 
   const handleStartAppDownload = async () => {
+    const target = selectedAsset || (appRelease?.downloadUrl ? { url: appRelease.downloadUrl, name: appRelease.assetName || 'star-multlogin' } : null);
+    if (!target) {
+      toast.error('Nenhum pacote compatível selecionado para download.');
+      return;
+    }
+
     setIsAppDownloading(true);
     setAppProgress(0);
-    setAppStage('downloading');
+    setAppStage('connecting');
 
-    const res = await appUpdateService.startDownload((progressPercent) => {
-      setAppProgress(Math.round(progressPercent));
-      if (progressPercent >= 100) {
-        setAppStage('ready');
-        setIsAppDownloading(false);
-        setIsAppReadyToRestart(true);
-        toast.success('Atualização baixada com sucesso! Clique em reiniciar para aplicar.');
-      }
-    }, appRelease?.downloadUrl);
+    const res = await appUpdateService.startDownload(
+      (status) => {
+        setAppProgress(status.progress);
+        setAppSpeedMbS(status.speed_mb_s);
+        setAppEtaSeconds(status.eta_seconds);
+        setAppStage(status.stage);
+        setAppDownloadedMb(status.downloaded_bytes / (1024 * 1024));
+        setAppTotalMb(status.total_bytes / (1024 * 1024));
+
+        if (status.stage === 'ready' || status.progress >= 100) {
+          setIsAppDownloading(false);
+          setIsAppReadyToRestart(true);
+          toast.success('Atualização baixada com sucesso! Arquivo disponível para instalação.');
+        } else if (status.stage === 'error') {
+          setIsAppDownloading(false);
+          toast.error(status.error || 'Falha durante o download da atualização.');
+        }
+      },
+      { url: target.url, name: target.name }
+    );
 
     if (res.downloadedDirectly) {
       setIsAppDownloading(false);
@@ -108,7 +135,7 @@ export const UpdateCenterDropdown: React.FC = () => {
       setIsAppDownloading(false);
       toast.error(res.message);
     } else {
-      toast.info('Iniciando download nativo pelo Tauri...');
+      toast.info(`Iniciando download de ${target.name}...`);
     }
   };
 
@@ -361,14 +388,51 @@ export const UpdateCenterDropdown: React.FC = () => {
                         Nova versão {appRelease.tagName} disponível!
                       </div>
                       <div className="text-[11px] text-[#8E92A2] mt-0.5 truncate">
-                        Versão atual: v{CURRENT_APP_VERSION} • {appRelease.arch || appRelease.platform}
+                        Versão atual: v{CURRENT_APP_VERSION} • {appRelease.detectionReason || appRelease.arch || appRelease.platform}
                       </div>
-                      {appRelease.assetName && (
-                        <div className="text-[10.5px] font-mono text-[#00FF66] mt-0.5 truncate flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66] shrink-0" />
-                          <span>Pacote compatível: {appRelease.assetName}</span>
+
+                      {/* Seletor de Formatos Compatíveis (ex: AppImage vs .deb no Linux) */}
+                      {appRelease.compatibleAssets && appRelease.compatibleAssets.length > 1 && !isAppDownloading && !isAppReadyToRestart && (
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1.5">
+                          <span className="text-[10px] uppercase tracking-wider text-[#686C7D] font-semibold">Formato:</span>
+                          {appRelease.compatibleAssets.map((asset) => {
+                            const isSelected = (selectedAsset?.name || appRelease.assetName) === asset.name;
+                            const label = asset.name.endsWith('.AppImage')
+                              ? 'AppImage (Portátil)'
+                              : asset.name.endsWith('.deb')
+                              ? '.deb (Ubuntu/Debian/Mint)'
+                              : asset.name.endsWith('.rpm')
+                              ? '.rpm (Fedora/RHEL)'
+                              : asset.name.endsWith('.exe')
+                              ? '.exe (Instalador NSIS)'
+                              : asset.name.endsWith('.msi')
+                              ? '.msi (Windows Installer)'
+                              : asset.name.endsWith('.dmg')
+                              ? '.dmg (macOS)'
+                              : asset.name;
+
+                            return (
+                              <button
+                                key={asset.name}
+                                type="button"
+                                onClick={() => setSelectedAsset({ name: asset.name, url: asset.download_url, size: asset.size_bytes })}
+                                className={`px-2 py-0.5 rounded text-[10.5px] font-medium transition-all cursor-pointer ${
+                                  isSelected
+                                    ? 'bg-[#00FF66]/20 border border-[#00FF66]/40 text-[#00FF66] font-semibold shadow-xs'
+                                    : 'bg-[#181920] border border-white/10 text-[#8E92A2] hover:text-white hover:border-white/20'
+                                }`}
+                              >
+                                {label}
+                              </button>
+                            );
+                          })}
                         </div>
                       )}
+
+                      <div className="text-[10.5px] font-mono text-[#00FF66] mt-1 truncate flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66] shrink-0" />
+                        <span>Pacote selecionado: {selectedAsset?.name || appRelease.assetName}</span>
+                      </div>
                     </div>
                   </div>
 
@@ -379,7 +443,7 @@ export const UpdateCenterDropdown: React.FC = () => {
                       className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all shadow-md shadow-[#00FF66]/20 active:scale-95 cursor-pointer"
                     >
                       <Download size={13} strokeWidth={2.5} />
-                      <span>Atualizar</span>
+                      <span>Baixar Atualização</span>
                     </button>
                   )}
 
@@ -396,16 +460,16 @@ export const UpdateCenterDropdown: React.FC = () => {
                   )}
                 </div>
 
-                {/* Animação e Barra de Progresso em Tempo Real (alimentada pelo WebSocket dedicado do Rust) */}
+                {/* Animação e Barra de Progresso em Tempo Real (alimentada pelo streaming de chunks do Rust) */}
                 {isAppDownloading && (
                   <div className="space-y-2 pt-2 border-t border-[#2B2D38]/60">
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="text-[#8E92A2]">
                         {appStage === 'connecting'
-                          ? 'Conectando ao repositório...'
+                          ? 'Conectando ao repositório GitHub...'
                           : appSpeedMbS > 0
-                            ? `${appSpeedMbS.toFixed(1)} MB/s • ${appEtaSeconds}s restantes`
-                            : 'Baixando atualização...'}
+                            ? `${appDownloadedMb.toFixed(1)} MB / ${appTotalMb.toFixed(1)} MB (${appSpeedMbS.toFixed(1)} MB/s • ${appEtaSeconds}s)`
+                            : `Baixando pacote (${appDownloadedMb.toFixed(1)} MB)...`}
                       </span>
                       <span className="font-mono font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
                         {Math.round(appProgress)}%

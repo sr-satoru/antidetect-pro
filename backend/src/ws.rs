@@ -53,6 +53,17 @@ pub enum WsEvent {
         eta_seconds: u64,
         error: Option<String>,
     },
+    #[serde(rename = "app_update_progress")]
+    AppUpdateProgress {
+        stage: String,
+        progress: f32,
+        downloaded_bytes: u64,
+        total_bytes: u64,
+        speed_mb_s: f32,
+        eta_seconds: u64,
+        error: Option<String>,
+        file_path: Option<String>,
+    },
 }
 
 #[derive(Clone)]

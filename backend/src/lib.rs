@@ -149,8 +149,17 @@ pub fn build_app_router(
         .route("/manifest", get(routes::browser::get_browser_manifest))
         .with_state(browser_state);
 
+    let app_update_service = Arc::new(routes::app_update::AppUpdateService::new(
+        std::path::Path::new(data_dir),
+        ws_state.clone(),
+    ));
+
     let app_routes = Router::new()
-        .route("/check-update", get(routes::app_update::check_app_update_handler));
+        .route("/check-update", get(routes::app_update::check_app_update_handler))
+        .route("/download", post(routes::app_update::trigger_app_download_handler))
+        .route("/download-status", get(routes::app_update::get_app_download_status_handler))
+        .route("/cancel-download", post(routes::app_update::cancel_app_download_handler))
+        .with_state(app_update_service);
 
     let ws_routes = Router::new()
         .route("/", get(ws::ws_handler))
