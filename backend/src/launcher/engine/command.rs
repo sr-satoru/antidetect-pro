@@ -17,6 +17,21 @@ pub fn build_browser_command(
 ) -> tokio::process::Command {
     let mut cmd = tokio::process::Command::new(binary_path);
 
+    // 0. Garante que o processo execute dentro da pasta do motor com as libs do Camoufox carregadas
+    if let Some(engine_dir) = binary_path.parent() {
+        cmd.current_dir(engine_dir);
+        #[cfg(target_os = "linux")]
+        {
+            let current_ld = std::env::var("LD_LIBRARY_PATH").unwrap_or_default();
+            let new_ld = if current_ld.is_empty() {
+                engine_dir.to_string_lossy().to_string()
+            } else {
+                format!("{}:{}", engine_dir.to_string_lossy(), current_ld)
+            };
+            cmd.env("LD_LIBRARY_PATH", new_ld);
+        }
+    }
+
     // 1. Aplica sintaxe de comando compatível por SO (-profile no Windows, --profile no Linux/macOS)
     sys::configure_browser_command(&mut cmd, profile_dir);
 
