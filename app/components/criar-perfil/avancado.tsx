@@ -111,7 +111,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
             <button
               type="button"
               onClick={() => setShowExtensionDropdown(!showExtensionDropdown)}
-              className="flex min-h-[38px] w-full cursor-pointer items-center justify-between rounded-lg border border-[#3A3D4B] bg-[#22242B] px-3.5 py-2 text-[13px] text-[#A6ABB9] transition-colors hover:border-[#4B4E5E] focus:border-[#2F80ED] focus:outline-none"
+              className="flex min-h-[38px] w-full cursor-pointer items-center justify-between rounded-lg border border-[#3A3D4B] bg-[#22242B] px-3.5 py-2 text-[13px] text-[#A6ABB9] transition-colors hover:border-[#4B4E5E] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
             >
               <span className={currentMode ? 'text-white' : 'text-[#7B7F91]'}>
                 {getDisplayLabel()}
@@ -151,7 +151,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                   >
                     <span>Usar extensões da equipe</span>
                     {currentMode === 'team' && (
-                      <Check size={14} className="text-[#2F80ED]" />
+                      <Check size={14} className="text-white" />
                     )}
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                                       className="h-full w-full rounded-[3px] object-contain"
                                     />
                                   ) : (
-                                    <span className="text-[10px] font-bold text-[#2F80ED]">
+                                    <span className="text-[10px] font-bold text-white">
                                       {ext.name.charAt(0).toUpperCase()}
                                     </span>
                                   )}
@@ -216,7 +216,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
 
                         <div className="ml-3 shrink-0 flex items-center gap-2">
                           {isSelected && (
-                            <Check size={14} className="text-[#2F80ED]" />
+                            <Check size={14} className="text-white" />
                           )}
                           <div
                             title={cat.description || 'Categoria de extensões'}

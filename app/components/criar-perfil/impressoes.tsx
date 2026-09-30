@@ -90,14 +90,14 @@ const ShuffleInput: React.FC<{
       type="text"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`flex-1 rounded border border-[#333541] bg-[#16171D] px-3 py-1.5 text-[12px] text-white focus:border-[#2F80ED] focus:outline-none ${
+      className={`flex-1 rounded border border-[#333541] bg-[#16171D] px-3 py-1.5 text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none ${
         mono ? 'font-mono' : ''
       }`}
     />
     <button
       type="button"
       onClick={onShuffle}
-      className="cursor-pointer rounded border border-[#3A3C4B] bg-[#2B2D38] p-2 text-[#2F80ED] transition-colors hover:bg-[#343744] hover:text-[#4F96FF]"
+      className="cursor-pointer rounded border border-[#3A3C4B] bg-[#2B2D38] p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
       title={title}
     >
       <svg
@@ -130,12 +130,12 @@ const NoisePill: React.FC<{
     >
       <div
         className={`h-4 w-8 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${
-          checked ? 'bg-[#2F80ED]' : 'bg-[#333541]'
+          checked ? 'bg-[#00FF66] shadow-[0_0_8px_rgba(0,255,102,0.35)]' : 'bg-[#333541]'
         }`}
       >
         <div
-          className={`h-3 w-3 rounded-full bg-white transition-transform duration-200 ease-in-out ${
-            checked ? 'translate-x-4' : 'translate-x-0'
+          className={`h-3 w-3 rounded-full transition-transform duration-200 ease-in-out ${
+            checked ? 'translate-x-4 bg-[#090A0F]' : 'translate-x-0 bg-white'
           }`}
         />
       </div>
@@ -199,7 +199,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.customTimezone}
               onChange={(e) => onChange('customTimezone', e.target.value)}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-[#2F80ED] focus:outline-none"
+              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
             >
               {config.timezones.map((tz) => (
                 <option key={tz.value} value={tz.value}>
@@ -248,7 +248,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                       name="locationPermission"
                       checked={formData.locationPermission === perm.id}
                       onChange={() => {}}
-                      className="cursor-pointer accent-[#2F80ED]"
+                      className="cursor-pointer accent-[#00FF66]"
                     />
                     <span>{perm.text}</span>
                   </label>
@@ -276,7 +276,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         className={`w-full rounded-md bg-[#16171D] px-3 py-2 text-[12.5px] text-white transition-colors focus:outline-none ${
                           isLatInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
-                            : 'border border-[#333541] focus:border-[#2F80ED]'
+                            : 'border border-[#333541] focus:border-white/60 focus:ring-1 focus:ring-white/15'
                         }`}
                       />
                       {isLatInvalid && (
@@ -297,7 +297,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         className={`w-full rounded-md bg-[#16171D] px-3 py-2 text-[12.5px] text-white transition-colors focus:outline-none ${
                           isLngInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
-                            : 'border border-[#333541] focus:border-[#2F80ED]'
+                            : 'border border-[#333541] focus:border-white/60 focus:ring-1 focus:ring-white/15'
                         }`}
                       />
                       {isLngInvalid && (
@@ -321,7 +321,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                     onChange={(e) =>
                       onChange('customAccuracy', Number(e.target.value) || 0)
                     }
-                    className="w-36 rounded-md border border-[#333541] bg-[#16171D] px-3 py-2 text-[12.5px] text-white focus:border-[#2F80ED] focus:outline-none"
+                    className="w-36 rounded-md border border-[#333541] bg-[#16171D] px-3 py-2 text-[12.5px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
                   />
                 </div>
               </div>
@@ -342,7 +342,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.customLanguage}
               onChange={(e) => onChange('customLanguage', e.target.value)}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-[#2F80ED] focus:outline-none"
+              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
             >
               {config.languages.map((lang) => (
                 <option key={lang.value} value={lang.value}>
@@ -366,7 +366,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.screenResolution}
               onChange={(e) => onChange('screenResolution', e.target.value)}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-[#2F80ED] focus:outline-none"
+              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
             >
               {config.screenResolutions.map((res) => (
                 <option key={res} value={res}>
@@ -385,7 +385,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
               onChange={(e) =>
                 onChange('customScreenWidth', e.target.value.replace(/\D/g, ''))
               }
-              className="w-24 rounded border border-[#333541] bg-[#1C1D24] px-3 py-1.5 text-center text-[12px] text-white focus:border-[#2F80ED] focus:outline-none"
+              className="w-24 rounded border border-[#333541] bg-[#1C1D24] px-3 py-1.5 text-center text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
             />
             <span className="text-[#8E92A2]">×</span>
             <input
@@ -398,7 +398,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                   e.target.value.replace(/\D/g, ''),
                 )
               }
-              className="w-24 rounded border border-[#333541] bg-[#1C1D24] px-3 py-1.5 text-center text-[12px] text-white focus:border-[#2F80ED] focus:outline-none"
+              className="w-24 rounded border border-[#333541] bg-[#1C1D24] px-3 py-1.5 text-center text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
             />
           </div>
         )}
@@ -452,7 +452,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
               <select
                 value={formData.webglVendor}
                 onChange={(e) => onChange('webglVendor', e.target.value)}
-                className="w-full rounded border border-[#333541] bg-[#16171D] px-3 py-1.5 text-[12px] text-white focus:border-[#2F80ED] focus:outline-none"
+                className="w-full rounded border border-[#333541] bg-[#16171D] px-3 py-1.5 text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
               >
                 {config.webglVendors.map((v) => (
                   <option key={v} value={v}>
@@ -499,7 +499,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.cpuCores}
               onChange={(e) => onChange('cpuCores', Number(e.target.value))}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-[#2F80ED] focus:outline-none"
+              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
             >
               {config.cpuCoresOptions.map((cores) => (
                 <option key={cores} value={cores}>
@@ -523,7 +523,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.ramGb || 8}
               onChange={(e) => onChange('ramGb', Number(e.target.value))}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-[#2F80ED] focus:outline-none"
+              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
             >
               {config.ramOptions.map((ram) => (
                 <option key={ram} value={ram}>
@@ -600,7 +600,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           placeholder="Opcional: Portas autorizadas (ex: 80, 443, 8080)"
           value={formData.portScanAllowedPorts || ''}
           onChange={(e) => onChange('portScanAllowedPorts', e.target.value)}
-          className="w-full max-w-md rounded border border-[#333541] bg-[#1C1D24] px-3 py-1.5 text-[12px] text-white focus:border-[#2F80ED] focus:outline-none"
+          className="w-full max-w-md rounded border border-[#333541] bg-[#1C1D24] px-3 py-1.5 text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
         />
       </FormRow>
 
@@ -629,7 +629,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           value={formData.launchHook || ''}
           onChange={(e) => onChange('launchHook', e.target.value)}
           placeholder={`--disable-notifications\n--blink-settings=imagesEnabled=false`}
-          className="w-full max-w-lg rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 font-mono text-[12px] text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+          className="w-full max-w-lg rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 font-mono text-[12px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
         />
       </FormRow>
     </div>

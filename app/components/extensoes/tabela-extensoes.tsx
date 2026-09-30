@@ -299,13 +299,13 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           <button
                             type="button"
                             onClick={() => onToggleEnabled(ext.id)}
-                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled ? 'bg-[#2F80ED]' : 'bg-[#3A3D4D]'
+                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled ? 'bg-[#00FF66] shadow-[0_0_8px_rgba(0,255,102,0.35)]' : 'bg-[#3A3D4D]'
                               }`}
                           >
                             <span
-                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition duration-200 ${ext.enabled
-                                ? 'translate-x-4.5'
-                                : 'translate-x-1'
+                              className={`inline-block h-3.5 w-3.5 transform rounded-full transition duration-200 ${ext.enabled
+                                ? 'translate-x-4.5 bg-[#090A0F]'
+                                : 'translate-x-1 bg-white'
                                 }`}
                             />
                           </button>

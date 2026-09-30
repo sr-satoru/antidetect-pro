@@ -200,7 +200,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
           <button
             type="button"
             onClick={handleRegenerateFingerprint}
-            className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-medium text-[#2F80ED] transition-colors hover:text-[#4B9CFF]"
+            className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-medium text-[#00FF66] transition-colors hover:text-[#00FF66]/80"
             title="Gerar nova impressão digital aleatória"
           >
             {/* Ícone Shuffle */}
@@ -248,7 +248,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       {/* Rodapé da prévia */}
       <div className="mt-6 border-t border-[#2C2E38] pt-4 text-[11px] text-[#8E92A2]">
         Definir valores padrão em{' '}
-        <span className="cursor-pointer text-[#2F80ED] hover:underline">
+        <span className="cursor-pointer text-[#00FF66] hover:underline">
           Preferências
         </span>
         .

@@ -116,7 +116,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
             value={formData.name}
             onChange={(e) => onChange('name', e.target.value.slice(0, 100))}
             placeholder="Opcional: nome do perfil"
-            className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 pr-16 text-[13px] text-white placeholder-[#5C6070] transition-colors focus:border-[#2F80ED] focus:outline-none"
+            className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 pr-16 text-[13px] text-white placeholder-[#5C6070] transition-colors focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
           />
           <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[11px] text-[#6B7082] select-none">
             {formData.name.length} / 100
@@ -138,17 +138,17 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
             <div className="flex flex-col">
               <div
                 onClick={() => onChange('kernel', 'Camoufox')}
-                className="flex cursor-pointer items-center gap-2.5 rounded-md border border-[#2F80ED] bg-[#192233] px-4 py-2.5 text-white ring-1 ring-[#2F80ED]/30 transition-all select-none"
+                className="flex cursor-pointer items-center gap-2.5 rounded-md border border-white/30 bg-[#262835] px-4 py-2.5 text-white ring-1 ring-white/10 shadow-sm transition-all select-none"
               >
                 <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF7A00] to-[#E65100] text-[11px] font-bold text-white shadow-sm">
                   🦊
                 </div>
                 <span className="text-[13px] font-semibold text-white">Camoufox</span>
-                <span className="rounded bg-[#2F80ED]/20 px-1.5 py-0.5 text-[10px] font-semibold text-[#64B5F6]">
+                <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold text-white/90 border border-white/15">
                   Nativo
                 </span>
                 <svg
-                  className="ml-1 h-3.5 w-3.5 text-[#2F80ED]"
+                  className="ml-1 h-3.5 w-3.5 text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -180,17 +180,17 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
                   onClick={() => handleSelectOS(osItem.id)}
                   className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-all select-none ${
                     isSelected
-                      ? 'border-[#2F80ED] bg-[#1D2B44] text-white shadow-sm ring-1 ring-[#2F80ED]/40'
+                      ? 'border-white/30 bg-[#323440] text-white shadow-sm ring-1 ring-white/10'
                       : 'border-[#333541] bg-[#1C1D24] text-[#8E93A5] hover:border-[#474A5B] hover:text-[#C5C9D7]'
                   }`}
                 >
                   {isSelected && (
-                    <span className="text-[11px] leading-none font-bold text-[#2F80ED]">
+                    <span className="text-[11px] leading-none font-bold text-white">
                       ✓
                     </span>
                   )}
                   <span
-                    className={isSelected ? 'text-[#3E8BFF]' : 'text-[#8E93A5]'}
+                    className={isSelected ? 'text-white' : 'text-[#8E93A5]'}
                   >
                     {osItem.icon}
                   </span>
@@ -242,7 +242,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
                     onClick={() => handleSelectCategory(item)}
                     className={`cursor-pointer px-3 py-1.5 text-[12px] transition-colors ${
                       (formData.userAgentCategory || 'Todo') === item
-                        ? 'bg-[#1D2B44] text-[#2F80ED] font-semibold'
+                        ? 'bg-[#323440] text-white font-semibold'
                         : 'text-[#C4C7D5] hover:bg-[#2C2E38] hover:text-white'
                     }`}
                   >
@@ -253,20 +253,20 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
             )}
           </div>
 
-          <div className="flex flex-1 items-center overflow-hidden rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-1.5 transition-colors focus-within:border-[#2F80ED]">
+          <div className="flex flex-1 items-center overflow-hidden rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-1.5 transition-colors focus-within:border-white/60 focus-within:ring-1 focus-within:ring-white/15">
             <input
               type="text"
               value={formData.userAgent}
               onChange={(e) => onChange('userAgent', e.target.value)}
               className="mr-2 flex-1 truncate bg-transparent font-mono text-[12px] text-[#D8DAE5] focus:outline-none"
             />
-            <span className="hidden select-none rounded bg-[#2F80ED]/15 px-2 py-0.5 text-[10.5px] font-semibold text-[#64B5F6] md:inline mr-2">
+            <span className="hidden select-none rounded bg-white/10 px-2 py-0.5 text-[10.5px] font-semibold text-white/90 border border-white/10 md:inline mr-2">
               {activeCategoryUas.length} opções
             </span>
             <button
               type="button"
               onClick={handleShuffleUserAgent}
-              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-[#2F80ED] transition-colors hover:bg-[#263145] hover:text-[#4F96FF]"
+              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-white/80 transition-colors hover:bg-white/10 hover:text-white"
               title={`Sortear outro User-Agent (${activeCategoryUas.length} disponíveis)`}
             >
               <svg
@@ -338,8 +338,8 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
               onClick={() => setShowTagInput(!showTagInput)}
               className={`flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-2 text-[12.5px] transition-colors select-none ${
                 showTagInput || currentTags.length > 0
-                  ? 'border-[#2F80ED] bg-[#1D2536] text-white'
-                  : 'border-[#333541] bg-[#1C1D24] text-[#2F80ED] hover:border-[#2F80ED]/50'
+                  ? 'border-white/30 bg-[#282935] text-white'
+                  : 'border-[#333541] bg-[#1C1D24] text-[#C4C7D5] hover:border-white/20'
               }`}
             >
               <svg
@@ -405,12 +405,12 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
             value={formData.cookies}
             onChange={(e) => onChange('cookies', e.target.value)}
             placeholder="Formatos: JSON, Netscape, Name=Value"
-            className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-[#2F80ED] focus:outline-none"
+            className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
           />
           <div className="flex justify-end">
             <button
               type="button"
-              className="flex cursor-pointer items-center gap-1 text-[12px] text-[#2F80ED] transition-colors select-none hover:text-[#4D97FF]"
+              className="flex cursor-pointer items-center gap-1 text-[12px] text-[#00FF66] transition-colors select-none hover:text-[#00FF66]/80"
             >
               <span>+</span>
               <span>Mesclar cookie</span>
@@ -430,7 +430,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
             value={formData.notes}
             onChange={(e) => onChange('notes', e.target.value.slice(0, 2000))}
             placeholder="Indique as notas"
-            className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 pr-16 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-[#2F80ED] focus:outline-none"
+            className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 pr-16 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
           />
           <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[11px] text-[#6B7082] select-none">
             {formData.notes.length} / 2000

@@ -279,7 +279,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           className={`w-full rounded-md border bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:outline-none ${
                             isDomainEmpty
                               ? 'border-[#EF4444] focus:border-[#EF4444]'
-                              : 'border-[#333541] focus:border-[#2F80ED]'
+                              : 'border-[#333541] focus:border-white/60 focus:ring-1 focus:ring-white/15'
                           }`}
                         />
                         {isDomainEmpty && (
@@ -304,7 +304,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           handleUpdateAccount(idx, { username: e.target.value })
                         }
                         placeholder="Indique por favor o nome do utilizador"
-                        className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+                        className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -322,7 +322,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           handleUpdateAccount(idx, { password: e.target.value })
                         }
                         placeholder="Digite a senha"
-                        className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+                        className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -342,7 +342,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           })
                         }
                         placeholder="Por favor, digite a chave."
-                        className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 pr-9 font-mono text-[12.5px] text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+                        className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 pr-9 font-mono text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
                       />
                       <Tooltip
                         content="Chave secreta TOTP para geração automática do código de dois fatores ao fazer login."
@@ -392,9 +392,9 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
             <button
               type="button"
               onClick={() => setIsAddDropdownOpen(!isAddDropdownOpen)}
-              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-[#3D4050] bg-[#1E1F27]/60 px-4 py-2.5 text-[12.5px] font-medium text-[#9EA3B5] transition-all select-none hover:border-[#2F80ED] hover:bg-[#1E1F27] hover:text-white"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-[#3D4050] bg-[#1E1F27]/60 px-4 py-2.5 text-[12.5px] font-medium text-[#9EA3B5] transition-all select-none hover:border-[#00FF66]/50 hover:bg-[#1E1F27] hover:text-white"
             >
-              <div className="flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#0D62FF] text-[13px] leading-none font-bold text-[#0D62FF]">
+              <div className="flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#00FF66] text-[13px] leading-none font-bold text-[#00FF66]">
                 +
               </div>
               <span>Adicionar conta da plataforma</span>
@@ -439,7 +439,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   type="checkbox"
                   checked={duplicateRules.usernamePassword}
                   onChange={() => handleToggleRule('usernamePassword')}
-                  className="h-3.5 w-3.5 cursor-pointer rounded border border-[#333541] bg-[#1C1D24] accent-[#0D62FF]"
+                  className="h-3.5 w-3.5 cursor-pointer rounded border border-[#333541] bg-[#1C1D24] accent-[#00FF66]"
                 />
                 <span className="text-[12.5px] text-[#C4C7D5] underline decoration-[#5C6070] decoration-dotted underline-offset-4 group-hover:text-white">
                   Nome de utilizador e senha
@@ -451,7 +451,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   type="checkbox"
                   checked={duplicateRules.cookie}
                   onChange={() => handleToggleRule('cookie')}
-                  className="h-3.5 w-3.5 cursor-pointer rounded border border-[#333541] bg-[#1C1D24] accent-[#0D62FF]"
+                  className="h-3.5 w-3.5 cursor-pointer rounded border border-[#333541] bg-[#1C1D24] accent-[#00FF66]"
                 />
                 <span className="text-[12.5px] text-[#C4C7D5] underline decoration-[#5C6070] decoration-dotted underline-offset-4 group-hover:text-white">
                   Cookie
@@ -463,7 +463,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   type="checkbox"
                   checked={duplicateRules.cUser}
                   onChange={() => handleToggleRule('cUser')}
-                  className="h-3.5 w-3.5 cursor-pointer rounded border border-[#333541] bg-[#1C1D24] accent-[#0D62FF]"
+                  className="h-3.5 w-3.5 cursor-pointer rounded border border-[#333541] bg-[#1C1D24] accent-[#00FF66]"
                 />
                 <span className="text-[12.5px] text-[#C4C7D5] underline decoration-[#5C6070] decoration-dotted underline-offset-4 group-hover:text-white">
                   c_user
@@ -487,7 +487,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
             value={formData.openTabsUrls || ''}
             onChange={(e) => onChange('openTabsUrls', e.target.value)}
             placeholder={`Digite URLs (uma URL por linha)\nwww.google.com\nwww.facebook.com`}
-            className="w-full rounded-md border border-[#333541] bg-[#1C1D24] p-3 font-mono text-[12.5px] leading-relaxed text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+            className="w-full rounded-md border border-[#333541] bg-[#1C1D24] p-3 font-mono text-[12.5px] leading-relaxed text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
           />
         </div>
       </div>

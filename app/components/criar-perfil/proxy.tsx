@@ -22,7 +22,7 @@ const PasswordInput: React.FC<{
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 pr-9 text-[12.5px] text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+        className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 pr-9 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
       />
       <button
         type="button"
@@ -211,7 +211,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
               className="flex cursor-pointer items-center gap-1.5 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#8E92A2] select-none hover:text-white"
             >
               <svg
-                className="h-3.5 w-3.5 text-[#2F80ED]"
+                className="h-3.5 w-3.5 text-white/70"
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
@@ -247,7 +247,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                   <button
                     type="button"
                     onClick={handleShuffleSavedProxy}
-                    className="p-0.5 text-[#2F80ED] transition-colors hover:text-[#4F96FF]"
+                    className="p-0.5 text-[#00FF66] transition-colors hover:text-[#00FF66]/80"
                     title="Aleatorizar proxy salvo"
                   >
                     <svg
@@ -408,7 +408,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         ? 'ex: rotating.proxyprovider.com'
                         : 'ex: 151.245.245.179'
                     }
-                    className="flex-1 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+                    className="flex-1 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
                   />
                   <input
                     type="text"
@@ -419,7 +419,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         ? 'Porta (ex: 8080)'
                         : 'Porta (ex: 50101)'
                     }
-                    className="w-32 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+                    className="w-32 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
                   />
                   {formData.proxyMode === 'rotating' && (
                     <button
@@ -445,7 +445,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                     value={formData.proxyUser}
                     onChange={(e) => onChange('proxyUser', e.target.value)}
                     placeholder="Usuário (opcional)"
-                    className="flex-1 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+                    className="flex-1 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
                   />
                   <PasswordInput
                     value={formData.proxyPass}
@@ -468,11 +468,11 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         onChange('proxyRotationUrl', e.target.value)
                       }
                       placeholder="https://api.proxyprovider.com/rotate?key=xyz..."
-                      className="flex-1 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 font-mono text-[12.5px] text-white placeholder-[#5C6070] focus:border-[#2F80ED] focus:outline-none"
+                      className="flex-1 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 font-mono text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
                     />
                     <button
                       type="button"
-                      className="flex cursor-pointer items-center gap-1.5 rounded-md border border-[#2F80ED]/60 bg-[#1E2B44] px-3.5 py-2 text-[12px] font-medium text-[#3E8BFF] transition-colors select-none hover:bg-[#25375A]"
+                      className="flex cursor-pointer items-center gap-1.5 rounded-md border border-white/20 bg-[#262835] px-3.5 py-2 text-[12px] font-medium text-white transition-colors select-none hover:bg-[#323444]"
                     >
                       <svg
                         className="h-3.5 w-3.5"
