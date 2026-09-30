@@ -40,6 +40,7 @@ export const PerfisPage: React.FC = () => {
       const data = await api.profiles.list(searchQuery, selectedGroup);
       const list = Array.isArray(data) ? data : [];
       setProfiles(list);
+      serviceTags.registerColors(list.flatMap((p: any) => p.tags || []));
     } catch (err: any) {
       setError(err.message || 'Erro ao carregar perfis do backend local.');
     } finally {
@@ -210,20 +211,26 @@ export const PerfisPage: React.FC = () => {
   // Filter logic
   const filteredProfiles = useMemo(() => {
     return profiles.filter((p) => {
-      const q = searchQuery.toLowerCase();
+      const q = searchQuery.toLowerCase().trim();
+      const tagNames = Array.isArray(p.tags)
+        ? p.tags.map((t: any) => (typeof t === 'string' ? t : t?.name || '')).filter(Boolean)
+        : typeof p.tags === 'string'
+          ? (p.tags as string).split(',').map((t: string) => t.trim()).filter(Boolean)
+          : [];
+
       const matchesSearch =
         !q ||
         (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.id && String(p.id).toLowerCase().includes(q)) ||
         (p.ip && p.ip.toLowerCase().includes(q)) ||
         (p.proxy?.host && p.proxy.host.toLowerCase().includes(q)) ||
-        (Array.isArray(p.tags) &&
-          p.tags.some((t: string) => typeof t === 'string' && t.toLowerCase().includes(q)));
+        tagNames.some((t: string) => t.toLowerCase().includes(q));
 
       const matchesGroup =
         selectedGroup === 'Todos os grupos' || p.group === selectedGroup;
 
       const matchesTag =
-        selectedTag === null || (p.tags && p.tags.includes(selectedTag));
+        selectedTag === null || tagNames.includes(selectedTag);
 
       return matchesSearch && matchesGroup && matchesTag;
     });

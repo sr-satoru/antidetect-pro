@@ -44,7 +44,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
   const [showTagInput, setShowTagInput] = useState(false);
 
   const currentTags: string[] = Array.isArray(formData.tags)
-    ? formData.tags
+    ? formData.tags.map((t: any) => (typeof t === 'string' ? t : t?.name || '')).filter(Boolean)
     : typeof formData.tags === 'string' && formData.tags
     ? formData.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
     : [];

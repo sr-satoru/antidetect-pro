@@ -27,14 +27,24 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
   const [newTagColor, setNewTagColor] = useState<string>(DEFAULT_TAG_COLOR);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Carrega etiquetas do backend sempre que abrir
+  const loadTags = async (query?: string) => {
+    try {
+      setIsLoading(true);
+      const list = await serviceTags.list(query);
+      setAvailableTags(Array.isArray(list) ? list : []);
+    } catch (err) {
+      console.error('Erro ao listar tags no dropdown:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
-      serviceTags.list().then((list) => {
-        setAvailableTags(Array.isArray(list) ? list : []);
-      }).catch(console.error);
-
+      loadTags();
       setSearchTerm('');
       setShowColorPicker(false);
       setNewTagColor(DEFAULT_TAG_COLOR);
@@ -43,6 +53,15 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isOpen]);
+
+  // Debounce para busca remota no backend ao digitar
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(() => {
+      loadTags(searchTerm.trim());
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [searchTerm, isOpen]);
 
   // Fecha ao clicar fora
   useEffect(() => {
@@ -83,10 +102,27 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
     return availableTags.filter((t) => t.name.toLowerCase().includes(q));
   }, [availableTags, searchTerm]);
 
-  // Handler para criar nova tag livremente
+  // Verifica se já existe uma tag exatamente igual à digitada
+  const exactMatch = useMemo(() => {
+    const q = searchTerm.toLowerCase().trim();
+    if (!q) return null;
+    return availableTags.find((t) => t.name.toLowerCase() === q);
+  }, [availableTags, searchTerm]);
+
+  // Handler para criar nova tag ou selecionar se já existir
   const handleCreateNewTag = async () => {
     const trimmed = searchTerm.trim();
     if (!trimmed || isCreating) return;
+
+    // Se já existe uma tag com este nome, apenas seleciona
+    if (exactMatch) {
+      if (!selectedTags.includes(exactMatch.name)) {
+        onToggleTag(exactMatch.name);
+      }
+      setSearchTerm('');
+      setShowColorPicker(false);
+      return;
+    }
 
     try {
       setIsCreating(true);
@@ -99,7 +135,10 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
           name: trimmed,
           color: newTagColor,
         });
-        setAvailableTags((prev) => [...prev, createdTag]);
+        setAvailableTags((prev) => {
+          const exists = prev.some((t) => t.id === createdTag.id || t.name.toLowerCase() === createdTag.name.toLowerCase());
+          return exists ? prev : [...prev, createdTag];
+        });
         onToggleTag(createdTag.name);
       }
 
@@ -184,26 +223,30 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
 
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-[#8E92A2]">Criar</span>
+              <span className="text-[#8E92A2]">{exactMatch ? 'Selecionar' : 'Criar'}</span>
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setShowColorPicker(!showColorPicker);
+                  if (!exactMatch) setShowColorPicker(!showColorPicker);
                 }}
                 style={{
-                  backgroundColor: currentBadgeStyle.backgroundColor,
-                  borderColor: currentBadgeStyle.borderColor,
-                  color: currentBadgeStyle.color,
+                  backgroundColor: exactMatch ? getTagColorStyle(exactMatch.color).backgroundColor : currentBadgeStyle.backgroundColor,
+                  borderColor: exactMatch ? getTagColorStyle(exactMatch.color).borderColor : currentBadgeStyle.borderColor,
+                  color: exactMatch ? getTagColorStyle(exactMatch.color).color : currentBadgeStyle.color,
                 }}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium transition-all hover:brightness-110 active:scale-98"
-                title="Clique para escolher a cor da etiqueta"
+                className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium transition-all ${
+                  exactMatch ? 'cursor-default' : 'cursor-pointer hover:brightness-110 active:scale-98'
+                }`}
+                title={exactMatch ? 'Etiqueta já existente' : 'Clique para escolher a cor da etiqueta'}
               >
                 <span className="truncate max-w-[150px]">{searchTerm.trim()}</span>
-                {showColorPicker ? (
-                  <ChevronUp size={12} className="opacity-70" />
-                ) : (
-                  <ChevronDown size={12} className="opacity-70" />
+                {!exactMatch && (
+                  showColorPicker ? (
+                    <ChevronUp size={12} className="opacity-70" />
+                  ) : (
+                    <ChevronDown size={12} className="opacity-70" />
+                  )
                 )}
               </button>
             </div>
@@ -216,7 +259,7 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
               }}
               disabled={isCreating}
               className="flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[#8E92A2] hover:bg-[#2C2E3B] hover:text-white transition-colors"
-              title="Pressione Enter ou clique para criar"
+              title={exactMatch ? 'Pressione Enter para selecionar' : 'Pressione Enter ou clique para criar'}
             >
               <CornerDownLeft size={13} />
             </button>
