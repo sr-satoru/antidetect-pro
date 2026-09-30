@@ -39,12 +39,5 @@
       "debugApplicationIdSuffix": ".debug"
     }
   },
-  "plugins": {
-    "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ1NjgxMTIzREIwRTE2N0MKUldSOEZnN2JJeEZvUmJ3R0t3WGVYbEFMd056cFhwMlpnN3RQOGZKVE5BTUYyRDBueTBQbGd6YVUK",
-      "endpoints": [
-        "https://github.com/sr-satoru/antidetect-pro/releases/latest/download/latest.json"
-      ]
-    }
-  }
+  "plugins": {}
 }
