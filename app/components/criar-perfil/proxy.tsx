@@ -1,7 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
 import config from '@/config/perfil.json';
 import { api } from '@/services/index.api';
+import {
+  Globe,
+  Shuffle,
+  ChevronDown,
+  Search,
+  X,
+  Eye,
+  EyeOff,
+  RotateCw,
+  Tag,
+  HelpCircle,
+} from 'lucide-react';
 
 interface ProxyTabProps {
   formData: any;
@@ -22,33 +34,16 @@ const PasswordInput: React.FC<{
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 pr-9 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+        className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 pr-9 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
       />
       <button
         type="button"
         onClick={() => setShow(!show)}
-        className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer text-[#7E8294] hover:text-white"
+        className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-pointer text-[#7E8294] transition-colors hover:text-white"
         tabIndex={-1}
+        title={show ? 'Ocultar senha' : 'Ver senha'}
       >
-        <svg
-          className="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          {show ? (
-            <>
-              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-              <line x1="1" y1="1" x2="23" y2="23" />
-            </>
-          ) : (
-            <>
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </>
-          )}
-        </svg>
+        {show ? <EyeOff size={15} /> : <Eye size={15} />}
       </button>
     </div>
   );
@@ -60,31 +55,45 @@ const IpCheckerField: React.FC<{
   onChange: (val: string) => void;
 }> = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [open]);
+
   return (
     <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:gap-4">
       <label className="shrink-0 text-left text-[13px] text-[#A6ABB9] select-none sm:w-[140px] sm:text-right">
         Verificador de IP
       </label>
       <div className="flex items-center gap-2">
-        <div className="relative w-48">
+        <div ref={containerRef} className="relative w-48">
           <button
             type="button"
             onClick={() => setOpen(!open)}
-            className="flex w-full cursor-pointer items-center justify-between rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] hover:border-[#444756]"
+            className="flex w-full cursor-pointer items-center justify-between rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors hover:border-white/25"
           >
             <span>{value || 'IP2Location'}</span>
-            <svg
-              className="h-3.5 w-3.5 opacity-60"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
+            <ChevronDown
+              size={14}
+              className={`opacity-60 transition-transform ${open ? 'rotate-180' : ''}`}
+            />
           </button>
           {open && (
-            <div className="absolute top-full right-0 left-0 z-20 mt-1 rounded-md border border-[#363845] bg-[#212229] py-1 shadow-xl">
+            <div className="absolute top-full right-0 left-0 z-30 mt-1 rounded-xl border border-white/10 bg-[#14151B] py-1 shadow-2xl backdrop-blur-md">
               {config.ipCheckers.map((checker) => (
                 <div
                   key={checker}
@@ -92,7 +101,11 @@ const IpCheckerField: React.FC<{
                     onChange(checker);
                     setOpen(false);
                   }}
-                  className="cursor-pointer px-3 py-1.5 text-[12px] text-[#C4C7D5] hover:bg-[#2C2E38] hover:text-white"
+                  className={`cursor-pointer px-3 py-1.5 text-[12px] transition-colors ${
+                    value === checker
+                      ? 'bg-white/[0.08] font-medium text-white'
+                      : 'text-[#C4C7D5] hover:bg-white/[0.05] hover:text-white'
+                  }`}
                 >
                   {checker}
                 </div>
@@ -101,20 +114,10 @@ const IpCheckerField: React.FC<{
           )}
         </div>
         <span
-          className="cursor-pointer text-[#787D90] hover:text-[#B0B4C4]"
+          className="cursor-pointer text-[#787D90] transition-colors hover:text-white"
           title="Provedor de geolocalização e verificação de IP"
         >
-          <svg
-            className="h-4 w-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="16" x2="12" y2="12" />
-            <line x1="12" y1="8" x2="12.01" y2="8" />
-          </svg>
+          <HelpCircle size={15} />
         </span>
       </div>
     </div>
@@ -127,13 +130,53 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
   const [selectedSavedProxy, setSelectedSavedProxy] = useState<any>(null);
   const [savedProxies, setSavedProxies] = useState<any[]>([]);
   const [isLoadingProxies, setIsLoadingProxies] = useState(false);
+  const [proxySearch, setProxySearch] = useState('');
 
+  const proxyDropdownRef = useRef<HTMLDivElement>(null);
+  const typeDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fecha dropdowns ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        proxyDropdownRef.current &&
+        !proxyDropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowProxyDropdown(false);
+      }
+      if (
+        typeDropdownRef.current &&
+        !typeDropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowTypeDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Carrega proxies do SQLite
   useEffect(() => {
     const loadProxies = async () => {
       try {
         setIsLoadingProxies(true);
         const list = await api.proxies.list();
-        setSavedProxies(list);
+        const safeList = Array.isArray(list) ? list : [];
+        setSavedProxies(safeList);
+
+        // Se já tiver host e port configurados no formulário, sincroniza a seleção visual
+        if (formData.proxyHost && formData.proxyPort) {
+          const match = safeList.find(
+            (p: any) =>
+              p.host === formData.proxyHost &&
+              String(p.port) === String(formData.proxyPort)
+          );
+          if (match) {
+            setSelectedSavedProxy(match);
+          }
+        }
       } catch (err) {
         console.error('Erro ao carregar proxies do banco:', err);
       } finally {
@@ -141,11 +184,11 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
       }
     };
     loadProxies();
-  }, []);
+  }, [formData.proxyHost, formData.proxyPort]);
 
   const handleSelectSavedProxy = (proxy: any) => {
     setSelectedSavedProxy(proxy);
-    onChange('proxyType', proxy.type);
+    onChange('proxyType', proxy.type || proxy.proxy_type || 'http');
     onChange('proxyHost', proxy.host);
     onChange('proxyPort', proxy.port);
     onChange('proxyUser', proxy.user || '');
@@ -162,6 +205,20 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
     }
   };
 
+  // Filtro de pesquisa no dropdown de proxies salvos
+  const filteredSavedProxies = useMemo(() => {
+    if (!proxySearch.trim()) return savedProxies;
+    const q = proxySearch.toLowerCase();
+    return savedProxies.filter(
+      (p) =>
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.host && p.host.toLowerCase().includes(q)) ||
+        (p.type && p.type.toLowerCase().includes(q)) ||
+        (p.proxy_type && p.proxy_type.toLowerCase().includes(q)) ||
+        (p.country && p.country.toLowerCase().includes(q))
+    );
+  }, [savedProxies, proxySearch]);
+
   return (
     <div className="flex-1 space-y-4 pr-1 text-[#D2D5DF]">
       {/* Título de seção */}
@@ -169,7 +226,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
         <span className="text-[12px] font-medium text-[#7E8294] select-none">
           Proxy
         </span>
-        <div className="h-[1px] flex-1 bg-[#2E303B]" />
+        <div className="h-[1px] flex-1 bg-white/10" />
       </div>
 
       {/* 1. Modos de Proxy */}
@@ -177,7 +234,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
         <label className="shrink-0 text-left text-[13px] text-[#A6ABB9] select-none sm:w-[140px] sm:text-right">
           Configuração do proxy
         </label>
-        <div className="flex items-center rounded-lg border border-[#333541] bg-[#1C1D24] p-1">
+        <div className="flex items-center rounded-lg border border-white/10 bg-[#14151B] p-1">
           {config.proxyModes.map((mode) => {
             const isSelected = formData.proxyMode === mode.id;
             return (
@@ -187,8 +244,8 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                   onClick={() => onChange('proxyMode', mode.id)}
                   className={`cursor-pointer rounded-md px-3.5 py-1.5 text-[12.5px] font-medium transition-all select-none ${
                     isSelected
-                      ? 'bg-[#383944] text-white shadow-sm'
-                      : 'text-[#8E92A2] hover:text-[#C5C9D7]'
+                      ? 'bg-white/10 font-semibold text-white shadow-xs'
+                      : 'text-[#8E92A2] hover:text-white'
                   }`}
                 >
                   {mode.label}
@@ -199,123 +256,173 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
         </div>
       </div>
 
-      {/* MODO 1: Proxies salvos */}
+      {/* MODO 1: Salvo (Puxa do banco SQLite local de proxies) */}
       {formData.proxyMode === 'saved' && (
         <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-start sm:gap-4">
           <label className="shrink-0 pt-2.5 text-left text-[13px] text-[#A6ABB9] select-none sm:w-[140px] sm:text-right">
-            Escolha um agente
+            Proxy Salvo
           </label>
           <div className="flex flex-1 items-start gap-2.5">
             <button
               type="button"
-              className="flex cursor-pointer items-center gap-1.5 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#8E92A2] select-none hover:text-white"
+              className="flex cursor-pointer items-center gap-1.5 rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#8E92A2] transition-colors select-none hover:border-white/25 hover:text-white"
             >
-              <svg
-                className="h-3.5 w-3.5 text-white/70"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-              </svg>
+              <Tag size={13} className="text-white/70" />
               <span>Tags</span>
-              <svg
-                className="ml-0.5 h-3 w-3 opacity-60"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+              <ChevronDown size={12} className="opacity-60" />
             </button>
 
-            <div className="relative max-w-md flex-1">
+            {/* Container Relativo do Seletor */}
+            <div ref={proxyDropdownRef} className="relative max-w-md flex-1">
               <div
                 onClick={() => setShowProxyDropdown(!showProxyDropdown)}
-                className={`flex w-full cursor-pointer items-center justify-between rounded-md bg-[#1C1D24] px-3 py-2 transition-all select-none ${
+                className={`flex w-full cursor-pointer items-center justify-between rounded-md bg-[#14151B] px-3.5 py-2 transition-all select-none ${
                   showProxyDropdown
-                    ? 'border border-white/80 ring-1 ring-white/20'
-                    : 'border border-[#333541] hover:border-[#444756]'
+                    ? 'border border-white/40 ring-1 ring-white/10'
+                    : 'border border-white/10 hover:border-white/25'
                 }`}
               >
-                <span className="text-[12.5px] text-[#A6ABB9]">
-                  {selectedSavedProxy
-                    ? `${selectedSavedProxy.name || `${selectedSavedProxy.host}:${selectedSavedProxy.port}`}`
-                    : 'Selecione um proxy do banco...'}
-                </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
+                  <Globe
+                    size={15}
+                    className={`shrink-0 transition-colors ${
+                      selectedSavedProxy ? 'text-[#00FF66]' : 'text-[#7E8294]'
+                    }`}
+                  />
+                  <span
+                    className={`truncate text-[12.5px] ${
+                      selectedSavedProxy
+                        ? 'font-medium text-white'
+                        : 'text-[#8E92A2]'
+                    }`}
+                  >
+                    {selectedSavedProxy
+                      ? `${selectedSavedProxy.name || `${selectedSavedProxy.host}:${selectedSavedProxy.port}`}`
+                      : 'Selecione um proxy do banco...'}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={handleShuffleSavedProxy}
-                    className="p-0.5 text-[#00FF66] transition-colors hover:text-[#00FF66]/80"
-                    title="Aleatorizar proxy salvo"
+                    className="cursor-pointer rounded p-1 text-[#00FF66] transition-colors hover:bg-white/10"
+                    title="Sortear aleatoriamente um proxy salvo"
                   >
-                    <svg
-                      className="h-3.5 w-3.5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.2"
-                    >
-                      <polyline points="16 3 21 3 21 8" />
-                      <line x1="4" y1="20" x2="21" y2="3" />
-                      <polyline points="21 16 21 21 16 21" />
-                      <line x1="15" y1="15" x2="21" y2="21" />
-                      <line x1="4" y1="4" x2="9" y2="9" />
-                    </svg>
+                    <Shuffle size={14} />
                   </button>
-                  <svg
-                    className={`h-3.5 w-3.5 opacity-60 transition-transform ${showProxyDropdown ? 'rotate-180' : ''}`}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  <ChevronDown
+                    size={14}
+                    className={`text-[#8E92A2] transition-transform ${
+                      showProxyDropdown ? 'rotate-180 text-white' : ''
+                    }`}
+                  />
                 </div>
               </div>
 
+              {/* Menu Dropdown de Proxies */}
               {showProxyDropdown && (
-                <div className="absolute top-full right-0 left-0 z-30 mt-1.5 max-h-60 overflow-y-auto rounded-xl border border-[#3E404E] bg-[#23242B] shadow-2xl">
-                  <div className="space-y-1 p-1">
-                    {savedProxies.length > 0 ? (
-                      savedProxies.map((proxy) => (
-                        <div
-                          key={proxy.id}
-                          onClick={() => handleSelectSavedProxy(proxy)}
-                          className={`flex cursor-pointer items-center justify-between rounded-lg p-2.5 transition-colors ${
-                            selectedSavedProxy?.id === proxy.id
-                              ? 'bg-[#2E313D]'
-                              : 'hover:bg-[#2A2B35]'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex h-5 w-5 items-center justify-center rounded bg-[#1C1D24] font-mono text-[11px] text-[#8E92A2]">
-                              #{proxy.id}
-                            </div>
-                            <div>
-                              <div className="font-mono text-[12.5px] leading-tight text-white">
-                                {proxy.name || `${proxy.type}://${proxy.host}:${proxy.port}`}
-                              </div>
-                              <div className="mt-0.5 text-[11px] text-[#7E8294]">
-                                {proxy.type.toUpperCase()} • {proxy.host}:{proxy.port} {proxy.country ? `• ${proxy.country}` : ''}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="pr-2 text-[12px] font-mono text-[#52C41A]">
-                            {proxy.ping ? `${proxy.ping}ms` : 'Ativo'}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="py-4 px-3 text-center text-xs text-[#8E92A2]">
+                <div className="absolute top-full right-0 left-0 z-50 mt-1.5 max-h-64 overflow-y-auto rounded-xl border border-white/10 bg-[#14151B] shadow-2xl backdrop-blur-md [scrollbar-width:thin]">
+                  {/* Busca se houver mais de 3 proxies */}
+                  {savedProxies.length > 3 && (
+                    <div className="sticky top-0 z-10 border-b border-white/10 bg-[#14151B] p-2">
+                      <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs">
+                        <Search size={13} className="shrink-0 text-[#8E92A2]" />
+                        <input
+                          type="text"
+                          placeholder="Buscar por nome, host, tipo..."
+                          value={proxySearch}
+                          onChange={(e) => setProxySearch(e.target.value)}
+                          className="w-full bg-transparent text-xs text-white placeholder-[#686C7E] outline-none"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        {proxySearch && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setProxySearch('');
+                            }}
+                            className="text-[#8E92A2] hover:text-white"
+                          >
+                            <X size={12} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-1 p-1.5">
+                    {savedProxies.length === 0 ? (
+                      <div className="py-6 px-4 text-center text-xs text-[#8E92A2]">
                         Nenhum proxy cadastrado no banco local.
                         <br />
-                        <span className="text-[11px] text-[#606375]">
+                        <span className="mt-1 inline-block text-[11px] text-[#606375]">
                           Cadastre proxies na aba "Proxies" para utilizá-los aqui.
                         </span>
                       </div>
+                    ) : filteredSavedProxies.length === 0 ? (
+                      <div className="py-5 px-3 text-center text-xs text-[#8E92A2]">
+                        Nenhum proxy encontrado para "{proxySearch}".
+                      </div>
+                    ) : (
+                      filteredSavedProxies.map((proxy, index) => {
+                        const isSelected =
+                          selectedSavedProxy?.id === proxy.id ||
+                          (formData.proxyHost === proxy.host &&
+                            String(formData.proxyPort) === String(proxy.port));
+                        const protocol = (
+                          proxy.type ||
+                          proxy.proxy_type ||
+                          'HTTP'
+                        ).toUpperCase();
+
+                        return (
+                          <div
+                            key={proxy.id || index}
+                            onClick={() => handleSelectSavedProxy(proxy)}
+                            className={`flex cursor-pointer items-center justify-between gap-3 rounded-lg px-2.5 py-2 transition-all ${
+                              isSelected
+                                ? 'border border-white/15 bg-white/[0.09]'
+                                : 'border border-transparent hover:bg-white/[0.05]'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                              <span className="flex h-5 shrink-0 items-center justify-center rounded border border-white/10 bg-white/[0.06] px-1.5 font-mono text-[10px] text-[#A6ABB9]">
+                                #{index + 1}
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <div className="truncate font-mono text-[12px] font-medium leading-snug text-white">
+                                  {proxy.name ||
+                                    `${protocol.toLowerCase()}://${proxy.host}:${proxy.port}`}
+                                </div>
+                                <div className="mt-0.5 flex items-center gap-1.5 truncate text-[11px] text-[#8E92A2]">
+                                  <span className="font-semibold text-white/70">
+                                    {protocol}
+                                  </span>
+                                  <span className="text-[#4E5160]">•</span>
+                                  <span className="font-mono">
+                                    {proxy.host}:{proxy.port}
+                                  </span>
+                                  {proxy.country && (
+                                    <>
+                                      <span className="text-[#4E5160]">•</span>
+                                      <span className="text-white/60">
+                                        {proxy.country}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex shrink-0 items-center gap-1.5 pl-2 font-mono text-[11.5px] text-[#00FF66]">
+                              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#00FF66] shadow-[0_0_6px_rgba(0,255,102,0.6)]" />
+                              <span>{proxy.ping ? `${proxy.ping}ms` : 'Ativo'}</span>
+                            </div>
+                          </div>
+                        );
+                      })
                     )}
                   </div>
                 </div>
@@ -325,7 +432,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
         </div>
       )}
 
-      {/* MODO 2 & 3: Personalizado e Rotativo (compartilham campos com zero duplicação) */}
+      {/* MODO 2 & 3: Personalizado e Rotativo */}
       {(formData.proxyMode === 'custom' ||
         formData.proxyMode === 'rotating') && (
         <div className="space-y-4 pt-1">
@@ -335,29 +442,24 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
               {formData.proxyMode === 'custom' ? 'Tipo proxy' : 'Protocolo'}
             </label>
             <div className="flex flex-1 items-center gap-3">
-              <div className="relative w-48">
+              <div ref={typeDropdownRef} className="relative w-48">
                 <button
                   type="button"
                   onClick={() => setShowTypeDropdown(!showTypeDropdown)}
-                  className="flex w-full cursor-pointer items-center justify-between rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] hover:border-[#444756]"
+                  className="flex w-full cursor-pointer items-center justify-between rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors hover:border-white/25"
                 >
                   <span>
                     {formData.proxyType === 'none'
                       ? 'Sem Proxy (Rede local)'
                       : formData.proxyType.toUpperCase()}
                   </span>
-                  <svg
-                    className="h-3.5 w-3.5 opacity-60"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  <ChevronDown
+                    size={14}
+                    className={`opacity-60 transition-transform ${showTypeDropdown ? 'rotate-180' : ''}`}
+                  />
                 </button>
                 {showTypeDropdown && (
-                  <div className="absolute top-full right-0 left-0 z-20 mt-1 rounded-md border border-[#363845] bg-[#212229] py-1 shadow-xl">
+                  <div className="absolute top-full right-0 left-0 z-30 mt-1 rounded-xl border border-white/10 bg-[#14151B] py-1 shadow-2xl backdrop-blur-md">
                     {(formData.proxyMode === 'custom'
                       ? config.proxyTypes
                       : config.rotatingProtocols.map((p) => ({
@@ -371,7 +473,11 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                           onChange('proxyType', item.id);
                           setShowTypeDropdown(false);
                         }}
-                        className="cursor-pointer px-3 py-2 text-[12px] text-[#C4C7D5] hover:bg-[#2C2E38] hover:text-white"
+                        className={`cursor-pointer px-3 py-2 text-[12px] transition-colors ${
+                          formData.proxyType === item.id
+                            ? 'bg-white/[0.08] font-medium text-white'
+                            : 'text-[#C4C7D5] hover:bg-white/[0.05] hover:text-white'
+                        }`}
                       >
                         {item.label}
                       </div>
@@ -383,7 +489,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
               {formData.proxyMode === 'custom' && (
                 <button
                   type="button"
-                  className="cursor-pointer rounded-md border border-[#3A3C4B] bg-[#2B2D38] px-3.5 py-2 text-[12px] text-[#C5C8D6] transition-colors select-none hover:bg-[#343744] hover:text-white"
+                  className="cursor-pointer rounded-md border border-white/10 bg-white/[0.05] px-3.5 py-2 text-[12px] font-medium text-white transition-colors select-none hover:bg-white/10 active:scale-[0.98]"
                 >
                   Verificar a rede
                 </button>
@@ -408,7 +514,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         ? 'ex: rotating.proxyprovider.com'
                         : 'ex: 151.245.245.179'
                     }
-                    className="flex-1 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+                    className="flex-1 rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
                   />
                   <input
                     type="text"
@@ -419,12 +525,12 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         ? 'Porta (ex: 8080)'
                         : 'Porta (ex: 50101)'
                     }
-                    className="w-32 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+                    className="w-32 rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
                   />
                   {formData.proxyMode === 'rotating' && (
                     <button
                       type="button"
-                      className="cursor-pointer rounded-md border border-[#3A3C4B] bg-[#2B2D38] px-3.5 py-2 text-[12px] text-[#C5C8D6] transition-colors select-none hover:bg-[#343744] hover:text-white"
+                      className="cursor-pointer rounded-md border border-white/10 bg-white/[0.05] px-3.5 py-2 text-[12px] font-medium text-white transition-colors select-none hover:bg-white/10 active:scale-[0.98]"
                     >
                       Verificar a rede
                     </button>
@@ -445,7 +551,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                     value={formData.proxyUser}
                     onChange={(e) => onChange('proxyUser', e.target.value)}
                     placeholder="Usuário (opcional)"
-                    className="flex-1 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+                    className="flex-1 rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
                   />
                   <PasswordInput
                     value={formData.proxyPass}
@@ -468,23 +574,13 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         onChange('proxyRotationUrl', e.target.value)
                       }
                       placeholder="https://api.proxyprovider.com/rotate?key=xyz..."
-                      className="flex-1 rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 font-mono text-[12.5px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+                      className="flex-1 rounded-md border border-white/10 bg-[#14151B] px-3 py-2 font-mono text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
                     />
                     <button
                       type="button"
-                      className="flex cursor-pointer items-center gap-1.5 rounded-md border border-white/20 bg-[#262835] px-3.5 py-2 text-[12px] font-medium text-white transition-colors select-none hover:bg-[#323444]"
+                      className="flex cursor-pointer items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.05] px-3.5 py-2 text-[12px] font-medium text-white transition-colors select-none hover:bg-white/10 active:scale-[0.98]"
                     >
-                      <svg
-                        className="h-3.5 w-3.5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="23 4 23 10 17 10" />
-                        <polyline points="1 20 1 14 7 14" />
-                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-                      </svg>
+                      <RotateCw size={13} />
                       <span>Rotacionar IP</span>
                     </button>
                   </div>

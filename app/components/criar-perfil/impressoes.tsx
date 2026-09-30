@@ -1,12 +1,225 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
 import config from '@/config/perfil.json';
+import { Shuffle } from 'lucide-react';
 
 interface ImpressaoDigitalTabProps {
   formData: any;
   onChange: (key: string, value: any) => void;
 }
 
+// ============================================================================
+// Dicionários de Hardware Realistas Alinhados por Sistema Operacional / Máquina
+// ============================================================================
+
+interface GpuOption {
+  vendor: string;
+  renderer: string;
+}
+
+const GPU_POOLS_BY_OS: Record<string, GpuOption[]> = {
+  windows: [
+    {
+      vendor: 'Google Inc. (NVIDIA)',
+      renderer:
+        'ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    },
+    {
+      vendor: 'Google Inc. (NVIDIA)',
+      renderer:
+        'ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    },
+    {
+      vendor: 'Google Inc. (NVIDIA)',
+      renderer:
+        'ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    },
+    {
+      vendor: 'Google Inc. (NVIDIA)',
+      renderer:
+        'ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    },
+    {
+      vendor: 'Google Inc. (NVIDIA)',
+      renderer:
+        'ANGLE (NVIDIA, NVIDIA GeForce GTX 1660 SUPER Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    },
+    {
+      vendor: 'Google Inc. (AMD)',
+      renderer:
+        'ANGLE (AMD, AMD Radeon RX 7900 XTX Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    },
+    {
+      vendor: 'Google Inc. (AMD)',
+      renderer:
+        'ANGLE (AMD, AMD Radeon RX 6700 XT Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    },
+    {
+      vendor: 'Google Inc. (Intel)',
+      renderer:
+        'ANGLE (Intel, Intel(R) Iris(R) Xe Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    },
+    {
+      vendor: 'Google Inc. (Intel)',
+      renderer:
+        'ANGLE (Intel, Intel(R) UHD Graphics 770 Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    },
+  ],
+  macos: [
+    { vendor: 'Apple', renderer: 'Apple M1' },
+    { vendor: 'Apple', renderer: 'Apple M1 Pro' },
+    { vendor: 'Apple', renderer: 'Apple M1 Max' },
+    { vendor: 'Apple', renderer: 'Apple M2' },
+    { vendor: 'Apple', renderer: 'Apple M2 Pro' },
+    { vendor: 'Apple', renderer: 'Apple M2 Max' },
+    { vendor: 'Apple', renderer: 'Apple M3' },
+    { vendor: 'Apple', renderer: 'Apple M3 Pro' },
+    { vendor: 'Apple', renderer: 'Apple M3 Max' },
+    { vendor: 'Apple', renderer: 'Intel Iris Plus Graphics 655' },
+    { vendor: 'Apple', renderer: 'AMD Radeon Pro 5500M OpenGL Engine' },
+  ],
+  linux: [
+    { vendor: 'Mesa', renderer: 'Mesa Intel(R) UHD Graphics 630 (CFL GT2)' },
+    { vendor: 'Mesa', renderer: 'Mesa Intel(R) Xe Graphics (TGL GT2)' },
+    {
+      vendor: 'Mesa',
+      renderer:
+        'Mesa AMD Radeon RX 6700 XT (radeonsi, navi22, LLVM 15.0.7, DRM 3.49)',
+    },
+    {
+      vendor: 'NVIDIA Corporation',
+      renderer: 'NVIDIA GeForce RTX 3070/PCIe/SSE2',
+    },
+    {
+      vendor: 'NVIDIA Corporation',
+      renderer: 'NVIDIA GeForce RTX 4070/PCIe/SSE2',
+    },
+  ],
+  android: [
+    { vendor: 'Qualcomm', renderer: 'Adreno (TM) 740' },
+    { vendor: 'Qualcomm', renderer: 'Adreno (TM) 730' },
+    { vendor: 'Qualcomm', renderer: 'Adreno (TM) 660' },
+    { vendor: 'ARM', renderer: 'Mali-G715 Immortalis-MC11' },
+    { vendor: 'ARM', renderer: 'Mali-G710 MC10' },
+  ],
+  ios: [{ vendor: 'Apple', renderer: 'Apple GPU' }],
+};
+
+function randomAlphanumeric(length: number): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let res = '';
+  for (let i = 0; i < length; i++) {
+    res += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return res;
+}
+
+export function generateDeviceName(os: string): string {
+  const normalized = (os || 'windows').toLowerCase();
+  switch (normalized) {
+    case 'windows': {
+      const prefix = Math.random() > 0.4 ? 'DESKTOP' : 'LAPTOP';
+      return `${prefix}-${randomAlphanumeric(7)}`;
+    }
+    case 'macos': {
+      const macModels = [
+        'MacBook-Pro.local',
+        'MacBook-Air.local',
+        'MacBookPro18,1',
+        'MacBookAir10,1',
+        'Mac-Studio.local',
+        'iMac.local',
+        `MacBook-de-${['Alex', 'Lucas', 'Carlos', 'Gabriel', 'Rafael', 'Matheus'][Math.floor(Math.random() * 6)]}.local`,
+      ];
+      return macModels[Math.floor(Math.random() * macModels.length)];
+    }
+    case 'linux': {
+      const linuxHosts = [
+        `workstation-${randomAlphanumeric(4).toLowerCase()}`,
+        `ubuntu-desktop-${randomAlphanumeric(4).toLowerCase()}`,
+        `fedora-pc-${randomAlphanumeric(4).toLowerCase()}`,
+        `arch-box-${randomAlphanumeric(4).toLowerCase()}`,
+        `linux-node-${randomAlphanumeric(4).toLowerCase()}`,
+      ];
+      return linuxHosts[Math.floor(Math.random() * linuxHosts.length)];
+    }
+    case 'android': {
+      const androidModels = [
+        'SM-S918B', // Galaxy S23 Ultra
+        'SM-S928B', // Galaxy S24 Ultra
+        'SM-G998B', // Galaxy S21 Ultra
+        'Pixel-8-Pro',
+        'Pixel-7a',
+        'Xiaomi-13-Ultra',
+        'OnePlus-11-5G',
+      ];
+      return androidModels[Math.floor(Math.random() * androidModels.length)];
+    }
+    case 'ios': {
+      const iosNames = [
+        'iPhone 15 Pro',
+        'iPhone 15 Pro Max',
+        'iPhone 14 Pro',
+        'iPhone 13',
+        'iPad Pro (12.9-inch)',
+        'iPad Air (5th gen)',
+      ];
+      return iosNames[Math.floor(Math.random() * iosNames.length)];
+    }
+    default:
+      return `DESKTOP-${randomAlphanumeric(7)}`;
+  }
+}
+
+const OUI_BY_OS: Record<string, string[]> = {
+  windows: [
+    '00:1B:21',
+    '00:E0:4C',
+    '9C:B6:D0',
+    '70:85:C2',
+    'B4:2E:99',
+    '28:D2:44',
+  ],
+  macos: [
+    'A4:83:E7',
+    'F0:18:98',
+    '3C:22:FB',
+    '14:7D:DA',
+    'AC:BC:32',
+    '8C:85:90',
+  ],
+  linux: [
+    '00:0C:29',
+    '52:54:00',
+    '00:16:3E',
+    '00:1B:21',
+    '70:85:C2',
+    '00:E0:4C',
+  ],
+  android: [
+    '54:4E:90',
+    '98:D6:F7',
+    '44:65:0D',
+    'B8:8A:EC',
+    '3C:CD:57',
+    'F4:F5:24',
+  ],
+  ios: ['A4:83:E7', 'F0:18:98', '3C:22:FB', '14:7D:DA', 'AC:BC:32', '8C:85:90'],
+};
+
+export function generateMacAddress(os: string): string {
+  const normalized = (os || 'windows').toLowerCase();
+  const ouis = OUI_BY_OS[normalized] || OUI_BY_OS.windows;
+  const prefix = ouis[Math.floor(Math.random() * ouis.length)];
+  const hex = '0123456789ABCDEF';
+  const octet = () =>
+    `${hex.charAt(Math.floor(Math.random() * 16))}${hex.charAt(Math.floor(Math.random() * 16))}`;
+  return `${prefix}:${octet()}:${octet()}:${octet()}`;
+}
+
+// ============================================================================
+// Subcomponentes de Formulário
+// ============================================================================
 
 const FormRow: React.FC<{
   label: string;
@@ -40,7 +253,7 @@ const SegmentedGroup: React.FC<{
   value: string;
   onChange: (id: string) => void;
 }> = ({ options, value, onChange }) => (
-  <div className="flex w-fit flex-wrap items-center rounded-lg border border-[#333541] bg-[#1C1D24] p-1">
+  <div className="flex w-fit flex-wrap items-center rounded-lg border border-white/10 bg-[#14151B] p-0.5 shadow-2xs gap-0.5">
     {options.map((item) => {
       const isSelected = value === item.id;
       const btn = (
@@ -50,8 +263,8 @@ const SegmentedGroup: React.FC<{
           onClick={() => onChange(item.id)}
           className={`cursor-pointer rounded-md px-3 py-1.5 text-[12px] font-medium transition-all select-none ${
             isSelected
-              ? 'bg-[#383944] text-white shadow-sm'
-              : 'text-[#8E92A2] hover:text-[#C5C9D7]'
+              ? 'border border-white/10 bg-white/[0.09] font-semibold text-white shadow-xs'
+              : 'border border-transparent text-[#8E92A2] hover:bg-white/[0.04] hover:text-white'
           }`}
         >
           {item.label}
@@ -77,42 +290,33 @@ const ShuffleInput: React.FC<{
   title: string;
   mono?: boolean;
   maxWidthClass?: string;
+  placeholder?: string;
 }> = ({
   value,
   onChange,
   onShuffle,
   title,
   mono = false,
-  maxWidthClass = 'max-w-sm',
+  maxWidthClass = 'max-w-md',
+  placeholder = '',
 }) => (
   <div className={`flex ${maxWidthClass} items-center gap-2`}>
     <input
       type="text"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`flex-1 rounded border border-[#333541] bg-[#16171D] px-3 py-1.5 text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none ${
+      placeholder={placeholder}
+      className={`flex-1 rounded-md border border-white/10 bg-[#14151B] px-3.5 py-2 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none ${
         mono ? 'font-mono' : ''
       }`}
     />
     <button
       type="button"
       onClick={onShuffle}
-      className="cursor-pointer rounded border border-[#3A3C4B] bg-[#2B2D38] p-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+      className="flex h-[37px] w-[37px] shrink-0 cursor-pointer items-center justify-center rounded-md border border-white/10 bg-white/[0.05] text-[#00FF66] shadow-2xs transition-all hover:border-white/20 hover:bg-white/10 active:scale-95"
       title={title}
     >
-      <svg
-        className="h-3.5 w-3.5"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <polyline points="16 3 21 3 21 8" />
-        <line x1="4" y1="20" x2="21" y2="3" />
-        <polyline points="21 16 21 21 16 21" />
-        <line x1="15" y1="15" x2="21" y2="21" />
-        <line x1="4" y1="4" x2="9" y2="9" />
-      </svg>
+      <Shuffle size={14} />
     </button>
   </div>
 );
@@ -130,7 +334,9 @@ const NoisePill: React.FC<{
     >
       <div
         className={`h-4 w-8 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${
-          checked ? 'bg-[#00FF66] shadow-[0_0_8px_rgba(0,255,102,0.35)]' : 'bg-[#333541]'
+          checked
+            ? 'bg-[#00FF66] shadow-[0_0_8px_rgba(0,255,102,0.35)]'
+            : 'bg-[#333541]'
         }`}
       >
         <div
@@ -150,32 +356,66 @@ const NoisePill: React.FC<{
   </Tooltip>
 );
 
+// ============================================================================
+// Componente Principal ImpressaoDigitalTab
+// ============================================================================
+
 export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
   formData,
   onChange,
 }) => {
+  const currentOs = (formData.os || 'windows').toLowerCase();
+
+  // Sincroniza e garante dados realistas caso os campos estejam vazios ou inconsistentes com o SO
+  useEffect(() => {
+    const gpuPool = GPU_POOLS_BY_OS[currentOs] || GPU_POOLS_BY_OS.windows;
+    const isRendererInPool = gpuPool.some(
+      (g) => g.renderer === formData.webglRenderer
+    );
+
+    // Se o renderer estiver vazio ou pertencer a um ecossistema completamente conflitante
+    if (!formData.webglRenderer || !isRendererInPool) {
+      const defaultGpu = gpuPool[0];
+      onChange('webglVendor', defaultGpu.vendor);
+      onChange('webglRenderer', defaultGpu.renderer);
+    }
+
+    // Se nome do dispositivo estiver vazio, gera um hostname realista para o SO
+    if (!formData.deviceName) {
+      onChange('deviceName', generateDeviceName(currentOs));
+    }
+
+    // Se MAC Address estiver vazio, gera um MAC formatado real
+    if (!formData.macAddress) {
+      onChange('macAddress', generateMacAddress(currentOs));
+    }
+  }, [currentOs]);
+
   const handleShuffleRenderer = () => {
-    const pool = config.webglRenderersPool;
-    const random = pool[Math.floor(Math.random() * pool.length)];
-    onChange('webglRenderer', random);
+    const gpuPool = GPU_POOLS_BY_OS[currentOs] || GPU_POOLS_BY_OS.windows;
+    const random = gpuPool[Math.floor(Math.random() * gpuPool.length)];
+    onChange('webglVendor', random.vendor);
+    onChange('webglRenderer', random.renderer);
   };
 
   const handleShuffleDeviceName = () => {
-    onChange('deviceName', '');
+    const name = generateDeviceName(currentOs);
+    onChange('deviceName', name);
   };
 
   const handleShuffleMacAddress = () => {
-    onChange('macAddress', '');
+    const mac = generateMacAddress(currentOs);
+    onChange('macAddress', mac);
   };
 
   return (
     <div className="flex-1 space-y-4 pr-1 text-[#D2D5DF]">
-      {/* Título de seção com linha divisória cinza */}
+      {/* Título de seção com linha divisória Obsidian */}
       <div className="flex items-center gap-3">
         <span className="text-[12px] font-medium text-[#7E8294] select-none">
           Impressão Digital (Fingerprint)
         </span>
-        <div className="h-[1px] flex-1 bg-[#2E303B]" />
+        <div className="h-[1px] flex-1 bg-white/10" />
       </div>
 
       {/* 1. WebRTC */}
@@ -199,7 +439,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.customTimezone}
               onChange={(e) => onChange('customTimezone', e.target.value)}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.timezones.map((tz) => (
                 <option key={tz.value} value={tz.value}>
@@ -215,15 +455,15 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
       {(() => {
         const isLatInvalid = Boolean(
           formData.customLatitude &&
-          (isNaN(Number(formData.customLatitude)) ||
-            Number(formData.customLatitude) < -90 ||
-            Number(formData.customLatitude) > 90),
+            (isNaN(Number(formData.customLatitude)) ||
+              Number(formData.customLatitude) < -90 ||
+              Number(formData.customLatitude) > 90)
         );
         const isLngInvalid = Boolean(
           formData.customLongitude &&
-          (isNaN(Number(formData.customLongitude)) ||
-            Number(formData.customLongitude) < -180 ||
-            Number(formData.customLongitude) > 180),
+            (isNaN(Number(formData.customLongitude)) ||
+              Number(formData.customLongitude) < -180 ||
+              Number(formData.customLongitude) > 180)
         );
 
         return (
@@ -241,7 +481,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                   <label
                     key={perm.id}
                     onClick={() => onChange('locationPermission', perm.id)}
-                    className="flex cursor-pointer items-center gap-2 text-[12.5px] text-[#A6ABB9] select-none hover:text-[#D2D5DF]"
+                    className="flex cursor-pointer items-center gap-2 text-[12.5px] text-[#A6ABB9] select-none hover:text-white"
                   >
                     <input
                       type="radio"
@@ -256,12 +496,12 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
               </div>
             )}
 
-            {/* Coordenadas customizadas com regras da imagem */}
+            {/* Coordenadas customizadas */}
             {formData.locationMode === 'custom' && (
-              <div className="max-w-lg space-y-3.5 rounded-lg border border-[#333541] bg-[#1C1D24] p-3.5">
+              <div className="max-w-lg space-y-3.5 rounded-xl border border-white/10 bg-[#14151B] p-3.5">
                 <div>
                   <label className="mb-1.5 block text-[12px] text-[#A6ABB9]">
-                    <span className="mr-1 font-bold text-red-500">*</span>
+                    <span className="mr-1 font-bold text-red-400">*</span>
                     Latitude / Longitude
                   </label>
                   <div className="grid grid-cols-2 items-start gap-3">
@@ -276,7 +516,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         className={`w-full rounded-md bg-[#16171D] px-3 py-2 text-[12.5px] text-white transition-colors focus:outline-none ${
                           isLatInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
-                            : 'border border-[#333541] focus:border-white/60 focus:ring-1 focus:ring-white/15'
+                            : 'border border-white/10 focus:border-white/40 focus:ring-1 focus:ring-white/10'
                         }`}
                       />
                       {isLatInvalid && (
@@ -297,7 +537,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         className={`w-full rounded-md bg-[#16171D] px-3 py-2 text-[12.5px] text-white transition-colors focus:outline-none ${
                           isLngInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
-                            : 'border border-[#333541] focus:border-white/60 focus:ring-1 focus:ring-white/15'
+                            : 'border border-white/10 focus:border-white/40 focus:ring-1 focus:ring-white/10'
                         }`}
                       />
                       {isLngInvalid && (
@@ -321,7 +561,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                     onChange={(e) =>
                       onChange('customAccuracy', Number(e.target.value) || 0)
                     }
-                    className="w-36 rounded-md border border-[#333541] bg-[#16171D] px-3 py-2 text-[12.5px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+                    className="w-36 rounded-md border border-white/10 bg-[#16171D] px-3 py-2 text-[12.5px] text-white transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
                   />
                 </div>
               </div>
@@ -342,7 +582,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.customLanguage}
               onChange={(e) => onChange('customLanguage', e.target.value)}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.languages.map((lang) => (
                 <option key={lang.value} value={lang.value}>
@@ -366,7 +606,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.screenResolution}
               onChange={(e) => onChange('screenResolution', e.target.value)}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.screenResolutions.map((res) => (
                 <option key={res} value={res}>
@@ -385,7 +625,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
               onChange={(e) =>
                 onChange('customScreenWidth', e.target.value.replace(/\D/g, ''))
               }
-              className="w-24 rounded border border-[#333541] bg-[#1C1D24] px-3 py-1.5 text-center text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+              className="w-24 rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-center text-[12px] text-white transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             />
             <span className="text-[#8E92A2]">×</span>
             <input
@@ -395,10 +635,10 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
               onChange={(e) =>
                 onChange(
                   'customScreenHeight',
-                  e.target.value.replace(/\D/g, ''),
+                  e.target.value.replace(/\D/g, '')
                 )
               }
-              className="w-24 rounded border border-[#333541] bg-[#1C1D24] px-3 py-1.5 text-center text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+              className="w-24 rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-center text-[12px] text-white transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             />
           </div>
         )}
@@ -444,34 +684,36 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           onChange={(val) => onChange('webglMetadataMode', val)}
         />
         {(formData.webglMetadataMode || 'custom') === 'custom' && (
-          <div className="max-w-lg space-y-3 rounded-lg border border-[#333541] bg-[#1C1D24] p-3">
+          <div className="max-w-lg space-y-3.5 rounded-xl border border-white/10 bg-[#14151B] p-3.5">
             <div>
-              <label className="mb-1 block text-[11.5px] text-[#8E92A2]">
-                Fornecedor
+              <label className="mb-1.5 block text-[11.5px] font-medium text-[#8E92A2]">
+                Fornecedor (Vendor)
               </label>
-              <select
-                value={formData.webglVendor}
+              <input
+                type="text"
+                value={formData.webglVendor || ''}
                 onChange={(e) => onChange('webglVendor', e.target.value)}
-                className="w-full rounded border border-[#333541] bg-[#16171D] px-3 py-1.5 text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
-              >
-                {config.webglVendors.map((v) => (
-                  <option key={v} value={v}>
-                    {v}
-                  </option>
-                ))}
-              </select>
+                placeholder="Ex: Google Inc. (NVIDIA)"
+                className="w-full rounded-md border border-white/10 bg-[#16171D] px-3.5 py-2 text-[12.5px] text-white transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
+              />
             </div>
 
             <div>
-              <label className="mb-1 block text-[11.5px] text-[#8E92A2]">
-                Renderizador
-              </label>
+              <div className="mb-1.5 flex items-center justify-between">
+                <label className="block text-[11.5px] font-medium text-[#8E92A2]">
+                  Renderizador GPU ({currentOs.toUpperCase()})
+                </label>
+                <span className="text-[10.5px] text-[#6E7284]">
+                  Sorteio adaptado para {currentOs}
+                </span>
+              </div>
               <ShuffleInput
-                value={formData.webglRenderer}
+                value={formData.webglRenderer || ''}
                 onChange={(val) => onChange('webglRenderer', val)}
                 onShuffle={handleShuffleRenderer}
-                title="Sortear Renderizador"
+                title={`Sortear Renderizador autêntico para ${currentOs}`}
                 maxWidthClass="w-full"
+                placeholder="Modelo de GPU"
               />
             </div>
           </div>
@@ -499,7 +741,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.cpuCores}
               onChange={(e) => onChange('cpuCores', Number(e.target.value))}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.cpuCoresOptions.map((cores) => (
                 <option key={cores} value={cores}>
@@ -523,7 +765,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             <select
               value={formData.ramGb || 8}
               onChange={(e) => onChange('ramGb', Number(e.target.value))}
-              className="w-full rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 text-[12.5px] text-[#C4C7D5] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+              className="w-full rounded-md border border-white/10 bg-[#14151B] px-3 py-2 text-[12.5px] text-[#C4C7D5] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
             >
               {config.ramOptions.map((ram) => (
                 <option key={ram} value={ram}>
@@ -552,12 +794,18 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           onChange={(val) => onChange('deviceNameMode', val)}
         />
         {(formData.deviceNameMode || 'custom') === 'custom' && (
-          <ShuffleInput
-            value={formData.deviceName || ''}
-            onChange={(val) => onChange('deviceName', val)}
-            onShuffle={handleShuffleDeviceName}
-            title="Sortear Nome"
-          />
+          <div className="space-y-1">
+            <ShuffleInput
+              value={formData.deviceName || ''}
+              onChange={(val) => onChange('deviceName', val)}
+              onShuffle={handleShuffleDeviceName}
+              title={`Sortear nome de máquina (${currentOs})`}
+              placeholder={`ex: ${generateDeviceName(currentOs)}`}
+            />
+            <span className="block text-[11px] text-[#6E7284]">
+              Hostname autêntico para ecossistema {currentOs.toUpperCase()}
+            </span>
+          </div>
         )}
       </FormRow>
 
@@ -569,13 +817,19 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           onChange={(val) => onChange('macAddressMode', val)}
         />
         {(formData.macAddressMode || 'custom') === 'custom' && (
-          <ShuffleInput
-            value={formData.macAddress || ''}
-            onChange={(val) => onChange('macAddress', val)}
-            onShuffle={handleShuffleMacAddress}
-            title="Sortear MAC"
-            mono
-          />
+          <div className="space-y-1">
+            <ShuffleInput
+              value={formData.macAddress || ''}
+              onChange={(val) => onChange('macAddress', val)}
+              onShuffle={handleShuffleMacAddress}
+              title={`Sortear MAC Address real (${currentOs})`}
+              placeholder="00:1B:21:AA:BB:CC"
+              mono
+            />
+            <span className="block text-[11px] text-[#6E7284]">
+              Endereço físico verossímil com OUI legítimo
+            </span>
+          </div>
         )}
       </FormRow>
 
@@ -600,7 +854,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           placeholder="Opcional: Portas autorizadas (ex: 80, 443, 8080)"
           value={formData.portScanAllowedPorts || ''}
           onChange={(e) => onChange('portScanAllowedPorts', e.target.value)}
-          className="w-full max-w-md rounded border border-[#333541] bg-[#1C1D24] px-3 py-1.5 text-[12px] text-white focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+          className="w-full max-w-md rounded-md border border-white/10 bg-[#14151B] px-3.5 py-2 text-[12.5px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
         />
       </FormRow>
 
@@ -629,9 +883,11 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           value={formData.launchHook || ''}
           onChange={(e) => onChange('launchHook', e.target.value)}
           placeholder={`--disable-notifications\n--blink-settings=imagesEnabled=false`}
-          className="w-full max-w-lg rounded-md border border-[#333541] bg-[#1C1D24] px-3 py-2 font-mono text-[12px] text-white placeholder-[#5C6070] focus:border-white/60 focus:ring-1 focus:ring-white/15 focus:outline-none"
+          className="w-full max-w-lg rounded-xl border border-white/10 bg-[#14151B] px-3.5 py-2.5 font-mono text-[12px] text-white placeholder-[#5C6070] transition-colors focus:border-white/40 focus:ring-1 focus:ring-white/10 focus:outline-none"
         />
       </FormRow>
     </div>
   );
 };
+
+export default ImpressaoDigitalTab;
