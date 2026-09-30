@@ -13,6 +13,7 @@ import {
   RotateCw,
   Tag,
   HelpCircle,
+  Check,
 } from 'lucide-react';
 
 interface ProxyTabProps {
@@ -282,7 +283,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                     : 'border border-white/10 hover:border-white/25'
                 }`}
               >
-                <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
+                <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
                   <Globe
                     size={15}
                     className={`shrink-0 transition-colors ${
@@ -292,7 +293,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                   <span
                     className={`truncate text-[12.5px] ${
                       selectedSavedProxy
-                        ? 'font-medium text-white'
+                        ? 'font-semibold text-white'
                         : 'text-[#8E92A2]'
                     }`}
                   >
@@ -300,6 +301,11 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                       ? `${selectedSavedProxy.name || `${selectedSavedProxy.host}:${selectedSavedProxy.port}`}`
                       : 'Selecione um proxy do banco...'}
                   </span>
+                  {selectedSavedProxy && (
+                    <span className="rounded bg-[#00FF66]/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#00FF66] border border-[#00FF66]/20 shrink-0 uppercase">
+                      {(selectedSavedProxy.type || selectedSavedProxy.proxy_type || 'HTTP').toUpperCase()}
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
@@ -381,44 +387,71 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                           <div
                             key={proxy.id || index}
                             onClick={() => handleSelectSavedProxy(proxy)}
-                            className={`flex cursor-pointer items-center justify-between gap-3 rounded-lg px-2.5 py-2 transition-all ${
+                            className={`group relative flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2.5 transition-all select-none ${
                               isSelected
-                                ? 'border border-white/15 bg-white/[0.09]'
-                                : 'border border-transparent hover:bg-white/[0.05]'
+                                ? 'border border-[#00FF66]/35 bg-[#00FF66]/[0.06] shadow-[0_0_12px_rgba(0,255,102,0.06)]'
+                                : 'border border-white/[0.04] bg-white/[0.015] hover:border-white/10 hover:bg-white/[0.04]'
                             }`}
                           >
+                            {/* Indicador vertical verde no item selecionado */}
+                            {isSelected && (
+                              <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#00FF66]" />
+                            )}
+
                             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                              <span className="flex h-5 shrink-0 items-center justify-center rounded border border-white/10 bg-white/[0.06] px-1.5 font-mono text-[10px] text-[#A6ABB9]">
-                                #{index + 1}
+                              {/* Badge de Protocolo */}
+                              <span
+                                className={`flex shrink-0 items-center justify-center rounded px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wider uppercase transition-colors ${
+                                  isSelected
+                                    ? 'bg-[#00FF66]/15 text-[#00FF66] border border-[#00FF66]/30'
+                                    : 'bg-white/[0.06] text-[#A6ABB9] border border-white/10 group-hover:text-white'
+                                }`}
+                              >
+                                {protocol}
                               </span>
+
+                              {/* Nome e Detalhes do Proxy */}
                               <div className="min-w-0 flex-1">
-                                <div className="truncate font-mono text-[12px] font-medium leading-snug text-white">
-                                  {proxy.name ||
-                                    `${protocol.toLowerCase()}://${proxy.host}:${proxy.port}`}
+                                <div
+                                  className={`truncate font-mono text-[12.5px] leading-tight transition-colors ${
+                                    isSelected
+                                      ? 'font-bold text-white'
+                                      : 'font-medium text-[#E1E4EE] group-hover:text-white'
+                                  }`}
+                                >
+                                  {proxy.name || `${proxy.host}:${proxy.port}`}
                                 </div>
-                                <div className="mt-0.5 flex items-center gap-1.5 truncate text-[11px] text-[#8E92A2]">
-                                  <span className="font-semibold text-white/70">
-                                    {protocol}
-                                  </span>
-                                  <span className="text-[#4E5160]">•</span>
-                                  <span className="font-mono">
-                                    {proxy.host}:{proxy.port}
-                                  </span>
+                                <div className="mt-1 flex items-center gap-1.5 truncate text-[11px] text-[#7E8294]">
+                                  <span className="font-mono">{proxy.host}:{proxy.port}</span>
                                   {proxy.country && (
                                     <>
                                       <span className="text-[#4E5160]">•</span>
-                                      <span className="text-white/60">
-                                        {proxy.country}
-                                      </span>
+                                      <span className="text-white/60">{proxy.country}</span>
+                                    </>
+                                  )}
+                                  {proxy.user && (
+                                    <>
+                                      <span className="text-[#4E5160]">•</span>
+                                      <span className="text-[#7E8294] truncate">user: {proxy.user}</span>
                                     </>
                                   )}
                                 </div>
                               </div>
                             </div>
 
-                            <div className="flex shrink-0 items-center gap-1.5 pl-2 font-mono text-[11.5px] text-[#00FF66]">
-                              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#00FF66] shadow-[0_0_6px_rgba(0,255,102,0.6)]" />
-                              <span>{proxy.ping ? `${proxy.ping}ms` : 'Ativo'}</span>
+                            {/* Lado Direito: Badge Selecionado ou Ping */}
+                            <div className="flex shrink-0 items-center gap-2 pl-2">
+                              {isSelected ? (
+                                <span className="flex items-center gap-1 rounded-full border border-[#00FF66]/30 bg-[#00FF66]/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-[#00FF66] shadow-[0_0_8px_rgba(0,255,102,0.2)]">
+                                  <Check size={11} strokeWidth={3} />
+                                  <span>Selecionado</span>
+                                </span>
+                              ) : (
+                                <div className="flex items-center gap-1.5 font-mono text-[11px] text-[#7E8294] group-hover:text-white/70">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-white/20 group-hover:bg-[#00FF66]" />
+                                  <span>{proxy.ping ? `${proxy.ping}ms` : 'Disponível'}</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
