@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@source "./(app)/**/*.{ts,tsx,js,jsx}";
+@source "./components/**/*.{ts,tsx,js,jsx}";
+@source "./contexts/**/*.{ts,tsx,js,jsx}";
+@source "./config/**/*.{ts,tsx,js,jsx}";
+@source "./services/**/*.{ts,tsx,js,jsx}";
+@source "./App.tsx";
+@source "./index.html";
+
 @theme {
   --color-kinetic: #FF334B;
   --color-kinetic-hover: #E0243C;
@@ -36,11 +44,11 @@
   }
 
   ::selection {
-    background-color: #FF334B;
-    color: #FFFFFF;
+    background-color: #00FF66;
+    color: #000000;
   }
 
-  /* Custom sleek scrollbar */
+  /* Custom sleek scrollbar global */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -54,5 +62,75 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #363a4a;
+  }
+}
+
+/* Animações e Keyframes para Modais e Componentes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes enterAnimation {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1));
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+  }
+}
+
+@utility animate-fadeIn {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@utility animate-in {
+  animation: enterAnimation 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --tw-enter-opacity: 1;
+  --tw-enter-scale: 1;
+  --tw-enter-translate-x: 0;
+  --tw-enter-translate-y: 0;
+}
+
+@utility fade-in {
+  --tw-enter-opacity: 0;
+}
+
+@utility zoom-in-95 {
+  --tw-enter-scale: 0.95;
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #3E4150 #14151B;
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #14151B;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #3E4150;
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #5A5E73;
   }
 }

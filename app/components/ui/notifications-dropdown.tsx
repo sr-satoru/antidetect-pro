@@ -100,7 +100,7 @@ export const NotificationsDropdown: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-white tracking-wide">Notificações</span>
               {unreadCount > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full bg-[#00FF66]/15 border border-[#00FF66]/30 text-[#00FF66] text-[10px] font-bold">
+                <span className="px-1.5 py-0.5 rounded-full bg-[#00FF66]/15 border border-[#00FF66]/30 text-[#00FF66] text-[10px] font-bold">
                   {unreadCount} novas
                 </span>
               )}

@@ -59,7 +59,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
               <FirefoxIcon size={16} />
             </div>
             <span>Firefox Add-ons (AMO)</span>
-            <span className="rounded-sm bg-[#FF7139]/20 px-1.5 py-0.2 text-[10px] font-semibold text-[#FF7139]">
+            <span className="rounded-sm bg-[#FF7139]/20 px-1.5 py-0.5 text-[10px] font-semibold text-[#FF7139]">
               Nativo AstroFox
             </span>
           </button>
@@ -77,7 +77,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
               <div className="h-full w-full rounded-full bg-[#161720]" />
             </div>
             <span>Chrome Web Store</span>
-            <span className="rounded-sm bg-white/10 px-1.5 py-0.2 text-[10px] font-medium text-white/80">
+            <span className="rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-white/80">
               Chromium
             </span>
           </button>

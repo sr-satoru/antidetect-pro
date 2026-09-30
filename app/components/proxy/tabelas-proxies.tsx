@@ -47,8 +47,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
         <CadastroProxies onClose={onCloseCadastro} onSave={onSaveCadastro} />
       ) : (
         <>
-          {/* Scrollable Table Area */}
-          <div className="flex-1 [scrollbar-width:thin] [scrollbar-color:#3E4150_#14151B] overflow-x-auto overflow-y-visible [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-[#3E4150] [&::-webkit-scrollbar-thumb:hover]:bg-white/40 [&::-webkit-scrollbar-track]:bg-[#14151B]">
+          <div className="flex-1 custom-scrollbar overflow-x-auto overflow-y-visible">
             <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
               {/* Header */}
               <thead className="sticky top-0 z-20 border-b border-white/10 bg-[#14151B] text-[11px] font-semibold tracking-wider text-[#A6ABB9] uppercase select-none">

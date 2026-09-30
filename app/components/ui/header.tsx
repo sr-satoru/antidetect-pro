@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           title="Central de Tarefas"
         >
           <ListTodo size={14} />
-          <span className="bg-[#2A1215] text-[#FF334B] text-[10px] font-bold px-1.5 py-0.2 rounded-full font-mono border border-[#FF334B]/30">
+          <span className="bg-[#2A1215] text-[#FF334B] text-[10px] font-bold px-1.5 py-0.5 rounded-full font-mono border border-[#FF334B]/30">
             0
           </span>
         </button>

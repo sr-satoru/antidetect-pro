@@ -101,7 +101,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             <RotateCcw size={14} />
             <span>Restaurar Selecionados</span>
             {selectedCount > 0 && (
-              <span className="ml-1 rounded-full bg-[#00FF66]/20 px-1.5 py-0.2 text-[11px] font-bold text-[#00FF66]">
+              <span className="ml-1 rounded-full bg-[#00FF66]/20 px-1.5 py-0.5 text-[11px] font-bold text-[#00FF66]">
                 {selectedCount}
               </span>
             )}
