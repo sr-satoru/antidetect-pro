@@ -34,7 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
 
   const navItemClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 group relative ${isActive
-      ? 'bg-[#181a22] text-[#00FF66] font-semibold shadow-xs'
+      ? 'bg-[#181a22] text-[#FF334B] font-semibold shadow-xs'
       : 'text-[#9093A2] hover:bg-[#14161e] hover:text-[#F4F4F6]'
     } ${isCollapsed ? 'justify-center px-2' : ''}`;
 
@@ -49,8 +49,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
           to="/perfis"
           className="flex items-center gap-2.5 overflow-hidden transition-all"
         >
-          <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#00FF66] to-[#00D655] text-black flex items-center justify-center shadow-[0_0_14px_rgba(0,255,102,0.4)] shrink-0">
-            <Star size={15} className="fill-black stroke-black" />
+          <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#FF334B] to-[#E0243C] text-white flex items-center justify-center shadow-[0_0_14px_rgba(255,51,75,0.45)] shrink-0">
+            <Star size={15} className="fill-white stroke-white" />
           </div>
           {!isCollapsed && (
             <div className="flex flex-col leading-tight">
@@ -79,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         <button
           type="button"
           onClick={handleNewProfile}
-          className={`w-full flex items-center justify-center gap-2 bg-[#00FF66] hover:bg-[#00D655] text-black font-semibold text-[13px] rounded-lg transition-all shadow-[0_2px_12px_rgba(0,255,102,0.25)] active:scale-[0.98] ${isCollapsed ? 'h-9 px-0' : 'h-9 px-3'
+          className={`w-full flex items-center justify-center gap-2 bg-[#FF334B] hover:bg-[#E0243C] text-white font-semibold text-[13px] rounded-lg transition-all shadow-[0_2px_12px_rgba(255,51,75,0.3)] active:scale-[0.98] ${isCollapsed ? 'h-9 px-0' : 'h-9 px-3'
             }`}
           title="Criar Novo Perfil"
         >

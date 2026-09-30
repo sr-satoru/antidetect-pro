@@ -84,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           title="Central de Tarefas"
         >
           <ListTodo size={14} />
-          <span className="bg-[#122A1E] text-[#00FF66] text-[10px] font-bold px-1.5 py-0.2 rounded-full font-mono border border-[#00FF66]/30">
+          <span className="bg-[#2A1215] text-[#FF334B] text-[10px] font-bold px-1.5 py-0.2 rounded-full font-mono border border-[#FF334B]/30">
             0
           </span>
         </button>
@@ -133,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           ) : (
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2 rounded-lg border border-white/20 bg-[#15161D] px-2.5 py-1 select-none">
-                <div className="w-6 h-6 rounded-full bg-[#00FF66]/15 border border-[#00FF66]/30 flex items-center justify-center text-xs font-bold text-[#00FF66]">
+                <div className="w-6 h-6 rounded-full bg-[#FF334B]/15 border border-[#FF334B]/30 flex items-center justify-center text-xs font-bold text-[#FF334B]">
                   {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <div className="flex flex-col text-left">
