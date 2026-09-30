@@ -98,9 +98,13 @@ export const UpdateCenterDropdown: React.FC = () => {
         setIsAppReadyToRestart(true);
         toast.success('Atualização baixada com sucesso! Clique em reiniciar para aplicar.');
       }
-    });
+    }, appRelease?.downloadUrl);
 
-    if (!res.success) {
+    if (res.downloadedDirectly) {
+      setIsAppDownloading(false);
+      setAppStage('idle');
+      toast.success(res.message);
+    } else if (!res.success) {
       setIsAppDownloading(false);
       toast.error(res.message);
     } else {
@@ -346,19 +350,25 @@ export const UpdateCenterDropdown: React.FC = () => {
 
             {/* Caso 4: Nova Versão do Aplicativo Star Multlogin */}
             {appRelease?.hasUpdate && (
-              <div className="rounded-xl bg-[#14151C] border border-blue-500/30 p-4 space-y-3">
+              <div className="rounded-xl bg-[#14151C] border border-[#00FF66]/25 p-4 space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 shrink-0 mt-0.5">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <div className="p-2 rounded-lg bg-[#00FF66]/10 border border-[#00FF66]/20 text-[#00FF66] shrink-0 mt-0.5">
                       <RefreshCw size={16} className={isAppDownloading ? 'animate-spin' : ''} />
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="text-xs font-semibold text-white">
                         Nova versão {appRelease.tagName} disponível!
                       </div>
-                      <div className="text-[11px] text-[#8E92A2] mt-0.5">
-                        Versão atual: v{CURRENT_APP_VERSION} • {appRelease.platform}
+                      <div className="text-[11px] text-[#8E92A2] mt-0.5 truncate">
+                        Versão atual: v{CURRENT_APP_VERSION} • {appRelease.arch || appRelease.platform}
                       </div>
+                      {appRelease.assetName && (
+                        <div className="text-[10.5px] font-mono text-[#00FF66] mt-0.5 truncate flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66] shrink-0" />
+                          <span>Pacote compatível: {appRelease.assetName}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -366,9 +376,9 @@ export const UpdateCenterDropdown: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleStartAppDownload}
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer"
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all shadow-md shadow-[#00FF66]/20 active:scale-95 cursor-pointer"
                     >
-                      <Download size={13} />
+                      <Download size={13} strokeWidth={2.5} />
                       <span>Atualizar</span>
                     </button>
                   )}
@@ -378,9 +388,9 @@ export const UpdateCenterDropdown: React.FC = () => {
                       type="button"
                       onClick={handleApplyRestart}
                       disabled={isRestarting}
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00FF66] hover:bg-[#00D655] text-black text-xs font-bold transition-all shadow-md shadow-[#00FF66]/20 active:scale-95 cursor-pointer disabled:opacity-50"
                     >
-                      <RefreshCw size={13} className={isRestarting ? 'animate-spin' : ''} />
+                      <RefreshCw size={13} className={isRestarting ? 'animate-spin' : ''} strokeWidth={2.5} />
                       <span>{isRestarting ? 'Reiniciando...' : 'Reiniciar Agora'}</span>
                     </button>
                   )}

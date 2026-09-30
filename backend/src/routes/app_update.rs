@@ -29,7 +29,81 @@ pub struct AppUpdateResponse {
     pub body: String,
     pub published_at: String,
     pub html_url: String,
+    pub platform: String,
+    pub os_name: String,
+    pub matched_asset: Option<AppAssetInfo>,
     pub assets: Vec<AppAssetInfo>,
+}
+
+fn resolve_platform_and_asset(assets: &[AppAssetInfo]) -> (String, String, Option<AppAssetInfo>) {
+    let os = if cfg!(target_os = "windows") {
+        "windows"
+    } else if cfg!(target_os = "macos") {
+        "macos"
+    } else if cfg!(target_os = "linux") {
+        "linux"
+    } else {
+        "unknown"
+    };
+
+    let os_display = if cfg!(target_os = "windows") {
+        "Windows"
+    } else if cfg!(target_os = "macos") {
+        "macOS"
+    } else if cfg!(target_os = "linux") {
+        "Linux"
+    } else {
+        "Desconhecido"
+    };
+
+    let is_arm64 = cfg!(target_arch = "aarch64");
+    let arch_label = if is_arm64 { "arm64" } else { "x86_64" };
+    let platform_key = format!("{}-{}", os, arch_label);
+
+    let matched = match os {
+        "linux" => {
+            // No Linux, prioriza .AppImage (roda em qualquer distro), seguido de .deb (Ubuntu/Debian) e .rpm
+            assets
+                .iter()
+                .find(|a| a.name.ends_with(".AppImage"))
+                .or_else(|| assets.iter().find(|a| a.name.ends_with(".deb")))
+                .or_else(|| assets.iter().find(|a| a.name.ends_with(".rpm")))
+                .cloned()
+        }
+        "windows" => {
+            // No Windows, prioriza setup.exe (NSIS), seguido de .msi ou qualquer .exe
+            assets
+                .iter()
+                .find(|a| a.name.to_lowercase().contains("setup.exe") || a.name.to_lowercase().ends_with(".exe"))
+                .or_else(|| assets.iter().find(|a| a.name.to_lowercase().ends_with(".msi")))
+                .cloned()
+        }
+        "macos" => {
+            // No macOS, filtra por arquitetura (aarch64 / Apple Silicon vs x64)
+            if is_arm64 {
+                assets
+                    .iter()
+                    .find(|a| {
+                        let lower = a.name.to_lowercase();
+                        (lower.contains("aarch64") || lower.contains("arm64")) && lower.ends_with(".dmg")
+                    })
+                    .or_else(|| assets.iter().find(|a| a.name.to_lowercase().ends_with(".dmg")))
+                    .cloned()
+            } else {
+                assets
+                    .iter()
+                    .find(|a| {
+                        let lower = a.name.to_lowercase();
+                        (lower.contains("x64") || lower.contains("x86_64")) && lower.ends_with(".dmg")
+                    })
+                    .or_else(|| assets.iter().find(|a| a.name.to_lowercase().ends_with(".dmg")))
+                    .cloned()
+            }
+        }
+        _ => assets.first().cloned(),
+    };
+
+    (platform_key, os_display.to_string(), matched)
 }
 
 fn is_version_newer(latest: &str, current: &str) -> bool {
@@ -71,6 +145,7 @@ pub async fn check_app_update_handler(
         Ok(r) => r,
         Err(e) => {
             tracing::warn!("⚠️ Erro ao consultar releases no GitHub: {}", e);
+            let (platform, os_name, _) = resolve_platform_and_asset(&[]);
             return Ok(Json(AppUpdateResponse {
                 has_update: false,
                 current_version: current_version.clone(),
@@ -80,6 +155,9 @@ pub async fn check_app_update_handler(
                 body: String::new(),
                 published_at: String::new(),
                 html_url: "https://github.com/sr-satoru/antidetect-pro/releases".to_string(),
+                platform,
+                os_name,
+                matched_asset: None,
                 assets: Vec::new(),
             }));
         }
@@ -87,6 +165,7 @@ pub async fn check_app_update_handler(
 
     if !resp.status().is_success() {
         tracing::warn!("⚠️ GitHub Releases retornou status HTTP: {}", resp.status());
+        let (platform, os_name, _) = resolve_platform_and_asset(&[]);
         return Ok(Json(AppUpdateResponse {
             has_update: false,
             current_version: current_version.clone(),
@@ -96,6 +175,9 @@ pub async fn check_app_update_handler(
             body: String::new(),
             published_at: String::new(),
             html_url: "https://github.com/sr-satoru/antidetect-pro/releases".to_string(),
+            platform,
+            os_name,
+            matched_asset: None,
             assets: Vec::new(),
         }));
     }
@@ -154,6 +236,8 @@ pub async fn check_app_update_handler(
         }
     }
 
+    let (platform, os_name, matched_asset) = resolve_platform_and_asset(&assets);
+
     Ok(Json(AppUpdateResponse {
         has_update,
         current_version,
@@ -163,6 +247,9 @@ pub async fn check_app_update_handler(
         body,
         published_at,
         html_url,
+        platform,
+        os_name,
+        matched_asset,
         assets,
     }))
 }

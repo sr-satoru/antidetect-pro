@@ -73,11 +73,11 @@ export const appUpdateService = {
           publishedAt: data.published_at || '',
           htmlUrl: data.html_url || 'https://github.com/sr-satoru/antidetect-pro/releases',
           hasUpdate: !!data.has_update,
-          downloadUrl: data.assets?.[0]?.download_url,
-          assetName: data.assets?.[0]?.name,
-          assetSize: data.assets?.[0]?.size_bytes,
-          platform: 'desktop',
-          arch: 'rust-backend',
+          downloadUrl: data.matched_asset?.download_url || data.assets?.[0]?.download_url,
+          assetName: data.matched_asset?.name || data.assets?.[0]?.name,
+          assetSize: data.matched_asset?.size_bytes || data.assets?.[0]?.size_bytes,
+          platform: data.platform || 'desktop',
+          arch: data.os_name || 'rust-backend',
         };
       }
     } catch (err) {
@@ -123,8 +123,9 @@ export const appUpdateService = {
    * Invoca o comando Rust nativo `start_app_download` e monitora eventos nativos `app-update-progress`
    */
   async startDownload(
-    onProgress?: (progress: number, downloaded: number, total: number) => void
-  ): Promise<{ success: boolean; message: string }> {
+    onProgress?: (progress: number, downloaded: number, total: number) => void,
+    fallbackDownloadUrl?: string
+  ): Promise<{ success: boolean; message: string; downloadedDirectly?: boolean }> {
     try {
       if (onProgress) {
         await tauriListen<any>('app-update-progress', (payload) => {
@@ -135,7 +136,19 @@ export const appUpdateService = {
       await tauriInvoke('start_app_download');
       return { success: true, message: 'Download e instalação iniciados pelo Rust nativo.' };
     } catch (err: any) {
-      console.error('[Rust Updater] Falha ao iniciar download no Rust:', err);
+      console.warn('[Rust Updater] Falha no comando Tauri nativo, acionando download direto:', err);
+      if (fallbackDownloadUrl && typeof window !== 'undefined') {
+        const link = document.createElement('a');
+        link.href = fallbackDownloadUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.click();
+        return {
+          success: true,
+          downloadedDirectly: true,
+          message: 'Download do instalador oficial para sua máquina iniciado.',
+        };
+      }
       return {
         success: false,
         message: err?.message || String(err) || 'Falha ao solicitar download nativo em Rust.',
