@@ -394,10 +394,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   };
 
   return (
-    <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] flex flex-col md:flex-row min-h-[580px]">
+    <div className="bg-[#13141C] border border-white/10 rounded-2xl overflow-hidden shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col md:flex-row min-h-[580px]">
       {/* PAINEL ESQUERDO: Lista de Endpoints para Navegação */}
-      <div className="w-full md:w-[260px] bg-[#222222]/90 border-b md:border-b-0 md:border-r border-white/[0.08] p-3.5 flex flex-col shrink-0 space-y-3">
-        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#9E9E9E] px-2 block">
+      <div className="w-full md:w-[260px] bg-[#101117] border-b md:border-b-0 md:border-r border-white/10 p-3.5 flex flex-col shrink-0 space-y-3">
+        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#8E92A2] px-2 block">
           Catálogo de Rotas
         </span>
 
@@ -414,8 +414,8 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                 }}
                 className={`w-full text-left px-3 py-2 rounded-xl text-[12px] font-medium transition-all flex items-center justify-between gap-2 ${
                   isSelected
-                    ? 'bg-[#3b3b3b] text-[#00FF66] font-bold shadow-xs border border-white/[0.08]'
-                    : 'text-[#D4D4D8] hover:bg-[#2c2c2c] hover:text-white'
+                    ? 'bg-[#1F212D] text-[#00FF66] font-bold shadow-xs border border-white/15'
+                    : 'text-[#C4C7D5] hover:bg-white/[0.05] hover:text-white'
                 }`}
               >
                 <div className="flex items-center gap-2 truncate">
@@ -438,27 +438,27 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       </div>
 
       {/* PAINEL DIREITO: IDÊNTICO À IMAGEM DO USUÁRIO (3 CARDS VERTICAIS) */}
-      <div className="flex-1 p-5 md:p-6 flex flex-col space-y-5 overflow-y-auto bg-[#2b2b2b]/40">
+      <div className="flex-1 p-5 md:p-6 flex flex-col space-y-5 overflow-y-auto bg-[#151620]">
         {/* ========================================================================= */}
         {/* CARD 1: Base URL                                                          */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl overflow-hidden border border-[#3e3e3e] shadow-md">
+        <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#121319] shadow-lg">
           {/* Header Bar */}
-          <div className="bg-[#1f1f1f] px-5 py-3 border-b border-[#333333]">
+          <div className="bg-[#181922] px-5 py-3 border-b border-white/10">
             <h3 className="text-[13px] font-bold text-white tracking-wide">Base URL</h3>
           </div>
 
           {/* Body */}
-          <div className="bg-[#2c2c2c] p-5 space-y-3.5 text-xs">
+          <div className="bg-[#121319] p-5 space-y-3.5 text-xs">
             <div>
-              <span className="text-[#9E9E9E] font-medium block mb-1">Produção:</span>
+              <span className="text-[#8E92A2] font-medium block mb-1">Produção:</span>
               <span className="text-white font-mono text-[13px] select-all block">
                 {baseUrl}
               </span>
             </div>
 
             <div>
-              <span className="text-[#9E9E9E] font-medium block mb-1">SandBox (Homolog):</span>
+              <span className="text-[#8E92A2] font-medium block mb-1">SandBox (Homolog):</span>
               <span className="text-white font-mono text-[13px] select-all block">
                 {sandboxUrl}
               </span>
@@ -469,14 +469,14 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         {/* ========================================================================= */}
         {/* CARD 2: Language Box (Tabs com Ícones em Cima e Texto Embaixo)              */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl overflow-hidden border border-[#3e3e3e] shadow-md">
+        <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#121319] shadow-lg">
           {/* Header Bar */}
-          <div className="bg-[#1f1f1f] px-5 py-3 border-b border-[#333333]">
+          <div className="bg-[#181922] px-5 py-3 border-b border-white/10">
             <h3 className="text-[13px] font-bold text-white tracking-wide">Language Box</h3>
           </div>
 
           {/* Body: Horizontal Language Selector */}
-          <div className="bg-[#2c2c2c] px-4 pt-4 pb-0 overflow-x-auto">
+          <div className="bg-[#121319] px-4 pt-4 pb-0 overflow-x-auto">
             <div className="flex items-center gap-2 min-w-max">
               {languages.map((lang) => {
                 const isSelected = selectedLang === lang.id;
@@ -512,9 +512,9 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         {/* ========================================================================= */}
         {/* CARD 3: Code Box com Linhas Numeradas e Botão 'Try in API Explorer'         */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl overflow-hidden border border-[#2a2a2a] bg-[#111111] shadow-xl relative">
+        <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#0C0D12] shadow-2xl relative">
           {/* Code Header Inside */}
-          <div className="px-5 py-3.5 flex items-center justify-between border-b border-[#222222]">
+          <div className="px-5 py-3.5 flex items-center justify-between border-b border-white/10 bg-[#161722]/80">
             <div className="flex items-center gap-2.5 font-mono text-[13px]">
               <span className="text-[#05c46b] font-bold tracking-wide">
                 {selectedEndpoint.method}
@@ -554,7 +554,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
           {/* Numbered Code Content */}
           <div className="p-4 overflow-x-auto text-[13px] font-mono leading-relaxed flex min-h-[220px]">
             {/* Line numbers gutter */}
-            <div className="select-none text-[#555555] pr-4 text-right border-r border-[#222222] mr-4 flex flex-col font-mono text-[12px]">
+            <div className="select-none text-[#555555] pr-4 text-right border-r border-white/10 mr-4 flex flex-col font-mono text-[12px]">
               {lines.map((_, i) => (
                 <span key={i}>{i + 1}</span>
               ))}
@@ -599,7 +599,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             <button
               type="button"
               onClick={() => setShowExplorer(!showExplorer)}
-              className="bg-[#242424] hover:bg-[#2c2c2c] active:scale-95 text-white text-[12px] font-bold px-4 py-2 rounded-xl border border-[#3e3e3e] shadow-md transition-all flex items-center gap-1.5"
+              className="bg-[#181922] hover:bg-[#202230] active:scale-95 text-white text-[12px] font-bold px-4 py-2 rounded-xl border border-white/10 shadow-md transition-all flex items-center gap-1.5"
             >
               <span>Try in API Explorer</span>
             </button>
@@ -608,7 +608,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
 
         {/* EXPANSÃO DO "API EXPLORER" (Quando clica no botão Try in API Explorer) */}
         {showExplorer && (
-          <div className="rounded-2xl border border-white/[0.1] bg-[#1a1a1a] p-5 shadow-2xl space-y-4 animate-fadeIn">
+          <div className="rounded-2xl border border-white/10 bg-[#121319] p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.8)] space-y-4 animate-fadeIn">
             <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300">
@@ -636,7 +636,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   type="text"
                   value={testParamId}
                   onChange={(e) => setTestParamId(e.target.value)}
-                  className="w-full bg-[#262626] border border-white/[0.1] rounded-xl px-3 py-1.5 text-[12px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
+                  className="w-full bg-[#0C0D12] border border-white/10 rounded-xl px-3 py-1.5 text-[12px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
                 />
               </div>
 
@@ -662,7 +662,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   </span>
                   <span className="text-[#8E8E93]">18ms</span>
                 </div>
-                <pre className="bg-[#111111] border border-white/[0.08] rounded-xl p-3.5 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto shadow-inner">
+                <pre className="bg-[#08090C] border border-white/10 rounded-xl p-3.5 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto shadow-inner">
                   {JSON.stringify(apiResponse, null, 2)}
                 </pre>
               </div>

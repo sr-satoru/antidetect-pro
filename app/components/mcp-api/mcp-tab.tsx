@@ -158,7 +158,7 @@ export const McpTab: React.FC<McpTabProps> = ({
   return (
     <div className="space-y-5">
       {/* Top Connection Card */}
-      <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 md:p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] space-y-4">
+      <div className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 md:p-6 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-[16px] font-bold text-white flex items-center gap-2">
@@ -174,7 +174,7 @@ export const McpTab: React.FC<McpTabProps> = ({
             type="button"
             onClick={handleRunTest}
             disabled={isTesting}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#484848] hover:bg-[#525252] border border-white/[0.08] text-[#00FF66] text-[12px] font-bold transition-all shrink-0 active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#1F212D] hover:bg-[#282B3A] border border-white/15 text-[#00FF66] text-[12px] font-bold transition-all shrink-0 active:scale-95 disabled:opacity-50"
           >
             <Play size={13} className={isTesting ? 'animate-spin' : ''} />
             <span>{isTesting ? 'Testando...' : 'Testar Conexão MCP'}</span>
@@ -182,7 +182,7 @@ export const McpTab: React.FC<McpTabProps> = ({
         </div>
 
         {/* Client selector tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 p-1 bg-[#282828] border border-white/[0.08] rounded-xl w-fit">
+        <div className="flex flex-wrap items-center gap-1.5 p-1 bg-[#0C0D12] border border-white/10 rounded-xl w-fit">
           {(['claude', 'cursor', 'antigravity', 'cli'] as const).map((key) => (
             <button
               key={key}
@@ -190,7 +190,7 @@ export const McpTab: React.FC<McpTabProps> = ({
               onClick={() => setSelectedClient(key)}
               className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all ${
                 selectedClient === key
-                  ? 'bg-[#484848] text-[#00FF66] shadow-xs'
+                  ? 'bg-[#1F212D] text-[#00FF66] shadow-sm border border-white/15'
                   : 'text-[#A0A0A0] hover:text-white'
               }`}
             >
@@ -201,13 +201,13 @@ export const McpTab: React.FC<McpTabProps> = ({
 
         {/* Snippet box */}
         <div className="relative group">
-          <pre className="bg-[#242424]/90 border border-white/[0.08] rounded-xl p-4 text-[12px] font-mono text-[#EDEDED] overflow-x-auto max-h-[220px] shadow-inner">
+          <pre className="bg-[#0C0D12] border border-white/10 rounded-xl p-4 text-[12px] font-mono text-[#EDEDED] overflow-x-auto max-h-[220px] shadow-inner">
             {clientConfigs[selectedClient].json}
           </pre>
           <button
             type="button"
             onClick={handleCopySnippet}
-            className="absolute top-2.5 right-2.5 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#404040] hover:bg-[#4d4d4d] text-[#00FF66] text-[11px] font-bold border border-white/[0.08] transition-all"
+            className="absolute top-2.5 right-2.5 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1E202B] hover:bg-[#282B3A] text-[#00FF66] text-[11px] font-bold border border-white/10 transition-all"
           >
             {copiedSnippet ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
             <span>{copiedSnippet ? 'Copiado!' : 'Copiar JSON'}</span>
@@ -216,12 +216,12 @@ export const McpTab: React.FC<McpTabProps> = ({
 
         {/* Path Hint */}
         <div className="text-[11px] text-[#A6A6A6]">
-          Arquivo de configuração: <code className="text-white font-mono bg-[#282828] px-2 py-0.5 rounded">{clientConfigs[selectedClient].pathText}</code>
+          Arquivo de configuração: <code className="text-white font-mono bg-[#181922] border border-white/10 px-2 py-0.5 rounded">{clientConfigs[selectedClient].pathText}</code>
         </div>
 
         {/* Test Result Preview */}
         {testOutput && (
-          <div className="pt-3 border-t border-white/[0.08] space-y-1.5 animate-fadeIn">
+          <div className="pt-3 border-t border-white/10 space-y-1.5 animate-fadeIn">
             <div className="flex items-center justify-between text-[11px] font-mono text-emerald-400 font-bold">
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 size={13} /> Resposta do Servidor MCP:
@@ -230,7 +230,7 @@ export const McpTab: React.FC<McpTabProps> = ({
                 Fechar
               </button>
             </div>
-            <pre className="bg-[#1e1e1e] border border-white/[0.08] rounded-xl p-3 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto shadow-inner">
+            <pre className="bg-[#08090C] border border-white/10 rounded-xl p-3 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto shadow-inner">
               {testOutput}
             </pre>
           </div>
@@ -240,7 +240,7 @@ export const McpTab: React.FC<McpTabProps> = ({
       {/* Two clean columns: Prompts & Allowed Tools */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Column 1: Prompts */}
-        <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] space-y-3">
+        <div className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-3">
           <h4 className="text-[13px] font-bold text-white flex items-center gap-1.5">
             <Sparkles size={15} className="text-[#00FF66]" />
             O Que Pedir Para a IA no Chat:
@@ -253,7 +253,7 @@ export const McpTab: React.FC<McpTabProps> = ({
             ].map((prompt, idx) => (
               <div
                 key={idx}
-                className="text-[12px] text-[#D4D4D8] bg-[#282828]/80 hover:bg-[#303030] px-3.5 py-2.5 rounded-xl border border-white/[0.04] font-mono select-all transition-colors cursor-pointer"
+                className="text-[12px] text-[#D4D4D8] bg-[#181922] hover:bg-[#202230] px-3.5 py-2.5 rounded-xl border border-white/10 font-mono select-all transition-colors cursor-pointer"
                 onClick={() => {
                   navigator.clipboard.writeText(prompt.replace(/"/g, ''));
                   toast.success('Prompt copiado!');
@@ -266,7 +266,7 @@ export const McpTab: React.FC<McpTabProps> = ({
         </div>
 
         {/* Column 2: Allowed Tools */}
-        <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] space-y-3">
+        <div className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-[13px] font-bold text-white flex items-center gap-1.5">
               <Code2 size={15} className="text-[#00FF66]" />
@@ -281,7 +281,7 @@ export const McpTab: React.FC<McpTabProps> = ({
             {tools.map((t) => (
               <div
                 key={t.name}
-                className="flex items-center justify-between bg-[#282828]/60 px-3 py-2 rounded-xl text-[12px] border border-white/[0.04]"
+                className="flex items-center justify-between bg-[#181922] px-3 py-2 rounded-xl text-[12px] border border-white/10"
               >
                 <div>
                   <code className="text-[#00FF66] font-mono font-bold block">{t.name}</code>

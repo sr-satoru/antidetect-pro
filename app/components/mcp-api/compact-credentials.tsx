@@ -71,7 +71,7 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
       </button>
 
       {/* Base URL Pill */}
-      <div className="flex items-center gap-2 bg-[#383838]/80 hover:bg-[#383838] border border-white/[0.08] rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-xs">
+      <div className="flex items-center gap-2 bg-[#13141B] hover:bg-[#181922] border border-white/10 rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-sm">
         <Globe size={13} className="text-[#00FF66] shrink-0" />
         <span className="text-[#D4D4D8] select-all">{baseUrl}</span>
         <button
@@ -85,7 +85,7 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
       </div>
 
       {/* Secret Token Pill */}
-      <div className="flex items-center gap-2 bg-[#383838]/80 hover:bg-[#383838] border border-white/[0.08] rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-xs">
+      <div className="flex items-center gap-2 bg-[#13141B] hover:bg-[#181922] border border-white/10 rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-sm">
         <Key size={13} className="text-amber-400 shrink-0" />
         <span className="text-[#D4D4D8] select-all">
           {showToken ? activeToken : `${activeToken.substring(0, 14)}••••••••••`}

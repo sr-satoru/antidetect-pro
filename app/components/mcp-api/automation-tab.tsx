@@ -336,7 +336,7 @@ runPuppeteer();
   return (
     <div className="space-y-6">
       {/* Prerequisites Banner */}
-      <div className="bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-[#00FF66]/15 border border-[#00FF66]/30 flex items-center justify-center text-[#00FF66] shrink-0 shadow-[0_0_15px_rgba(0,255,102,0.18)]">
             <Zap size={20} />
@@ -355,7 +355,7 @@ runPuppeteer();
         </div>
 
         {/* Command Badge */}
-        <div className="bg-[#2c2c2c]/90 border border-[#484848] rounded-xl px-3.5 py-2 font-mono text-[11px] text-[#D8D8D8] shrink-0">
+        <div className="bg-[#0C0D12] border border-white/10 rounded-xl px-3.5 py-2 font-mono text-[11px] text-[#D8D8D8] shrink-0">
           <span className="text-[#A0A0A0] block text-[9px] uppercase font-bold font-sans">
             Instalação Mínima:
           </span>
@@ -366,7 +366,7 @@ runPuppeteer();
       {/* Main Grid: Recipe Selector on Left, Code on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Recipe Selector */}
-        <div className="lg:col-span-4 bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-4 shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] space-y-3">
+        <div className="lg:col-span-4 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-3">
           <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-[#A0A0A0] px-1 flex items-center gap-1.5">
             <Boxes size={14} className="text-[#00FF66]" />
             Cenários de Automação
@@ -381,15 +381,15 @@ runPuppeteer();
                   onClick={() => setSelectedRecipe(r.id)}
                   className={`p-3 rounded-xl border cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-[#484848] border-[#00FF66]/80 shadow-[0_4px_20px_rgba(0,0,0,0.25)]'
-                      : 'bg-[#2c2c2c]/75 border-[#484848] hover:bg-[#353535] hover:border-[#5c5c5c]'
+                      ? 'bg-[#1F212D] border-white/20 shadow-md text-[#00FF66]'
+                      : 'bg-[#181922] border-white/10 hover:bg-[#202230] hover:border-white/15'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[13px] font-bold text-white">
+                    <span className={`text-[13px] font-bold ${isSelected ? 'text-[#00FF66]' : 'text-white'}`}>
                       {r.title}
                     </span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#383838] text-[#C4C4C4] border border-[#525252] shrink-0">
+                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#0C0D12] text-[#C4C4C4] border border-white/10 shrink-0">
                       {r.tag}
                     </span>
                   </div>
@@ -403,8 +403,8 @@ runPuppeteer();
         </div>
 
         {/* Right Column: Code Display */}
-        <div className="lg:col-span-8 bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#4d4d4d]/60">
+        <div className="lg:col-span-8 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
             <div>
               <h4 className="text-[14px] font-bold text-white flex items-center gap-2">
                 <FileCode size={16} className="text-[#00FF66]" />
@@ -416,14 +416,14 @@ runPuppeteer();
             </div>
 
             {/* Language Switcher */}
-            <div className="flex items-center gap-1.5 p-1 bg-[#2c2c2c]/85 border border-[#484848] rounded-xl backdrop-blur-sm">
+            <div className="flex items-center gap-1.5 p-1 bg-[#0C0D12] border border-white/10 rounded-xl backdrop-blur-sm">
               <button
                 type="button"
                 onClick={() => setSelectedLang('python')}
                 className={`py-1.5 px-3 rounded-lg text-[12px] font-bold transition-all ${
                   selectedLang === 'python'
-                    ? 'bg-[#484848] text-[#00FF66] font-bold shadow-sm border border-[#606060]'
-                    : 'text-[#A6A6A6] hover:text-white hover:bg-[#383838]/60'
+                    ? 'bg-[#1F212D] text-[#00FF66] font-bold shadow-sm border border-white/15'
+                    : 'text-[#A6A6A6] hover:text-white'
                 }`}
               >
                 Python (Playwright)
@@ -433,8 +433,8 @@ runPuppeteer();
                 onClick={() => setSelectedLang('node')}
                 className={`py-1.5 px-3 rounded-lg text-[12px] font-bold transition-all ${
                   selectedLang === 'node'
-                    ? 'bg-[#484848] text-[#00FF66] font-bold shadow-sm border border-[#606060]'
-                    : 'text-[#A6A6A6] hover:text-white hover:bg-[#383838]/60'
+                    ? 'bg-[#1F212D] text-[#00FF66] font-bold shadow-sm border border-white/15'
+                    : 'text-[#A6A6A6] hover:text-white'
                 }`}
               >
                 Node.js
@@ -444,13 +444,13 @@ runPuppeteer();
 
           {/* Code Editor Container */}
           <div className="relative group">
-            <pre className="bg-[#242424]/95 border border-[#484848] rounded-xl p-4 text-[12px] font-mono text-[#F0F0F0] overflow-x-auto max-h-[440px] leading-relaxed shadow-inner">
+            <pre className="bg-[#0C0D12] border border-white/10 rounded-xl p-4 text-[12px] font-mono text-[#F0F0F0] overflow-x-auto max-h-[440px] leading-relaxed shadow-inner">
               {recipeCodes[selectedRecipe][selectedLang]}
             </pre>
             <button
               type="button"
               onClick={handleCopyCode}
-              className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#424242] hover:bg-[#4e4e4e] text-[#00FF66] text-[12px] font-bold border border-[#585858] transition-all shadow-sm"
+              className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1E202B] hover:bg-[#282B3A] text-[#00FF66] text-[12px] font-bold border border-white/10 transition-all shadow-sm"
             >
               {copiedCode ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
               <span>{copiedCode ? 'Copiado!' : 'Copiar Script'}</span>
@@ -458,7 +458,7 @@ runPuppeteer();
           </div>
 
           {/* Quick Info Footer */}
-          <div className="flex items-center justify-between pt-2 border-t border-[#4d4d4d]/50 text-[11px] text-[#A6A6A6]">
+          <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[11px] text-[#A6A6A6]">
             <span>Endereço da API: <strong className="text-white font-mono">{baseUrl}</strong></span>
             <span className="text-emerald-400 flex items-center gap-1">
               <ShieldCheck size={13} />

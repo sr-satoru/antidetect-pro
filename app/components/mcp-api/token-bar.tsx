@@ -34,9 +34,9 @@ export const TokenBar: React.FC<TokenBarProps> = ({
   };
 
   return (
-    <div className="bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] space-y-4 transition-all">
+    <div className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4 transition-all">
       {/* Top row: Title and Security Badges */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#4d4d4d]/60">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-[#00FF66]/15 border border-[#00FF66]/30 flex items-center justify-center text-[#00FF66] shadow-[0_0_16px_rgba(0,255,102,0.18)]">
             <Lock size={17} />
@@ -57,11 +57,11 @@ export const TokenBar: React.FC<TokenBarProps> = ({
 
         {/* Security tags */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-medium bg-[#454545]/70 text-[#E0E0E0] border border-[#5a5a5a]/70 backdrop-blur-sm shadow-xs">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-medium bg-[#181922] text-[#E0E0E0] border border-white/10 backdrop-blur-sm shadow-xs">
             <Globe size={12} className="text-[#00FF66]" />
             Loopback 127.0.0.1
           </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-medium bg-[#454545]/70 text-[#E0E0E0] border border-[#5a5a5a]/70 backdrop-blur-sm shadow-xs">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-medium bg-[#181922] text-[#E0E0E0] border border-white/10 backdrop-blur-sm shadow-xs">
             <ShieldCheck size={12} className="text-emerald-400" />
             Permissão 0600
           </span>
@@ -76,12 +76,12 @@ export const TokenBar: React.FC<TokenBarProps> = ({
             <span>Endereço Base da API</span>
             <span className="text-emerald-400 font-medium lowercase">porta: {apiPort}</span>
           </label>
-          <div className="flex items-center bg-[#2c2c2c]/90 backdrop-blur-md border border-[#4d4d4d]/80 hover:border-[#606060] focus-within:border-white/60 focus-within:ring-1 focus-within:ring-white/15 rounded-xl px-3.5 py-2.5 text-[13px] text-white font-mono transition-colors shadow-inner">
+          <div className="flex items-center bg-[#0C0D12] backdrop-blur-md border border-white/10 hover:border-white/20 focus-within:border-white/60 focus-within:ring-1 focus-within:ring-white/15 rounded-xl px-3.5 py-2.5 text-[13px] text-white font-mono transition-colors shadow-inner">
             <span className="flex-1 truncate select-all">{baseUrl}</span>
             <button
               type="button"
               onClick={handleCopyUrl}
-              className="ml-2 p-1.5 text-[#B0B0B0] hover:text-[#00FF66] hover:bg-[#454545] rounded-lg transition-all"
+              className="ml-2 p-1.5 text-[#B0B0B0] hover:text-[#00FF66] hover:bg-[#1E202B] rounded-lg transition-all"
               title="Copiar URL"
             >
               {copiedUrl ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
@@ -95,7 +95,7 @@ export const TokenBar: React.FC<TokenBarProps> = ({
             <span>Bearer Token Secreto</span>
             <span className="text-[#00FF66] font-medium lowercase">anti-CSRF blindado</span>
           </label>
-          <div className="flex items-center bg-[#2c2c2c]/90 backdrop-blur-md border border-[#4d4d4d]/80 hover:border-[#606060] focus-within:border-white/60 focus-within:ring-1 focus-within:ring-white/15 rounded-xl px-3.5 py-2 text-[13px] text-white font-mono gap-2 transition-colors shadow-inner">
+          <div className="flex items-center bg-[#0C0D12] backdrop-blur-md border border-white/10 hover:border-white/20 focus-within:border-white/60 focus-within:ring-1 focus-within:ring-white/15 rounded-xl px-3.5 py-2 text-[13px] text-white font-mono gap-2 transition-colors shadow-inner">
             <Key size={15} className="text-[#00FF66] shrink-0" />
             <input
               type={showToken ? 'text' : 'password'}
@@ -107,7 +107,7 @@ export const TokenBar: React.FC<TokenBarProps> = ({
               <button
                 type="button"
                 onClick={() => setShowToken(!showToken)}
-                className="p-1.5 text-[#B0B0B0] hover:text-white hover:bg-[#454545] rounded-lg transition-all"
+                className="p-1.5 text-[#B0B0B0] hover:text-white hover:bg-[#1E202B] rounded-lg transition-all"
                 title={showToken ? 'Ocultar token' : 'Revelar token'}
               >
                 {showToken ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -115,7 +115,7 @@ export const TokenBar: React.FC<TokenBarProps> = ({
               <button
                 type="button"
                 onClick={handleCopyToken}
-                className="p-1.5 text-[#B0B0B0] hover:text-[#00FF66] hover:bg-[#454545] rounded-lg transition-all"
+                className="p-1.5 text-[#B0B0B0] hover:text-[#00FF66] hover:bg-[#1E202B] rounded-lg transition-all"
                 title="Copiar token"
               >
                 {copiedToken ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
@@ -124,7 +124,7 @@ export const TokenBar: React.FC<TokenBarProps> = ({
                 <button
                   type="button"
                   onClick={onRefreshToken}
-                  className="p-1.5 text-[#B0B0B0] hover:text-amber-400 hover:bg-[#454545] rounded-lg transition-all ml-1 border-l border-[#4d4d4d] pl-2"
+                  className="p-1.5 text-[#B0B0B0] hover:text-amber-400 hover:bg-[#1E202B] rounded-lg transition-all ml-1 border-l border-white/10 pl-2"
                   title="Gerar novo token"
                 >
                   <RefreshCw size={15} />

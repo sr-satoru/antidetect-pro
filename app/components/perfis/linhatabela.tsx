@@ -181,18 +181,18 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   const isStriped = index % 2 === 1;
 
-  // Cores do Zebrado e Seleção
+  // Cores do Zebrado e Seleção Minimalista Cinza / Meio-Branco
   const rowBg = isSelected
-    ? 'bg-[#00FF66]/16 border-l-2 border-l-[#00FF66]'
+    ? 'bg-white/[0.08] border-l-2 border-l-white/70'
     : isStriped
-      ? 'bg-[#2C2D33] hover:bg-[#484848]'
-      : 'bg-[#383838] hover:bg-[#484848]';
+      ? 'bg-[#1F2027] hover:bg-white/[0.04]'
+      : 'bg-[#181920] hover:bg-white/[0.04]';
 
   const stickyBg = isSelected
-    ? 'bg-[#171c20]'
+    ? 'bg-[#262832]'
     : isStriped
-      ? 'bg-[#2C2D33] group-hover:bg-[#484848]'
-      : 'bg-[#383838] group-hover:bg-[#484848]';
+      ? 'bg-[#1F2027] group-hover:bg-[#262832]'
+      : 'bg-[#181920] group-hover:bg-[#262832]';
 
   const osKey = (profile.os || 'linux').toLowerCase();
 
@@ -245,7 +245,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   return (
     <tr
-      className={`group h-[62px] border-b border-[#44444C] transition-colors ${rowBg}`}
+      className={`group h-[60px] border-b border-white/[0.07] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td className="w-[38px] max-w-[38px] min-w-[38px] px-3.5 py-2.5 text-center">
@@ -284,7 +284,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEdit(profile);
             }}
-            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#00FF66] hover:bg-[#00FF66]/15 hover:scale-110 active:scale-95 transition-all"
+            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
             title="Editar nome"
           >
             <EditIcon size={13} />
@@ -368,7 +368,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEditTags && onEditTags(profile);
             }}
-            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#00FF66] hover:bg-[#00FF66]/15 hover:scale-110 active:scale-95 transition-all"
+            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
             title="Editar etiquetas"
           >
             <EditIcon size={13} />
@@ -389,7 +389,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEditNotes && onEditNotes(profile);
             }}
-            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#00FF66] hover:bg-[#00FF66]/15 hover:scale-110 active:scale-95 transition-all"
+            className="ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8E92A2] hover:text-white hover:bg-white/10 transition-all active:scale-95"
             title="Editar observação"
           >
             <EditIcon size={13} />

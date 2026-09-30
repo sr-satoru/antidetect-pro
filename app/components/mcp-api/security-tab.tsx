@@ -65,7 +65,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ apiPort = 18922 }) => 
   return (
     <div className="space-y-5">
       {/* Top Status Card */}
-      <div className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5 md:p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 md:p-6 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
             <ShieldCheck size={22} />
@@ -87,7 +87,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ apiPort = 18922 }) => 
           type="button"
           onClick={handleRunAudit}
           disabled={isRunningAudit}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#484848] hover:bg-[#525252] border border-white/[0.08] text-emerald-300 text-[12px] font-bold transition-all shrink-0 active:scale-95 disabled:opacity-50"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#1F212D] hover:bg-[#282B3A] border border-white/15 text-[#00FF66] text-[12px] font-bold transition-all shrink-0 active:scale-95 disabled:opacity-50"
         >
           <RotateCw size={13} className={isRunningAudit ? 'animate-spin' : ''} />
           <span>{isRunningAudit ? 'Auditando...' : 'Verificar Blindagem'}</span>
@@ -106,7 +106,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ apiPort = 18922 }) => 
         {securityLayers.map((layer, idx) => (
           <div
             key={layer.id}
-            className="bg-[#383838]/70 backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 space-y-2 hover:border-white/[0.15] transition-all shadow-[0_4px_20px_0_rgba(0,0,0,0.15)]"
+            className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-4 space-y-2 hover:border-white/20 transition-all shadow-[0_8px_25px_-5px_rgba(0,0,0,0.6)]"
           >
             <div className="flex items-center justify-between gap-2">
               <span className="text-[13px] font-bold text-white flex items-center gap-2">

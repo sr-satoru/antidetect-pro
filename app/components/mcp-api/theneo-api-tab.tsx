@@ -438,7 +438,7 @@ await page.goto('${testParamUrl}');`;
   return (
     <div className="space-y-5">
       {/* Top Banner: Theneo / Stripe style docs */}
-      <div className="bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#00FF66]/15 text-[#00FF66] border border-[#00FF66]/30">
@@ -455,7 +455,7 @@ await page.goto('${testParamUrl}');`;
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[11px] font-mono px-3 py-1.5 rounded-xl bg-[#2c2c2c]/90 text-[#D4D4D4] border border-[#484848]">
+          <span className="text-[11px] font-mono px-3 py-1.5 rounded-xl bg-[#0C0D12] text-[#D4D4D4] border border-white/10">
             Base: <strong className="text-white">{baseUrl}</strong>
           </span>
         </div>
@@ -466,7 +466,7 @@ await page.goto('${testParamUrl}');`;
         {/* ========================================================================= */}
         {/* COLUNA 1: Navegação Lateral (Endpoints Tree & Search) [3 Colunas no Desktop] */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-3 bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-4 shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] space-y-4">
+        <div className="lg:col-span-3 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4">
           {/* Search Box */}
           <div className="relative">
             <Search size={14} className="absolute left-3 top-2.5 text-[#8E8E93]" />
@@ -475,7 +475,7 @@ await page.goto('${testParamUrl}');`;
               placeholder="Buscar endpoints..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#2c2c2c]/90 border border-[#484848] rounded-xl pl-9 pr-3 py-1.5 text-[12px] text-white placeholder-[#8E8E93] outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15 transition-all shadow-inner"
+              className="w-full bg-[#0C0D12] border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-[12px] text-white placeholder-[#8E8E93] outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15 transition-all shadow-inner"
             />
           </div>
 
@@ -503,8 +503,8 @@ await page.goto('${testParamUrl}');`;
                           }}
                           className={`w-full text-left px-2.5 py-2 rounded-xl transition-all flex items-center justify-between gap-2 text-[12px] ${
                             isSelected
-                              ? 'bg-[#484848] text-[#00FF66] font-bold border border-[#606060] shadow-sm'
-                              : 'text-[#D4D4D8] hover:bg-[#353535]/80 hover:text-white border border-transparent'
+                              ? 'bg-[#1F212D] text-[#00FF66] font-bold border border-white/15 shadow-sm'
+                              : 'text-[#D4D4D8] hover:bg-white/[0.04] hover:text-white border border-transparent'
                           }`}
                         >
                           <div className="flex items-center gap-2 truncate">
@@ -535,9 +535,9 @@ await page.goto('${testParamUrl}');`;
         {/* ========================================================================= */}
         {/* COLUNA 2: Documentação Técnica Central (Params, Body, Specs) [5 Colunas]  */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-5 bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] space-y-5">
+        <div className="lg:col-span-5 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-5">
           {/* Endpoint Header */}
-          <div className="space-y-2 pb-4 border-b border-[#4d4d4d]/60">
+          <div className="space-y-2 pb-4 border-b border-white/10">
             <div className="flex items-center gap-2 flex-wrap">
               <span
                 className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-lg font-mono ${
@@ -548,7 +548,7 @@ await page.goto('${testParamUrl}');`;
               >
                 {selectedEndpoint.method}
               </span>
-              <code className="text-[13px] font-mono font-bold text-white bg-[#2c2c2c]/90 px-2.5 py-0.5 rounded-lg border border-[#484848]">
+              <code className="text-[13px] font-mono font-bold text-white bg-[#0C0D12] px-2.5 py-0.5 rounded-lg border border-white/10">
                 {selectedEndpoint.path}
               </code>
             </div>
@@ -568,14 +568,14 @@ await page.goto('${testParamUrl}');`;
               <span className="text-emerald-400 font-normal">HTTP {selectedEndpoint.method}</span>
             </h4>
 
-            <div className="border border-[#484848] rounded-xl overflow-hidden bg-[#2c2c2c]/70 shadow-inner">
-              <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-[#333333] border-b border-[#484848] text-[10px] font-bold uppercase tracking-wider text-[#9E9E9E]">
+            <div className="border border-white/10 rounded-xl overflow-hidden bg-[#0C0D12] shadow-inner">
+              <div className="grid grid-cols-12 gap-2 px-3 py-2 bg-[#181922] border-b border-white/10 text-[10px] font-bold uppercase tracking-wider text-[#9E9E9E]">
                 <span className="col-span-4">Parâmetro</span>
                 <span className="col-span-3">Tipo</span>
                 <span className="col-span-5">Descrição</span>
               </div>
 
-              <div className="divide-y divide-[#3d3d3d]">
+              <div className="divide-y divide-white/10">
                 {selectedEndpoint.params.map((p, idx) => (
                   <div key={idx} className="grid grid-cols-12 gap-2 px-3 py-2.5 text-[11px] items-start">
                     <div className="col-span-4 font-mono font-bold text-white flex items-center gap-1.5 flex-wrap">
@@ -585,7 +585,7 @@ await page.goto('${testParamUrl}');`;
                           obrigatório
                         </span>
                       ) : (
-                        <span className="text-[9px] text-[#8E8E93] bg-[#3a3a3a] px-1 rounded">
+                        <span className="text-[9px] text-[#8E8E93] bg-white/[0.06] px-1 rounded">
                           opcional
                         </span>
                       )}
@@ -613,14 +613,14 @@ await page.goto('${testParamUrl}');`;
               <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-[#A0A0A0]">
                 Exemplo de JSON Body
               </h4>
-              <pre className="bg-[#242424]/95 border border-[#484848] rounded-xl p-3 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto shadow-inner">
+              <pre className="bg-[#0C0D12] border border-white/10 rounded-xl p-3 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto shadow-inner">
                 {JSON.stringify(selectedEndpoint.sampleBody, null, 2)}
               </pre>
             </div>
           )}
 
           {/* Security Notice */}
-          <div className="p-3 rounded-xl bg-[#2a2a2a]/80 border border-[#484848] flex items-start gap-2.5 text-[11px] text-[#A6A6A6]">
+          <div className="p-3 rounded-xl bg-[#181922] border border-white/10 flex items-start gap-2.5 text-[11px] text-[#A6A6A6]">
             <ShieldCheck size={16} className="text-emerald-400 shrink-0 mt-0.5" />
             <div>
               <strong className="text-white">Proteção Local Ativa:</strong> Requisições para este endpoint são restritas estritamente ao endereço loopback e rejeitam automaticamente requisições contendo cabeçalho <code>Origin</code>.
@@ -631,8 +631,8 @@ await page.goto('${testParamUrl}');`;
         {/* ========================================================================= */}
         {/* COLUNA 3: Code Console & Interactive Playground Theneo [4 Colunas]         */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-4 bg-[#383838]/75 backdrop-blur-xl border border-[#525252]/60 rounded-2xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.2)] space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#4d4d4d]/60">
+        <div className="lg:col-span-4 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-white/10">
             <h4 className="text-[13px] font-bold text-white flex items-center gap-1.5">
               <Terminal size={15} className="text-[#00FF66]" />
               Playground & Snippets
@@ -643,7 +643,7 @@ await page.goto('${testParamUrl}');`;
           </div>
 
           {/* Language Selector */}
-          <div className="flex items-center gap-1 p-1 bg-[#2c2c2c]/85 border border-[#484848] rounded-xl">
+          <div className="flex items-center gap-1 p-1 bg-[#0C0D12] border border-white/10 rounded-xl">
             {(['curl', 'python', 'node', 'playwright'] as const).map((lang) => (
               <button
                 key={lang}
@@ -651,8 +651,8 @@ await page.goto('${testParamUrl}');`;
                 onClick={() => setSelectedLang(lang)}
                 className={`flex-1 py-1 px-2 rounded-lg text-[11px] font-bold transition-all text-center ${
                   selectedLang === lang
-                    ? 'bg-[#484848] text-[#00FF66] shadow-sm border border-[#606060]'
-                    : 'text-[#A0A0A0] hover:text-white hover:bg-[#383838]/50'
+                    ? 'bg-[#1F212D] text-[#00FF66] shadow-sm border border-white/15'
+                    : 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
                 {lang === 'curl' ? 'cURL' : lang === 'python' ? 'Python' : lang === 'node' ? 'Node' : 'Playwright'}
@@ -662,13 +662,13 @@ await page.goto('${testParamUrl}');`;
 
           {/* Code Snippet Box */}
           <div className="relative group">
-            <pre className="bg-[#242424]/95 border border-[#484848] rounded-xl p-3.5 text-[11px] font-mono text-[#F0F0F0] overflow-x-auto max-h-[220px] leading-relaxed shadow-inner">
+            <pre className="bg-[#0C0D12] border border-white/10 rounded-xl p-3.5 text-[11px] font-mono text-[#F0F0F0] overflow-x-auto max-h-[220px] leading-relaxed shadow-inner">
               {getCodeSnippet()}
             </pre>
             <button
               type="button"
               onClick={handleCopyCode}
-              className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#424242] hover:bg-[#4e4e4e] text-[#00FF66] text-[10px] font-bold border border-[#585858] transition-all shadow-sm"
+              className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#1E202B] hover:bg-[#282B3A] text-[#00FF66] text-[10px] font-bold border border-white/10 transition-all shadow-sm"
             >
               {copiedCode ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
               <span>{copiedCode ? 'Copiado!' : 'Copiar'}</span>
@@ -676,7 +676,7 @@ await page.goto('${testParamUrl}');`;
           </div>
 
           {/* Try It Out Live Inputs */}
-          <div className="p-3.5 bg-[#2c2c2c]/80 border border-[#484848] rounded-xl space-y-3">
+          <div className="p-3.5 bg-[#181922] border border-white/10 rounded-xl space-y-3">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#A0A0A0] block">
               Parâmetros de Teste Dinâmico
             </span>
@@ -690,7 +690,7 @@ await page.goto('${testParamUrl}');`;
                   type="text"
                   value={testParamId}
                   onChange={(e) => setTestParamId(e.target.value)}
-                  className="w-full bg-[#202020] border border-[#424242] rounded-lg px-2.5 py-1 text-[11px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
+                  className="w-full bg-[#0C0D12] border border-white/10 rounded-lg px-2.5 py-1 text-[11px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
                 />
               </div>
 
@@ -703,7 +703,7 @@ await page.goto('${testParamUrl}');`;
                     type="text"
                     value={testParamUrl}
                     onChange={(e) => setTestParamUrl(e.target.value)}
-                    className="w-full bg-[#202020] border border-[#424242] rounded-lg px-2.5 py-1 text-[11px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
+                    className="w-full bg-[#0C0D12] border border-white/10 rounded-lg px-2.5 py-1 text-[11px] font-mono text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/15"
                   />
                 </div>
               )}
@@ -743,7 +743,7 @@ await page.goto('${testParamUrl}');`;
                 </div>
               </div>
 
-              <pre className="bg-[#1e1e1e] border border-[#444444] rounded-xl p-3 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto max-h-[220px] shadow-inner">
+              <pre className="bg-[#08090C] border border-white/10 rounded-xl p-3 text-[11px] font-mono text-[#DCDCDC] overflow-x-auto max-h-[220px] shadow-inner">
                 {JSON.stringify(liveResponse, null, 2)}
               </pre>
             </div>

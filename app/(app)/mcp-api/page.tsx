@@ -34,17 +34,17 @@ export const McpApiPage: React.FC = () => {
       </div>
 
       {/* Modern Segmented Navigation Pill (2 Tabs) */}
-      <div className="flex items-center gap-1.5 p-1 bg-[#383838]/60 backdrop-blur-xl border border-white/[0.08] rounded-2xl w-fit shrink-0 shadow-xs">
+      <div className="flex items-center gap-1.5 p-1 bg-[#13141B] border border-white/10 rounded-2xl w-fit shrink-0 shadow-lg">
         <button
           type="button"
           onClick={() => setActiveTab('mcp')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all ${
             activeTab === 'mcp'
-              ? 'text-[#00FF66] bg-[#484848] border border-white/[0.08] shadow-xs'
-              : 'text-[#A0A0A0] hover:text-white'
+              ? 'text-[#00FF66] bg-[#222430] border border-white/15 shadow-sm'
+              : 'text-[#9EA2AE] hover:text-white hover:bg-white/[0.04]'
           }`}
         >
-          <Bot size={15} className={activeTab === 'mcp' ? 'text-[#00FF66]' : 'text-[#8E8E93]'} />
+          <Bot size={15} className={activeTab === 'mcp' ? 'text-[#00FF66]' : 'text-[#7E8294]'} />
           <span>Agentes de IA (MCP)</span>
         </button>
 
@@ -53,11 +53,11 @@ export const McpApiPage: React.FC = () => {
           onClick={() => setActiveTab('api')}
           className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all ${
             activeTab === 'api'
-              ? 'text-[#00FF66] bg-[#484848] border border-white/[0.08] shadow-xs'
-              : 'text-[#A0A0A0] hover:text-white'
+              ? 'text-[#00FF66] bg-[#222430] border border-white/15 shadow-sm'
+              : 'text-[#9EA2AE] hover:text-white hover:bg-white/[0.04]'
           }`}
         >
-          <Terminal size={15} className={activeTab === 'api' ? 'text-[#00FF66]' : 'text-[#8E8E93]'} />
+          <Terminal size={15} className={activeTab === 'api' ? 'text-[#00FF66]' : 'text-[#7E8294]'} />
           <span>API REST & Playwright</span>
         </button>
       </div>
