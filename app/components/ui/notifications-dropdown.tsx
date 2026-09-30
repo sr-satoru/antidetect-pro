@@ -60,9 +60,9 @@ export const NotificationsDropdown: React.FC = () => {
   const renderIcon = (type: NotificationItem['type']) => {
     switch (type) {
       case 'migration':
-        return <ShieldCheck size={16} className="text-[#DFE104] shrink-0" />;
+        return <ShieldCheck size={16} className="text-[#00FF66] shrink-0" />;
       case 'success':
-        return <CheckCircle2 size={16} className="text-[#4ade80] shrink-0" />;
+        return <CheckCircle2 size={16} className="text-[#00FF66] shrink-0" />;
       case 'warning':
       case 'error':
         return <AlertTriangle size={16} className="text-[#f87171] shrink-0" />;
@@ -86,7 +86,7 @@ export const NotificationsDropdown: React.FC = () => {
       >
         <Bell size={15} />
         {unreadCount > 0 && (
-          <span className="flex items-center justify-center min-w-[14px] h-[14px] px-1 rounded-full bg-[#DFE104] text-[9px] font-black text-black absolute -top-1 -right-1 shadow-md animate-pulse">
+          <span className="flex items-center justify-center min-w-[14px] h-[14px] px-1 rounded-full bg-[#00FF66] text-[9px] font-black text-black absolute -top-1 -right-1 shadow-md shadow-[#00FF66]/30 animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -100,7 +100,7 @@ export const NotificationsDropdown: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-white tracking-wide">Notificações</span>
               {unreadCount > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full bg-[#DFE104]/15 border border-[#DFE104]/30 text-[#DFE104] text-[10px] font-bold">
+                <span className="px-1.5 py-0.2 rounded-full bg-[#00FF66]/15 border border-[#00FF66]/30 text-[#00FF66] text-[10px] font-bold">
                   {unreadCount} novas
                 </span>
               )}
@@ -171,7 +171,7 @@ export const NotificationsDropdown: React.FC = () => {
                   </div>
 
                   {!notif.read && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#DFE104] shrink-0 mt-2" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00FF66] shrink-0 mt-2 shadow-xs shadow-[#00FF66]/50" />
                   )}
                 </div>
               ))

@@ -71,7 +71,7 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
       case 'primary':
       default:
         return (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#DFE104]/10 text-[#DFE104] border border-[#DFE104]/25 shadow-lg">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/25 shadow-lg shadow-[#00FF66]/10">
             <HelpCircle size={20} />
           </div>
         );
