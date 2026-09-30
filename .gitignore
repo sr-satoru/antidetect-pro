@@ -1,17 +1,8 @@
 node_modules
-.env
 .next
-venv
 .DS_Store
 *.db
-
 dist
 __pycache__
-
 target
-vps
-
-
 comandos-utils.md
-
-
