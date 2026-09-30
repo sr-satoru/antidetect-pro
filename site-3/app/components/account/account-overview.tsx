@@ -44,7 +44,7 @@ export function AccountOverview() {
   };
 
   const handleCopyEmail = () => {
-    navigator.clipboard?.writeText("vanirdemo@gmail.com");
+    navigator.clipboard?.writeText("usuario@starmultlogin.com");
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2000);
   };
@@ -76,13 +76,13 @@ export function AccountOverview() {
         {/* Card do Usuário */}
         <div className="p-4 rounded-xl border border-[#232530] bg-[#101116] shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#181922] border border-[#232530] flex items-center justify-center font-bold text-sm text-white">
-              VD
+            <div className="w-10 h-10 rounded-lg bg-[#181922] border border-[#232530] flex items-center justify-center font-bold text-sm text-[#00FF66]">
+              <User className="w-5 h-5 text-[#00FF66]" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-semibold text-white truncate">
-                  vanirdemo@gmail.com
+                  usuario@starmultlogin.com
                 </span>
                 <button
                   type="button"
