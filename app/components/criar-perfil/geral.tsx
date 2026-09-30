@@ -8,6 +8,7 @@ interface GeralTabProps {
 }
 
 import { OsIcon } from '../ui/os-icon';
+import { FirefoxIcon } from '../ui/firefox-icon';
 import { TagBadge } from '../tags/tag-badge';
 import { DropdownSeletorEtiquetas } from '../tags/dropdown-seletor-etiquetas';
 import { serviceTags } from '../../services/tags/service.tags';
@@ -130,9 +131,9 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
           Browser Kernel
         </label>
         <div className="flex flex-wrap items-center gap-3">
-          {/* Camoufox Nativo */}
+          {/* AstroFox Nativo */}
           <Tooltip
-            content="Motor Camoufox nativo (base Gecko / Firefox 150): evasão avançada de fingerprinting, isolamento de perfis e spoofing de hardware/WebRTC."
+            content="Motor AstroFox nativo (base Gecko / Firefox Quantum): evasão avançada de fingerprinting, isolamento de perfis e spoofing de hardware/WebRTC."
             position="top"
           >
             <div className="flex flex-col">
@@ -140,10 +141,10 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
                 onClick={() => onChange('kernel', 'Camoufox')}
                 className="flex cursor-pointer items-center gap-2.5 rounded-md border border-white/30 bg-[#262835] px-4 py-2.5 text-white ring-1 ring-white/10 shadow-sm transition-all select-none"
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF7A00] to-[#E65100] text-[11px] font-bold text-white shadow-sm">
-                  🦊
+                <div className="flex h-5 w-5 items-center justify-center shrink-0">
+                  <FirefoxIcon size={20} />
                 </div>
-                <span className="text-[13px] font-semibold text-white">Camoufox</span>
+                <span className="text-[13px] font-semibold text-white">AstroFox</span>
                 <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold text-white/90 border border-white/15">
                   Nativo
                 </span>

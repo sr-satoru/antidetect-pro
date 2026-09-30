@@ -28,7 +28,7 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
     name: '',
     group: 'Desagrupado',
     tags: [] as string[],
-    kernel: 'Camoufox',
+    kernel: 'AstroFox',
     kernelVersion: '150',
     os: osKey,
     osVersion: 'Linux x86_64',

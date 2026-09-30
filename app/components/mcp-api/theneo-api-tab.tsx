@@ -57,7 +57,7 @@ export const TheneoApiTab: React.FC<TheneoApiTabProps> = ({
       category: 'Geral & Sistema',
       method: 'GET',
       path: '/api/v1/status',
-      summary: 'Retorna a integridade do motor Camoufox, versão e perfis ativos.',
+      summary: 'Retorna a integridade do motor AstroFox, versão e perfis ativos.',
       desc: 'Este endpoint é utilizado para checar se o serviço de automação local está em execução e pronto para receber comandos. Pode ser utilizado em healthchecks contínuos.',
       params: [
         {
@@ -114,11 +114,11 @@ export const TheneoApiTab: React.FC<TheneoApiTabProps> = ({
     },
     {
       id: 'post_profile_start',
-      name: 'Iniciar Perfil (Camoufox BiDi/CDP)',
+      name: 'Iniciar Perfil (AstroFox BiDi/CDP)',
       category: 'Gerenciamento de Perfis',
       method: 'POST',
       path: '/api/v1/profiles/start',
-      summary: 'Inicia o navegador Camoufox e expõe a porta WebSocket para controle externo.',
+      summary: 'Inicia o navegador AstroFox e expõe a porta WebSocket para controle externo.',
       desc: 'Abre o perfil carregando automaticamente impressões digitais spoofadas, cookies persistidos e o proxy configurado. Retorna o endpoint WebSocket onde o Playwright ou Puppeteer devem se conectar.',
       params: [
         {
@@ -161,7 +161,7 @@ export const TheneoApiTab: React.FC<TheneoApiTabProps> = ({
       method: 'POST',
       path: '/api/v1/profiles/stop',
       summary: 'Finaliza o navegador e garante a gravação de novos cookies e storage.',
-      desc: 'Encerra o processo do perfil de maneira segura e graciosa, forçando o Camoufox a descarregar todas as sessões e cookies para o armazenamento local.',
+      desc: 'Encerra o processo do perfil de maneira segura e graciosa, forçando o AstroFox a descarregar todas as sessões e cookies para o armazenamento local.',
       params: [
         {
           name: 'Authorization',
@@ -263,7 +263,7 @@ export const TheneoApiTab: React.FC<TheneoApiTabProps> = ({
         ok: true,
         tab_id: 'tab_3',
         url: 'https://bot.sannysoft.com',
-        message: 'Nova aba aberta com sucesso no Camoufox.',
+        message: 'Nova aba aberta com sucesso no AstroFox.',
       },
     },
   ];
@@ -370,7 +370,7 @@ const startRes = await fetch('${baseUrl}/api/v1/profiles/start', {
 });
 const { ws_endpoint } = await startRes.json();
 
-// 2. Conecta o Playwright direto no Camoufox aberto
+// 2. Conecta o Playwright direto no AstroFox aberto
 import { firefox } from 'playwright';
 const browser = await firefox.connect(ws_endpoint);
 const page = browser.contexts()[0].pages()[0];

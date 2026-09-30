@@ -34,7 +34,7 @@ export const AutomationTab: React.FC<AutomationTabProps> = ({
       id: 'basic_connect',
       title: '1. Conexão Direta Playwright',
       tag: 'Recomendado',
-      desc: 'Inicia o perfil e conecta o Playwright ao Camoufox sem baixar navegadores externos.',
+      desc: 'Inicia o perfil e conecta o Playwright ao AstroFox sem baixar navegadores externos.',
     },
     {
       id: 'multi_profile',
@@ -138,7 +138,7 @@ main();
     multi_profile: {
       python: `#!/usr/bin/env python3
 """
-Automação Paralela em Múltiplos Perfis com Camoufox
+Automação Paralela em Múltiplos Perfis com AstroFox
 Cada perfil roda isolado na sua própria porta com seu proxy residencial próprio.
 """
 import concurrent.futures
@@ -343,13 +343,13 @@ runPuppeteer();
           </div>
           <div>
             <h3 className="text-[15px] font-bold text-white flex items-center gap-2">
-              Cookbook de Automação Playwright & Camoufox
+              Cookbook de Automação Playwright & AstroFox
               <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                 Zero Download Extra
               </span>
             </h3>
             <p className="text-[12px] text-[#B5B5B5] mt-0.5 max-w-2xl leading-relaxed">
-              Você <strong>não</strong> precisa baixar Chromium ou Firefox adicionais (<code className="text-[#00FF66]">playwright install</code> é desnecessário). O Playwright se acopla diretamente ao processo do Camoufox que já está configurado com seu proxy e perfil anti-detect.
+              Você <strong>não</strong> precisa baixar Chromium ou Firefox adicionais (<code className="text-[#00FF66]">playwright install</code> é desnecessário). O Playwright se acopla diretamente ao processo do AstroFox que já está configurado com seu proxy e perfil anti-detect.
             </p>
           </div>
         </div>

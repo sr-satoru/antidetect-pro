@@ -92,9 +92,9 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
         onSave({
           name: cleanName || 'Nova Extensão Firefox',
           description:
-            'Extensão oficial importada do Firefox Add-ons (AMO). Compatível com Camoufox.',
+            'Extensão oficial importada do Firefox Add-ons (AMO). Compatível com AstroFox.',
           iconType: 'firefox',
-          iconBg: '#2F80ED',
+          iconBg: '#FF5500',
           provider: 'Firefox Add-ons',
           providerUrl: url,
           tab: 'team',

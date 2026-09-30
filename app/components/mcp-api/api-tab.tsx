@@ -56,7 +56,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   const endpoints: EndpointItem[] = [
     {
       id: 'start_profile',
-      name: 'Iniciar Perfil (Camoufox)',
+      name: 'Iniciar Perfil (AstroFox)',
       method: 'POST',
       path: '/api/v1/profiles/start',
       desc: 'Inicia o perfil com cookies, proxy e camuflagem de hardware, expondo a porta WebSocket para controle do Playwright/Puppeteer.',
@@ -104,7 +104,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       name: 'Verificar Saúde do Motor',
       method: 'GET',
       path: '/api/v1/status',
-      desc: 'Verifica a integridade do motor Camoufox e quantos perfis estão abertos no momento.',
+      desc: 'Verifica a integridade do motor AstroFox e quantos perfis estão abertos no momento.',
       mockResponse: {
         ok: true,
         engine: 'camoufox',
@@ -630,7 +630,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="flex-1">
                 <label className="text-[11px] text-[#A6A6A6] block mb-1 font-medium">
-                  ID do Perfil Camoufox:
+                  ID do Perfil AstroFox:
                 </label>
                 <input
                   type="text"

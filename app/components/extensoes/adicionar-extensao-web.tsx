@@ -8,6 +8,7 @@ import {
   Flame,
   Globe,
 } from 'lucide-react';
+import { FirefoxIcon } from '../ui/firefox-icon';
 
 export interface ExtensaoWebFormValues {
   url: string;
@@ -54,12 +55,12 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
                 : 'border-[#333543] bg-[#161720] text-[#8E92A2] hover:border-[#444758] hover:text-white'
             }`}
           >
-            <div className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF3B30] via-[#FF9500] to-[#FF2D55] text-[10px] text-white">
-              <Flame size={10} />
+            <div className="flex h-4 w-4 items-center justify-center shrink-0">
+              <FirefoxIcon size={16} />
             </div>
             <span>Firefox Add-ons (AMO)</span>
             <span className="rounded-sm bg-[#FF7139]/20 px-1.5 py-0.2 text-[10px] font-semibold text-[#FF7139]">
-              Nativo Camoufox
+              Nativo AstroFox
             </span>
           </button>
 
@@ -115,7 +116,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
               </span>
               <ul className="space-y-1.5 pl-1">
                 <li>
-                  1. O motor <strong className="text-white">Camoufox (FlowerBrowser)</strong> executa extensões nativas do Firefox no formato <code className="rounded bg-[#20222D] px-1 py-0.5 text-[#FFA07A]">.xpi</code>.
+                  1. O motor <strong className="text-white">AstroFox</strong> executa extensões nativas do Firefox no formato <code className="rounded bg-[#20222D] px-1 py-0.5 text-[#FFA07A]">.xpi</code>.
                 </li>
                 <li>
                   2. Visite a{' '}

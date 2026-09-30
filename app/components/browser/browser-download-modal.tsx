@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Zap,
 } from 'lucide-react';
+import { FirefoxIcon } from '../ui/firefox-icon';
 import { useBrowser } from '../../contexts/browser-context';
 
 export const BrowserDownloadModal: React.FC = () => {
@@ -47,7 +48,7 @@ export const BrowserDownloadModal: React.FC = () => {
       case 'connecting':
         return 'Conectando ao repositório oficial...';
       case 'downloading':
-        return 'Baixando pacote do motor Camoufox...';
+        return 'Baixando pacote do motor AstroFox...';
       case 'extracting':
         return 'Descompactando arquivos e bibliotecas...';
       case 'finalizing':
@@ -86,15 +87,15 @@ export const BrowserDownloadModal: React.FC = () => {
         {/* Top Header */}
         <div className="px-5 py-4 border-b border-[#1E202B] flex items-center justify-between bg-[#13151D]/60">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-[#00FF66]/10 text-[#00FF66] border border-[#00FF66]/20">
-              <Zap size={18} />
+            <div className="flex h-9 w-9 items-center justify-center shrink-0">
+              <FirefoxIcon size={26} />
             </div>
             <div>
               <h3 className="text-sm font-semibold text-white tracking-tight">
-                Motor de Navegação One Star
+                Motor de Navegação AstroFox
               </h3>
               <p className="text-[11px] text-[#787C8A]">
-                Camoufox v2.0.0 • Binário Oficial Isolado
+                AstroFox v2.0.0 • Binário Oficial Isolado
               </p>
             </div>
           </div>
@@ -255,10 +256,10 @@ export const BrowserDownloadModal: React.FC = () => {
                 <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <div className="font-semibold text-emerald-200">
-                    Motor One Star instalado e totalmente operacional
+                    Motor AstroFox instalado e totalmente operacional
                   </div>
                   <p className="text-[11px] text-emerald-300/80">
-                    O motor oficial Camoufox v2.0.0 está isolado na pasta .engine e pronto para lançar perfis com antidetect de alta fidelidade.
+                    O motor oficial AstroFox v2.0.0 está isolado na pasta .engine e pronto para lançar perfis com antidetect de alta fidelidade.
                   </p>
                 </div>
               </div>
@@ -307,12 +308,12 @@ export const BrowserDownloadModal: React.FC = () => {
                 <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <div className="font-semibold text-amber-200">
-                    {isBroken ? 'Motor Corrompido ou Incompleto' : 'Motor One Star Não Instalado'}
+                    {isBroken ? 'Motor Corrompido ou Incompleto' : 'Motor AstroFox Não Instalado'}
                   </div>
                   <p className="text-[11px] leading-relaxed text-amber-300/80">
                     {isBroken
                       ? (status?.health as any)?.reason || 'Arquivos vitais ausentes ou executável quebrado.'
-                      : 'Para executar perfis com spoofing de hardware e WebRTC, o motor Camoufox v2.0.0 precisa ser baixado.'}
+                      : 'Para executar perfis com spoofing de hardware e WebRTC, o motor AstroFox v2.0.0 precisa ser baixado.'}
                   </p>
                 </div>
               </div>
