@@ -140,7 +140,7 @@ export function extrairImpressaoDigitalLimpa(formData: any): ImpressaoDigitalDat
     open_tabs_urls: formData.openTabsUrls || undefined,
     cookies: formData.cookies || undefined,
 
-    kernel: formData.kernel || 'Camoufox',
+    kernel: formData.kernel || 'AstroFox',
     kernel_version: formData.kernelVersion || '150',
     os: (formData.os || 'windows').toLowerCase(),
     os_version: formData.osVersion || 'Linux x86_64',
@@ -266,7 +266,7 @@ export const impressaoDigitalService = {
       status: 'ready',
 
       // 3. Atalhos diretos para a tabela de listagem
-      kernel: formData.kernel || 'Camoufox',
+      kernel: formData.kernel || 'AstroFox',
       browser_version: formData.kernelVersion || '150',
       os: (formData.os || 'windows').toLowerCase(),
       proxy_type: formData.proxyType || 'none',

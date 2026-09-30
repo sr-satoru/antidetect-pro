@@ -138,7 +138,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
           >
             <div className="flex flex-col">
               <div
-                onClick={() => onChange('kernel', 'Camoufox')}
+                onClick={() => onChange('kernel', 'AstroFox')}
                 className="flex cursor-pointer items-center gap-2.5 rounded-md border border-white/30 bg-[#262835] px-4 py-2.5 text-white ring-1 ring-white/10 shadow-sm transition-all select-none"
               >
                 <div className="flex h-5 w-5 items-center justify-center shrink-0">

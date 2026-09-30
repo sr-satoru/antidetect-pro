@@ -4,7 +4,7 @@
  */
 
 export type OsType = 'windows' | 'macos' | 'linux';
-export type KernelType = 'Camoufox' | 'FlowerBrowser' | 'SunBrowser';
+export type KernelType = 'AstroFox' | 'Camoufox' | 'FlowerBrowser' | 'SunBrowser';
 export type ProfileStatus = 'ready' | 'running' | 'error';
 export type ProxyType = 'none' | 'http' | 'https' | 'socks5' | 'mobile';
 

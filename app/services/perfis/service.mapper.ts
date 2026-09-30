@@ -43,7 +43,7 @@ export function profileToFormData(profile: any): any {
     name: profile.name || '',
     group: profile.group || 'Desagrupado',
     tags: tagsList,
-    kernel: profile.kernel || fp.kernel || 'Camoufox',
+    kernel: profile.kernel || fp.kernel || 'AstroFox',
     kernelVersion: profile.browser_version || fp.kernel_version || '150',
     os: osKey,
     osVersion: fp.os_version || 'Linux x86_64',
