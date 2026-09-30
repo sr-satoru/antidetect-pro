@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronDown, Info, RotateCw, Loader2 } from 'lucide-react';
+import { ChevronDown, Info, RotateCw, Loader2 } from 'lucide-react';
 import { api } from '@/services/index.api';
 import { formatProxyTestResult, FormattedTestResult } from '@/services/proxies/service.proxies';
 
@@ -9,20 +9,22 @@ interface EditarProxiesProps {
   onSave: (data: any) => void;
 }
 
-const inputCls =
-  'w-full rounded-md border border-[#323440] bg-[#18191E] px-3 py-1.5 text-xs text-[#E1E4EE] transition-colors hover:border-[#3E4150] focus:border-[#2F80ED] focus:outline-hidden';
+const baseInputCls =
+  'h-10 rounded-xl border border-[#363948] bg-[#14151C] px-4 text-sm text-[#F0F2F8] placeholder-[#5E6274] transition-all hover:border-[#4B5065] focus:border-[#DFE104] focus:ring-2 focus:ring-[#DFE104]/25 focus:outline-hidden';
+
+const inputCls = `w-full ${baseInputCls}`;
 
 const FieldRow: React.FC<{
   label: React.ReactNode;
   required?: boolean;
   children: React.ReactNode;
 }> = ({ label, required, children }) => (
-  <div className="grid grid-cols-12 items-center gap-3">
-    <label className="col-span-4 text-right text-xs leading-snug text-[#8E92A2] select-none">
-      {required && <span className="mr-0.5 text-[#FF4D4F]">*</span>}
+  <div className="flex items-center gap-4">
+    <label className="w-44 shrink-0 text-right text-sm font-medium text-[#A6ABB8] select-none leading-normal">
+      {required && <span className="mr-1 text-[#FF4D4F] font-bold">*</span>}
       {label}
     </label>
-    <div className="col-span-8">{children}</div>
+    <div className="flex-1 min-w-0">{children}</div>
   </div>
 );
 
@@ -115,33 +117,20 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 select-none">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-black/85 backdrop-blur-xs transition-opacity"
         onClick={onClose}
       />
 
-      {/* Modal Popup Box */}
-      <div className="relative z-10 w-full max-w-[560px] overflow-hidden rounded-xl border border-[#323440] bg-[#222329] text-[#D1D5DB] shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-        {/* Header */}
-        <div className="flex h-12 items-center justify-between border-b border-[#2C2E38] px-6 select-none">
-          <span className="text-sm font-semibold text-white">Editar proxy</span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="cursor-pointer rounded p-1 text-[#8E92A2] transition-colors hover:bg-[#2C2E38] hover:text-white"
-            title="Fechar"
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* Form Body */}
-        <div className="space-y-3.5 p-6">
+      {/* Modal Popup Box - Sem cabeçalho e sem botão X (fechamento via Cancelar) */}
+      <div className="relative z-10 w-full max-w-[760px] overflow-hidden rounded-2xl border border-[#343644] bg-[#1C1E26] text-[#E0E2EC] shadow-2xl shadow-black/95 animate-in fade-in zoom-in-95 duration-150">
+        {/* Form Body - Letras aumentadas, campos mais altos e confortáveis */}
+        <div className="space-y-5 p-8">
           {/* Row 1: ID do agente */}
-          <FieldRow label="ID do agente">
-            <span className="inline-flex items-center rounded bg-[#1677FF]/15 px-2 py-0.5 text-xs font-semibold text-[#1677FF]">
+          <FieldRow label="ID do Agente">
+            <span className="inline-flex items-center rounded-lg bg-[#1677FF]/15 border border-[#1677FF]/35 px-3 py-1.5 text-xs font-mono font-semibold text-[#4096FF]">
               {proxy?.id ?? 2}
             </span>
           </FieldRow>
@@ -152,7 +141,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
               <select
                 value={form.type}
                 onChange={(e) => updateField('type', e.target.value)}
-                className={`${inputCls} cursor-pointer appearance-none pr-8`}
+                className={`${inputCls} cursor-pointer appearance-none pr-10 text-sm font-medium`}
               >
                 <option value="socks5">Socks5</option>
                 <option value="http">HTTP</option>
@@ -160,8 +149,8 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
                 <option value="ssh">SSH</option>
               </select>
               <ChevronDown
-                size={14}
-                className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-[#6C6F7E]"
+                size={16}
+                className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-[#7C8092]"
               />
             </div>
           </FieldRow>
@@ -172,62 +161,63 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
               <select
                 value={form.ipChecker}
                 onChange={(e) => updateField('ipChecker', e.target.value)}
-                className={`${inputCls} cursor-pointer appearance-none pr-10`}
+                className={`${inputCls} cursor-pointer appearance-none pr-12 text-sm font-medium`}
               >
                 <option value="IP2Location">IP2Location</option>
                 <option value="ip-api.com">ip-api.com</option>
                 <option value="ipinfo.io">ipinfo.io</option>
               </select>
-              <div className="pointer-events-none absolute top-1/2 right-2.5 flex -translate-y-1/2 items-center gap-1 text-[#6C6F7E]">
-                <Info size={13} />
-                <ChevronDown size={14} />
+              <div className="pointer-events-none absolute top-1/2 right-3.5 flex -translate-y-1/2 items-center gap-1.5 text-[#7C8092]">
+                <Info size={15} />
+                <ChevronDown size={16} />
               </div>
             </div>
           </FieldRow>
 
-          {/* Row 4: Host:Porto */}
-          <FieldRow label="Host:Porto" required>
-            <div className="flex items-center gap-1.5">
+          {/* Row 4: Host : Porta */}
+          <FieldRow label="Host : Porta" required>
+            <div className="flex items-center gap-2.5">
               <input
                 type="text"
                 value={form.host}
                 onChange={(e) => updateField('host', e.target.value)}
-                placeholder="Host"
-                className={`min-w-0 flex-1 font-mono ${inputCls}`}
+                placeholder="Ex: 192.168.1.1 ou proxy.exemplo.com"
+                className={`flex-1 min-w-[220px] font-mono text-sm ${baseInputCls}`}
               />
-              <span className="font-semibold text-[#8E92A2]">:</span>
+              <span className="font-bold text-[#8E92A2] select-none text-base">:</span>
               <input
                 type="text"
                 value={form.port}
                 onChange={(e) => updateField('port', e.target.value)}
                 placeholder="Porta"
-                className={`w-20 font-mono ${inputCls} px-2.5`}
+                className={`w-32 shrink-0 font-mono text-center text-sm ${baseInputCls}`}
               />
-              <Info size={13} className="shrink-0 text-[#6C6F7E]" />
               <button
                 type="button"
                 onClick={handleTest}
                 disabled={isTesting || !form.host.trim() || !form.port.trim()}
-                className="flex shrink-0 cursor-pointer items-center gap-1 rounded-md border border-[#383A46] bg-[#1C1D23] px-2.5 py-1.5 text-xs text-[#A0A5B5] transition-colors hover:bg-[#282A33] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                className="h-10 flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-[#3C3F4F] bg-[#161720] px-4 text-xs font-semibold text-[#DFE104] transition-all hover:border-[#DFE104]/50 hover:bg-[#DFE104]/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-[#161720] disabled:hover:border-[#3C3F4F] disabled:text-[#7C8092] active:scale-[0.98]"
               >
-                {isTesting && (
-                  <Loader2 size={12} className="animate-spin text-[#2F80ED]" />
+                {isTesting ? (
+                  <Loader2 size={14} className="animate-spin text-[#DFE104]" />
+                ) : (
+                  <RotateCw size={14} />
                 )}
                 <span>Verificar proxy</span>
               </button>
             </div>
             {testResult.text && (
-              <div className="mt-1 font-mono text-[11px]">{testResult.text}</div>
+              <div className="mt-2 font-mono text-xs px-1">{testResult.text}</div>
             )}
           </FieldRow>
 
-          {/* Row 5: Nome do utilizador do proxy */}
-          <FieldRow label={<>Nome do utilizador<br />do proxy</>}>
+          {/* Row 5: Usuário do Proxy */}
+          <FieldRow label="Usuário do Proxy">
             <input
               type="text"
               value={form.user}
               onChange={(e) => updateField('user', e.target.value)}
-              placeholder="Nome do utilizador do proxy"
+              placeholder="Nome de usuário (opcional)"
               className={inputCls}
             />
           </FieldRow>
@@ -238,60 +228,61 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
               type="text"
               value={form.pass}
               onChange={(e) => updateField('pass', e.target.value)}
-              placeholder="Senha do Proxy"
+              placeholder="Senha de autenticação (opcional)"
               className={inputCls}
             />
           </FieldRow>
 
-          {/* Row 7: Mudar o URL IP */}
-          <FieldRow label="Mudar o URL IP">
+          {/* Row 7: URL de Rotação (IP) */}
+          <FieldRow label="URL de Rotação (IP)">
             <div className="relative flex items-center">
               <input
                 type="text"
                 value={form.rotationLink}
                 onChange={(e) => updateField('rotationLink', e.target.value)}
-                placeholder="Indique Alterar o URL IP"
+                placeholder="Link para forçar troca de IP (opcional)"
                 className={`${inputCls} pr-14`}
               />
-              <div className="absolute right-2.5 flex items-center gap-1.5 text-[#6C6F7E]">
-                <span
+              <div className="absolute right-3.5 flex items-center gap-2 text-[#7C8092]">
+                <button
+                  type="button"
                   title="Recarregar"
-                  className="cursor-pointer text-[#2F80ED] transition-transform hover:rotate-180"
+                  className="cursor-pointer text-[#3B82F6] transition-transform hover:rotate-180"
                 >
-                  <RotateCw size={13} />
-                </span>
-                <Info size={13} />
+                  <RotateCw size={15} />
+                </button>
+                <Info size={15} />
               </div>
             </div>
           </FieldRow>
 
-          {/* Row 8: Nota */}
-          <FieldRow label="Nota">
+          {/* Row 8: Observação / Nota */}
+          <FieldRow label="Observação / Nota">
             <input
               type="text"
               value={form.name}
               onChange={(e) => updateField('name', e.target.value)}
-              placeholder="Indique a observação"
+              placeholder="Identificação ou observação para este proxy"
               className={inputCls}
             />
           </FieldRow>
         </div>
 
-        {/* Footer */}
-        <div className="flex h-14 shrink-0 items-center justify-start gap-3 border-t border-[#2C2E38] bg-[#1E1F24] px-6 select-none">
-          <button
-            type="button"
-            onClick={handleSave}
-            className="flex cursor-pointer items-center justify-center rounded-md bg-[#1C1D24] border border-white/30 hover:border-white px-6 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-[#252834] active:scale-[0.98]"
-          >
-            OK
-          </button>
+        {/* Footer com botões maiores e confortáveis */}
+        <div className="flex h-16 shrink-0 items-center justify-end gap-3.5 border-t border-[#292B37] bg-[#16171E] px-8">
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-md px-4 py-1.5 text-xs font-medium text-[#8E92A2] transition-colors hover:bg-[#282932] hover:text-white"
+            className="cursor-pointer rounded-xl px-5 py-2.5 text-sm font-medium text-[#9EA2AE] transition-colors hover:bg-white/5 hover:text-white"
           >
             Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            className="flex cursor-pointer items-center justify-center rounded-xl bg-[#DFE104] px-7 py-2.5 text-sm font-bold text-black transition-all hover:bg-[#c8ca03] active:scale-[0.98] shadow-md shadow-[#DFE104]/15"
+          >
+            Salvar Alterações
           </button>
         </div>
       </div>
