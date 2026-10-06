@@ -1,0 +1,182 @@
+name: Release Multi-Plataforma (Linux, Windows, macOS)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão do release (ex: 0.1.0). Se vazio, usa a versão do package.json'
+        required: false
+        default: ''
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  tag-release:
+    name: Gerar Tag de Release
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.version_step.outputs.tag_name }}
+      version: ${{ steps.version_step.outputs.version }}
+      should_build: ${{ steps.version_step.outputs.should_build }}
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determinar e Criar Tag Automática
+        id: version_step
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Obtém apenas o título da última mensagem de commit
+          COMMIT_MSG=$(git log -1 --format="%s" | tr -d '\r' | xargs)
+          echo "Mensagem do commit: '$COMMIT_MSG'"
+
+          INPUT_VERSION="${{ github.event.inputs.version }}"
+          SHOULD_BUILD="false"
+
+          if [ -n "$INPUT_VERSION" ]; then
+            VERSION="$INPUT_VERSION"
+            echo "Usando versão informada manualmente: $VERSION"
+            SHOULD_BUILD="true"
+            node -e "
+              const fs = require('fs');
+              const pkg = JSON.parse(fs.readFileSync('app/package.json'));
+              pkg.version = '$VERSION';
+              fs.writeFileSync('app/package.json', JSON.stringify(pkg, null, 2) + '\n');
+              
+              try {
+                const tauri = JSON.parse(fs.readFileSync('app/src-tauri/tauri.conf.json'));
+                tauri.version = '$VERSION';
+                fs.writeFileSync('app/src-tauri/tauri.conf.json', JSON.stringify(tauri, null, 2) + '\n');
+              } catch(e) {}
+            "
+            git add app/package.json app/src-tauri/tauri.conf.json
+            git commit -m "chore(release): bump version to $VERSION [skip ci]" || true
+            git push origin main || true
+          elif [[ "$COMMIT_MSG" =~ [pP][uU][lL][lL]$ ]]; then
+            echo "🔥 Commit termina com a palavra 'pull'! Incrementando versão automaticamente..."
+            SHOULD_BUILD="true"
+            VERSION=$(node -e "
+              const fs = require('fs');
+              const pkg = JSON.parse(fs.readFileSync('app/package.json'));
+              const parts = (pkg.version || '0.1.0').split('.').map(Number);
+              parts[2] = (parts[2] || 0) + 1;
+              const nextVer = parts.join('.');
+              pkg.version = nextVer;
+              fs.writeFileSync('app/package.json', JSON.stringify(pkg, null, 2) + '\n');
+              
+              try {
+                const tauri = JSON.parse(fs.readFileSync('app/src-tauri/tauri.conf.json'));
+                tauri.version = nextVer;
+                fs.writeFileSync('app/src-tauri/tauri.conf.json', JSON.stringify(tauri, null, 2) + '\n');
+              } catch(e) {}
+              
+              console.log(nextVer);
+            ")
+            echo "Nova versão gerada automaticamente: $VERSION"
+            git add app/package.json app/src-tauri/tauri.conf.json
+            git commit -m "chore(release): bump version to $VERSION [skip ci]" || true
+            git push origin main || true
+          else
+            VERSION=$(node -p "require('./app/package.json').version")
+            echo "Usando versão do package.json: $VERSION"
+          fi
+
+          TAG="v$VERSION"
+          echo "tag_name=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+          # Cria a tag se ela ainda não existir remotamente
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG"; then
+            echo "Tag $TAG já existe no repositório remoto."
+            # Se disparado manualmente via dispatch, força o build mesmo com tag existente
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              SHOULD_BUILD="true"
+            fi
+          else
+            echo "Criando nova tag git $TAG..."
+            git tag -a "$TAG" -m "Release $TAG gerada automaticamente"
+            git push origin "$TAG"
+            SHOULD_BUILD="true"
+          fi
+
+          echo "should_build=$SHOULD_BUILD" >> "$GITHUB_OUTPUT"
+
+  build-tauri:
+    name: Compilar para ${{ matrix.platform }}
+    needs: tag-release
+    if: needs.tag-release.outputs.should_build == 'true'
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-22.04, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.tag-release.outputs.tag_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache de Compilação Rust
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            app/src-tauri -> target
+            backend -> target
+
+      - name: Instalar Dependências de Sistema no Linux
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Instalar Dependências do Frontend
+        run: |
+          cd app
+          npm ci
+
+      - name: Build do Pacote com Tauri Action
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+        with:
+          projectPath: "./app"
+          tagName: ${{ needs.tag-release.outputs.tag_name }}
+          releaseName: "Star Multilogin ${{ needs.tag-release.outputs.tag_name }}"
+          releaseBody: |
+            🚀 **Star Multilogin ${{ needs.tag-release.outputs.tag_name }}**
+            
+            Compilação nativa multiplataforma gerada automaticamente pelo GitHub Actions.
+            
+            ### 📦 Binários Disponíveis:
+            - **Linux**: `.AppImage` (portátil) e `.deb` (Ubuntu/Debian)
+            - **Windows**: `.msi` e `.exe` (Instalador NSIS)
+            - **macOS**: `.dmg` e `.app` (Apple Silicon)
+          releaseDraft: false
+          prerelease: false
