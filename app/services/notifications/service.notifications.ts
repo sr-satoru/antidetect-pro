@@ -16,33 +16,8 @@ type Listener = (notifications: NotificationItem[]) => void;
 class NotificationsService {
   private notifications: NotificationItem[] = [];
   private listeners: Set<Listener> = new Set();
-  private storageKey = 'star_app_notifications_v1';
-
-  constructor() {
-    this.loadFromStorage();
-  }
-
-  private loadFromStorage() {
-    try {
-      const stored = localStorage.getItem(this.storageKey);
-      if (stored) {
-        this.notifications = JSON.parse(stored);
-      }
-    } catch {
-      this.notifications = [];
-    }
-  }
-
-  private saveToStorage() {
-    try {
-      localStorage.setItem(this.storageKey, JSON.stringify(this.notifications.slice(0, 50)));
-    } catch {
-      // Ignora erro de cota de localStorage
-    }
-  }
 
   private notify() {
-    this.saveToStorage();
     this.listeners.forEach((fn) => fn([...this.notifications]));
   }
 
@@ -62,13 +37,13 @@ class NotificationsService {
     return this.notifications.filter((n) => !n.read).length;
   }
 
-  public add(item: Omit<NotificationItem, 'id' | 'timestamp' | 'read'> & { id?: string }): NotificationItem {
+  public add(item: Omit<NotificationItem, 'id' | 'timestamp' | 'read'> & { id?: string; timestamp?: number }): NotificationItem {
     const newNotification: NotificationItem = {
       id: item.id || `notif_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       title: item.title,
       description: item.description,
       type: item.type,
-      timestamp: Date.now(),
+      timestamp: item.timestamp || Date.now(),
       read: false,
       meta: item.meta,
     };

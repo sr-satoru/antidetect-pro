@@ -43,7 +43,6 @@ export const ExtensoesPage: React.FC = () => {
 
     try {
       await api.extensions.update(id, { enabled: newEnabled });
-      toast.success(newEnabled ? 'Extensão ativada' : 'Extensão desativada');
     } catch (err: any) {
       toast.error(`Erro ao alterar status da extensão: ${err.message}`);
       setExtensions((prev) =>

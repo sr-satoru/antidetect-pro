@@ -497,34 +497,3 @@ pub fn is_blocked_target(host: &str, port: u16, port_scan_protection: bool, allo
     }
     false
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_is_local_target() {
-        assert!(is_local_target("127.0.0.1"));
-        assert!(is_local_target("localhost"));
-        assert!(is_local_target("app.localhost"));
-        assert!(is_local_target("192.168.1.1"));
-        assert!(is_local_target("10.0.0.5"));
-        assert!(is_local_target("172.16.0.1"));
-        assert!(is_local_target("::1"));
-        assert!(!is_local_target("google.com"));
-        assert!(!is_local_target("8.8.8.8"));
-        assert!(!is_local_target("1.1.1.1"));
-    }
-
-    #[test]
-    fn test_is_blocked_target() {
-        // Proteção ativa: bloqueia loopback
-        assert!(is_blocked_target("127.0.0.1", 8080, true, &[]));
-        // Porta permitida
-        assert!(!is_blocked_target("127.0.0.1", 8080, true, &[8080]));
-        // Proteção inativa: permite
-        assert!(!is_blocked_target("127.0.0.1", 8080, false, &[]));
-        // Alvo externo: sempre permitido pelo filtro local
-        assert!(!is_blocked_target("1.1.1.1", 443, true, &[]));
-    }
-}

@@ -10,9 +10,10 @@ import {
   Send,
   CheckCircle2,
   ChevronRight,
+  ExternalLink,
 } from 'lucide-react';
-import { toast } from '@/components/ui/notification';
-import { BACKEND_PORT, http } from '@/services/http';
+import { BACKEND_PORT } from '@/services/http';
+import { serviceMcp } from '@/services/mcp/service.mcp';
 
 interface ApiTabProps {
   apiPort?: number;
@@ -35,15 +36,14 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   apiPort = BACKEND_PORT,
   token: initialToken,
 }) => {
-  const [token, setToken] = useState(initialToken || localStorage.getItem('star_mcp_token') || 'star_sec_loading');
+  const [token, setToken] = useState(initialToken || serviceMcp.getCachedToken());
 
   React.useEffect(() => {
     if (!initialToken || initialToken.includes('8f92a10b48c34791')) {
-      http.get<{ token: string }>('/mcp/info')
+      serviceMcp.getInfo()
         .then((res) => {
           if (res?.token) {
             setToken(res.token);
-            localStorage.setItem('star_mcp_token', res.token);
           }
         })
         .catch(() => {});
@@ -55,48 +55,84 @@ export const ApiTab: React.FC<ApiTabProps> = ({
 
   const endpoints: EndpointItem[] = [
     {
+      id: 'get_public_profiles',
+      name: 'Puxar Perfil Público (ID, Nome & Tags)',
+      method: 'GET',
+      path: '/api/profiles/public',
+      desc: 'Puxa o ID, Nome e Tags do perfil para controle inteligente de agentes de IA sem expor credenciais ou cofre. Aceita ?id=, ?name= ou ?tag=.',
+      sampleBody: {
+        tag: 'shopee',
+      },
+      mockResponse: {
+        id: 'prf_shopee_01',
+        name: 'Shopee Ads',
+        tags: ['shopee', 'aquecimento'],
+      },
+    },
+    {
+      id: 'get_playwright_options',
+      name: 'Playwright: Opções Nativa Camoufox',
+      method: 'GET',
+      path: '/api/profiles/{id}/playwright',
+      desc: 'Retorna manifesto completo com user_data_dir, executable_path, configs de hardware e prefs para execução nativa no Camoufox (zero BiDi).',
+      mockResponse: {
+        profile_id: 'prf_shopee_01',
+        name: 'Shopee Ads',
+        os: 'windows',
+        user_data_dir: '/dados/profiles/prf_shopee_01/profile',
+        executable_path: '/binarios/camoufox/camoufox',
+        config: {
+          'geolocation:latitude': -23.55,
+          'geolocation:longitude': -46.63,
+          'navigator:oscpu': 'Windows NT 10.0; Win64; x64',
+          fonts: ['Arial', 'Calibri'],
+        },
+        firefox_user_prefs: {
+          'network.dns.disableIPv6': true,
+        },
+      },
+    },
+    {
       id: 'start_profile',
-      name: 'Iniciar Perfil (AstroFox)',
+      name: 'Iniciar Perfil (Camoufox GUI)',
       method: 'POST',
-      path: '/api/v1/profiles/start',
-      desc: 'Inicia o perfil com cookies, proxy e camuflagem de hardware, expondo a porta WebSocket para controle do Playwright/Puppeteer.',
+      path: '/api/profiles/{id}/launch',
+      desc: 'Inicia o perfil com janela gráfica, cookies, proxy e camuflagem de hardware no Camoufox.',
       sampleBody: {
         id: 'prf_shopee_01',
-        headless: false,
       },
       mockResponse: {
         status: 'launched',
         profile_id: 'prf_shopee_01',
         pid: 15820,
-        debug_port: 18922,
-        ws_endpoint: 'ws://127.0.0.1:18922/session',
+        kernel: 'FlowerBrowser',
+        message: 'Navegador FlowerBrowser iniciado com sucesso (PID: 15820).',
       },
     },
     {
       id: 'stop_profile',
       name: 'Encerrar Perfil & Salvar',
       method: 'POST',
-      path: '/api/v1/profiles/stop',
-      desc: 'Encerra o processo do navegador de forma graciosa e salva novos cookies/storage no banco local.',
+      path: '/api/profiles/{id}/stop',
+      desc: 'Encerra o processo do navegador de forma graciosa e salva novos cookies/storage no cofre local.',
       sampleBody: {
         id: 'prf_shopee_01',
       },
       mockResponse: {
         status: 'stopped',
         profile_id: 'prf_shopee_01',
-        cookies_saved: 42,
-        message: 'Perfil encerrado e cookies sincronizados com sucesso.',
+        message: 'Navegador finalizado com sucesso.',
       },
     },
     {
       id: 'list_profiles',
       name: 'Listar Todos os Perfis',
       method: 'GET',
-      path: '/api/v1/profiles',
+      path: '/api/profiles',
       desc: 'Lista todos os perfis cadastrados com tags, proxies associados e status.',
       mockResponse: [
         { id: 'prf_shopee_01', name: 'Shopee Ads', status: 'ready', proxy: 'res-br:1080' },
-        { id: 'prf_ml_02', name: 'Mercado Livre Farm', status: 'running', debug_port: 18922 },
+        { id: 'prf_ml_02', name: 'Mercado Livre Farm', status: 'ready' },
       ],
     },
     {
@@ -104,26 +140,14 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       name: 'Verificar Saúde do Motor',
       method: 'GET',
       path: '/api/v1/status',
-      desc: 'Verifica a integridade do motor AstroFox e quantos perfis estão abertos no momento.',
+      desc: 'Verifica a integridade do motor FlowerBrowser/Camoufox e quantos perfis estão abertos no momento.',
       mockResponse: {
         ok: true,
-        engine: 'camoufox',
+        status: 'ready',
+        engine: 'FlowerBrowser (Camoufox)',
         version: '2.1.0',
-        running_count: 1,
+        running_count: 0,
         loopback_only: true,
-      },
-    },
-    {
-      id: 'tabs_inspect',
-      name: 'Inspecionar Abas do Perfil',
-      method: 'GET',
-      path: '/api/v1/profiles/{id}/tabs',
-      desc: 'Lê títulos e URLs das abas abertas no perfil em tempo real via BiDi.',
-      mockResponse: {
-        tabs: [
-          { id: 'tab_1', title: 'Mercado Livre', url: 'https://mercadolivre.com.br' },
-          { id: 'tab_2', title: 'Painel de Vendas', url: 'https://ads.mercadolivre.com.br' },
-        ],
       },
     },
   ];
@@ -379,7 +403,6 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   const handleCopy = () => {
     navigator.clipboard.writeText(rawCode);
     setCopied(true);
-    toast.success('Snippet de código copiado!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -389,7 +412,6 @@ export const ApiTab: React.FC<ApiTabProps> = ({
     setTimeout(() => {
       setIsExecuting(false);
       setApiResponse(selectedEndpoint.mockResponse);
-      toast.success('Requisição executada com sucesso (200 OK)!');
     }, 400);
   };
 
@@ -397,9 +419,21 @@ export const ApiTab: React.FC<ApiTabProps> = ({
     <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm shadow-slate-200/50 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col md:flex-row min-h-[580px]">
       {/* PAINEL ESQUERDO: Lista de Endpoints para Navegação */}
       <div className="w-full md:w-[260px] bg-slate-50 dark:bg-[#101117] border-b md:border-b-0 md:border-r border-slate-200 dark:border-white/10 p-3.5 flex flex-col shrink-0 space-y-3">
-        <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-[#8E92A2] px-2 block">
-          Catálogo de Rotas
-        </span>
+        <div className="flex items-center justify-between px-2">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-[#8E92A2] block">
+            Catálogo de Rotas
+          </span>
+          <a
+            href={`http://127.0.0.1:${apiPort}/swagger-ui/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-[#00FF66] hover:underline"
+            title="Abrir Swagger UI Interativo"
+          >
+            <span>Swagger</span>
+            <ExternalLink size={11} />
+          </a>
+        </div>
 
         <div className="space-y-1">
           {endpoints.map((ep) => {
@@ -630,7 +664,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="flex-1">
                 <label className="text-[11px] text-slate-600 dark:text-[#A6A6A6] block mb-1 font-medium">
-                  ID do Perfil AstroFox:
+                  ID do Perfil Star Multlogin:
                 </label>
                 <input
                   type="text"

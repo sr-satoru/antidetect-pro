@@ -6,42 +6,81 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 
-pub mod browser_downloader;
-pub mod extensions;
-pub mod extraction_session;
-pub mod fingerprint;
-pub mod id_generator;
-pub mod launcher;
-pub mod mcp;
-pub mod models;
+// 6 Domínios Principais do Monorepo
+pub mod api;
+pub mod browser;
+pub mod core;
 pub mod network;
-pub mod openapi;
-pub mod proxy_validator;
-pub mod routes;
-pub mod security;
-pub mod server_sync;
-pub mod service_database;
-pub mod ws;
+pub mod storage;
+pub mod sync;
+pub mod swagger;
+
+// Re-exportações e Aliases para 100% de compatibilidade com testes e rotas existentes
+pub use browser::browser_downloader;
+pub use browser::camoufox;
+pub use browser::extensions;
+pub use browser::extraction_session;
+pub use browser::fingerprint;
+pub use browser::launcher;
+
+pub use network::validator as proxy_validator;
+
+pub use storage::service_database;
+pub use sync::server_sync;
+
+pub use swagger::openapi;
+pub use api::routes;
+pub use api::ws;
+
+pub use core::id_generator;
+pub use core::models;
+pub use core::security;
 
 pub use server_sync::{cloud_auth, cloud_sync};
 
 use extensions::ExtensionStorage;
 use service_database::{ExtensionCategoryStorage, ProfileStorage, ProxyStorage, TagStorage, Vault};
 
-/// Resolve o diretório raiz de dados do aplicativo
+/// Resolve o diretório raiz de dados do aplicativo.
+///
+/// Prioridade de resolução:
+/// 1. Variável de ambiente `STAR_DATA_DIR` (se informada e não vazia).
+/// 2. `data_dir_override` explícito passado via parâmetro (ex: Tauri em produção).
+/// 3. Modo desenvolvimento (`cargo run` / `cfg!(debug_assertions)`):
+///    Usa a pasta `./app-data` localizada no próprio diretório do backend (`CARGO_MANIFEST_DIR/app-data`),
+///    isolando completamente o banco `star_vault.db` e perfis de teste do banco de dados oficial do sistema.
+/// 4. Modo produção (Release):
+///    Usa o diretório canônico padrão do sistema operacional (`get_canonical_app_dir`).
 fn resolve_data_dir(data_dir_override: Option<String>) -> String {
-    data_dir_override
-        .or_else(|| std::env::var("STAR_DATA_DIR").ok())
-        .unwrap_or_else(|| {
-            let local_data = std::path::Path::new("./data");
-            if local_data.is_dir() {
-                "./data".to_string()
-            } else {
-                browser_downloader::platform::get_canonical_app_dir()
-                    .to_string_lossy()
-                    .to_string()
-            }
-        })
+    // 1. Variável de ambiente explícita
+    if let Ok(dir) = std::env::var("STAR_DATA_DIR") {
+        if !dir.trim().is_empty() {
+            return dir;
+        }
+    }
+
+    // 2. Parâmetro explícito
+    if let Some(dir) = data_dir_override {
+        if !dir.trim().is_empty() {
+            return dir;
+        }
+    }
+
+    // 3. Modo desenvolvimento (cargo run) -> pasta local ./app-data no diretório do backend
+    if cfg!(debug_assertions) {
+        let dev_dir = if let Some(manifest_dir) = option_env!("CARGO_MANIFEST_DIR") {
+            std::path::PathBuf::from(manifest_dir).join("app-data")
+        } else {
+            std::path::PathBuf::from("./app-data")
+        };
+        let _ = std::fs::create_dir_all(&dev_dir);
+        return dev_dir.to_string_lossy().to_string();
+    }
+
+    // 4. Modo produção (Release) -> diretório canônico oficial do SO
+    browser_downloader::platform::get_canonical_app_dir()
+        .to_string_lossy()
+        .to_string()
 }
 
 /// Constrói o roteador Axum completo com todos os módulos, documentação Swagger e middlewares
@@ -56,7 +95,6 @@ pub fn build_app_router(
     cloud_sync_service: Arc<cloud_sync::CloudSyncService>,
     browser_state: routes::browser::BrowserRouteState,
     ws_state: ws::WsState,
-    token_state: mcp::security::TokenState,
 ) -> Router {
     let cors = CorsLayer::new()
         .allow_origin(Any)
@@ -65,6 +103,7 @@ pub fn build_app_router(
 
     let profile_routes = Router::new()
         .route("/", get(routes::profiles::list_profiles).post(routes::profiles::create_profile))
+        .route("/public", get(routes::profiles::get_public_profiles).post(routes::profiles::lookup_public_profile))
         .route("/trash", get(routes::profiles::list_trash))
         .route("/trash/empty", delete(routes::profiles::empty_trash))
         .route(
@@ -73,13 +112,13 @@ pub fn build_app_router(
                 .put(routes::profiles::update_profile)
                 .delete(routes::profiles::delete_profile),
         )
+        .route("/{id}/public", get(routes::profiles::get_public_profile_by_id))
         .route("/{id}/launch", post(routes::profiles::launch_profile))
         .route("/{id}/stop", post(routes::profiles::stop_profile))
+        .route("/{id}/playwright", get(routes::profiles::get_profile_playwright))
         .route("/{id}/clone", post(routes::profiles::clone_profile))
         .route("/{id}/restore", post(routes::profiles::restore_profile))
         .route("/{id}/permanent", delete(routes::profiles::delete_permanent))
-        .route("/{id}/tabs", get(routes::tabs::get_profile_tabs).post(routes::tabs::open_profile_tab))
-        .route("/{id}/tabs/{tab_id}", delete(routes::tabs::close_profile_tab))
         .route(
             "/{id}/cookies",
             get(routes::cookies::get_profile_cookies)
@@ -137,10 +176,10 @@ pub fn build_app_router(
     let cloud_sync_routes = Router::new()
         .route("/health", get(routes::cloud_sync::check_cloud_health))
         .route("/pull", post(routes::cloud_sync::pull_all_cloud_profiles))
-        .route("/two-way", post(routes::cloud_sync::two_way_sync))
         .route("/{id}/sync", post(routes::cloud_sync::sync_to_cloud))
         .route("/{id}/restore", post(routes::cloud_sync::restore_from_cloud))
         .route("/{id}/stat", get(routes::cloud_sync::get_cloud_stat))
+        .route("/{id}", delete(routes::cloud_sync::delete_from_cloud))
         .with_state(cloud_sync_service);
 
     let browser_routes = Router::new()
@@ -166,16 +205,24 @@ pub fn build_app_router(
         .route("/", get(ws::ws_handler))
         .with_state(ws_state);
 
-    let mcp_routes = mcp::create_mcp_router(
-        profile_storage.clone(),
-        std::path::PathBuf::from(data_dir),
-        token_state.clone(),
-    );
+    let fingerprint_routes = Router::new()
+        .route("/random", get(routes::fingerprints::get_random_preset))
+        .route("/presets", get(routes::fingerprints::list_presets))
+        .route("/fonts", get(routes::fingerprints::get_fonts))
+        .route("/media-devices", get(routes::fingerprints::get_media_devices));
 
-    let native_mcp_routes = mcp::create_native_mcp_router(profile_storage, token_state);
+    let mcp_routes = Router::new()
+        .route("/info", get(routes::mcp::get_mcp_info))
+        .route("/{token}", post(routes::mcp::handle_mcp_jsonrpc))
+        .route("/{token}/sse", get(routes::mcp::handle_mcp_sse))
+        .with_state(profile_storage.clone());
 
-    Router::new()
-        .nest("/api/profiles", profile_routes)
+    let app = Router::new()
+        .nest("/api/profiles", profile_routes.clone())
+        .nest("/api/v1/profiles", profile_routes)
+        .route("/api/v1/status", get(routes::mcp::get_mcp_status).with_state(profile_storage.clone()))
+        .nest("/mcp", mcp_routes)
+        .nest("/api/fingerprints", fingerprint_routes)
         .nest("/api/cloud-sync", cloud_sync_routes)
         .nest("/api/proxies", proxy_routes)
         .nest("/api/extensions", extension_routes)
@@ -184,11 +231,9 @@ pub fn build_app_router(
         .nest("/api/auth", auth_routes)
         .nest("/api/browser", browser_routes)
         .nest("/api/app", app_routes)
-        .nest("/api/ws", ws_routes)
-        .nest("/api/v1", mcp_routes.clone())
-        .nest("/v1", mcp_routes)
-        .merge(native_mcp_routes)
-        .layer(cors)
+        .nest("/api/ws", ws_routes);
+
+    swagger::mount_swagger_ui(app).layer(cors)
 }
 
 /// Inicia o servidor Axum do ecossistema Star Multlogin na porta e diretório especificados
@@ -197,6 +242,7 @@ pub async fn start_star_server(
     port: u16,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let data_dir = resolve_data_dir(data_dir_override);
+    tracing::info!("📂 Diretório raiz de dados Star Multlogin: {}", data_dir);
 
     let _ = std::fs::create_dir_all(&data_dir);
     let _ = std::fs::create_dir_all(std::path::Path::new(&data_dir).join("profiles"));
@@ -221,8 +267,9 @@ pub async fn start_star_server(
     // 3. Sincronização em nuvem e auto-sync
     let auth_service = Arc::new(cloud_auth::CloudAuthService::new(vault.clone()));
     let cloud_sync_service = Arc::new(
-        cloud_sync::CloudSyncService::new(&data_dir, auth_service.clone())
+        cloud_sync::CloudSyncService::new(vault.clone(), auth_service.clone())
             .with_ws(ws_state.clone()),
+
     );
     let pm = profile_storage.get_process_manager();
     cloud_sync_service.set_running_checker(Arc::new(move |pid: &str| pm.is_running(pid)));
@@ -234,14 +281,6 @@ pub async fn start_star_server(
     ));
     profile_storage.set_auto_sync(auto_sync_engine);
 
-    // 4. Token e rotas do subsistema MCP
-    let token = mcp::security::ensure_token(vault.clone())
-        .map_err(|e| format!("Falha ao inicializar api-token: {}", e))?;
-    let token_state = mcp::security::TokenState::new(
-        token,
-        vault.clone(),
-        std::path::PathBuf::from(&data_dir),
-    );
 
     // 5. Download e monitoramento de engine do navegador
     let browser_download_service = Arc::new(browser_downloader::BrowserDownloadService::new(
@@ -265,7 +304,6 @@ pub async fn start_star_server(
         cloud_sync_service,
         browser_state,
         ws_state,
-        token_state,
     );
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));

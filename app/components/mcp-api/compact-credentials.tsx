@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Key, Copy, Check, Eye, EyeOff, ShieldCheck, Globe, Bot } from 'lucide-react';
-import { toast } from '@/components/ui/notification';
-import { http, BACKEND_PORT } from '@/services/http';
+import { BACKEND_PORT } from '@/services/http';
+import { serviceMcp } from '@/services/mcp/service.mcp';
 
 interface CompactCredentialsProps {
   apiPort?: number;
@@ -12,7 +12,7 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
   apiPort = BACKEND_PORT,
   token: initialToken,
 }) => {
-  const [token, setToken] = useState(initialToken || '');
+  const [token, setToken] = useState(initialToken || serviceMcp.getCachedToken());
   const [showToken, setShowToken] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
@@ -20,39 +20,35 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
 
   useEffect(() => {
     if (!initialToken) {
-      http.get<{ token: string; server_url: string }>('/mcp/info')
+      serviceMcp.getInfo()
         .then((res) => {
           if (res?.token) {
             setToken(res.token);
-            localStorage.setItem('star_mcp_token', res.token);
           }
         })
         .catch(() => {});
     }
   }, [initialToken]);
 
-  const activeToken = token || initialToken || 'star_sec_loading';
+  const activeToken = token || initialToken || serviceMcp.getCachedToken();
   const baseUrl = `http://127.0.0.1:${apiPort}`;
   const mcpSseUrl = `http://127.0.0.1:${apiPort}/mcp/${activeToken}/sse`;
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(baseUrl);
     setCopiedUrl(true);
-    toast.success('URL base copiada!');
     setTimeout(() => setCopiedUrl(false), 2000);
   };
 
   const handleCopyToken = () => {
     navigator.clipboard.writeText(activeToken);
     setCopiedToken(true);
-    toast.success('Token copiado!');
     setTimeout(() => setCopiedToken(false), 2000);
   };
 
   const handleCopyMcpUrl = () => {
     navigator.clipboard.writeText(mcpSseUrl);
     setCopiedMcpUrl(true);
-    toast.success('URL MCP (SSE) copiada para a IDE!');
     setTimeout(() => setCopiedMcpUrl(false), 2000);
   };
 

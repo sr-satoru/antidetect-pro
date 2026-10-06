@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import servicePerfis from '@/services/perfis/service.perfis';
-import { API_BASE_URL } from '@/services/http';
+import { serviceAuth } from '@/services/auth/service.auth';
 
 interface PendingAuthSession {
   sessionId: string;
@@ -44,12 +44,7 @@ export const LoginPage: React.FC = () => {
 
     const checkSession = async () => {
       try {
-        const res = await fetch(
-          `${API_BASE_URL}/api/auth/session/${waitingSession.sessionId}`
-        );
-        if (!res.ok) return;
-
-        const data = await res.json();
+        const data = await serviceAuth.getSessionStatus(waitingSession.sessionId);
         if (data.status === 'authenticated' && data.user && data.token) {
           if (pollIntervalRef.current) {
             clearInterval(pollIntervalRef.current);
@@ -102,17 +97,8 @@ export const LoginPage: React.FC = () => {
   const handleConnect = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch(`${API_BASE_URL}/api/auth/start-login`, {
-        method: 'POST',
-      });
-
-      if (!res.ok) {
-        throw new Error('Falha ao gerar link de conexão. Verifique se o daemon local está ativo.');
-      }
-
-      const data = await res.json();
+      const data = await serviceAuth.startLogin();
       window.open(data.auth_url, '_blank', 'noopener,noreferrer');
-      toast.info('Abrindo navegador seguro para conectar...');
 
       setWaitingSession({
         sessionId: data.session_id,

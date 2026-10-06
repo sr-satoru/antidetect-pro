@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Key, Copy, Check, Eye, EyeOff, RefreshCw, ShieldCheck, Lock, Globe } from 'lucide-react';
-import { toast } from '@/components/ui/notification';
 
 interface TokenBarProps {
   apiPort?: number;
@@ -22,14 +21,12 @@ export const TokenBar: React.FC<TokenBarProps> = ({
   const handleCopyToken = () => {
     navigator.clipboard.writeText(token);
     setCopiedToken(true);
-    toast.success('Token de automação copiado!');
     setTimeout(() => setCopiedToken(false), 2000);
   };
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(baseUrl);
     setCopiedUrl(true);
-    toast.success('Endereço base da API copiado!');
     setTimeout(() => setCopiedUrl(false), 2000);
   };
 

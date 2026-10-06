@@ -13,6 +13,10 @@ import { http } from './http';
 
 import { serviceExtensoes } from './extensoes/service.extensoes';
 import { serviceCategorias } from './extensoes/service.categorias';
+import { serviceAuth } from './auth/service.auth';
+import { serviceMcp } from './mcp/service.mcp';
+import { serviceSync } from './sync/service.sync';
+import { wsService } from './ws/service.ws';
 
 // Re-exporta serviços ativos
 export { serviceGeral } from './criar-perfil/service.geral';
@@ -24,6 +28,10 @@ export { serviceCookies } from './perfis/service.cookies';
 export { serviceTags } from './tags/service.tags';
 export { serviceExtensoes } from './extensoes/service.extensoes';
 export { serviceCategorias } from './extensoes/service.categorias';
+export { serviceAuth } from './auth/service.auth';
+export { serviceMcp } from './mcp/service.mcp';
+export { serviceSync } from './sync/service.sync';
+export { wsService } from './ws/service.ws';
 export { http, ApiError } from './http';
 
 /**
@@ -33,21 +41,12 @@ export const api = {
   profiles: servicePerfis,
   tags: serviceTags,
   proxies: serviceProxies,
-
   extensions: serviceExtensoes,
   extensionCategories: serviceCategorias,
-
-  auth: {
-    startLogin: () =>
-      http.post<{ session_id: string; token: string; auth_url: string }>('/api/auth/start-login'),
-    startRegister: () =>
-      http.post<{ session_id: string; token: string; auth_url: string }>('/api/auth/start-register'),
-    getSession: (sessionId: string) =>
-      http.get<any>(`/api/auth/session/${sessionId}`),
-    me: () => http.get<any>('/api/auth/me'),
-    logout: () => http.post<any>('/api/auth/logout'),
-  },
-
+  auth: serviceAuth,
+  mcp: serviceMcp,
+  sync: serviceSync,
+  ws: wsService,
   impressoes: impressaoDigitalService,
 };
 

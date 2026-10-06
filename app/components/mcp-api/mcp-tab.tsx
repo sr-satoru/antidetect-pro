@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Bot,
   Copy,
@@ -8,11 +8,11 @@ import {
   Play,
   CheckCircle2,
   Code2,
-  FileCode,
-  ShieldCheck,
+  Layers,
+  HelpCircle,
 } from 'lucide-react';
-import { toast } from '@/components/ui/notification';
-import { http, BACKEND_PORT } from '@/services/http';
+import { BACKEND_PORT } from '@/services/http';
+import { serviceMcp } from '@/services/mcp/service.mcp';
 
 interface McpTabProps {
   scriptPath?: string;
@@ -22,14 +22,17 @@ interface McpTabProps {
 export const McpTab: React.FC<McpTabProps> = ({
   apiPort = BACKEND_PORT,
 }) => {
-  const [selectedClient, setSelectedClient] = useState<'claude' | 'cursor' | 'antigravity' | 'cli'>('claude');
+  const [selectedClient, setSelectedClient] = useState<
+    'cursor' | 'antigravity' | 'claude' | 'vscode' | 'windsurf' | 'cli'
+  >('cursor');
   const [copiedSnippet, setCopiedSnippet] = useState(false);
   const [testOutput, setTestOutput] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState(false);
-  const [token, setToken] = useState('star_sec_loading');
+  const [token, setToken] = useState(serviceMcp.getCachedToken());
 
   useEffect(() => {
-    http.get<{ token: string }>('/mcp/info')
+    serviceMcp
+      .getInfo()
       .then((res) => {
         if (res?.token) {
           setToken(res.token);
@@ -38,75 +41,124 @@ export const McpTab: React.FC<McpTabProps> = ({
       .catch(() => {});
   }, []);
 
-  const sseUrl = `http://127.0.0.1:${apiPort}/mcp/${token}/sse`;
+  const activeHost = '127.0.0.1';
+  const sseUrl = `http://${activeHost}:${apiPort}/mcp/${token}/sse`;
 
-  const clientConfigs = {
-    claude: {
-      name: 'Claude Desktop',
-      pathText: '~/.config/Claude/claude_desktop_config.json',
-      json: JSON.stringify(
-        {
-          mcpServers: {
-            star: {
-              serverUrl: sseUrl,
+  const clientConfigs = useMemo(() => {
+    return {
+      cursor: {
+        name: 'Cursor IDE',
+        category: 'IDE Nativo',
+        pathText: 'Settings > Features > MCP Servers > Add New Server (Type: SSE)',
+        json: JSON.stringify(
+          {
+            mcpServers: {
+              star: {
+                url: sseUrl,
+              },
             },
           },
-        },
-        null,
-        2
-      ),
-    },
-    cursor: {
-      name: 'Cursor IDE',
-      pathText: 'Settings > Features > MCP > Add New Server (Type: sse)',
-      json: JSON.stringify(
-        {
-          mcpServers: {
-            star: {
-              serverUrl: sseUrl,
+          null,
+          2
+        ),
+      },
+      antigravity: {
+        name: 'Antigravity IDE',
+        category: 'Google Gemini',
+        pathText: '~/.gemini/config/mcp_config.json',
+        json: JSON.stringify(
+          {
+            mcpServers: {
+              star: {
+                serverUrl: sseUrl,
+              },
             },
           },
-        },
-        null,
-        2
-      ),
-    },
-    antigravity: {
-      name: 'Antigravity IDE',
-      pathText: '~/.gemini/config/mcp_config.json',
-      json: JSON.stringify(
-        {
-          mcpServers: {
-            star: {
-              serverUrl: sseUrl,
+          null,
+          2
+        ),
+      },
+      claude: {
+        name: 'Claude Desktop',
+        category: 'Anthropic',
+        pathText:
+          navigator.platform.indexOf('Mac') > -1
+            ? '~/Library/Application Support/Claude/claude_desktop_config.json'
+            : '~/.config/Claude/claude_desktop_config.json',
+        json: JSON.stringify(
+          {
+            mcpServers: {
+              star: {
+                command: 'npx',
+                args: ['-y', 'mcp-remote', sseUrl],
+              },
             },
           },
-        },
-        null,
-        2
-      ),
-    },
-    cli: {
-      name: 'Claude CLI',
-      pathText: 'Terminal / Shell:',
-      json: `claude mcp add --transport sse star ${sseUrl}`,
-    },
-  };
+          null,
+          2
+        ),
+      },
+      vscode: {
+        name: 'VS Code (Cline / Roo)',
+        category: 'Extensões IA',
+        pathText: 'Cline / Roo Code Settings > MCP Servers > Config JSON',
+        json: JSON.stringify(
+          {
+            mcpServers: {
+              star: {
+                url: sseUrl,
+                type: 'sse',
+              },
+            },
+          },
+          null,
+          2
+        ),
+      },
+      windsurf: {
+        name: 'Windsurf IDE',
+        category: 'Codeium',
+        pathText: '~/.codeium/windsurf/mcp_config.json',
+        json: JSON.stringify(
+          {
+            mcpServers: {
+              star: {
+                serverUrl: sseUrl,
+              },
+            },
+          },
+          null,
+          2
+        ),
+      },
+      cli: {
+        name: 'Claude Code / CLI',
+        category: 'Terminal',
+        pathText: 'Execute no terminal para conectar instantaneamente:',
+        json: `claude mcp add --transport sse star ${sseUrl}`,
+      },
+    };
+  }, [sseUrl]);
 
   const tools = [
-    { name: 'star_status', desc: 'Informa à IA se o motor está ativo e perfis em execução.', tag: 'Leitura' },
-    { name: 'star_profiles', desc: 'Lista perfis com tags, status (Zero-Leakage: sem dados sensíveis).', tag: 'Leitura' },
-    { name: 'star_start_profile', desc: 'Abre o perfil seguro e devolve o endpoint WebSocket/CDP.', tag: 'Execução' },
-    { name: 'star_stop_profile', desc: 'Encerra o perfil graciosamente persistindo cookies e sessão.', tag: 'Execução' },
-    { name: 'star_get_tabs', desc: 'Lê títulos e URLs das abas abertas em tempo real.', tag: 'Inspeção' },
-    { name: 'star_open_tab', desc: 'Abre uma nova URL em uma aba do perfil.', tag: 'Ação' },
-    { name: 'star_close_tab', desc: 'Fecha uma aba específica do perfil sem fechar o navegador.', tag: 'Ação' },
+    { name: 'star_status', desc: 'Verifica se o motor Camoufox e o backend estão ativos e perfis rodando.', tag: 'Status' },
+    { name: 'star_profiles', desc: 'Lista perfis disponíveis sem expor proxies nem credenciais sensíveis.', tag: 'Leitura' },
+    { name: 'star_start_profile', desc: 'Inicia o perfil no Camoufox e devolve ws_endpoint para BiDi/Playwright.', tag: 'Ciclo' },
+    { name: 'star_stop_profile', desc: 'Finaliza o perfil graciosamente persistindo sessão e cookies no Vault.', tag: 'Ciclo' },
+    { name: 'star_get_tabs', desc: 'Inspeciona títulos e URLs de todas as abas abertas em tempo real.', tag: 'Abas' },
+    { name: 'star_open_tab', desc: 'Abre uma nova aba navegando diretamente para a URL desejada.', tag: 'Abas' },
+    { name: 'star_close_tab', desc: 'Fecha uma aba específica do perfil sem encerrar o navegador.', tag: 'Abas' },
+    { name: 'star_click', desc: 'Executa clique humanizado simulando trajeto de mouse e eventos reais.', tag: 'Ação' },
+    { name: 'star_type', desc: 'Digita texto em inputs/textareas disparando eventos de input e change.', tag: 'Ação' },
+    { name: 'star_scroll', desc: 'Rola a página suavemente com animação na direção desejada.', tag: 'Ação' },
+    { name: 'star_read_content', desc: 'Extrai texto visível, título e URL da página ou elemento especificado.', tag: 'Extração' },
+    { name: 'star_screenshot', desc: 'Captura screenshot em PNG Base64 da aba informada.', tag: 'Visual' },
+    { name: 'star_evaluate', desc: 'Executa código JavaScript arbitrário no contexto da aba selecionada.', tag: 'Script' },
   ];
 
   const handleCopySnippet = () => {
     navigator.clipboard.writeText(clientConfigs[selectedClient].json);
     setCopiedSnippet(true);
-    toast.success('Configuração copiada!');
     setTimeout(() => setCopiedSnippet(false), 2000);
   };
 
@@ -114,42 +166,44 @@ export const McpTab: React.FC<McpTabProps> = ({
     setIsTesting(true);
     setTestOutput(null);
     try {
-      const status = await http.get<any>('/api/v1/status');
+      // Executa chamada real no endpoint HTTP direto do MCP
+      const res = await fetch(`http://127.0.0.1:${apiPort}/mcp/${token}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'initialize',
+          params: { protocolVersion: '2024-11-05', capabilities: {} },
+        }),
+      });
+
+      const json = await res.json();
       setTestOutput(
         JSON.stringify(
           {
-            jsonrpc: '2.0',
-            id: 1,
-            result: {
-              serverInfo: { name: 'star-multlogin', version: status.version || '2.1.0' },
-              capabilities: { tools: tools.length },
-              transport: 'Server-Sent Events (SSE) Nativo',
-              status: status.ok ? 'online' : 'error',
-              running_profiles: status.running_count,
-              message: 'Servidor MCP nativo operacional sem Python!',
-            },
+            handshake: '200 OK',
+            protocolVersion: '2024-11-05',
+            transport: 'SSE & HTTP Direto',
+            toolsCount: tools.length,
+            server_response: json,
           },
           null,
           2
         )
       );
-      toast.success('Servidor MCP testado com sucesso!');
     } catch (e: any) {
       setTestOutput(
         JSON.stringify(
           {
-            jsonrpc: '2.0',
-            id: 1,
-            error: {
-              code: -32603,
-              message: e.message || 'Falha ao conectar no backend local',
-            },
+            status: 'Falha na conexão',
+            message: e?.message || 'Não foi possível conectar ao backend MCP',
+            dica: `Certifique-se de que o backend Rust está rodando na porta ${apiPort}.`,
           },
           null,
           2
         )
       );
-      toast.error('Erro ao conectar no servidor MCP local');
     } finally {
       setIsTesting(false);
     }
@@ -163,10 +217,10 @@ export const McpTab: React.FC<McpTabProps> = ({
           <div>
             <h3 className="text-[16px] font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Bot size={18} className="text-emerald-600 dark:text-[#00FF66]" />
-              Conectar Assistentes de IA (MCP)
+              Conectar Qualquer IA ou IDE (Protocolo MCP 2024-11-05)
             </h3>
             <p className="text-[12px] text-slate-600 dark:text-[#A6A6A6] mt-0.5">
-              Permita que o Claude Desktop, Cursor ou Antigravity controlem seus perfis do Star Multlogin diretamente pelo chat em linguagem natural.
+              Controle nativo do Camoufox diretamente via chat no Cursor, Claude, Antigravity, VS Code, Windsurf e Cline.
             </p>
           </div>
 
@@ -177,13 +231,13 @@ export const McpTab: React.FC<McpTabProps> = ({
             className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 dark:bg-[#1F212D] dark:hover:bg-[#282B3A] dark:border-white/15 dark:text-[#00FF66] text-[12px] font-bold transition-all shrink-0 active:scale-95 disabled:opacity-50 cursor-pointer"
           >
             <Play size={13} className={isTesting ? 'animate-spin' : ''} />
-            <span>{isTesting ? 'Testando...' : 'Testar Conexão MCP'}</span>
+            <span>{isTesting ? 'Testando Handshake...' : 'Testar Conexão MCP'}</span>
           </button>
         </div>
 
         {/* Client selector tabs */}
         <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 dark:bg-[#0C0D12] border border-slate-200 dark:border-white/10 rounded-xl w-fit">
-          {(['claude', 'cursor', 'antigravity', 'cli'] as const).map((key) => (
+          {(['cursor', 'antigravity', 'claude', 'vscode', 'windsurf', 'cli'] as const).map((key) => (
             <button
               key={key}
               type="button"
@@ -210,13 +264,13 @@ export const McpTab: React.FC<McpTabProps> = ({
             className="absolute top-2.5 right-2.5 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 dark:bg-[#1E202B] dark:hover:bg-[#282B3A] dark:text-[#00FF66] text-[11px] font-bold border border-slate-700 dark:border-white/10 transition-all cursor-pointer shadow-xs"
           >
             {copiedSnippet ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-            <span>{copiedSnippet ? 'Copiado!' : 'Copiar JSON'}</span>
+            <span>{copiedSnippet ? 'Copiado!' : 'Copiar Config'}</span>
           </button>
         </div>
 
         {/* Path Hint */}
         <div className="text-[11px] text-slate-500 dark:text-[#A6A6A6]">
-          Arquivo de configuração: <code className="text-slate-800 dark:text-white font-mono bg-slate-100 dark:bg-[#181922] border border-slate-200 dark:border-white/10 px-2 py-0.5 rounded">{clientConfigs[selectedClient].pathText}</code>
+          Onde configurar: <code className="text-slate-800 dark:text-white font-mono bg-slate-100 dark:bg-[#181922] border border-slate-200 dark:border-white/10 px-2 py-0.5 rounded">{clientConfigs[selectedClient].pathText}</code>
         </div>
 
         {/* Test Result Preview */}
@@ -247,16 +301,17 @@ export const McpTab: React.FC<McpTabProps> = ({
           </h4>
           <div className="space-y-2">
             {[
-              '"Quais perfis eu tenho cadastrados no Star Multlogin?"',
-              '"Abra o perfil da Shopee e me informe o saldo de anúncios."',
-              '"Inicie todos os perfis com a tag \'aquecer\' em paralelo."',
+              '"Quais perfis estão disponíveis no Star Multlogin?"',
+              '"Inicie o perfil da Shopee e abra a página inicial."',
+              '"Quais abas estão abertas no perfil e qual o título da atual?"',
+              '"Clique no botão de login com seletor button#submit e me avise."',
+              '"Capture uma screenshot da página atual para eu verificar."',
             ].map((prompt, idx) => (
               <div
                 key={idx}
                 className="text-[12px] text-slate-800 dark:text-[#D4D4D8] bg-slate-50 hover:bg-slate-100 dark:bg-[#181922] dark:hover:bg-[#202230] px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 font-mono select-all transition-colors cursor-pointer"
                 onClick={() => {
                   navigator.clipboard.writeText(prompt.replace(/"/g, ''));
-                  toast.success('Prompt copiado!');
                 }}
               >
                 {prompt}
@@ -270,14 +325,14 @@ export const McpTab: React.FC<McpTabProps> = ({
           <div className="flex items-center justify-between">
             <h4 className="text-[13px] font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
               <Code2 size={15} className="text-emerald-600 dark:text-[#00FF66]" />
-              Ferramentas Expostas (MCP Tools):
+              Ferramentas Nativas do Camoufox (MCP Tools):
             </h4>
             <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20">
-              6 ativas
+              {tools.length} ativas
             </span>
           </div>
 
-          <div className="space-y-1.5 max-h-[190px] overflow-y-auto pr-1">
+          <div className="space-y-1.5 max-h-[260px] overflow-y-auto pr-1">
             {tools.map((t) => (
               <div
                 key={t.name}

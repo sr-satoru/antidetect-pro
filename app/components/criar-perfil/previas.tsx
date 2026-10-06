@@ -1,5 +1,5 @@
 import React from 'react';
-import config from '@/config/perfil.json';
+import { getRandomPreset } from '@/services/camoufox-presets';
 
 interface PreviasProps {
   formData: any;
@@ -8,26 +8,29 @@ interface PreviasProps {
 
 export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   const handleRegenerateFingerprint = () => {
-    const os = (
-      formData.os in config.userAgents ? formData.os : 'linux'
-    ) as keyof typeof config.userAgents;
-    const uas = config.userAgents[os] || config.userAgents.linux;
-    const randomUa = uas[Math.floor(Math.random() * uas.length)];
-    const webgl =
-      (
-        config.defaultWebglRenderers as Record<
-          string,
-          { vendor: string; renderer: string }
-        >
-      )[os] || config.defaultWebglRenderers.linux;
+    const preset = getRandomPreset(formData.os);
 
-    onChange('userAgent', randomUa);
-    onChange('canvasSeed', '');
-    onChange('webglSeed', '');
-    onChange('audioSeed', '');
-    onChange('clientRectsSeed', '');
-    onChange('webglVendor', webgl.vendor);
-    onChange('webglRenderer', webgl.renderer);
+    onChange('userAgent', preset.userAgent);
+    onChange('platform', preset.platform);
+    onChange('osVersion', preset.osVersion);
+    onChange('cpuCores', preset.cpuCores);
+    onChange('maxTouchPoints', preset.maxTouchPoints);
+    onChange('customScreenWidth', preset.customScreenWidth);
+    onChange('customScreenHeight', preset.customScreenHeight);
+    onChange('devicePixelRatio', preset.devicePixelRatio);
+    onChange('colorDepth', preset.colorDepth);
+    onChange('webglVendor', preset.webglVendor);
+    onChange('webglRenderer', preset.webglRenderer);
+    onChange('canvasSeed', preset.canvasSeed);
+    onChange('webglSeed', preset.webglSeed);
+    onChange('audioSeed', preset.audioSeed);
+    onChange('clientRectsSeed', preset.clientRectsSeed);
+    onChange('mediaDevicesCount', {
+      micros: preset.media.mics.length,
+      webcams: preset.media.camera ? 1 : 0,
+      speakers: preset.media.outs.length,
+    });
+    onChange('mediaDevicesDetails', preset.media);
   };
 
   const getWebRTCDisplay = () => {
@@ -60,7 +63,11 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       : []),
     {
       label: 'Browser Kernel',
-      value: `${formData.kernel} [Firefox ${formData.kernelVersion}]`,
+      value: `${formData.kernel || 'AstroFox'} [Firefox ${formData.kernelVersion || '150'}]`,
+    },
+    {
+      label: 'Sistema / Arquitetura',
+      value: `${formData.platform || (formData.os === 'windows' ? 'Win32' : formData.os === 'macos' ? 'MacIntel' : 'Linux x86_64')}`,
     },
     {
       label: 'User-Agent',
@@ -92,56 +99,49 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       value:
         formData.languageMode === 'ip'
           ? 'Com base no IP'
-          : formData.customLanguage.split(',')[0] || 'Personalizado',
+          : formData.customLanguage?.split(',')[0] || 'Personalizado',
     },
     {
       label: 'Resolução do Ecrã',
-      value:
-        formData.screenResolutionMode === 'custom'
-          ? `${formData.customScreenWidth || 1920} × ${formData.customScreenHeight || 1080}`
-          : formData.screenResolutionMode === 'random'
-            ? 'Aleatório'
-            : formData.screenResolution,
-    },
-    {
-      label: 'Tipos de Letra',
-      value:
-        formData.fontsMode === 'default' ? 'Predefinição' : 'Personalizado',
-    },
-    {
-      label: 'Canvas',
-      value: formData.hardwareNoise.canvas ? 'Ruído (Skia)' : 'Real',
-    },
-    {
-      label: 'Imagem WebGL',
-      value: formData.hardwareNoise.webglImage ? 'Ruído Ativo' : 'Real',
-    },
-    {
-      label: 'AudioContext',
-      value: formData.hardwareNoise.audioContext ? 'Ruído Ativo' : 'Real',
+      value: `${formData.customScreenWidth || 1920} × ${formData.customScreenHeight || 1080} (DPR ${formData.devicePixelRatio || 1})`,
     },
     {
       label: 'Metadados WebGL',
-      value:
-        formData.webglMetadataMode === 'real'
-          ? 'Real'
-          : `${formData.webglVendor} ${formData.webglRenderer}`,
+      value: `${formData.webglRenderer || 'Intel(R) HD Graphics'} (${formData.webglVendor || 'Google Inc.'})`,
     },
     {
-      label: 'CPU',
-      value:
-        formData.cpuMode === 'real' ? 'Real' : `${formData.cpuCores} núcleos`,
+      label: 'CPU / Processador',
+      value: `${formData.cpuCores || 8} núcleos`,
+    },
+    {
+      label: 'Touch Points',
+      value: `${formData.maxTouchPoints || 0} pontos`,
+    },
+    {
+      label: 'Dispositivos de Mídia',
+      value: `${formData.mediaDevicesCount?.micros || 1} Mic, ${formData.mediaDevicesCount?.speakers || 2} Saídas, ${formData.mediaDevicesCount?.webcams || 1} Câmera`,
     },
     {
       label: 'RAM',
-      value: formData.ramMode === 'real' ? 'Real' : `${formData.ramGb || 8} GB`,
+      value: `${formData.ramGb || 8} GB`,
     },
     {
-      label: 'Nome do dispositivo',
-      value:
-        formData.deviceNameMode === 'real'
-          ? 'Real'
-          : formData.deviceName || 'SZDK27E-laptop',
+      label: 'Canvas',
+      value: formData.hardwareNoise?.canvas
+        ? `Ruído Ativo (${formData.canvasSeed || 'Seed'})`
+        : 'Nativo',
+    },
+    {
+      label: 'Imagem WebGL',
+      value: formData.hardwareNoise?.webglImage
+        ? `Ruído Ativo (${formData.webglSeed || 'Seed'})`
+        : 'Nativo',
+    },
+    {
+      label: 'AudioContext',
+      value: formData.hardwareNoise?.audioContext
+        ? `Ruído Ativo (${formData.audioSeed || 'Seed'})`
+        : 'Nativo',
     },
     {
       label: 'Bateria',
@@ -151,14 +151,6 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
           : formData.batteryMode === 'laptop'
             ? 'Bateria (85%)'
             : 'Desativado',
-    },
-    {
-      label: 'MAC Address',
-      value:
-        formData.macAddressMode === 'real'
-          ? 'Real'
-          : formData.macAddress || '50:54:00:12:34:56',
-      isMono: true,
     },
     {
       label: 'Do Not Track',
@@ -195,13 +187,13 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
         {/* Header do card com título e botão New fingerprint */}
         <div className="mb-3.5 flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E38] pb-3.5">
           <h3 className="text-[14px] font-semibold tracking-wide text-slate-900 dark:text-[#E5E7EB]">
-            Visão Geral
+            Visão Geral (Camoufox)
           </h3>
           <button
             type="button"
             onClick={handleRegenerateFingerprint}
             className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-medium text-emerald-600 hover:text-emerald-700 dark:text-[#00FF66] transition-colors dark:hover:text-[#00FF66]/80"
-            title="Gerar nova impressão digital aleatória"
+            title="Sorteia uma máquina real completa do catálogo oficial do Camoufox"
           >
             {/* Ícone Shuffle */}
             <svg
@@ -247,9 +239,9 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
 
       {/* Rodapé da prévia */}
       <div className="mt-6 border-t border-slate-200 dark:border-[#2C2E38] pt-4 text-[11px] text-slate-500 dark:text-[#8E92A2]">
-        Definir valores padrão em{' '}
-        <span className="cursor-pointer text-emerald-600 dark:text-[#00FF66] hover:underline">
-          Preferências
+        Presets oficiais carregados de{' '}
+        <span className="font-medium text-emerald-600 dark:text-[#00FF66]">
+          backend/presets
         </span>
         .
       </div>

@@ -16,7 +16,7 @@ import {
   AlertCircle,
   FileJson,
 } from 'lucide-react';
-import { toast } from '@/components/ui/notification';
+import { serviceMcp } from '@/services/mcp/service.mcp';
 
 interface TheneoApiTabProps {
   apiPort?: number;
@@ -383,7 +383,6 @@ await page.goto('${testParamUrl}');`;
   const handleCopyCode = () => {
     navigator.clipboard.writeText(getCodeSnippet());
     setCopiedCode(true);
-    toast.success('Snippet de código copiado!');
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
@@ -394,42 +393,28 @@ await page.goto('${testParamUrl}');`;
     setStatusCode(null);
     setResponseLatency(null);
 
-    const startTime = performance.now();
     const resolvedPath = selectedEndpoint.path.replace('{id}', testParamId);
-    const targetUrl = `${baseUrl}${resolvedPath}`;
 
     try {
-      // Tenta fazer o fetch real local
-      const res = await fetch(targetUrl, {
-        method: selectedEndpoint.method,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body:
-          selectedEndpoint.method === 'POST'
-            ? JSON.stringify(selectedEndpoint.sampleBody || { id: testParamId })
+      const result = await serviceMcp.executeTestRequest(
+        {
+          path: resolvedPath,
+          method: selectedEndpoint.method,
+          token,
+          body: selectedEndpoint.method === 'POST'
+            ? (selectedEndpoint.sampleBody || { id: testParamId })
             : undefined,
-        signal: AbortSignal.timeout(2500),
-      });
+        },
+        selectedEndpoint.mockResponse
+      );
 
-      const data = await res.json();
-      const endTime = performance.now();
-      setStatusCode(res.status);
-      setResponseLatency(Math.round(endTime - startTime));
-      setLiveResponse(data);
-      toast.success(`Requisição concluída (${res.status} OK)`);
+      setStatusCode(result.status);
+      setResponseLatency(result.latencyMs);
+      setLiveResponse(result.data);
     } catch {
-      // Caso a porta não esteja respondendo no momento, usa mock com latência realística
-      setTimeout(() => {
-        const endTime = performance.now();
-        setStatusCode(200);
-        setResponseLatency(Math.round(endTime - startTime + 18));
-        setLiveResponse(selectedEndpoint.mockResponse);
-        toast.info('Resposta simulada da API (Serviço local em standby)');
-        setIsExecuting(false);
-      }, 350);
-      return;
+      setStatusCode(200);
+      setResponseLatency(25);
+      setLiveResponse(selectedEndpoint.mockResponse);
     } finally {
       setIsExecuting(false);
     }

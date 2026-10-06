@@ -7,11 +7,8 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let data_dir = std::env::var("STAR_DATA_DIR")
-        .or_else(|_| std::env::var("STAR_DATA_DIR"))
-        .ok();
+    let data_dir = std::env::var("STAR_DATA_DIR").ok();
     let port: u16 = std::env::var("STAR_BACKEND_PORT")
-        .or_else(|_| std::env::var("STAR_BACKEND_PORT"))
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(12540);

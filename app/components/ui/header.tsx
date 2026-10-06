@@ -13,9 +13,8 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
-import { toast } from '@/components/ui/notification';
 import { useBrowser } from '@/contexts/browser-context';
-import { http } from '@/services/http';
+import { serviceSync } from '@/services/sync/service.sync';
 
 import { UpdateCenterDropdown } from '@/components/browser/update-center-dropdown';
 import { NotificationsDropdown } from '@/components/ui/notifications-dropdown';
@@ -35,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     let isMounted = true;
     const checkHealth = async () => {
       try {
-        const res = await http.get<{ cloud_online: boolean }>('/api/cloud-sync/health');
+        const res = await serviceSync.checkHealth();
         if (isMounted) {
           setCloudOnline(res.cloud_online);
         }

@@ -1,0 +1,12 @@
+pub mod auth;
+pub mod cookies;
+pub mod extensions;
+pub mod extension_categories;
+pub mod profiles;
+pub mod proxies;
+pub mod tags;
+pub mod cloud_sync;
+pub mod browser;
+pub mod app_update;
+pub mod fingerprints;
+pub mod mcp;

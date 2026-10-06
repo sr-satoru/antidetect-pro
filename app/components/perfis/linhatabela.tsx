@@ -152,18 +152,18 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLocalSyncing, setIsLocalSyncing] = useState(false);
-  const isRunning = profile.status === 'running' || profile.isRunning;
+  const isStarting = Boolean(profile.isStarting || profile.status === 'starting');
+  const isRunning = (profile.status === 'running' || profile.isRunning) && !isStarting;
   const isSyncing = Boolean(profile.isSyncing || isLocalSyncing);
-  const isBusy = isSyncing;
+  const isBusy = isSyncing || isStarting;
 
   const handleRestoreCloud = async () => {
     try {
       setIsLocalSyncing(true);
-      toast.loading(`Restaurando perfil ${profile.name}...`, { id: `restore-${profile.id}` });
       await servicePerfis.restoreFromCloud(profile.id);
-      toast.success(`Perfil ${profile.name} restaurado da nuvem!`, { id: `restore-${profile.id}` });
+      toast.success(`Perfil ${profile.name} restaurado da nuvem!`);
     } catch (err: any) {
-      toast.error(`Falha ao restaurar: ${err?.message || 'Cápsula não encontrada na nuvem'}`, { id: `restore-${profile.id}` });
+      toast.error(`Falha ao restaurar: ${err?.message || 'Cápsula não encontrada na nuvem'}`);
     } finally {
       setIsLocalSyncing(false);
     }
@@ -426,17 +426,27 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           type="button"
           disabled={isBusy}
           onClick={() => !isBusy && onToggleRunning(profile.id)}
-          title={isSyncing ? 'Sincronizando perfil com a nuvem...' : undefined}
+          title={
+            isSyncing
+              ? 'Sincronizando perfil com a nuvem...'
+              : isStarting
+                ? 'Iniciando navegador em segundo plano...'
+                : undefined
+          }
           className={`inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-md px-3.5 text-xs font-bold transition-all active:scale-[0.98] ${
-            isBusy
+            isSyncing
               ? 'cursor-not-allowed opacity-60 border border-slate-300 bg-slate-200/50 text-slate-400 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-400'
-              : isRunning
-                ? 'cursor-pointer border border-[#ff334b]/35 bg-red-50 text-red-600 hover:bg-[#ff334b] hover:text-white dark:bg-[#ff334b]/12 dark:text-[#ff334b] dark:hover:text-black'
-                : 'cursor-pointer border border-emerald-500/35 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white dark:border-[#00FF66]/35 dark:bg-[#00FF66]/12 dark:text-[#00FF66] dark:hover:bg-[#00FF66] dark:hover:text-black shadow-xs'
+              : isStarting
+                ? 'cursor-wait border border-emerald-500/40 bg-emerald-50/70 text-emerald-600 dark:border-[#00FF66]/30 dark:bg-[#00FF66]/10 dark:text-[#00FF66] animate-pulse shadow-xs'
+                : isRunning
+                  ? 'cursor-pointer border border-[#ff334b]/35 bg-red-50 text-red-600 hover:bg-[#ff334b] hover:text-white dark:bg-[#ff334b]/12 dark:text-[#ff334b] dark:hover:text-black'
+                  : 'cursor-pointer border border-emerald-500/35 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white dark:border-[#00FF66]/35 dark:bg-[#00FF66]/12 dark:text-[#00FF66] dark:hover:bg-[#00FF66] dark:hover:text-black shadow-xs'
           }`}
         >
-          {isBusy ? (
+          {isSyncing ? (
             <Loader2 size={11} className="animate-spin text-zinc-400" />
+          ) : isStarting ? (
+            <Loader2 size={11} className="animate-spin text-emerald-600 dark:text-[#00FF66]" />
           ) : isRunning ? (
             <Square size={11} fill="currentColor" />
           ) : (
@@ -445,9 +455,11 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           <span>
             {isSyncing
               ? 'Sincronizando'
-              : isRunning
-                ? 'Parar'
-                : 'Iniciar'}
+              : isStarting
+                ? 'Iniciando...'
+                : isRunning
+                  ? 'Parar'
+                  : 'Iniciar'}
           </span>
         </button>
       </td>

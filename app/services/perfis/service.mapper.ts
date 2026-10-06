@@ -1,4 +1,5 @@
 import config from '@/config/perfil.json';
+import { getUserAgents, getGpuOptions } from '@/services/camoufox-presets';
 
 /**
  * Mapeia os dados do Perfil vindos da API do backend Rust
@@ -20,8 +21,9 @@ export function profileToFormData(profile: any): any {
   }
 
   const osKey = (profile.os || fp.os || 'linux').toLowerCase();
-  const uas = (config.userAgents as any)[osKey] || config.userAgents.linux;
-  const webgl = (config.defaultWebglRenderers as any)[osKey] || config.defaultWebglRenderers.linux;
+  const uas = getUserAgents(osKey);
+  const defaultGpu = getGpuOptions(osKey)[0] || { vendor: 'Google Inc.', renderer: 'Intel(R) HD Graphics' };
+  const webgl = defaultGpu;
 
   // Normalização de tags (array de strings)
   const tagsList = Array.isArray(profile.tags)

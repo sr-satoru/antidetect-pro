@@ -83,7 +83,9 @@ export const servicePerfis = {
   pullFromCloud: (force = false) =>
     http.post<any>(`/api/cloud-sync/pull${force ? '?force=true' : ''}`),
   twoWaySync: (force = false) =>
-    http.post<any>(`/api/cloud-sync/two-way${force ? '?force=true' : ''}`),
+    http.post<any>(`/api/cloud-sync/pull${force ? '?force=true' : ''}`),
+  deleteFromCloud: (id: string | number) =>
+    http.delete<any>(`/api/cloud-sync/${id}`),
 };
 
 

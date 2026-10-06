@@ -13,6 +13,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { serviceNotifications, NotificationItem } from '@/services/notifications/service.notifications';
+import { wsService, NotificationData } from '@/services/ws/service.ws';
 
 export const NotificationsDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +24,23 @@ export const NotificationsDropdown: React.FC = () => {
     const unsubscribe = serviceNotifications.subscribe((items) => {
       setNotifications(items);
     });
+    return unsubscribe;
+  }, []);
+
+  // Escuta notificações em tempo real disparadas pelo Rust Backend via Hub wsService centralizado
+  useEffect(() => {
+    const unsubscribe = wsService.subscribe<NotificationData>('notification', (data) => {
+      if (!data) return;
+      const { id, title, description, type, timestamp } = data;
+      serviceNotifications.add({
+        id,
+        title,
+        description,
+        type: (type as any) || 'warning',
+        timestamp: timestamp || Date.now(),
+      });
+    });
+
     return unsubscribe;
   }, []);
 

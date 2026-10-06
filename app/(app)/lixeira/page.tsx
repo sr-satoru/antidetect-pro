@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import {
   HeaderLixeira,
   TabelaLixeira,
@@ -16,8 +16,11 @@ export const LixeiraPage: React.FC = () => {
   const [selectedGroup, setSelectedGroup] = useState('Todos os grupos');
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
 
-  const fetchTrash = useCallback(async () => {
-    setLoading(true);
+  const hasLoadedOnce = useRef(false);
+  const fetchTrash = useCallback(async (forceLoader = false) => {
+    if (forceLoader || !hasLoadedOnce.current) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const data = await api.profiles.listTrash();
@@ -25,6 +28,7 @@ export const LixeiraPage: React.FC = () => {
     } catch (err: any) {
       setError(err.message || 'Erro ao carregar itens da lixeira.');
     } finally {
+      hasLoadedOnce.current = true;
       setLoading(false);
     }
   }, []);
@@ -163,7 +167,6 @@ export const LixeiraPage: React.FC = () => {
   const handleRefresh = () => {
     fetchTrash();
     setSelectedIds([]);
-    toast.info('Lixeira sincronizada com o banco de dados.');
   };
 
   return (
@@ -198,8 +201,9 @@ export const LixeiraPage: React.FC = () => {
             <span>{error}</span>
           </div>
           <button
-            onClick={fetchTrash}
-            className="rounded bg-red-500/20 px-2 py-1 font-semibold hover:bg-red-500/30 text-white"
+            type="button"
+            onClick={() => fetchTrash(true)}
+            className="rounded bg-red-500/20 px-2 py-1 font-semibold hover:bg-red-500/30 text-white cursor-pointer"
           >
             Tentar novamente
           </button>

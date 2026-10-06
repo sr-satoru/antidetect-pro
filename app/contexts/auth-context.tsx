@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { http } from '@/services/http';
+import { serviceAuth } from '@/services/auth/service.auth';
 
 export interface UserSession {
   id: string;
@@ -43,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const fetchSessionFromBackend = async () => {
     try {
-      const backendUser = await http.get<any>('/api/auth/me');
+      const backendUser = await serviceAuth.getMe();
       if (backendUser && !backendUser.is_offline && backendUser.email) {
         const sessionUser: UserSession = {
           id: String(backendUser.id || 'cloud_user'),
@@ -54,38 +54,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           is_offline: false,
         };
         setUser(sessionUser);
-        if (backendUser.token) {
-          setToken(backendUser.token);
-          localStorage.setItem('star_auth_token', backendUser.token);
-        }
-        localStorage.setItem('star_auth_user', JSON.stringify(sessionUser));
+        setToken(backendUser.token || null);
         return true;
+      } else {
+        setUser(DEFAULT_OFFLINE_USER);
+        setToken(null);
       }
     } catch (err) {
-      console.warn('Erro ao consultar /api/auth/me do backend local:', err);
+      console.warn('Backend local offline ou inacessível ao sincronizar sessão:', err);
     }
     return false;
   };
 
-  // Carrega a sessão salva no localStorage e sincroniza com /api/auth/me
+  // Inicializa a sessão consultando a fonte única da verdade: o backend Rust (Vault SQLite)
   useEffect(() => {
     let isMounted = true;
 
     const initAuth = async () => {
-      const savedToken = localStorage.getItem('star_auth_token');
-      const savedUser = localStorage.getItem('star_auth_user');
-
-      if (savedToken && savedUser) {
-        try {
-          setToken(savedToken);
-          setUser(JSON.parse(savedUser));
-        } catch {
-          localStorage.removeItem('star_auth_token');
-          localStorage.removeItem('star_auth_user');
-          setUser(DEFAULT_OFFLINE_USER);
-        }
-      }
-
       await fetchSessionFromBackend();
       if (isMounted) {
         setIsLoading(false);
@@ -100,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   /**
-   * Define a sessão vinda diretamente do fluxo OAuth 2.0 Web
+   * Define a sessão vinda do fluxo OAuth 2.0 PKCE concluído
    */
   const setCloudSession = (cloudUser: any, sessionToken: string) => {
     const sessionUser: UserSession = {
@@ -118,8 +103,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setToken(sessionToken);
     setUser(sessionUser);
-    localStorage.setItem('star_auth_token', sessionToken);
-    localStorage.setItem('star_auth_user', JSON.stringify(sessionUser));
   };
 
   /**
@@ -128,21 +111,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const continueOffline = () => {
     setToken(null);
     setUser(DEFAULT_OFFLINE_USER);
-    localStorage.removeItem('star_auth_token');
-    localStorage.removeItem('star_auth_user');
   };
 
   /**
-   * Desconectar da nuvem
+   * Desconectar da nuvem (limpa o cofre do backend Rust e a memória local)
    */
   const logout = async () => {
     try {
-      await http.post('/api/auth/logout');
+      await serviceAuth.logout();
     } catch {}
     setToken(null);
     setUser(DEFAULT_OFFLINE_USER);
-    localStorage.removeItem('star_auth_token');
-    localStorage.removeItem('star_auth_user');
   };
 
   const isOnline = !user.is_offline;

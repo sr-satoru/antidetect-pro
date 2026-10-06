@@ -4,7 +4,6 @@ import {
   RotateCw,
   CheckCircle2,
 } from 'lucide-react';
-import { toast } from '@/components/ui/notification';
 
 interface SecurityTabProps {
   apiPort?: number;
@@ -58,7 +57,6 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ apiPort = 18922 }) => 
     setTimeout(() => {
       setIsRunningAudit(false);
       setAuditComplete(true);
-      toast.success('Auditoria concluída: 5/5 barreiras íntegras!');
     }, 500);
   };
 

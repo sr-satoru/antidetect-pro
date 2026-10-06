@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
+  RotateCw,
 } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
 
@@ -20,6 +21,7 @@ interface TabelaProps {
   onEditNotes?: (profile: any) => void;
   onDelete: (id: any) => void;
   onDuplicate?: (profile: any) => void;
+  isSyncing?: boolean;
 }
 
 export const Tabela: React.FC<TabelaProps> = ({
@@ -33,6 +35,7 @@ export const Tabela: React.FC<TabelaProps> = ({
   onEditNotes,
   onDelete,
   onDuplicate,
+  isSyncing = false,
 }) => {
   const isAllSelected =
     profiles.length > 0 && selectedIds.length === profiles.length;
@@ -60,8 +63,8 @@ export const Tabela: React.FC<TabelaProps> = ({
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] shadow-sm shadow-slate-200/50 dark:shadow-none">
-      <div className="flex-1 custom-scrollbar overflow-x-auto overflow-y-visible">
-        <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
+      <div className="flex-1 custom-scrollbar overflow-auto relative">
+        <table className="min-w-full w-full border-collapse text-left text-xs whitespace-nowrap">
           {/* Header */}
           <thead className="sticky top-0 z-20 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] text-[11px] font-semibold tracking-wider text-slate-500 dark:text-[#A6ABB9] uppercase select-none">
             <tr className="h-11">
@@ -124,6 +127,23 @@ export const Tabela: React.FC<TabelaProps> = ({
                   onDuplicate={onDuplicate}
                 />
               ))
+            ) : isSyncing ? (
+              <tr>
+                <td colSpan={12} className="py-20 text-center text-slate-400 dark:text-[#5E6172]">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <RotateCw
+                      size={28}
+                      className="animate-spin text-emerald-500"
+                    />
+                    <p className="text-sm font-semibold text-slate-700 dark:text-[#E1E4EE]">
+                      Sincronizando perfis com a VPS...
+                    </p>
+                    <p className="text-xs text-slate-400 dark:text-[#8E92A2]">
+                      Baixando e descriptografando dados locais com segurança.
+                    </p>
+                  </div>
+                </td>
+              </tr>
             ) : (
               <tr>
                 <td colSpan={12} className="py-16 text-center text-slate-400 dark:text-[#5E6172]">
@@ -190,11 +210,10 @@ export const Tabela: React.FC<TabelaProps> = ({
                       setPageSize(size);
                       setIsPageDropdownOpen(false);
                     }}
-                    className={`flex w-full items-center px-3 py-1 text-[11px] transition-colors cursor-pointer select-none text-left ${
-                      pageSize === size
+                    className={`flex w-full items-center px-3 py-1 text-[11px] transition-colors cursor-pointer select-none text-left ${pageSize === size
                         ? 'bg-emerald-50 text-emerald-700 dark:bg-[#00FF66]/10 dark:text-[#00FF66] font-medium'
                         : 'text-slate-700 dark:text-[#C8CBD4] hover:bg-slate-100 dark:hover:bg-[#2A2C38] hover:text-slate-900 dark:hover:text-white'
-                    }`}
+                      }`}
                   >
                     {size} / pág
                   </button>

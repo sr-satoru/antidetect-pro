@@ -112,7 +112,6 @@ export const ProxyPage: React.FC = () => {
             : p,
         ),
       );
-      toast.success('Teste de conexão concluído');
     } catch (err: any) {
       toast.error(`Falha no teste: ${err.message}`);
     }

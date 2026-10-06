@@ -12,7 +12,6 @@ import {
   Boxes,
   Zap,
 } from 'lucide-react';
-import { toast } from '@/components/ui/notification';
 
 interface AutomationTabProps {
   apiPort?: number;
@@ -32,27 +31,27 @@ export const AutomationTab: React.FC<AutomationTabProps> = ({
   const recipes = [
     {
       id: 'basic_connect',
-      title: '1. Conexão Direta Playwright',
+      title: '1. Biblioteca Nativa Camoufox',
       tag: 'Recomendado',
-      desc: 'Inicia o perfil e conecta o Playwright ao AstroFox sem baixar navegadores externos.',
+      desc: 'Inicia o perfil usando a SDK oficial do Camoufox com Juggler nativo (Zero BiDi).',
     },
     {
       id: 'multi_profile',
       title: '2. Automação Multi-Perfis Paralela',
       tag: 'Concorrência',
-      desc: 'Dispara múltiplos perfis simultaneamente com proxies residenciais e portas independentes.',
+      desc: 'Dispara múltiplos perfis simultaneamente com pastas isoladas e proxies residenciais.',
     },
     {
       id: 'session_cookies',
       title: '3. Aquecimento & Coleta de Cookies',
       tag: 'Persistência',
-      desc: 'Navega humanizado, acumula cookies e encerra sincronizando as sessões no disco.',
+      desc: 'Navega humanizado, acumula cookies e salva automaticamente na pasta do perfil.',
     },
     {
-      id: 'puppeteer_cdp',
-      title: '4. Integração com Puppeteer',
-      tag: 'Node.js',
-      desc: 'Para desenvolvedores que utilizam a biblioteca Puppeteer tradicional em pipelines.',
+      id: 'tag_dispatch',
+      title: '4. Seleção Inteligente por Tags (IA / Bot)',
+      tag: 'Agentes & Tags',
+      desc: 'Filtra perfis públicos pelas tags de negócio e executa tarefas sob demanda.',
     },
   ];
 
@@ -60,75 +59,68 @@ export const AutomationTab: React.FC<AutomationTabProps> = ({
     basic_connect: {
       python: `#!/usr/bin/env python3
 """
-Conexão Direta Playwright -> Star Multlogin Core
-Preserva 100% dos cookies, proxy residencial e camuflagem de hardware.
-SEM baixar navegadores extras ('playwright install' não é necessário!).
+Automação Nativa com Camoufox + Star Multlogin (Zero BiDi)
+Usa o driver Juggler nativo do Camoufox carregando todos os dados do perfil salvo.
 """
 import requests
-from playwright.sync_api import sync_playwright
+from camoufox.sync_api import Camoufox
 
 API_BASE = "${baseUrl}"
-TOKEN = "${token}"
-HEADERS = {"Authorization": f"Bearer {TOKEN}"}
+# (Dica: Você pode puxar o ID, Nome e Tags pelo endpoint público: requests.get(f"{API_BASE}/api/profiles/public?name=Meu Perfil"))
+PROFILE_ID = "seu_perfil_id_aqui"
 
-# 1. Inicia o perfil no Star Multlogin
-profile_id = "seu_perfil_id_aqui"
-res = requests.post(f"{API_BASE}/api/v1/profiles/start", json={"id": profile_id}, headers=HEADERS)
-data = res.json()
+# 1. Obtém as configurações e diretório do perfil no Star Multlogin
+res = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright")
+opts = res.json()
 
-ws_endpoint = data.get("ws_endpoint")
-print(f"🚀 Camoufox ativo! Conectando via BiDi/CDP em: {ws_endpoint}")
+print(f"🦊 Carregando perfil '{opts.get('name')}' via Camoufox...")
 
-# 2. Conecta o Playwright direto no processo Camoufox já aberto
-with sync_playwright() as pw:
-    browser = pw.firefox.connect(ws_endpoint)
-    context = browser.contexts[0]
-    page = context.pages[0] if context.pages else context.new_page()
-
+# 2. Executa direto na biblioteca nativa do Camoufox (zero erros de BiDi/CDP)
+with Camoufox(
+    executable_path=opts.get("executable_path") or None,
+    user_data_dir=opts["user_data_dir"],
+    persistent_context=True,
+    os=opts["os"],
+    proxy=opts.get("proxy"),
+    config=opts.get("config"),
+    firefox_user_prefs=opts.get("firefox_user_prefs"),
+    humanize=True,
+    headless=False,
+) as browser:
+    page = browser.pages[0] if browser.pages else browser.new_page()
     page.goto("https://bot.sannysoft.com")
     print("✅ Página carregada com sucesso:", page.title())
-
-    # 3. Finaliza e persiste todos os cookies novos no banco SQLite do Star Multlogin
-    requests.post(f"{API_BASE}/api/v1/profiles/stop", json={"id": profile_id}, headers=HEADERS)
-    print("🔒 Sessão encerrada e dados gravados com sucesso.")
 `,
-      node: `// Node.js: Conexão Direta Playwright -> Camoufox
-import { firefox } from 'playwright';
+      node: `// Node.js: Automação Nativa com @camoufox/camoufox (Zero BiDi)
+import { Camoufox } from '@camoufox/camoufox';
 
 const API_BASE = '${baseUrl}';
-const TOKEN = '${token}';
-const HEADERS = {
-  'Content-Type': 'application/json',
-  'Authorization': \`Bearer \${TOKEN}\`
-};
+// (Dica: Você pode puxar o ID, Nome e Tags pelo endpoint público: await fetch(\`\${API_BASE}/api/profiles/public?name=Meu Perfil\`))
+const PROFILE_ID = 'seu_perfil_id_aqui';
 
 async function main() {
-  const profileId = 'seu_perfil_id_aqui';
+  // 1. Obtém as opções e pasta do perfil do Star Multlogin
+  const res = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/playwright\`);
+  const opts = await res.json();
 
-  // 1. Inicia o perfil via API REST do Star Multlogin
-  const startRes = await fetch(\`\${API_BASE}/api/v1/profiles/start\`, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ id: profileId })
+  console.log(\`🦊 Carregando perfil '\${opts.name}' via Camoufox...\`);
+
+  // 2. Executa via biblioteca nativa do Camoufox com contexto persistente
+  const browser = await Camoufox({
+    executable_path: opts.executable_path || undefined,
+    user_data_dir: opts.user_data_dir,
+    persistent_context: true,
+    os: opts.os,
+    proxy: opts.proxy || undefined,
+    config: opts.config,
+    firefox_user_prefs: opts.firefox_user_prefs,
+    humanize: true,
+    headless: false,
   });
-  const { ws_endpoint, pid } = await startRes.json();
-  console.log(\`🚀 Camoufox iniciado no PID \${pid}. Conectando em \${ws_endpoint}...\`);
 
-  // 2. Conecta ao Camoufox existente sem baixar novos binários
-  const browser = await firefox.connect(ws_endpoint);
-  const context = browser.contexts()[0];
-  const page = context.pages()[0] || await context.newPage();
-
+  const page = browser.pages()[0] || await browser.newPage();
   await page.goto('https://bot.sannysoft.com');
   console.log('✅ Título da página:', await page.title());
-
-  // 3. Encerra e persiste cookies no disco
-  await fetch(\`\${API_BASE}/api/v1/profiles/stop\`, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ id: profileId })
-  });
-  console.log('🔒 Perfil finalizado com segurança.');
 }
 
 main();
@@ -138,190 +130,240 @@ main();
     multi_profile: {
       python: `#!/usr/bin/env python3
 """
-Automação Paralela em Múltiplos Perfis com AstroFox
-Cada perfil roda isolado na sua própria porta com seu proxy residencial próprio.
+Automação Paralela em Múltiplos Perfis com Camoufox Nativo (Zero BiDi)
+Executa múltiplos perfis simultaneamente usando ThreadPool e pastas de dados isoladas.
 """
 import concurrent.futures
 import requests
-from playwright.sync_api import sync_playwright
+from camoufox.sync_api import Camoufox
 
 API_BASE = "${baseUrl}"
-HEADERS = {"Authorization": "Bearer ${token}"}
 
-PROFILES_TO_RUN = ["perfil_shopee_01", "perfil_mercado_02", "perfil_google_03"]
+# 1. Puxa perfis cadastrados pelo endpoint público (com suporte a tags)
+res = requests.get(f"{API_BASE}/api/profiles/public")
+profiles = res.json()
+target_ids = [p["id"] for p in profiles[:3]]
 
-def automate_profile(profile_id):
-    # Inicia o perfil e obtém a porta WebSocket
-    res = requests.post(f"{API_BASE}/api/v1/profiles/start", json={"id": profile_id}, headers=HEADERS)
-    ws_endpoint = res.json()["ws_endpoint"]
-    
-    with sync_playwright() as pw:
-        browser = pw.firefox.connect(ws_endpoint)
-        page = browser.contexts[0].new_page()
-        page.goto("https://httpbin.org/ip")
-        print(f"[{profile_id}] IP Detectado:", page.inner_text("body"))
-        browser.close()
-    
-    # Encerra o perfil
-    requests.post(f"{API_BASE}/api/v1/profiles/stop", json={"id": profile_id}, headers=HEADERS)
-    return f"Perfil {profile_id} finalizado."
+def run_profile(profile_id):
+    # Obtém as opções específicas do perfil (caminho dos dados, proxy, resolução)
+    opts = requests.get(f"{API_BASE}/api/profiles/{profile_id}/playwright").json()
+    print(f"🦊 Iniciando perfil '{opts.get('name')}' em paralelo...")
 
-# Executa em paralelo usando ThreadPool
+    with Camoufox(
+        executable_path=opts.get("executable_path") or None,
+        user_data_dir=opts["user_data_dir"],
+        persistent_context=True,
+        os=opts["os"],
+        proxy=opts.get("proxy"),
+        config=opts.get("config"),
+        firefox_user_prefs=opts.get("firefox_user_prefs"),
+        humanize=True,
+        headless=False,
+    ) as browser:
+        page = browser.pages[0] if browser.pages else browser.new_page()
+        page.goto("https://bot.sannysoft.com")
+        print(f"[{profile_id}] Sucesso: {page.title()}")
+
+# Roda perfis em paralelo com isolamento total de disco e sem erros de BiDi
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-    results = executor.map(automate_profile, PROFILES_TO_RUN)
-    for r in results:
-        print(r)
+    executor.map(run_profile, target_ids)
 `,
-      node: `// Automação Multi-Perfis Simultânea em Node.js
-import { firefox } from 'playwright';
+      node: `// Node.js: Execução Multi-Perfis Concorrente com @camoufox/camoufox
+import { Camoufox } from '@camoufox/camoufox';
 
 const API_BASE = '${baseUrl}';
-const HEADERS = {
-  'Content-Type': 'application/json',
-  'Authorization': 'Bearer ${token}'
-};
 
-const PROFILES = ['perfil_01', 'perfil_02', 'perfil_03'];
+async function runProfile(profileId) {
+  const res = await fetch(\`\${API_BASE}/api/profiles/\${profileId}/playwright\`);
+  const opts = await res.json();
 
-async function runWorker(profileId) {
-  const start = await fetch(\`\${API_BASE}/api/v1/profiles/start\`, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ id: profileId })
+  console.log(\`🦊 [\${opts.name}] Iniciando...\`);
+  const browser = await Camoufox({
+    executable_path: opts.executable_path || undefined,
+    user_data_dir: opts.user_data_dir,
+    persistent_context: true,
+    os: opts.os,
+    proxy: opts.proxy || undefined,
+    config: opts.config,
+    firefox_user_prefs: opts.firefox_user_prefs,
+    humanize: true,
+    headless: false,
   });
-  const { ws_endpoint } = await start.json();
 
-  const browser = await firefox.connect(ws_endpoint);
-  const page = await browser.contexts()[0].newPage();
-  await page.goto('https://httpbin.org/ip');
-  console.log(\`[\${profileId}] Terminado.\`);
-
-  await fetch(\`\${API_BASE}/api/v1/profiles/stop\`, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ id: profileId })
-  });
+  const page = browser.pages()[0] || await browser.newPage();
+  await page.goto('https://bot.sannysoft.com');
+  console.log(\`✅ [\${opts.name}] Concluído:\`, await page.title());
+  await browser.close();
 }
 
-// Roda todos os perfis em paralelo
-Promise.all(PROFILES.map(id => runWorker(id)))
-  .then(() => console.log('🎉 Todos os perfis foram executados com sucesso!'));
+async function main() {
+  const publicRes = await fetch(\`\${API_BASE}/api/profiles/public\`);
+  const profiles = await publicRes.json();
+  const targetIds = profiles.slice(0, 3).map(p => p.id);
+
+  await Promise.all(targetIds.map(id => runProfile(id)));
+  console.log('🎉 Todos os perfis concluídos em paralelo!');
+}
+
+main();
 `,
     },
 
     session_cookies: {
       python: `#!/usr/bin/env python3
 """
-Aquecimento de Perfil & Coleta de Cookies com Rolagem Humanizada
-Garante que novos tokens de sessão sejam descarregados para o banco de dados local.
+Aquecimento de Perfil & Coleta de Cookies com Camoufox Nativo
+Com persistent_context=True, todas as sessões e cookies são salvos automaticamente no disco.
 """
 import time
 import requests
-from playwright.sync_api import sync_playwright
+from camoufox.sync_api import Camoufox
 
 API_BASE = "${baseUrl}"
-HEADERS = {"Authorization": "Bearer ${token}"}
-profile_id = "perfil_aquecer_01"
+PROFILE_ID = "seu_perfil_id_aqui"
 
-# 1. Inicia o navegador Camoufox
-res = requests.post(f"{API_BASE}/api/v1/profiles/start", json={"id": profile_id}, headers=HEADERS)
-ws = res.json()["ws_endpoint"]
+# 1. Puxa as diretrizes do perfil
+opts = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright").json()
 
-with sync_playwright() as pw:
-    browser = pw.firefox.connect(ws)
-    page = browser.contexts[0].pages[0]
+# 2. Inicia o navegador Camoufox nativo
+with Camoufox(
+    executable_path=opts.get("executable_path") or None,
+    user_data_dir=opts["user_data_dir"],
+    persistent_context=True,
+    os=opts["os"],
+    proxy=opts.get("proxy"),
+    config=opts.get("config"),
+    firefox_user_prefs=opts.get("firefox_user_prefs"),
+    humanize=True,
+    headless=False,
+) as browser:
+    page = browser.pages[0] if browser.pages else browser.new_page()
 
-    # Navega para o site desejado
+    # Navega com fingerprint realista
     page.goto("https://mercadolivre.com.br")
     page.wait_for_load_state("networkidle")
 
-    # Rolagem humanizada suave (anti-detect)
+    # Rolagem e interação humanizada (anti-detect)
     for _ in range(3):
         page.mouse.wheel(0, 300)
         time.sleep(1.2)
 
-    print("Cookies na sessão ativa:", len(page.context.cookies()))
+    cookies = browser.contexts[0].cookies() if browser.contexts else []
+    print(f"🍪 Cookies na sessão ativa: {len(cookies)}")
 
-# 2. Descarrega cookies e persistência no disco do Star Multlogin
-requests.post(f"{API_BASE}/api/v1/profiles/stop", json={"id": profile_id}, headers=HEADERS)
-print("✅ Cookies gravados no armazenamento local do perfil!")
+# Ao sair do bloco 'with', o Camoufox grava e sincroniza tudo na pasta do perfil!
+print("✅ Sessões e cookies persistidos automaticamente no Star Multlogin!")
 `,
-      node: `// Aquecimento & Persistência de Cookies em Node.js
-import { firefox } from 'playwright';
+      node: `// Node.js: Aquecimento de Perfil & Persistência Nativa Camoufox
+import { Camoufox } from '@camoufox/camoufox';
 
 const API_BASE = '${baseUrl}';
-const HEADERS = {
-  'Content-Type': 'application/json',
-  'Authorization': 'Bearer ${token}'
-};
+const PROFILE_ID = 'seu_perfil_id_aqui';
 
 async function warmUp() {
-  const profileId = 'perfil_aquecer_01';
+  const res = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/playwright\`);
+  const opts = await res.json();
 
-  const res = await fetch(\`\${API_BASE}/api/v1/profiles/start\`, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ id: profileId })
+  const browser = await Camoufox({
+    executable_path: opts.executable_path || undefined,
+    user_data_dir: opts.user_data_dir,
+    persistent_context: true,
+    os: opts.os,
+    proxy: opts.proxy || undefined,
+    config: opts.config,
+    firefox_user_prefs: opts.firefox_user_prefs,
+    humanize: true,
+    headless: false,
   });
-  const { ws_endpoint } = await res.json();
 
-  const browser = await firefox.connect(ws_endpoint);
-  const page = browser.contexts()[0].pages()[0];
-
+  const page = browser.pages()[0] || await browser.newPage();
   await page.goto('https://mercadolivre.com.br', { waitUntil: 'networkidle' });
   await page.mouse.wheel(0, 400);
 
-  // Fecha o perfil de forma graciosa
-  await fetch(\`\${API_BASE}/api/v1/profiles/stop\`, {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ id: profileId })
-  });
-  console.log('✅ Cookies persistidos com sucesso!');
+  // Fecha o navegador sincronizando cookies e armazenamento no disco
+  await browser.close();
+  console.log('✅ Cookies e dados da sessão salvos no diretório do perfil!');
 }
 
 warmUp();
 `,
     },
 
-    puppeteer_cdp: {
-      python: `"""
-Nota: No ecossistema Python recomenda-se Playwright por suporte nativo a Firefox/Camoufox.
-Caso use Puppeteer, utilize o script em Node.js na aba ao lado.
+    tag_dispatch: {
+      python: `#!/usr/bin/env python3
 """
-print("Selecione a aba Node.js para o exemplo de Puppeteer!")
+Seleção por Tags para Agentes de IA & Pipelines
+Usa o endpoint público GET /api/profiles/public?tag=... que expõe apenas ID, Nome e Tags.
+"""
+import requests
+from camoufox.sync_api import Camoufox
+
+API_BASE = "${baseUrl}"
+TAG_FILTRO = "aquecimento"
+
+# 1. Agente consulta apenas perfis que possuem a tag desejada
+res = requests.get(f"{API_BASE}/api/profiles/public", params={"tag": TAG_FILTRO})
+perfis_alvo = res.json()
+
+print(f"🎯 Perfis encontrados com a tag '{TAG_FILTRO}':", len(perfis_alvo))
+
+for perfil in perfis_alvo:
+    print(f"\\n🚀 Executando perfil: {perfil['name']} (ID: {perfil['id']}) [Tags: {perfil.get('tags', [])}]")
+    
+    # 2. Carrega configuração nativa para o perfil filtrado
+    opts = requests.get(f"{API_BASE}/api/profiles/{perfil['id']}/playwright").json()
+    
+    with Camoufox(
+        executable_path=opts.get("executable_path") or None,
+        user_data_dir=opts["user_data_dir"],
+        persistent_context=True,
+        os=opts["os"],
+        proxy=opts.get("proxy"),
+        config=opts.get("config"),
+        humanize=True,
+        headless=False,
+    ) as browser:
+        page = browser.pages[0] if browser.pages else browser.new_page()
+        page.goto("https://bot.sannysoft.com")
+        print(f"✅ Concluído: {perfil['name']} - Título:", page.title())
 `,
-      node: `// Conexão via Puppeteer Core
-import puppeteer from 'puppeteer-core';
+      node: `// Node.js: Seleção por Tags e Execução para Agentes de IA
+import { Camoufox } from '@camoufox/camoufox';
 
 const API_BASE = '${baseUrl}';
-const TOKEN = '${token}';
+const TAG_FILTRO = 'aquecimento';
 
-async function runPuppeteer() {
-  const profileId = 'seu_perfil_id_aqui';
+async function runTaggedAutomation() {
+  // 1. Consulta pública por tags (zero vazamento de cofre ou credenciais)
+  const res = await fetch(\`\${API_BASE}/api/profiles/public?tag=\${TAG_FILTRO}\`);
+  const profiles = await res.json();
 
-  // Inicia o Camoufox
-  const res = await fetch(\`\${API_BASE}/api/v1/profiles/start\`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': \`Bearer \${TOKEN}\`
-    },
-    body: JSON.stringify({ id: profileId })
-  });
-  const { ws_endpoint } = await res.json();
+  console.log(\`🎯 Perfis com a tag '\${TAG_FILTRO}':\`, profiles.length);
 
-  // Conecta via browserWSEndpoint
-  const browser = await puppeteer.connect({
-    browserWSEndpoint: ws_endpoint
-  });
+  for (const p of profiles) {
+    console.log(\`🚀 Executando \${p.name} (ID: \${p.id})...\`);
+    const optsRes = await fetch(\`\${API_BASE}/api/profiles/\${p.id}/playwright\`);
+    const opts = await optsRes.json();
 
-  const page = (await browser.pages())[0];
-  await page.goto('https://bot.sannysoft.com');
-  console.log('Puppeteer conectado com sucesso!');
+    const browser = await Camoufox({
+      executable_path: opts.executable_path || undefined,
+      user_data_dir: opts.user_data_dir,
+      persistent_context: true,
+      os: opts.os,
+      proxy: opts.proxy || undefined,
+      config: opts.config,
+      humanize: true,
+      headless: false,
+    });
+
+    const page = browser.pages()[0] || await browser.newPage();
+    await page.goto('https://bot.sannysoft.com');
+    console.log(\`✅ [\${p.name}] Concluído:\`, await page.title());
+    await browser.close();
+  }
 }
 
-runPuppeteer();
+runTaggedAutomation();
 `,
     },
   };
@@ -329,7 +371,6 @@ runPuppeteer();
   const handleCopyCode = () => {
     navigator.clipboard.writeText(recipeCodes[selectedRecipe][selectedLang]);
     setCopiedCode(true);
-    toast.success('Exemplo de automação copiado!');
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
@@ -343,13 +384,13 @@ runPuppeteer();
           </div>
           <div>
             <h3 className="text-[15px] font-bold text-white flex items-center gap-2">
-              Cookbook de Automação Playwright & AstroFox
+              Cookbook de Automação Playwright & Camoufox (Zero BiDi)
               <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                Zero Download Extra
+                Driver Nativo
               </span>
             </h3>
             <p className="text-[12px] text-[#B5B5B5] mt-0.5 max-w-2xl leading-relaxed">
-              Você <strong>não</strong> precisa baixar Chromium ou Firefox adicionais (<code className="text-[#00FF66]">playwright install</code> é desnecessário). O Playwright se acopla diretamente ao processo do AstroFox que já está configurado com seu proxy e perfil anti-detect.
+              O Camoufox inicializa diretamente o perfil configurado no Star Multlogin com Juggler nativo, proxy residencial e camuflagem de hardware <strong>sem erros de BiDi ou portas CDP</strong>.
             </p>
           </div>
         </div>
@@ -357,9 +398,9 @@ runPuppeteer();
         {/* Command Badge */}
         <div className="bg-[#0C0D12] border border-white/10 rounded-xl px-3.5 py-2 font-mono text-[11px] text-[#D8D8D8] shrink-0">
           <span className="text-[#A0A0A0] block text-[9px] uppercase font-bold font-sans">
-            Instalação Mínima:
+            Instalação Recomendada:
           </span>
-          <code>pip install playwright requests</code>
+          <code>pip install camoufox requests</code>
         </div>
       </div>
 

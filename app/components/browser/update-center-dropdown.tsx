@@ -57,13 +57,8 @@ export const UpdateCenterDropdown: React.FC = () => {
     try {
       const release = await appUpdateService.checkForAppUpdate();
       setAppRelease(release);
-      if (release?.hasUpdate) {
-        toast.info(`Nova versão disponível: ${release.tagName}`);
-      } else {
-        toast.success(`Star Multlogin está na versão mais recente (v${CURRENT_APP_VERSION})`);
-      }
-    } catch {
-      toast.error('Não foi possível verificar atualizações.');
+    } catch (e) {
+      console.warn('Não foi possível verificar atualizações:', e);
     } finally {
       setIsChecking(false);
     }

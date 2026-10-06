@@ -1,0 +1,137 @@
+use axum::{
+    extract::{
+        ws::{Message, WebSocket, WebSocketUpgrade},
+        State,
+    },
+    response::IntoResponse,
+};
+use serde::{Deserialize, Serialize};
+use tokio::sync::broadcast;
+use tracing::info;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "event", content = "data")]
+pub enum WsEvent {
+    #[serde(rename = "profile_status")]
+    ProfileStatus {
+        profile_id: String,
+        status: String, // "running" ou "ready"
+    },
+    #[serde(rename = "profile_syncing")]
+    ProfileSyncing {
+        profile_id: String,
+    },
+    #[serde(rename = "profile_synced")]
+    ProfileSynced {
+        profile_id: String,
+        size_kb: usize,
+    },
+    #[serde(rename = "profile_sync_failed")]
+    ProfileSyncFailed {
+        profile_id: String,
+        error: String,
+    },
+    #[serde(rename = "profile_migrating")]
+    ProfileMigrating {
+        profile_id: String,
+        message: String,
+    },
+    #[serde(rename = "profile_migrated")]
+    ProfileMigrated {
+        profile_id: String,
+        success: bool,
+        message: String,
+        applied: Vec<String>,
+    },
+    #[serde(rename = "browser_download_progress")]
+    BrowserDownloadProgress {
+        stage: String,
+        progress: f32,
+        downloaded_bytes: u64,
+        total_bytes: u64,
+        speed_mb_s: f32,
+        eta_seconds: u64,
+        error: Option<String>,
+    },
+    #[serde(rename = "app_update_progress")]
+    AppUpdateProgress {
+        stage: String,
+        progress: f32,
+        downloaded_bytes: u64,
+        total_bytes: u64,
+        speed_mb_s: f32,
+        eta_seconds: u64,
+        error: Option<String>,
+        file_path: Option<String>,
+    },
+    #[serde(rename = "notification")]
+    Notification {
+        id: String,
+        title: String,
+        description: String,
+        #[serde(rename = "type")]
+        notification_type: String,
+        timestamp: i64,
+    },
+}
+
+#[derive(Clone)]
+pub struct WsState {
+    pub tx: broadcast::Sender<WsEvent>,
+}
+
+impl WsState {
+    pub fn new() -> Self {
+        let (tx, _) = broadcast::channel(256);
+        Self { tx }
+    }
+
+    pub fn emit(&self, event: WsEvent) {
+        let _ = self.tx.send(event);
+    }
+}
+
+pub async fn ws_handler(
+    ws: WebSocketUpgrade,
+    State(state): State<WsState>,
+) -> impl IntoResponse {
+    ws.on_upgrade(move |socket| handle_socket(socket, state))
+}
+
+async fn handle_socket(mut socket: WebSocket, state: WsState) {
+    let mut rx = state.tx.subscribe();
+    info!("🔌 Cliente conectado ao WebSocket /api/ws");
+
+    loop {
+        tokio::select! {
+            // Envia eventos do backend para o frontend
+            event_res = rx.recv() => {
+                match event_res {
+                    Ok(event) => {
+                        info!("📡 WebSocket enviando evento: {:?}", event);
+                        if let Ok(json) = serde_json::to_string(&event) {
+                            if socket.send(Message::Text(json.into())).await.is_err() {
+                                break;
+                            }
+                        }
+                    }
+                    Err(broadcast::error::RecvError::Lagged(_)) => continue,
+                    Err(broadcast::error::RecvError::Closed) => break,
+                }
+            }
+            // Lê pings/mensagens do cliente (mantém a conexão viva)
+            msg_res = socket.recv() => {
+                match msg_res {
+                    Some(Ok(Message::Ping(data))) => {
+                        if socket.send(Message::Pong(data)).await.is_err() {
+                            break;
+                        }
+                    }
+                    Some(Ok(Message::Close(_))) | None => break,
+                    _ => {}
+                }
+            }
+        }
+    }
+    info!("🔌 Cliente desconectado do WebSocket /api/ws");
+}

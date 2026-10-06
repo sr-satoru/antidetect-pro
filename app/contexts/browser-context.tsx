@@ -4,7 +4,7 @@ import {
   BrowserStatusResponse,
 } from '../services/browser/service.browser';
 import { toast } from '../components/ui/notification';
-import { WS_BASE_URL } from '../services/http';
+import { wsService, BrowserDownloadProgressData } from '../services/ws/service.ws';
 
 interface BrowserContextType {
   status: BrowserStatusResponse | null;
@@ -88,69 +88,38 @@ export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  // WebSocket para receber o progresso de download em tempo real (zero polling)
+  // WebSocket em tempo real via Hub wsService centralizado (zero polling)
   useEffect(() => {
-    let ws: WebSocket | null = null;
-    let isDisposed = false;
-    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+    const unsub = wsService.subscribe<BrowserDownloadProgressData>('browser_download_progress', (d) => {
+      if (!d) return;
+      setStage(d.stage);
+      setProgress(d.progress ?? 0);
+      setDownloadedBytes(d.downloaded_bytes ?? 0);
+      setTotalBytes(d.total_bytes ?? 0);
+      setSpeedMbS(d.speed_mb_s ?? 0);
+      setEtaSeconds(d.eta_seconds ?? 0);
 
-    const connectWs = () => {
-      if (isDisposed) return;
-      try {
-        const wsUrl = WS_BASE_URL;
-        ws = new WebSocket(wsUrl);
-
-        ws.onmessage = (event) => {
-          try {
-            const parsed = JSON.parse(event.data);
-            if (parsed.event === 'browser_download_progress' && parsed.data) {
-              const d = parsed.data;
-              setStage(d.stage);
-              setProgress(d.progress ?? 0);
-              setDownloadedBytes(d.downloaded_bytes ?? 0);
-              setTotalBytes(d.total_bytes ?? 0);
-              setSpeedMbS(d.speed_mb_s ?? 0);
-              setEtaSeconds(d.eta_seconds ?? 0);
-
-              if (d.stage === 'downloading' || d.stage === 'extracting' || d.stage === 'finalizing' || d.stage === 'connecting') {
-                setIsDownloading(true);
-              }
-
-              if (d.stage === 'ready') {
-                setIsDownloading(false);
-                setProgress(100);
-                toast.success('Motor Star Multlogin instalado e verificado com sucesso!');
-                checkStatus();
-              }
-
-              if (d.stage === 'error') {
-                setIsDownloading(false);
-                setError(d.error || 'Erro desconhecido durante o download.');
-                toast.error(d.error || 'Falha no download do motor.');
-                checkStatus();
-              }
-            }
-          } catch (e) {
-            console.error('Erro ao ler mensagem WebSocket no BrowserContext:', e);
-          }
-        };
-
-        ws.onclose = () => {
-          if (!isDisposed) {
-            reconnectTimeout = setTimeout(connectWs, 2500);
-          }
-        };
-      } catch (err) {
-        console.warn('Erro ao conectar WebSocket do motor:', err);
+      if (d.stage === 'downloading' || d.stage === 'extracting' || d.stage === 'finalizing' || d.stage === 'connecting') {
+        setIsDownloading(true);
       }
-    };
 
-    connectWs();
+      if (d.stage === 'ready') {
+        setIsDownloading(false);
+        setProgress(100);
+        toast.success('Motor Star Multlogin instalado e verificado com sucesso!');
+        checkStatus();
+      }
+
+      if (d.stage === 'error') {
+        setIsDownloading(false);
+        setError(d.error || 'Erro desconhecido durante o download.');
+        toast.error(d.error || 'Falha no download do motor.');
+        checkStatus();
+      }
+    });
 
     return () => {
-      isDisposed = true;
-      if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      if (ws) ws.close();
+      unsub();
     };
   }, [checkStatus]);
 

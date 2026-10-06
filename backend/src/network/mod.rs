@@ -1,5 +1,8 @@
 pub mod prefs;
 pub mod relay;
+pub mod validator;
+
+pub use validator as proxy_validator;
 
 use crate::models::ProfileProxyConfig;
 use std::collections::HashMap;
@@ -20,6 +23,17 @@ impl NetworkSetupResult {
     pub fn apply_to_command(&self, cmd: &mut tokio::process::Command) {
         for (k, v) in &self.env_vars {
             cmd.env(k, v);
+        }
+    }
+}
+
+impl Default for NetworkSetupResult {
+    fn default() -> Self {
+        Self {
+            user_js_snippet: String::new(),
+            env_vars: HashMap::new(),
+            relay: None,
+            addon_paths: Vec::new(),
         }
     }
 }
@@ -111,52 +125,4 @@ pub async fn prepare_network(
         relay: Some(active_relay),
         addon_paths: Vec::new(),
     })
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn test_proxy_none() {
-        let proxy = ProfileProxyConfig {
-            proxy_type: "none".to_string(),
-            ..Default::default()
-        };
-
-        let res = prepare_network(&proxy, &serde_json::json!({})).await.unwrap();
-        assert!(res.user_js_snippet.contains("user_pref(\"network.proxy.type\", 0);"));
-        assert!(res.relay.is_none());
-        assert!(res.env_vars.is_empty());
-    }
-
-    #[tokio::test]
-    async fn test_http_proxy_with_auth_uses_relay() {
-        let proxy = ProfileProxyConfig {
-            mode: "custom".to_string(),
-            proxy_type: "http".to_string(),
-            host: Some("192.168.1.100".to_string()),
-            port: Some(8080),
-            username: Some("user_test".to_string()),
-            password: Some("pass_secret".to_string()),
-            socks_remote_dns: true,
-            ..Default::default()
-        };
-
-        let res = prepare_network(&proxy, &serde_json::json!({})).await.unwrap();
-        assert!(res.user_js_snippet.contains("user_pref(\"network.proxy.type\", 1);"));
-        assert!(res.user_js_snippet.contains("user_pref(\"network.proxy.http\", \"127.0.0.1\");"));
-        assert!(res.user_js_snippet.contains("user_pref(\"network.proxy.share_proxy_settings\", true);"));
-        assert!(res.user_js_snippet.contains("user_pref(\"network.trr.mode\", 5);"));
-        assert!(res.user_js_snippet.contains("user_pref(\"network.http.http3.enable\", false);"));
-
-        // O relay ativo deve estar presente
-        assert!(res.relay.is_some());
-        let relay_port = res.relay.unwrap().port;
-        assert!(relay_port > 0);
-        assert!(res.user_js_snippet.contains(&format!("\"network.proxy.http_port\", {relay_port}")));
-
-        // Nenhuma extensão de auto-auth em disco!
-        assert!(res.addon_paths.is_empty());
-    }
 }

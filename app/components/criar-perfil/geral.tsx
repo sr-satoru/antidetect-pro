@@ -17,31 +17,12 @@ const renderOSIcon = (os: string): React.ReactNode => {
   return <OsIcon os={os} size={14} className="h-3.5 w-3.5 shrink-0" />;
 };
 
-/**
- * Filtra a lista de User-Agents de config/perfil.json conforme o SO e a Categoria
- */
-const getFilteredUas = (os: string, category: string = 'Todo'): string[] => {
-  const pool =
-    (config.userAgents as Record<string, string[]>)[os] ||
-    config.userAgents.linux;
-
-  if (!category || category === 'Todo') return pool;
-  const catLower = category.toLowerCase();
-
-  const filtered = pool.filter((ua) => {
-    if (catLower === 'firefox') return ua.includes('Firefox/');
-    if (catLower === 'chrome') return ua.includes('Chrome/') && !ua.includes('Edg/');
-    if (catLower === 'safari') return ua.includes('Safari/') && !ua.includes('Chrome/');
-    if (catLower === 'edge') return ua.includes('Edg/');
-    return true;
-  });
-
-  return filtered.length > 0 ? filtered : pool;
-};
+import { getUserAgents, getRandomPreset } from '@/services/camoufox-presets';
 
 export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
   const [showGroupDropdown, setShowGroupDropdown] = useState(false);
   const [showUaDropdown, setShowUaDropdown] = useState(false);
+  const [showUaListModal, setShowUaListModal] = useState(false);
   const [showTagInput, setShowTagInput] = useState(false);
 
   const currentTags: string[] = Array.isArray(formData.tags)
@@ -65,44 +46,55 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
     icon: renderOSIcon(item.id),
   }));
 
-  const handleSelectOS = (selectedOS: string) => {
-    onChange('os', selectedOS);
-    const uas = getFilteredUas(selectedOS, formData.userAgentCategory || 'Todo');
-    onChange('userAgent', uas[0]);
-
-    // Sincroniza a GPU padrão autêntica para o novo sistema operacional
-    const webgl =
-      (config.defaultWebglRenderers as Record<string, { vendor: string; renderer: string }>)[selectedOS] ||
-      config.defaultWebglRenderers.linux;
-    if (webgl) {
-      onChange('webglVendor', webgl.vendor);
-      onChange('webglRenderer', webgl.renderer);
+  React.useEffect(() => {
+    if (formData.os === 'android' || formData.os === 'ios') {
+      handleSelectOS('windows');
     }
+  }, [formData.os]);
 
-    const osVersion =
-      selectedOS === 'windows'
-        ? 'Windows NT 10.0; Win64; x64'
-        : selectedOS === 'macos'
-        ? 'Intel Mac OS X 10.15'
-        : 'Linux x86_64';
-    onChange('osVersion', osVersion);
+  const handleSelectOS = (selectedOS: string) => {
+    if (selectedOS === 'android' || selectedOS === 'ios') return;
+    onChange('os', selectedOS);
+    const preset = getRandomPreset(selectedOS);
+    onChange('userAgent', preset.userAgent);
+    onChange('platform', preset.platform);
+    onChange('osVersion', preset.osVersion);
+    onChange('webglVendor', preset.webglVendor);
+    onChange('webglRenderer', preset.webglRenderer);
+    onChange('cpuCores', preset.cpuCores);
+    onChange('maxTouchPoints', preset.maxTouchPoints);
+    onChange('customScreenWidth', preset.customScreenWidth);
+    onChange('customScreenHeight', preset.customScreenHeight);
+    onChange('devicePixelRatio', preset.devicePixelRatio);
+    onChange('colorDepth', preset.colorDepth);
+    onChange('canvasSeed', preset.canvasSeed);
+    onChange('webglSeed', preset.webglSeed);
+    onChange('audioSeed', preset.audioSeed);
+    onChange('clientRectsSeed', preset.clientRectsSeed);
+    onChange('mediaDevicesCount', {
+      micros: preset.media.mics.length,
+      webcams: preset.media.camera ? 1 : 0,
+      speakers: preset.media.outs.length,
+    });
+    onChange('mediaDevicesDetails', preset.media);
   };
 
-  const handleSelectCategory = (cat: string) => {
-    onChange('userAgentCategory', cat);
+  const handleSelectCategory = (_cat: string) => {
     setShowUaDropdown(false);
-    const uas = getFilteredUas(formData.os, cat);
-    onChange('userAgent', uas[0]);
+    const uas = getUserAgents(formData.os);
+    if (uas.length > 0) {
+      onChange('userAgent', uas[0]);
+    }
   };
 
   const handleShuffleUserAgent = () => {
-    const uas = getFilteredUas(formData.os, formData.userAgentCategory || 'Todo');
+    const uas = getUserAgents(formData.os);
     const currentIdx = uas.indexOf(formData.userAgent);
     const nextIdx = (currentIdx + 1) % uas.length;
     onChange('userAgent', uas[nextIdx]);
   };
 
-  const activeCategoryUas = getFilteredUas(formData.os, formData.userAgentCategory || 'Todo');
+  const activeCategoryUas = getUserAgents(formData.os);
 
   return (
     <div className="flex-1 space-y-4 pr-1 text-slate-800 dark:text-[#D2D5DF]">
@@ -173,16 +165,24 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
         </label>
         <div className="flex flex-wrap items-center gap-2">
           {osList.map((osItem) => {
+            const isComingSoon = osItem.id === 'android' || osItem.id === 'ios';
             const isSelected = formData.os === osItem.id;
             return (
-              <Tooltip key={osItem.id} content={osItem.desc} position="top">
+              <Tooltip
+                key={osItem.id}
+                content={isComingSoon ? `${osItem.label}: Em breve (suporte mobile em desenvolvimento)` : osItem.desc}
+                position="top"
+              >
                 <button
                   type="button"
-                  onClick={() => handleSelectOS(osItem.id)}
-                  className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-all select-none ${
-                    isSelected
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:border-white/30 dark:bg-[#323440] dark:text-white shadow-xs ring-1 ring-emerald-500/20 dark:ring-white/10'
-                      : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-[#333541] dark:bg-[#1C1D24] dark:text-[#8E93A5] dark:hover:border-[#474A5B] dark:hover:text-[#C5C9D7]'
+                  disabled={isComingSoon}
+                  onClick={() => !isComingSoon && handleSelectOS(osItem.id)}
+                  className={`flex items-center gap-2 rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-all select-none ${
+                    isComingSoon
+                      ? 'cursor-not-allowed opacity-50 border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-400 dark:text-slate-500'
+                      : isSelected
+                      ? 'cursor-pointer border-emerald-500 bg-emerald-50 text-emerald-800 dark:border-white/30 dark:bg-[#323440] dark:text-white shadow-xs ring-1 ring-emerald-500/20 dark:ring-white/10'
+                      : 'cursor-pointer border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-[#333541] dark:bg-[#1C1D24] dark:text-[#8E93A5] dark:hover:border-[#474A5B] dark:hover:text-[#C5C9D7]'
                   }`}
                 >
                   {isSelected && (
@@ -196,15 +196,21 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
                     {osItem.icon}
                   </span>
                   <span>{osItem.label}</span>
-                  <svg
-                    className="h-3 w-3 opacity-60"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  {isComingSoon ? (
+                    <span className="rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-1.5 py-0.5 text-[9.5px] font-semibold tracking-wider">
+                      Em breve
+                    </span>
+                  ) : (
+                    <svg
+                      className="h-3 w-3 opacity-60"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  )}
                 </button>
               </Tooltip>
             );
@@ -261,9 +267,48 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange }) => {
               onChange={(e) => onChange('userAgent', e.target.value)}
               className="mr-2 flex-1 truncate bg-transparent font-mono text-[12px] text-slate-800 dark:text-[#D8DAE5] focus:outline-none"
             />
-            <span className="hidden select-none rounded bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-[10.5px] font-semibold text-slate-700 dark:text-white/90 border border-slate-200 dark:border-white/10 md:inline mr-2">
-              {activeCategoryUas.length} opções
-            </span>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowUaListModal(!showUaListModal)}
+                className="cursor-pointer select-none rounded bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-[#00FF66] border border-emerald-300 dark:border-emerald-500/30 transition-colors mr-2 flex items-center gap-1"
+                title="Clique para ver e escolher entre todas as opções de User-Agent"
+              >
+                <span>{activeCategoryUas.length} opções</span>
+                <svg className="h-3 w-3 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+
+              {showUaListModal && (
+                <div className="absolute right-0 top-full z-30 mt-1.5 w-80 md:w-96 max-h-64 overflow-y-auto rounded-lg border border-slate-200 dark:border-[#3A3D4C] bg-white dark:bg-[#1E1F27] p-1.5 shadow-2xl">
+                  <div className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 dark:text-[#7E8294] border-b border-slate-100 dark:border-white/5 mb-1 flex items-center justify-between">
+                    <span>User-Agents Disponíveis ({activeCategoryUas.length})</span>
+                    <span className="text-[10px] text-emerald-600 dark:text-[#00FF66]">Clique para aplicar</span>
+                  </div>
+                  {activeCategoryUas.map((ua, idx) => {
+                    const isSelected = formData.userAgent === ua;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          onChange('userAgent', ua);
+                          setShowUaListModal(false);
+                        }}
+                        className={`w-full text-left p-2 rounded-md font-mono text-[11px] transition-colors leading-tight mb-1 cursor-pointer break-all ${
+                          isSelected
+                            ? 'bg-emerald-50 dark:bg-[#00FF66]/10 text-emerald-700 dark:text-[#00FF66] font-semibold border border-emerald-300 dark:border-[#00FF66]/30'
+                            : 'text-slate-700 dark:text-[#C5C8D6] hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                        }`}
+                      >
+                        {ua}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
             <button
               type="button"
               onClick={handleShuffleUserAgent}

@@ -3,26 +3,8 @@ import type { TagItem } from '@/types';
 
 export type { TagItem };
 
-// Cache local persistente para cores das tags
-const CACHE_KEY = 'star_tag_colors';
+// Cache em memória para cores das tags (zero sessionStorage)
 let tagColorCache: Record<string, string> = {};
-
-try {
-  const saved = typeof window !== 'undefined' ? sessionStorage.getItem(CACHE_KEY) : null;
-  if (saved) {
-    tagColorCache = JSON.parse(saved);
-  }
-} catch {
-  // Ignora falhas de parsing de storage
-}
-
-const persistCache = () => {
-  try {
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem(CACHE_KEY, JSON.stringify(tagColorCache));
-    }
-  } catch {}
-};
 
 export const serviceTags = {
   list: async (search?: string): Promise<TagItem[]> => {
@@ -30,14 +12,11 @@ export const serviceTags = {
       params: { search: search?.trim() || undefined },
     });
     if (Array.isArray(list)) {
-      let updated = false;
       list.forEach((t) => {
         if (t.name && t.color) {
           tagColorCache[t.name.toLowerCase()] = t.color;
-          updated = true;
         }
       });
-      if (updated) persistCache();
       return list;
     }
     return [];
@@ -51,21 +30,17 @@ export const serviceTags = {
   },
 
   registerColors: (tags: Array<{ name?: string; color?: string } | string>) => {
-    let updated = false;
     tags.forEach((t) => {
       if (typeof t === 'object' && t !== null && t.name && t.color) {
         tagColorCache[t.name.toLowerCase().trim()] = t.color;
-        updated = true;
       }
     });
-    if (updated) persistCache();
   },
 
   create: async (data: { name: string; color?: string }): Promise<TagItem> => {
     const res = await http.post<TagItem>('/api/tags', data);
     if (res?.name && res?.color) {
       tagColorCache[res.name.toLowerCase().trim()] = res.color;
-      persistCache();
     }
     return res;
   },
@@ -74,7 +49,6 @@ export const serviceTags = {
     const res = await http.put<TagItem>(`/api/tags/${id}`, data);
     if (res?.name && res?.color) {
       tagColorCache[res.name.toLowerCase().trim()] = res.color;
-      persistCache();
     }
     return res;
   },

@@ -24,7 +24,6 @@ uuid = { version = "1.26.1", features = ["v4", "serde"] }
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "socks", "stream"] }
 zip = { version = "2.2", default-features = false, features = ["deflate"] }
 rusqlite = { version = "0.31", features = ["bundled"] }
-tokio-tungstenite = "0.26"
 futures-util = "0.3"
 sha2 = "0.10"
 hmac = "0.12"
@@ -36,4 +35,5 @@ zeroize = { version = "1.8", features = ["derive"] }
 utoipa = { version = "6.0", features = ["axum_extras", "chrono", "uuid"] }
 utoipa-swagger-ui = { version = "10.0", features = ["axum"] }
 semver = "1.0"
+
 

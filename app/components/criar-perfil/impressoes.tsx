@@ -1,110 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
 import { Select } from '@/components/ui/select';
 import config from '@/config/perfil.json';
-import { Shuffle } from 'lucide-react';
+import { Shuffle, Search, ChevronDown, Check } from 'lucide-react';
 
 interface ImpressaoDigitalTabProps {
   formData: any;
   onChange: (key: string, value: any) => void;
 }
 
-// ============================================================================
-// Dicionários de Hardware Realistas Alinhados por Sistema Operacional / Máquina
-// ============================================================================
+import {
+  getGpuOptions,
+  getScreenResolutions,
+  getCpuCoreOptions,
+  getFontsForOs,
+  getMediaDevicesForOs,
+  getRandomPreset,
+  GpuOption,
+} from '@/services/camoufox-presets';
 
-interface GpuOption {
-  vendor: string;
-  renderer: string;
-}
-
-const GPU_POOLS_BY_OS: Record<string, GpuOption[]> = {
-  windows: [
-    {
-      vendor: 'Google Inc. (NVIDIA)',
-      renderer:
-        'ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 Direct3D11 vs_5_0 ps_5_0, D3D11)',
-    },
-    {
-      vendor: 'Google Inc. (NVIDIA)',
-      renderer:
-        'ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)',
-    },
-    {
-      vendor: 'Google Inc. (NVIDIA)',
-      renderer:
-        'ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Direct3D11 vs_5_0 ps_5_0, D3D11)',
-    },
-    {
-      vendor: 'Google Inc. (NVIDIA)',
-      renderer:
-        'ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)',
-    },
-    {
-      vendor: 'Google Inc. (NVIDIA)',
-      renderer:
-        'ANGLE (NVIDIA, NVIDIA GeForce GTX 1660 SUPER Direct3D11 vs_5_0 ps_5_0, D3D11)',
-    },
-    {
-      vendor: 'Google Inc. (AMD)',
-      renderer:
-        'ANGLE (AMD, AMD Radeon RX 7900 XTX Direct3D11 vs_5_0 ps_5_0, D3D11)',
-    },
-    {
-      vendor: 'Google Inc. (AMD)',
-      renderer:
-        'ANGLE (AMD, AMD Radeon RX 6700 XT Direct3D11 vs_5_0 ps_5_0, D3D11)',
-    },
-    {
-      vendor: 'Google Inc. (Intel)',
-      renderer:
-        'ANGLE (Intel, Intel(R) Iris(R) Xe Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)',
-    },
-    {
-      vendor: 'Google Inc. (Intel)',
-      renderer:
-        'ANGLE (Intel, Intel(R) UHD Graphics 770 Direct3D11 vs_5_0 ps_5_0, D3D11)',
-    },
-  ],
-  macos: [
-    { vendor: 'Apple', renderer: 'Apple M1' },
-    { vendor: 'Apple', renderer: 'Apple M1 Pro' },
-    { vendor: 'Apple', renderer: 'Apple M1 Max' },
-    { vendor: 'Apple', renderer: 'Apple M2' },
-    { vendor: 'Apple', renderer: 'Apple M2 Pro' },
-    { vendor: 'Apple', renderer: 'Apple M2 Max' },
-    { vendor: 'Apple', renderer: 'Apple M3' },
-    { vendor: 'Apple', renderer: 'Apple M3 Pro' },
-    { vendor: 'Apple', renderer: 'Apple M3 Max' },
-    { vendor: 'Apple', renderer: 'Intel Iris Plus Graphics 655' },
-    { vendor: 'Apple', renderer: 'AMD Radeon Pro 5500M OpenGL Engine' },
-  ],
-  linux: [
-    { vendor: 'Mesa', renderer: 'Mesa Intel(R) UHD Graphics 630 (CFL GT2)' },
-    { vendor: 'Mesa', renderer: 'Mesa Intel(R) Xe Graphics (TGL GT2)' },
-    {
-      vendor: 'Mesa',
-      renderer:
-        'Mesa AMD Radeon RX 6700 XT (radeonsi, navi22, LLVM 15.0.7, DRM 3.49)',
-    },
-    {
-      vendor: 'NVIDIA Corporation',
-      renderer: 'NVIDIA GeForce RTX 3070/PCIe/SSE2',
-    },
-    {
-      vendor: 'NVIDIA Corporation',
-      renderer: 'NVIDIA GeForce RTX 4070/PCIe/SSE2',
-    },
-  ],
-  android: [
-    { vendor: 'Qualcomm', renderer: 'Adreno (TM) 740' },
-    { vendor: 'Qualcomm', renderer: 'Adreno (TM) 730' },
-    { vendor: 'Qualcomm', renderer: 'Adreno (TM) 660' },
-    { vendor: 'ARM', renderer: 'Mali-G715 Immortalis-MC11' },
-    { vendor: 'ARM', renderer: 'Mali-G710 MC10' },
-  ],
-  ios: [{ vendor: 'Apple', renderer: 'Apple GPU' }],
-};
 
 function randomAlphanumeric(length: number): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -357,6 +271,130 @@ const NoisePill: React.FC<{
   </Tooltip>
 );
 
+interface SearchableSelectProps {
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+}
+
+const SearchableSelect: React.FC<SearchableSelectProps> = ({
+  value,
+  options,
+  onChange,
+  placeholder = 'Selecione uma opção...',
+  className = '',
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      setTimeout(() => inputRef.current?.focus(), 40);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const filteredOptions = searchTerm
+    ? options.filter((opt) => opt.toLowerCase().includes(searchTerm.toLowerCase()))
+    : options;
+
+  return (
+    <div ref={containerRef} className={`relative w-full ${className}`}>
+      {/* Botão Gatilho / Trigger com estilo idêntico ao Select padrão */}
+      <button
+        type="button"
+        onClick={() => {
+          setIsOpen(!isOpen);
+          setSearchTerm('');
+        }}
+        className="w-full flex items-center justify-between cursor-pointer rounded-md border border-slate-300 dark:border-white/10 bg-white dark:bg-[#14151B] px-3 py-2 text-[12.5px] text-slate-800 dark:text-[#C4C7D5] transition-all hover:border-slate-400 dark:hover:border-white/20 focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs text-left select-none"
+      >
+        <span className="truncate">{value || placeholder}</span>
+        <ChevronDown
+          size={14}
+          className={`shrink-0 text-slate-400 dark:text-[#7E8294] transition-transform duration-200 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+
+      {/* Dropdown Menu com Search na primeira linha */}
+      {isOpen && (
+        <div className="absolute left-0 top-full mt-1.5 w-full z-50 rounded-lg border border-slate-200 dark:border-white/15 bg-white dark:bg-[#171821] shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-100">
+          {/* PRIMEIRA LINHA: Input de Busca com Ícone */}
+          <div className="p-2 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#12131A]">
+            <div className="relative flex items-center">
+              <Search
+                size={13}
+                className="absolute left-2.5 pointer-events-none text-slate-400 dark:text-[#7E8294]"
+              />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Pesquisar..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full rounded bg-white dark:bg-[#1C1D26] pl-8 pr-7 py-1 text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5E6273] border border-slate-200 dark:border-white/10 focus:border-emerald-500 dark:focus:border-white/30 focus:outline-none shadow-xs"
+              />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-2 text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* LISTA ROLÁVEL DE OPÇÕES */}
+          <div className="max-h-56 overflow-y-auto p-1 scrollbar-thin">
+            {filteredOptions.length === 0 ? (
+              <div className="py-3 px-2 text-center text-[12px] text-slate-400 dark:text-[#6F7386]">
+                Nenhuma opção encontrada
+              </div>
+            ) : (
+              filteredOptions.map((opt) => {
+                const isSelected = opt === value;
+                return (
+                  <div
+                    key={opt}
+                    onClick={() => {
+                      onChange(opt);
+                      setIsOpen(false);
+                    }}
+                    className={`flex items-center justify-between px-2.5 py-1.5 text-[12px] rounded cursor-pointer transition-colors ${
+                      isSelected
+                        ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium'
+                        : 'text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-100 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <span className="truncate">{opt}</span>
+                    {isSelected && <Check size={12} className="shrink-0 text-emerald-600 dark:text-emerald-400 ml-2" />}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ============================================================================
 // Componente Principal ImpressaoDigitalTab
 // ============================================================================
@@ -366,19 +404,24 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
   onChange,
 }) => {
   const currentOs = (formData.os || 'windows').toLowerCase();
+  const gpuList = getGpuOptions(currentOs);
+  const screenOptions = getScreenResolutions(currentOs);
+  const cpuCoresList = getCpuCoreOptions(currentOs);
+  const osFonts = getFontsForOs(currentOs);
 
   // Sincroniza e garante dados realistas caso os campos estejam vazios ou inconsistentes com o SO
   useEffect(() => {
-    const gpuPool = GPU_POOLS_BY_OS[currentOs] || GPU_POOLS_BY_OS.windows;
-    const isRendererInPool = gpuPool.some(
+    const isRendererInPool = gpuList.some(
       (g) => g.renderer === formData.webglRenderer
     );
 
     // Se o renderer estiver vazio ou pertencer a um ecossistema completamente conflitante
     if (!formData.webglRenderer || !isRendererInPool) {
-      const defaultGpu = gpuPool[0];
-      onChange('webglVendor', defaultGpu.vendor);
-      onChange('webglRenderer', defaultGpu.renderer);
+      const defaultGpu = gpuList[0];
+      if (defaultGpu) {
+        onChange('webglVendor', defaultGpu.vendor);
+        onChange('webglRenderer', defaultGpu.renderer);
+      }
     }
 
     // Se nome do dispositivo estiver vazio, gera um hostname realista para o SO
@@ -393,8 +436,8 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
   }, [currentOs]);
 
   const handleShuffleRenderer = () => {
-    const gpuPool = GPU_POOLS_BY_OS[currentOs] || GPU_POOLS_BY_OS.windows;
-    const random = gpuPool[Math.floor(Math.random() * gpuPool.length)];
+    if (gpuList.length === 0) return;
+    const random = gpuList[Math.floor(Math.random() * gpuList.length)];
     onChange('webglVendor', random.vendor);
     onChange('webglRenderer', random.renderer);
   };
@@ -604,11 +647,23 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           <div className="max-w-md">
             <Select
               value={formData.screenResolution}
-              onChange={(e) => onChange('screenResolution', e.target.value)}
+              onChange={(e) => {
+                const label = e.target.value;
+                onChange('screenResolution', label);
+                const sel = screenOptions.find((s) => s.label === label);
+                if (sel) {
+                  onChange('customScreenWidth', sel.width);
+                  onChange('customScreenHeight', sel.height);
+                  onChange('devicePixelRatio', sel.dpr);
+                }
+              }}
             >
-              {config.screenResolutions.map((res) => (
-                <option key={res} value={res} className="bg-[#14151B] text-[#C4C7D5]">
-                  {res}
+              <option value="Com base no User-Agent" className="bg-[#14151B] text-[#C4C7D5]">
+                Com base no User-Agent
+              </option>
+              {screenOptions.map((res) => (
+                <option key={res.label} value={res.label} className="bg-[#14151B] text-[#C4C7D5]">
+                  {res.label}
                 </option>
               ))}
             </Select>
@@ -643,12 +698,25 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
       </FormRow>
 
       {/* 6. Tipos de Letra */}
-      <FormRow label="Tipos de Letra">
+      <FormRow label="Tipos de Letra" alignTop>
         <SegmentedGroup
           options={config.fontsModes}
           value={formData.fontsMode || 'default'}
           onChange={(val) => onChange('fontsMode', val)}
         />
+        {formData.fontsMode === 'custom' && (
+          <div className="max-w-md">
+            <SearchableSelect
+              value={formData.customFont || (osFonts.includes('Arial') ? 'Arial' : osFonts[0] || '')}
+              options={osFonts}
+              placeholder="Pesquisar ou selecionar fonte..."
+              onChange={(val) => {
+                onChange('customFont', val);
+                onChange('customFonts', [val]);
+              }}
+            />
+          </div>
+        )}
       </FormRow>
 
       {/* 7. Ruído de hardware (Switches inline) */}
@@ -702,17 +770,37 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                   Renderizador GPU ({currentOs.toUpperCase()})
                 </label>
                 <span className="text-[10.5px] text-slate-400 dark:text-[#6E7284]">
-                  Sorteio adaptado para {currentOs}
+                  Catálogo Camoufox ({currentOs})
                 </span>
               </div>
-              <ShuffleInput
-                value={formData.webglRenderer || ''}
-                onChange={(val) => onChange('webglRenderer', val)}
-                onShuffle={handleShuffleRenderer}
-                title={`Sortear Renderizador autêntico para ${currentOs}`}
-                maxWidthClass="w-full"
-                placeholder="Modelo de GPU"
-              />
+              <div className="flex items-center gap-2">
+                <Select
+                  value={formData.webglRenderer || ''}
+                  onChange={(e) => {
+                    const sel = gpuList.find((g) => g.renderer === e.target.value);
+                    if (sel) {
+                      onChange('webglVendor', sel.vendor);
+                      onChange('webglRenderer', sel.renderer);
+                    } else {
+                      onChange('webglRenderer', e.target.value);
+                    }
+                  }}
+                >
+                  {gpuList.map((g) => (
+                    <option key={g.renderer} value={g.renderer} className="bg-[#14151B] text-[#C4C7D5]">
+                      {g.label}
+                    </option>
+                  ))}
+                </Select>
+                <button
+                  type="button"
+                  onClick={handleShuffleRenderer}
+                  title={`Sortear Renderizador autêntico para ${currentOs}`}
+                  className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-md border border-slate-300 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-[#1E1F26] dark:hover:bg-[#252730] transition-colors"
+                >
+                  <Shuffle className="h-4 w-4 text-emerald-600 dark:text-[#00FF66]" />
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -740,7 +828,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
               value={formData.cpuCores}
               onChange={(e) => onChange('cpuCores', Number(e.target.value))}
             >
-              {config.cpuCoresOptions.map((cores) => (
+              {cpuCoresList.map((cores) => (
                 <option key={cores} value={cores} className="bg-[#14151B] text-[#C4C7D5]">
                   {cores} núcleos
                 </option>

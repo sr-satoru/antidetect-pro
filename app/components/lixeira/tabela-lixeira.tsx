@@ -28,8 +28,8 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] shadow-sm shadow-slate-200/50 dark:shadow-none">
-      <div className="flex-1 custom-scrollbar overflow-x-auto overflow-y-visible">
-        <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
+      <div className="flex-1 custom-scrollbar overflow-auto relative">
+        <table className="min-w-full w-full border-collapse text-left text-xs whitespace-nowrap">
           {/* Header */}
           <thead className="sticky top-0 z-20 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] text-[11px] font-semibold tracking-wider text-slate-500 dark:text-[#A6ABB9] uppercase select-none">
             <tr className="h-11">

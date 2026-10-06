@@ -166,7 +166,7 @@ const recentNotifications = new Map<
   string,
   { id: string | number; timestamp: number }
 >();
-const DEDUP_COOLDOWN_MS = 1500; // Janela de bloqueio de duplicatas consecutivas
+const DEDUP_COOLDOWN_MS = 1000; // Janela ágil de bloqueio de duplicatas consecutivas
 
 function generateNotificationKey(
   type: NotificationType,
@@ -208,9 +208,10 @@ function showNotification(
     if (item && item.id === toastId) {
       recentNotifications.delete(key);
     }
-  }, DEDUP_COOLDOWN_MS + 500);
+  }, DEDUP_COOLDOWN_MS + 200);
 
-  const duration = options?.duration ?? (type === 'error' ? 5000 : 4000);
+  // Duração rápida e dinâmica para agilidade da UX (2s para sucesso/info, 3s para erro)
+  const duration = options?.duration ?? (type === 'error' ? 3000 : 2000);
 
   return sonnerToast.custom(
     (id) => (

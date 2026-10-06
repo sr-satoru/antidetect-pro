@@ -26,6 +26,7 @@ interface HeaderTabelaProps {
   onRefresh?: () => void;
   onOpenTagFilter?: () => void;
   onOpenMoreOptions?: () => void;
+  isSyncing?: boolean;
   [key: string]: any;
 }
 
@@ -41,6 +42,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
   onRefresh,
   onOpenTagFilter,
   onOpenMoreOptions,
+  isSyncing = false,
 }) => {
   return (
     <div className="flex flex-col gap-2.5 shrink-0 select-none pb-1">
@@ -181,10 +183,11 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <button
             type="button"
             onClick={onRefresh}
-            className="h-[34px] w-[34px] rounded-md bg-white dark:bg-[#14151B] hover:bg-slate-50 dark:hover:bg-[#1A1C24] border border-slate-200 dark:border-[#262732] text-slate-500 dark:text-[#8E92A2] hover:text-slate-900 dark:hover:text-[#E1E4EE] flex items-center justify-center transition-colors cursor-pointer shadow-xs"
-            title="Atualizar lista"
+            disabled={isSyncing}
+            className="h-[34px] w-[34px] rounded-md bg-white dark:bg-[#14151B] hover:bg-slate-50 dark:hover:bg-[#1A1C24] border border-slate-200 dark:border-[#262732] text-slate-500 dark:text-[#8E92A2] hover:text-slate-900 dark:hover:text-[#E1E4EE] flex items-center justify-center transition-colors cursor-pointer shadow-xs disabled:opacity-60"
+            title={isSyncing ? "Sincronizando com a nuvem..." : "Atualizar lista"}
           >
-            <RotateCw size={14} />
+            <RotateCw size={14} className={isSyncing ? "animate-spin text-emerald-500" : ""} />
           </button>
         </div>
       </div>

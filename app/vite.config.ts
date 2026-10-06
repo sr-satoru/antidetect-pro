@@ -11,10 +11,14 @@ export default defineConfig({
   server: {
     port: 1254,
     strictPort: true,
+    fs: {
+      allow: ['..'],
+    },
   },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./', import.meta.url)),
+      '@presets': fileURLToPath(new URL('../backend/presets', import.meta.url)),
     },
   },
   build: {

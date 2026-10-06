@@ -9,17 +9,26 @@ import { TagBadge } from '@/components/tags/tag-badge';
 import { serviceTags } from '@/services/tags/service.tags';
 import { api } from '@/services/index.api';
 import { servicePerfis } from '@/services/perfis/service.perfis';
+import { serviceSync } from '@/services/sync/service.sync';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
-import { useBrowser } from '@/contexts/browser-context';
-import { WS_BASE_URL } from '@/services/http';
+import { serviceNotifications } from '@/services/notifications/service.notifications';
+import { useAuth } from '@/contexts/auth-context';
+import {
+  wsService,
+  ProfileStatusData,
+  ProfileSyncingData,
+  ProfileSyncedData,
+  ProfileSyncFailedData,
+} from '@/services/ws/service.ws';
 
 export const PerfisPage: React.FC = () => {
   const navigate = useNavigate();
-  const { openModal } = useBrowser();
+  const { isAuthenticated } = useAuth();
 
   const [profiles, setProfiles] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSyncingCloud, setIsSyncingCloud] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,10 +40,13 @@ export const PerfisPage: React.FC = () => {
   const [editingTagsProfile, setEditingTagsProfile] = useState<any | null>(null);
   const [editingNotesProfile, setEditingNotesProfile] = useState<any | null>(null);
 
-  // Carrega perfis reais do backend local
-  const fetchProfiles = useCallback(async () => {
+  // Carrega perfis reais do backend local sem desmontar o DOM nas atualizações
+  const hasLoadedOnce = useRef(false);
+  const fetchProfiles = useCallback(async (forceLoader = false) => {
     try {
-      setIsLoading(true);
+      if (forceLoader || !hasLoadedOnce.current) {
+        setIsLoading(true);
+      }
       setError(null);
       serviceTags.list().catch(() => {});
       const data = await api.profiles.list(searchQuery, selectedGroup);
@@ -44,6 +56,7 @@ export const PerfisPage: React.FC = () => {
     } catch (err: any) {
       setError(err.message || 'Erro ao carregar perfis do backend local.');
     } finally {
+      hasLoadedOnce.current = true;
       setIsLoading(false);
     }
   }, [searchQuery, selectedGroup]);
@@ -52,161 +65,105 @@ export const PerfisPage: React.FC = () => {
     fetchProfiles();
   }, [fetchProfiles]);
 
-  // Dupla Troca automática com a nuvem (Download de ausentes + Upload/LWW de locais) ao abrir a página
+  // Assina o estado global de sincronização do serviceSync para acionar o spinner
+  useEffect(() => {
+    return serviceSync.subscribeSyncState((syncing) => {
+      setIsSyncingCloud(syncing);
+    });
+  }, []);
+
+  // Dupla Troca inteligente automática ao abrir a página se autenticado
   const hasAutoSynced = useRef(false);
   useEffect(() => {
-    const token = localStorage.getItem('star_auth_token');
-    if (!token || hasAutoSynced.current) return;
+    if (!isAuthenticated || hasAutoSynced.current) return;
     hasAutoSynced.current = true;
 
-    servicePerfis
-      .twoWaySync()
-      .then((res: any) => {
-        if (!res) return;
-        const downloaded = res.downloaded_count || 0;
-        const uploaded = res.uploaded_count || 0;
-        const skipped = res.skipped_running || 0;
+    serviceSync.syncProfiles(() => {
+      fetchProfiles(false);
+    }).catch((err) => {
+      console.warn('Falha na sincronização automática em segundo plano:', err);
+    });
+  }, [fetchProfiles, isAuthenticated]);
 
-        if (downloaded > 0 && uploaded > 0) {
-          toast.success(
-            `☁️ Dupla Troca: ${downloaded} baixado(s) da nuvem e ${uploaded} enviado(s)!`,
-          );
-        } else if (downloaded > 0) {
-          toast.success(
-            `☁️ ${downloaded} perfil(is) baixado(s) e restaurado(s) da nuvem!`,
-          );
-        } else if (uploaded > 0) {
-          toast.success(
-            `☁️ ${uploaded} perfil(is) novo(s) enviado(s) para a nuvem!`,
-          );
-        }
-
-        if (skipped > 0) {
-          toast.info(
-            `ℹ️ ${skipped} perfil(is) em execução localmente serão sincronizados ao fechar.`,
-          );
-        }
-
-        if (downloaded > 0 || uploaded > 0) {
-          fetchProfiles();
-        }
-      })
-      .catch((err) => {
-        console.warn('Falha na Dupla Troca automática em segundo plano:', err);
-      });
+  const handleRefresh = useCallback(() => {
+    serviceSync.syncProfiles(() => {
+      fetchProfiles(false);
+    }).catch(() => {
+      fetchProfiles(false);
+    });
   }, [fetchProfiles]);
 
-
-  // WebSocket em tempo real: zero polling, atualização instantânea quando o Camoufox for fechado pelo 'X'
+  // WebSocket em tempo real via Hub wsService centralizado (zero polling, zero conexões duplicadas)
   useEffect(() => {
-    let ws: WebSocket | null = null;
-    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
-    let isDisposed = false;
+    const unsubs = [
+      wsService.subscribe<ProfileStatusData>('profile_status', (data) => {
+        if (!data) return;
+        const { profile_id, status } = data;
+        const isRunning = status === 'running';
+        setProfiles((prev) =>
+          prev.map((curr) =>
+            String(curr.id) === String(profile_id)
+              ? { ...curr, status, isRunning, isStarting: false }
+              : curr,
+          ),
+        );
+      }),
 
-    const connect = () => {
-      if (isDisposed) return;
-      try {
-        const wsUrl = WS_BASE_URL;
-        ws = new WebSocket(wsUrl);
+      wsService.subscribe<ProfileSyncingData>('profile_syncing', (data) => {
+        if (!data) return;
+        const { profile_id } = data;
+        setProfiles((prev) =>
+          prev.map((curr) =>
+            String(curr.id) === String(profile_id)
+              ? { ...curr, isSyncing: true }
+              : curr,
+          ),
+        );
+        setTimeout(() => {
+          setProfiles((prev) =>
+            prev.map((curr) =>
+              String(curr.id) === String(profile_id) && curr.isSyncing
+                ? { ...curr, isSyncing: false }
+                : curr,
+            ),
+          );
+        }, 8000);
+      }),
 
-        ws.onopen = () => {
-          console.log('⚡ Conectado ao WebSocket do Star Multlogin Backend:', ws?.url);
-        };
-
-        ws.onmessage = (event) => {
-          try {
-            const msg = JSON.parse(event.data);
-            if (msg.event === 'profile_status' && msg.data) {
-              const { profile_id, status } = msg.data;
-              console.log('⚡ WebSocket profile_status recebido:', { profile_id, status });
-              const isRunning = status === 'running';
-              setProfiles((prev) =>
-                prev.map((curr) =>
-                  String(curr.id) === String(profile_id)
-                    ? { ...curr, status, isRunning }
-                    : curr,
-                ),
-              );
-            } else if (msg.event === 'profile_syncing' && msg.data) {
-              const { profile_id } = msg.data;
-              console.log('🔄 WebSocket profile_syncing recebido:', profile_id);
-              setProfiles((prev) =>
-                prev.map((curr) =>
-                  String(curr.id) === String(profile_id)
-                    ? { ...curr, isSyncing: true }
-                    : curr,
-                ),
-              );
-              // Watchdog de segurança: garante que o perfil destrava após 8s mesmo em falhas de rede silenciosas
-              setTimeout(() => {
-                setProfiles((prev) =>
-                  prev.map((curr) =>
-                    String(curr.id) === String(profile_id) && curr.isSyncing
-                      ? { ...curr, isSyncing: false }
-                      : curr,
-                  ),
-                );
-              }, 8000);
-            } else if (msg.event === 'profile_synced' && msg.data) {
-              const { profile_id, size_kb } = msg.data;
-              console.log('✅ WebSocket profile_synced recebido:', { profile_id, size_kb });
-              setProfiles((prev) => {
-                const exists = prev.some((curr) => String(curr.id) === String(profile_id));
-                if (!exists) {
-                  fetchProfiles();
-                  return prev;
+      wsService.subscribe<ProfileSyncedData>('profile_synced', (data) => {
+        if (!data) return;
+        const { profile_id, size_kb } = data;
+        setProfiles((prev) =>
+          prev.map((curr) =>
+            String(curr.id) === String(profile_id)
+              ? {
+                  ...curr,
+                  isSyncing: false,
+                  cloud_synced: true,
+                  cloudSizeKb: size_kb,
                 }
-                return prev.map((curr) =>
-                  String(curr.id) === String(profile_id)
-                    ? {
-                        ...curr,
-                        isSyncing: false,
-                        cloud_synced: true,
-                        cloudSizeKb: size_kb,
-                      }
-                    : curr,
-                );
-              });
-            } else if (msg.event === 'profile_sync_failed' && msg.data) {
-              const { profile_id, error } = msg.data;
-              console.warn('⚠️ WebSocket profile_sync_failed recebido:', { profile_id, error });
-              setProfiles((prev) =>
-                prev.map((curr) =>
-                  String(curr.id) === String(profile_id)
-                    ? { ...curr, isSyncing: false }
-                    : curr,
-                ),
-              );
-            }
-          } catch (err) {
-            console.error('Erro ao processar mensagem do WebSocket:', err);
-          }
-        };
+              : curr,
+          ),
+        );
+      }),
 
-        ws.onclose = () => {
-          if (!isDisposed) {
-            reconnectTimeout = setTimeout(connect, 2000);
-          }
-        };
-
-        ws.onerror = () => {
-          ws?.close();
-        };
-      } catch (e) {
-        if (!isDisposed) {
-          reconnectTimeout = setTimeout(connect, 3000);
-        }
-      }
-    };
-
-    connect();
+      wsService.subscribe<ProfileSyncFailedData>('profile_sync_failed', (data) => {
+        if (!data) return;
+        const { profile_id } = data;
+        setProfiles((prev) =>
+          prev.map((curr) =>
+            String(curr.id) === String(profile_id)
+              ? { ...curr, isSyncing: false }
+              : curr,
+          ),
+        );
+      }),
+    ];
 
     return () => {
-      isDisposed = true;
-      if (reconnectTimeout) clearTimeout(reconnectTimeout);
-      if (ws) ws.close();
+      unsubs.forEach((unsub) => unsub());
     };
-  }, []);
+  }, [fetchProfiles]);
 
   // Filter logic
   const filteredProfiles = useMemo(() => {
@@ -256,44 +213,64 @@ export const PerfisPage: React.FC = () => {
     }
   };
 
-  // Iniciar / Parar toggle
+  // Iniciar / Parar toggle assíncrono e não-bloqueante
   const handleToggleRunning = async (id: string | number) => {
     const target = profiles.find((p) => p.id === id);
     if (!target) return;
 
     const isCurrentlyRunning = target.status === 'running' || target.isRunning;
+    const isCurrentlyStarting = Boolean(target.isStarting || target.status === 'starting');
+
+    // Evita cliques duplos enquanto já estiver iniciando
+    if (isCurrentlyStarting) return;
 
     if (!isCurrentlyRunning) {
-      // Iniciar navegador
-      try {
-        setProfiles((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, isRunning: true, status: 'running' } : p)),
-        );
-        const res = await api.profiles.launch(String(id));
-        if (res && res.profile) {
+      // 1. Marca imediatamente como iniciando apenas nesta linha (sem travar a tela)
+      setProfiles((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, isStarting: true, status: 'starting' } : p,
+        ),
+      );
+
+      // 2. Dispara a requisição em background
+      api.profiles
+        .launch(String(id))
+        .then((res) => {
+          if (res && res.profile) {
+            setProfiles((prev) =>
+              prev.map((p) =>
+                p.id === id
+                  ? { ...p, ...res.profile, isStarting: false, isRunning: true, status: 'running' }
+                  : p,
+              ),
+            );
+          }
+        })
+        .catch((err: any) => {
+          console.warn('⚠️ Falha ao iniciar perfil:', err);
+          // Restaura o estado para pronto silenciosamente sem modais intrusivos
           setProfiles((prev) =>
-            prev.map((p) => (p.id === id ? { ...p, ...res.profile, isRunning: true, status: 'running' } : p)),
+            prev.map((p) =>
+              p.id === id
+                ? { ...p, isStarting: false, isRunning: false, status: 'ready' }
+                : p,
+            ),
           );
-        }
-      } catch (err: any) {
-        toast.error(`Falha ao iniciar o perfil: ${err.message}`);
-        if (
-          err.message?.includes('motor') ||
-          err.message?.includes('instalado') ||
-          err.message?.includes('Baixar Cliente')
-        ) {
-          openModal();
-        }
-        setProfiles((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, isRunning: false, status: 'ready' } : p)),
-        );
-      }
+          // Adiciona notificação silenciosa na central do Header
+          serviceNotifications.add({
+            title: `Falha ao Iniciar "${target.name || 'Perfil'}"`,
+            description: err.message || 'Erro ao inicializar o motor do navegador.',
+            type: 'error',
+          });
+        });
     } else {
       // Parar perfil
+      setProfiles((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, isRunning: false, isStarting: false, status: 'ready' } : p,
+        ),
+      );
       try {
-        setProfiles((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, isRunning: false, status: 'ready' } : p)),
-        );
         await api.profiles.stop(String(id));
       } catch (err: any) {
         console.error('Erro ao parar perfil:', err);
@@ -301,16 +278,14 @@ export const PerfisPage: React.FC = () => {
     }
   };
 
-  // Start selected
+  // Start selected de forma assíncrona com leve escalonamento
   const handleStartSelected = async () => {
-    for (const id of selectedIds) {
-      try {
-        await api.profiles.launch(String(id));
-      } catch (err) {
-        console.error(err);
-      }
+    const toStart = [...selectedIds];
+    setSelectedIds([]);
+    for (const id of toStart) {
+      handleToggleRunning(id);
+      await new Promise((r) => setTimeout(r, 150));
     }
-    fetchProfiles();
   };
 
   // Stop selected
@@ -394,11 +369,12 @@ export const PerfisPage: React.FC = () => {
         selectedTag={selectedTag}
         onSelectTag={setSelectedTag}
         onNewProfile={() => navigate('/criar-perfil')}
-        onRefresh={fetchProfiles}
+        onRefresh={handleRefresh}
         onOpenTagFilter={() => setIsTagModalOpen(true)}
         onStartSelected={handleStartSelected}
         onStopSelected={handleStopSelected}
         onDeleteSelected={handleDeleteSelected}
+        isSyncing={isSyncingCloud}
       />
 
       {/* Indicador de Filtro por Etiqueta Ativo */}
@@ -419,7 +395,7 @@ export const PerfisPage: React.FC = () => {
           <span>{error}</span>
           <button
             type="button"
-            onClick={fetchProfiles}
+            onClick={() => fetchProfiles(true)}
             className="cursor-pointer font-semibold underline hover:text-red-600 dark:hover:text-red-300"
           >
             Tentar novamente
@@ -447,6 +423,7 @@ export const PerfisPage: React.FC = () => {
           onEditNotes={handleOpenEditNotes}
           onDelete={handleDelete}
           onDuplicate={handleDuplicate}
+          isSyncing={isSyncingCloud}
         />
       )}
 

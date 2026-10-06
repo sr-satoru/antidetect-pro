@@ -11,18 +11,10 @@ import { api } from '@/services/index.api';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 
+import { getRandomPreset } from '@/services/camoufox-presets';
+
 const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
-  const osKey = (
-    suggestedOS in config.userAgents ? suggestedOS : 'linux'
-  ) as keyof typeof config.userAgents;
-  const uas = config.userAgents[osKey] || config.userAgents.linux;
-  const webgl =
-    (
-      config.defaultWebglRenderers as Record<
-        string,
-        { vendor: string; renderer: string }
-      >
-    )[osKey] || config.defaultWebglRenderers.linux;
+  const preset = getRandomPreset(suggestedOS);
 
   return {
     name: '',
@@ -30,9 +22,10 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
     tags: [] as string[],
     kernel: 'AstroFox',
     kernelVersion: '150',
-    os: osKey,
-    osVersion: 'Linux x86_64',
-    userAgent: uas[0],
+    os: preset.os,
+    osVersion: preset.osVersion,
+    platform: preset.platform,
+    userAgent: preset.userAgent,
     userAgentCategory: 'Todo',
     cookies: '',
     notes: '',
@@ -57,7 +50,7 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
     openTabsUrls: '',
 
     cpuMode: 'custom',
-    cpuCores: 10,
+    cpuCores: preset.cpuCores,
     webrtcMode: 'disabled',
     timezoneMode: 'ip',
     customTimezone: 'America/Sao_Paulo',
@@ -68,11 +61,12 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
     customAccuracy: 1000,
     displayLanguageMode: 'language',
     screenResolutionMode: 'default',
-    screenResolution: 'Com base no User-Agent',
-    customScreenWidth: 1920,
-    customScreenHeight: 1080,
+    screenResolution: `${preset.customScreenWidth} × ${preset.customScreenHeight} (DPR ${preset.devicePixelRatio})`,
+    customScreenWidth: preset.customScreenWidth,
+    customScreenHeight: preset.customScreenHeight,
+    devicePixelRatio: preset.devicePixelRatio,
     fontsMode: 'default',
-    colorDepth: 24,
+    colorDepth: preset.colorDepth,
     languageMode: 'ip',
     customLanguage: 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
     audioSampleRate: 48000,
@@ -86,13 +80,13 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
       fontPack: false,
       fontMetrics: false,
     },
-    clientRectsSeed: '',
-    canvasSeed: '',
-    webglSeed: '',
-    audioSeed: '',
+    clientRectsSeed: preset.clientRectsSeed,
+    canvasSeed: preset.canvasSeed,
+    webglSeed: preset.webglSeed,
+    audioSeed: preset.audioSeed,
     webglMetadataMode: 'custom',
-    webglVendor: webgl.vendor,
-    webglRenderer: webgl.renderer,
+    webglVendor: preset.webglVendor,
+    webglRenderer: preset.webglRenderer,
     webgpuMode: 'webgl',
     ramMode: 'custom',
     ramGb: 8,
@@ -106,14 +100,14 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
     hardwareAcceleration: 'default',
     disableTlsFeatures: 'close',
 
-    devicePixelRatio: 1,
-    maxTouchPoints: 0,
+    maxTouchPoints: preset.maxTouchPoints,
     batteryMode: 'desktop',
     mediaDevicesCount: {
-      micros: 1,
-      webcams: 1,
-      speakers: 2,
+      micros: preset.media.mics.length,
+      webcams: preset.media.camera ? 1 : 0,
+      speakers: preset.media.outs.length,
     },
+    mediaDevicesDetails: preset.media,
     doNotTrack: 'unspecified',
     globalPrivacyControl: false,
     memorySaver: false,
