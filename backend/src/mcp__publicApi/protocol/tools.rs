@@ -51,7 +51,8 @@ pub fn list_tools_spec() -> Value {
                 "type": "object",
                 "properties": {
                     "id": { "type": "string", "description": "ID único do perfil" },
-                    "url": { "type": "string", "description": "URL inicial opcional para navegação" }
+                    "url": { "type": "string", "description": "URL inicial opcional para navegação" },
+                    "cdp": { "type": "boolean", "description": "Habilitar porta de depuração CDP (padrão: false para modo humano puro sem depuração de bot)" }
                 },
                 "required": ["id"]
             }
@@ -118,20 +119,32 @@ pub async fn execute_tool(
             }
 
             let url = args.get("url").and_then(Value::as_str);
+            // Padrão sempre false: inicia no modo humano normal sem porta de depuração de bot
+            let cdp = args.get("cdp").and_then(Value::as_bool).unwrap_or(false);
 
-            match storage.launch_with_options(profile_id, true, url).await {
+            match storage.launch_with_options(profile_id, cdp, url).await {
                 Ok((profile, pid, debug_port, ws_endpoint)) => {
-                    let val = json!({
+                    let mut val = json!({
                         "status": "launched",
                         "profile_id": profile.id,
                         "name": profile.name,
                         "pid": pid,
-                        "debug_port": debug_port,
-                        "ws_endpoint": ws_endpoint,
                         "kernel": profile.kernel,
                         "url": url,
-                        "message": format!("Perfil '{}' ({}) iniciado com sucesso (PID: {pid}).", profile.name, profile.kernel)
+                        "mode": if cdp { "debug_automation" } else { "human_normal" },
+                        "message": format!(
+                            "Perfil '{}' ({}) iniciado com sucesso (PID: {pid}) no modo {}.",
+                            profile.name,
+                            profile.kernel,
+                            if cdp { "automação (CDP)" } else { "humano normal (sem depuração)" }
+                        )
                     });
+                    if let Some(port) = debug_port {
+                        val["debug_port"] = json!(port);
+                    }
+                    if let Some(ws) = ws_endpoint {
+                        val["ws_endpoint"] = json!(ws);
+                    }
                     serde_json::to_string(&val).map_err(|e| McpError::Internal(e.to_string()))
                 }
                 Err(err) => Err(McpError::LaunchFailed {

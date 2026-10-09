@@ -117,9 +117,9 @@ impl ProcessManager {
         // Prepara configurações e extensões via engine desacoplada
         let prep = engine.prepare_profile_dir(&profile_dir, profile, data_dir, &self.client, cdp).await?;
 
-        // Seleciona porta CDP se solicitado ou se for AstroBrowser (para sincronização de cookies 100% resiliente)
+        // Seleciona porta CDP apenas se solicitado explicitamente (cdp: true) para evitar modo depuração de bot
         let is_chromium = engine.kernel_name() == "AstroBrowser";
-        let debug_port = if cdp || is_chromium {
+        let debug_port = if cdp {
             let port = cdp::pick_available_port();
             let _ = std::fs::remove_file(profile_dir.join("DevToolsActivePort"));
             Some(port)
