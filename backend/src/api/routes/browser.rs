@@ -34,6 +34,10 @@ pub struct BrowserStatusResponse {
     pub platform: String,
     pub os_name: String,
     pub available_version: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub clearcote_version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub camoufox_version: Option<String>,
     pub has_update: bool,
 }
 
@@ -58,10 +62,29 @@ pub async fn get_browser_status(
     let os_name = platform::get_os_display_name().to_string();
 
     let manifest = BrowserManifest::load(&state.data_dir).ok();
-    let available_version = manifest
-        .as_ref()
-        .map(|m| m.version.clone())
-        .unwrap_or_else(|| "v2.1.0".to_string());
+    let clearcote_version = Some(
+        manifest.as_ref()
+            .and_then(|m| m.engines.get("clearcote"))
+            .map(|e| e.version.clone())
+            .unwrap_or_else(|| crate::browser_downloader::astrobrowser::ASTROBROWSER_CHROMIUM_VERSION.to_string())
+    );
+    let camoufox_version = Some(
+        manifest.as_ref()
+            .and_then(|m| m.engines.get("camoufox"))
+            .map(|e| e.version.clone())
+            .unwrap_or_else(|| crate::browser_downloader::astrofox::ASTROFOX_RELEASE_TAG.to_string())
+    );
+
+    let available_version = match req_engine {
+        Some(EngineKind::Clearcote) => clearcote_version.clone().unwrap_or_default(),
+        Some(EngineKind::Camoufox) => camoufox_version.clone().unwrap_or_default(),
+        None => {
+            match &health {
+                EngineHealthStatus::Installed { version, .. } => version.clone(),
+                _ => clearcote_version.clone().unwrap_or_default(),
+            }
+        }
+    };
 
     let installed_version = match &health {
         EngineHealthStatus::Installed { version, .. } => Some(version.as_str()),
@@ -84,6 +107,8 @@ pub async fn get_browser_status(
         platform,
         os_name,
         available_version,
+        clearcote_version,
+        camoufox_version,
         has_update,
     })
 }
@@ -93,18 +118,18 @@ pub async fn trigger_browser_download(
     State(state): State<BrowserRouteState>,
     Query(query): Query<DownloadQuery>,
 ) -> impl IntoResponse {
-    let engine = query
-        .engine
-        .as_deref()
-        .and_then(EngineKind::from_str)
-        .unwrap_or(EngineKind::Clearcote);
+    let result = if let Some(engine) = query.engine.as_deref().and_then(EngineKind::from_str) {
+        state.service.start_download_engine(engine).await.map(|_| vec![engine.as_str().to_string()])
+    } else {
+        state.service.start_smart_sync().await
+    };
 
-    match state.service.start_download_engine(engine).await {
-        Ok(_) => (
+    match result {
+        Ok(engines) => (
             StatusCode::OK,
             Json(GenericMessageResponse {
                 success: true,
-                message: format!("Download do motor '{}' iniciado com sucesso.", engine.as_str()),
+                message: format!("Sincronização dos motores iniciada: {}", engines.join(", ")),
             }),
         ),
         Err(err) => (
@@ -128,5 +153,27 @@ pub async fn get_browser_manifest(
             Json(serde_json::json!({ "error": err.to_string() })),
         )
             .into_response(),
+    }
+}
+
+/// GET or POST /api/browser/verify
+pub async fn verify_browser_installation(
+    State(state): State<BrowserRouteState>,
+    Query(query): Query<DownloadQuery>,
+) -> impl IntoResponse {
+    let req_engine = query.engine.as_deref().and_then(EngineKind::from_str);
+    match req_engine {
+        Some(eng) => {
+            let report = detector::verify_installed_engine(&state.data_dir, eng);
+            Json(serde_json::to_value(report).unwrap_or_default())
+        }
+        None => {
+            let clearcote = detector::verify_installed_engine(&state.data_dir, EngineKind::Clearcote);
+            let camoufox = detector::verify_installed_engine(&state.data_dir, EngineKind::Camoufox);
+            Json(serde_json::json!({
+                "clearcote": clearcote,
+                "camoufox": camoufox,
+            }))
+        }
     }
 }

@@ -7,7 +7,6 @@ pub mod preferences;
 use std::fs;
 use std::path::{Path, PathBuf};
 use async_trait::async_trait;
-use tracing::info;
 
 use crate::models::Profile;
 use crate::extraction_session::{ImportCookieResult, UnifiedCookie, UnifiedSession};
@@ -20,26 +19,6 @@ impl ClearcoteEngine {
     pub fn new() -> Self {
         Self
     }
-
-    /// Localiza o executável chrome / chrome.exe do Clearcote
-    fn find_executable(base_dir: &Path) -> Option<PathBuf> {
-        #[cfg(windows)]
-        let candidates = ["chrome.exe", "clearcote.exe", "star-chromium.exe"];
-        #[cfg(not(windows))]
-        let candidates = ["chrome", "clearcote", "star-chromium"];
-
-        for c in &candidates {
-            let p = base_dir.join(c);
-            if p.exists() && p.is_file() {
-                return Some(p);
-            }
-            let sub = base_dir.join("browser").join(c);
-            if sub.exists() && sub.is_file() {
-                return Some(sub);
-            }
-        }
-        None
-    }
 }
 
 #[async_trait]
@@ -49,66 +28,7 @@ impl BrowserEngine for ClearcoteEngine {
     }
 
     fn resolve_binary(&self, data_dir: &Path) -> Result<PathBuf, String> {
-        let base = if data_dir.ends_with("profiles") {
-            data_dir.parent().unwrap_or(data_dir)
-        } else {
-            data_dir
-        };
-
-        // 1. Prioridade: app-data local em dev ou binaries da aplicação em prod (.engine-chromium)
-        let primary_dir = base.join("binaries").join(".engine-chromium");
-        if let Some(exe) = Self::find_executable(&primary_dir) {
-            return Ok(exe);
-        }
-
-        // 2. Diretório alternativo binaries/astrobrowser
-        let alt_dir = base.join("binaries").join("astrobrowser");
-        if let Some(exe) = Self::find_executable(&alt_dir) {
-            return Ok(exe);
-        }
-
-        // 3. Fallback inteligente para cache pré-instalado do clearcote (~/.cache/clearcote/*/browser/chrome)
-        #[cfg(unix)]
-        {
-            if let Ok(home) = std::env::var("HOME") {
-                let cache_base = PathBuf::from(home).join(".cache").join("clearcote");
-                if cache_base.exists() {
-                    if let Ok(entries) = fs::read_dir(&cache_base) {
-                        for entry in entries.flatten() {
-                            let p = entry.path().join("browser");
-                            if let Some(exe) = Self::find_executable(&p) {
-                                info!("💡 [Clearcote] Binário detectado no cache local: {:?}", exe);
-                                return Ok(exe);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        #[cfg(windows)]
-        {
-            if let Ok(local_app_data) = std::env::var("LOCALAPPDATA") {
-                let cache_base = PathBuf::from(local_app_data).join("clearcote").join("Cache");
-                if cache_base.exists() {
-                    if let Ok(entries) = fs::read_dir(&cache_base) {
-                        for entry in entries.flatten() {
-                            let p = entry.path().join("browser");
-                            if let Some(exe) = Self::find_executable(&p) {
-                                info!("💡 [Clearcote] Binário detectado no cache local: {:?}", exe);
-                                return Ok(exe);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        Err(
-            "O motor Chromium (AstroBrowser / Clearcote) não foi encontrado no sistema. \
-             Verifique se o binário foi instalado na pasta binaries/.engine-chromium."
-                .to_string(),
-        )
+        crate::browser_downloader::resolve_clearcote_binary(data_dir)
     }
 
     fn clear_profile_locks(&self, profile_dir: &Path) {

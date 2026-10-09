@@ -1,44 +1,59 @@
-use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
 use std::path::{Path, PathBuf};
 use tracing::{info, warn};
 use zip::ZipArchive;
 
-use super::error::AstrobrowserError;
+use super::super::error::AstrobrowserError;
 
-/// Formatos de compactação suportados pelo AstroBrowser
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
-#[serde(rename_all = "lowercase")]
-pub enum ArchiveFormat {
-    #[default]
-    Zip,
-    #[serde(rename = "tar.xz")]
-    TarXz,
-}
+/// Extrai arquivo .tar.xz no Linux
+pub fn extract_tar_xz(archive_path: &Path, dest_dir: &Path) -> Result<(), AstrobrowserError> {
+    #[cfg(unix)]
+    {
+        info!(
+            "📦 Descompactando .tar.xz do AstroBrowser via tar do sistema para: {:?}",
+            dest_dir
+        );
+        let output = std::process::Command::new("tar")
+            .args(["-xf"])
+            .arg(archive_path)
+            .args(["-C"])
+            .arg(dest_dir)
+            .output()
+            .map_err(|e| {
+                AstrobrowserError::ExtractionFailed(format!("Falha ao invocar tar do sistema: {e}"))
+            })?;
 
-/// Descompacta o arquivo baixado para o diretório de destino de acordo com seu formato
-pub fn extract_archive(
-    archive_path: &Path,
-    dest_dir: &Path,
-    format: ArchiveFormat,
-) -> Result<(), AstrobrowserError> {
-    fs::create_dir_all(dest_dir)?;
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(AstrobrowserError::ExtractionFailed(format!(
+                "tar finalizou com erro (código {:?}): {stderr}",
+                output.status.code()
+            )));
+        }
 
-    match format {
-        ArchiveFormat::Zip => extract_zip(archive_path, dest_dir),
-        ArchiveFormat::TarXz => extract_tar_xz(archive_path, dest_dir),
+        flatten_wrapper_dir(dest_dir)?;
+        apply_unix_permissions(dest_dir);
+        Ok(())
+    }
+
+    #[cfg(not(unix))]
+    {
+        let _ = (archive_path, dest_dir);
+        Err(AstrobrowserError::ExtractionFailed(
+            "Extração de .tar.xz não é suportada nativamente em ambientes não-Unix.".to_string(),
+        ))
     }
 }
 
-/// Extração segura de arquivos ZIP com mitigação contra Zip Slip
+/// Extrai arquivo .zip no Linux caso o artefato esteja em formato zip
 pub fn extract_zip(zip_path: &Path, dest_dir: &Path) -> Result<(), AstrobrowserError> {
+    fs::create_dir_all(dest_dir)?;
     let file = File::open(zip_path)?;
     let mut archive = ZipArchive::new(file).map_err(|e| {
         AstrobrowserError::CorruptedPackage(format!("Arquivo ZIP inválido: {e}"))
     })?;
 
-    let total = archive.len();
-    for i in 0..total {
+    for i in 0..archive.len() {
         let mut entry = archive.by_index(i).map_err(|e| {
             AstrobrowserError::ExtractionFailed(format!("Falha ao ler entrada {i} do zip: {e}"))
         })?;
@@ -46,18 +61,13 @@ pub fn extract_zip(zip_path: &Path, dest_dir: &Path) -> Result<(), AstrobrowserE
         let enclosed = match entry.enclosed_name() {
             Some(path) => path.to_owned(),
             None => {
-                warn!(
-                    "Entrada suspeita ignorada no zip (potencial Zip Slip): {:?}",
-                    entry.name()
-                );
+                warn!("Entrada suspeita ignorada no zip (Zip Slip): {:?}", entry.name());
                 continue;
             }
         };
 
         let outpath = dest_dir.join(enclosed);
-
         if !outpath.starts_with(dest_dir) {
-            warn!("Caminho fora do destino ignorado: {:?}", outpath);
             continue;
         }
 
@@ -80,51 +90,12 @@ pub fn extract_zip(zip_path: &Path, dest_dir: &Path) -> Result<(), AstrobrowserE
         }
     }
 
+    flatten_wrapper_dir(dest_dir)?;
+    apply_unix_permissions(dest_dir);
     Ok(())
 }
 
-/// Extração de pacotes TAR.XZ no Linux/Unix utilizando tar nativo do sistema operacional
-pub fn extract_tar_xz(archive_path: &Path, dest_dir: &Path) -> Result<(), AstrobrowserError> {
-    #[cfg(unix)]
-    {
-        info!(
-            "📦 Descompactando .tar.xz do AstroBrowser via tar do sistema para: {:?}",
-            dest_dir
-        );
-        let output = std::process::Command::new("tar")
-            .args(["-xf"])
-            .arg(archive_path)
-            .args(["-C"])
-            .arg(dest_dir)
-            .output()
-            .map_err(|e| {
-                AstrobrowserError::ExtractionFailed(format!(
-                    "Falha ao invocar tar do sistema: {e}"
-                ))
-            })?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(AstrobrowserError::ExtractionFailed(format!(
-                "tar finalizou com erro (código {:?}): {stderr}",
-                output.status.code()
-            )));
-        }
-
-        Ok(())
-    }
-
-    #[cfg(not(unix))]
-    {
-        Err(AstrobrowserError::ExtractionFailed(
-            "Extração de .tar.xz não é suportada nativamente no Windows sem tar no PATH."
-                .to_string(),
-        ))
-    }
-}
-
-/// Se o arquivo foi descompactado dentro de uma única subpasta wrapper (ex: clearcote-*/),
-/// move todo o seu conteúdo para a raiz do diretório de destino.
+/// Achatamento de wrapper único (ex: clearcote-*/ -> raiz)
 pub fn flatten_wrapper_dir(dir: &Path) -> Result<(), AstrobrowserError> {
     let entries: Vec<PathBuf> = fs::read_dir(dir)?
         .filter_map(|e| e.ok())
@@ -150,20 +121,22 @@ pub fn flatten_wrapper_dir(dir: &Path) -> Result<(), AstrobrowserError> {
     Ok(())
 }
 
-/// Aplica permissões executáveis (0o755) e setuid no sandbox do Chromium (0o4755) no Unix
-pub fn apply_unix_permissions(base_dir: &Path, exe_path: &Path) {
+/// Aplica permissões de execução (0o755) em binários e SUID (0o4755) no chrome-sandbox
+pub fn apply_unix_permissions(base_dir: &Path) {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        let _ = fs::set_permissions(exe_path, fs::Permissions::from_mode(0o755));
 
-        // Chrome Sandbox (Chromium)
+        let exe_path = base_dir.join("chrome");
+        if exe_path.exists() {
+            let _ = fs::set_permissions(&exe_path, fs::Permissions::from_mode(0o755));
+        }
+
         let sandbox = base_dir.join("chrome-sandbox");
         if sandbox.exists() {
             let _ = fs::set_permissions(&sandbox, fs::Permissions::from_mode(0o4755));
         }
 
-        // Permissão em binários auxiliares
         if let Ok(entries) = fs::read_dir(base_dir) {
             for entry in entries.flatten() {
                 let p = entry.path();

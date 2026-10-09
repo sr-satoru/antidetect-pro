@@ -193,6 +193,7 @@ pub fn build_app_router(
         .route("/status", get(routes::browser::get_browser_status))
         .route("/download", post(routes::browser::trigger_browser_download))
         .route("/manifest", get(routes::browser::get_browser_manifest))
+        .route("/verify", get(routes::browser::verify_browser_installation).post(routes::browser::verify_browser_installation))
         .with_state(browser_state);
 
     let app_update_service = Arc::new(routes::app_update::AppUpdateService::new(

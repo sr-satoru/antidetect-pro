@@ -1,164 +1,187 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import {
   browserService,
   BrowserStatusResponse,
+  EngineVerificationReport,
+  AllEnginesVerificationReport,
 } from '../services/browser/service.browser';
-import { toast } from '../components/ui/notification';
 import { wsService, BrowserDownloadProgressData } from '../services/ws/service.ws';
+import { toast } from '../components/ui/notification';
 
-interface BrowserContextType {
-  status: BrowserStatusResponse | null;
+export interface EngineDownloadState {
   isDownloading: boolean;
-  isModalOpen: boolean;
-  openModal: () => void;
-  closeModal: () => void;
-  progress: number;
+  engine: string | null;
   stage: string;
+  progress: number;
   speedMbS: number;
   etaSeconds: number;
   downloadedBytes: number;
   totalBytes: number;
   error: string | null;
+}
+
+const INITIAL_DOWNLOAD_STATE: EngineDownloadState = {
+  isDownloading: false,
+  engine: null,
+  stage: 'idle',
+  progress: 0,
+  speedMbS: 0,
+  etaSeconds: 0,
+  downloadedBytes: 0,
+  totalBytes: 0,
+  error: null,
+};
+
+interface BrowserContextType {
+  status: BrowserStatusResponse | null;
+  download: EngineDownloadState;
+  isDownloading: boolean;
+  isOffline: boolean;
+  isVerifying: boolean;
+  lastVerification: Record<string, EngineVerificationReport>;
   checkStatus: () => Promise<BrowserStatusResponse | null>;
-  startDownload: () => Promise<void>;
+  startUpdate: (engine?: 'clearcote' | 'camoufox') => Promise<void>;
+  verifyEngines: (engine?: 'clearcote' | 'camoufox') => Promise<void>;
 }
 
 const BrowserContext = createContext<BrowserContextType | undefined>(undefined);
 
 export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [status, setStatus] = useState<BrowserStatusResponse | null>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [stage, setStage] = useState('idle');
-  const [speedMbS, setSpeedMbS] = useState(0);
-  const [etaSeconds, setEtaSeconds] = useState(0);
-  const [downloadedBytes, setDownloadedBytes] = useState(0);
-  const [totalBytes, setTotalBytes] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-
-  const hasAutoStartedRef = useRef(false);
+  const [download, setDownload] = useState<EngineDownloadState>(INITIAL_DOWNLOAD_STATE);
+  const [isOffline, setIsOffline] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [lastVerification, setLastVerification] = useState<Record<string, EngineVerificationReport>>({});
 
   const checkStatus = useCallback(async (): Promise<BrowserStatusResponse | null> => {
     try {
       const data = await browserService.getStatus();
       setStatus(data);
+      setIsOffline(false);
 
       if (data.download.is_downloading) {
-        setIsDownloading(true);
-        setStage(data.download.stage);
-        setProgress(data.download.progress);
-        setSpeedMbS(data.download.speed_mb_s);
-        setEtaSeconds(data.download.eta_seconds);
-        setDownloadedBytes(data.download.downloaded_bytes);
-        setTotalBytes(data.download.total_bytes);
-        if (data.download.error) {
-          setError(data.download.error);
-        }
+        setDownload({
+          isDownloading: true,
+          engine: data.download.engine || null,
+          stage: data.download.stage,
+          progress: data.download.progress,
+          speedMbS: data.download.speed_mb_s,
+          etaSeconds: data.download.eta_seconds,
+          downloadedBytes: data.download.downloaded_bytes,
+          totalBytes: data.download.total_bytes,
+          error: null,
+        });
+      } else {
+        setDownload((prev) => ({
+          ...prev,
+          isDownloading: false,
+          error: data.download.stage === 'error' ? data.download.error || null : null,
+        }));
       }
-
       return data;
-    } catch (err) {
-      console.warn('Backend Star Multlogin offline ou inacessível ao verificar status do motor:', err);
+    } catch {
+      setIsOffline(true);
       return null;
     }
   }, []);
 
-  const startDownload = useCallback(async () => {
-    setError(null);
-    setIsDownloading(true);
-    setStage('connecting');
-    setProgress(0);
+  const startUpdate = useCallback(async (engine?: 'clearcote' | 'camoufox') => {
+    setDownload({
+      ...INITIAL_DOWNLOAD_STATE,
+      isDownloading: true,
+      stage: 'connecting',
+      engine: engine || null,
+    });
 
     try {
-      const res = await browserService.triggerDownload();
+      const res = await browserService.triggerDownload(engine);
       if (!res.success) {
-        setError(res.message);
-        setIsDownloading(false);
+        setDownload((prev) => ({
+          ...prev,
+          isDownloading: false,
+          stage: 'error',
+          error: res.message,
+        }));
         toast.error(res.message);
       }
     } catch (err: any) {
-      const msg = err?.message || 'Falha ao iniciar o download do motor.';
-      setError(msg);
-      setIsDownloading(false);
+      const msg = err?.message || 'Falha ao iniciar atualização dos motores.';
+      setDownload((prev) => ({
+        ...prev,
+        isDownloading: false,
+        stage: 'error',
+        error: msg,
+      }));
       toast.error(msg);
     }
   }, []);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const verifyEngines = useCallback(async (engine?: 'clearcote' | 'camoufox') => {
+    setIsVerifying(true);
+    try {
+      const res = await browserService.verifyEngine(engine);
+      if (engine) {
+        const report = res as EngineVerificationReport;
+        setLastVerification((prev) => ({ ...prev, [engine]: report }));
+      } else {
+        const reports = res as AllEnginesVerificationReport;
+        setLastVerification({ clearcote: reports.clearcote, camoufox: reports.camoufox });
+      }
+      await checkStatus();
+      toast.success('Diagnóstico dos motores concluído!');
+    } catch (err: any) {
+      toast.error(`Falha ao verificar motores: ${err?.message || 'Erro de conexão'}`);
+    } finally {
+      setIsVerifying(false);
+    }
+  }, [checkStatus]);
 
-  // WebSocket em tempo real via Hub wsService centralizado (zero polling)
+  // WebSocket reativo para eventos de download
   useEffect(() => {
     const unsub = wsService.subscribe<BrowserDownloadProgressData>('browser_download_progress', (d) => {
       if (!d) return;
-      setStage(d.stage);
-      setProgress(d.progress ?? 0);
-      setDownloadedBytes(d.downloaded_bytes ?? 0);
-      setTotalBytes(d.total_bytes ?? 0);
-      setSpeedMbS(d.speed_mb_s ?? 0);
-      setEtaSeconds(d.eta_seconds ?? 0);
+      const isRunning = d.stage === 'downloading' || d.stage === 'extracting' || d.stage === 'verifying' || d.stage === 'connecting';
 
-      if (d.stage === 'downloading' || d.stage === 'extracting' || d.stage === 'finalizing' || d.stage === 'connecting') {
-        setIsDownloading(true);
-      }
+      setDownload({
+        isDownloading: isRunning,
+        engine: (d as any).engine || null,
+        stage: d.stage,
+        progress: d.progress ?? (d.stage === 'ready' ? 100 : 0),
+        downloadedBytes: d.downloaded_bytes ?? 0,
+        totalBytes: d.total_bytes ?? 0,
+        speedMbS: d.speed_mb_s ?? 0,
+        etaSeconds: d.eta_seconds ?? 0,
+        error: d.stage === 'error' ? d.error || 'Erro no processo' : null,
+      });
 
       if (d.stage === 'ready') {
-        setIsDownloading(false);
-        setProgress(100);
-        toast.success('Motor Star Multlogin instalado e verificado com sucesso!');
+        toast.success('Motores de navegação instalados e prontos!');
         checkStatus();
-      }
-
-      if (d.stage === 'error') {
-        setIsDownloading(false);
-        setError(d.error || 'Erro desconhecido durante o download.');
+      } else if (d.stage === 'error') {
         toast.error(d.error || 'Falha no download do motor.');
         checkStatus();
       }
     });
 
-    return () => {
-      unsub();
-    };
+    return () => unsub();
   }, [checkStatus]);
 
-  // Checagem inicial na inicialização da aplicação de forma discreta (sem pop-up intrusivo)
   useEffect(() => {
-    const initCheck = async () => {
-      const data = await checkStatus();
-      if (!data) return;
-
-      // Se ausente, sincroniza estado sem disparar pop-up
-      if (
-        !hasAutoStartedRef.current &&
-        (data.health.status === 'missing' || data.health.status === 'broken')
-      ) {
-        hasAutoStartedRef.current = true;
-        console.log('🔍 Motor Star Multlogin ausente detectado. Disponível para download na Central de Atualizações.');
-      }
-    };
-
-    initCheck();
+    checkStatus();
   }, [checkStatus]);
 
   return (
     <BrowserContext.Provider
       value={{
         status,
-        isDownloading,
-        isModalOpen,
-        openModal,
-        closeModal,
-        progress,
-        stage,
-        speedMbS,
-        etaSeconds,
-        downloadedBytes,
-        totalBytes,
-        error,
+        download,
+        isDownloading: download.isDownloading,
+        isOffline,
+        isVerifying,
+        lastVerification,
         checkStatus,
-        startDownload,
+        startUpdate,
+        verifyEngines,
       }}
     >
       {children}
@@ -167,9 +190,7 @@ export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ child
 };
 
 export const useBrowser = (): BrowserContextType => {
-  const context = useContext(BrowserContext);
-  if (!context) {
-    throw new Error('useBrowser deve ser utilizado dentro de um BrowserProvider');
-  }
-  return context;
+  const ctx = useContext(BrowserContext);
+  if (!ctx) throw new Error('useBrowser deve ser utilizado dentro de um BrowserProvider');
+  return ctx;
 };

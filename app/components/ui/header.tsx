@@ -13,7 +13,6 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
-import { useBrowser } from '@/contexts/browser-context';
 import { serviceSync } from '@/services/sync/service.sync';
 
 import { UpdateCenterDropdown } from '@/components/browser/update-center-dropdown';

@@ -1,11 +1,11 @@
 {
   "engine_name": "star-engine",
-  "version": "v2.1.0",
-  "release_tag": "v2.1.0",
+  "version": "v3.0.0",
+  "release_tag": "v3.0.0",
   "platforms": {
     "win-x86_64": {
       "filename": "camoufox-152.0.4-beta.31-win.x86_64.zip",
-      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-win.x86_64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-win.x86_64.zip",
       "exe_name": "star-engine.exe",
       "archive_format": "zip",
       "source_candidates": [
@@ -18,7 +18,7 @@
     },
     "win-i686": {
       "filename": "camoufox-152.0.4-beta.31-win.i686.zip",
-      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-win.i686.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-win.i686.zip",
       "exe_name": "star-engine.exe",
       "archive_format": "zip",
       "source_candidates": [
@@ -31,7 +31,7 @@
     },
     "lin-x86_64": {
       "filename": "camoufox-152.0.4-beta.31-lin.x86_64.zip",
-      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-lin.x86_64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-lin.x86_64.zip",
       "exe_name": "star-engine",
       "archive_format": "zip",
       "source_candidates": [
@@ -45,7 +45,7 @@
     },
     "lin-arm64": {
       "filename": "camoufox-152.0.4-beta.31-lin.arm64.zip",
-      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-lin.arm64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-lin.arm64.zip",
       "exe_name": "star-engine",
       "archive_format": "zip",
       "source_candidates": [
@@ -59,7 +59,7 @@
     },
     "mac-arm64": {
       "filename": "camoufox-152.0.4-beta.31-mac.arm64.zip",
-      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-mac.arm64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-mac.arm64.zip",
       "exe_name": "star-engine",
       "archive_format": "zip",
       "source_candidates": [
@@ -72,7 +72,7 @@
     },
     "mac-x86_64": {
       "filename": "camoufox-152.0.4-beta.31-mac.x86_64.zip",
-      "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-mac.x86_64.zip",
+      "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-mac.x86_64.zip",
       "exe_name": "star-engine",
       "archive_format": "zip",
       "source_candidates": [
@@ -89,7 +89,7 @@
       "engine_name": "clearcote",
       "version": "150.0.7871.114",
       "release_tag": "v0.1.0-pre.23",
-      "target_dir": ".engine-chromium",
+      "target_dir": "astrobrowser",
       "platforms": {
         "win-x86_64": {
           "filename": "clearcote-150.0.7871.114-windows-x64.zip",
@@ -123,13 +123,13 @@
     },
     "camoufox": {
       "engine_name": "star-engine",
-      "version": "v2.1.0",
-      "release_tag": "v2.1.0",
-      "target_dir": ".engine",
+      "version": "v3.0.0",
+      "release_tag": "v3.0.0",
+      "target_dir": "astrofox",
       "platforms": {
         "win-x86_64": {
           "filename": "camoufox-152.0.4-beta.31-win.x86_64.zip",
-          "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-win.x86_64.zip",
+          "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-win.x86_64.zip",
           "exe_name": "star-engine.exe",
           "archive_format": "zip",
           "source_candidates": [
@@ -142,7 +142,7 @@
         },
         "win-i686": {
           "filename": "camoufox-152.0.4-beta.31-win.i686.zip",
-          "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-win.i686.zip",
+          "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-win.i686.zip",
           "exe_name": "star-engine.exe",
           "archive_format": "zip",
           "source_candidates": [
@@ -155,7 +155,7 @@
         },
         "lin-x86_64": {
           "filename": "camoufox-152.0.4-beta.31-lin.x86_64.zip",
-          "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-lin.x86_64.zip",
+          "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-lin.x86_64.zip",
           "exe_name": "star-engine",
           "archive_format": "zip",
           "source_candidates": [
@@ -169,7 +169,7 @@
         },
         "lin-arm64": {
           "filename": "camoufox-152.0.4-beta.31-lin.arm64.zip",
-          "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-lin.arm64.zip",
+          "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-lin.arm64.zip",
           "exe_name": "star-engine",
           "archive_format": "zip",
           "source_candidates": [
@@ -183,7 +183,7 @@
         },
         "mac-arm64": {
           "filename": "camoufox-152.0.4-beta.31-mac.arm64.zip",
-          "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-mac.arm64.zip",
+          "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-mac.arm64.zip",
           "exe_name": "star-engine",
           "archive_format": "zip",
           "source_candidates": [
@@ -196,7 +196,7 @@
         },
         "mac-x86_64": {
           "filename": "camoufox-152.0.4-beta.31-mac.x86_64.zip",
-          "url": "https://github.com/sr-satoru/navegador/releases/download/v2.1.0/camoufox-152.0.4-beta.31-mac.x86_64.zip",
+          "url": "https://github.com/sr-satoru/navegador/releases/download/v3.0.0/camoufox-152.0.4-beta.31-mac.x86_64.zip",
           "exe_name": "star-engine",
           "archive_format": "zip",
           "source_candidates": [

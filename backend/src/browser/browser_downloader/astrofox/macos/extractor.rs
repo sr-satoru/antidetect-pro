@@ -3,19 +3,17 @@ use std::path::{Path, PathBuf};
 use tracing::warn;
 use zip::ZipArchive;
 
-use super::error::AstrofoxError;
+use super::super::error::AstrofoxError;
 
-/// Extração segura de arquivo ZIP do AstroFox com mitigação contra Zip Slip
+/// Extrai arquivo ZIP no macOS e limpa quarentena
 pub fn extract_zip(zip_path: &Path, dest_dir: &Path) -> Result<(), AstrofoxError> {
     fs::create_dir_all(dest_dir)?;
-
     let file = File::open(zip_path)?;
     let mut archive = ZipArchive::new(file).map_err(|e| {
         AstrofoxError::CorruptedPackage(format!("Arquivo ZIP inválido: {e}"))
     })?;
 
-    let total = archive.len();
-    for i in 0..total {
+    for i in 0..archive.len() {
         let mut entry = archive.by_index(i).map_err(|e| {
             AstrofoxError::ExtractionFailed(format!("Falha ao ler entrada {i} do zip: {e}"))
         })?;
@@ -23,19 +21,13 @@ pub fn extract_zip(zip_path: &Path, dest_dir: &Path) -> Result<(), AstrofoxError
         let enclosed = match entry.enclosed_name() {
             Some(path) => path.to_owned(),
             None => {
-                warn!(
-                    "Entrada suspeita ignorada no zip (potencial Zip Slip): {:?}",
-                    entry.name()
-                );
+                warn!("Entrada suspeita ignorada no zip (Zip Slip): {:?}", entry.name());
                 continue;
             }
         };
 
         let outpath = dest_dir.join(enclosed);
-
-        // Validação de contenção dentro do diretório de destino
         if !outpath.starts_with(dest_dir) {
-            warn!("Caminho fora do destino ignorado: {:?}", outpath);
             continue;
         }
 
@@ -58,11 +50,20 @@ pub fn extract_zip(zip_path: &Path, dest_dir: &Path) -> Result<(), AstrofoxError
         }
     }
 
+    flatten_wrapper_dir(dest_dir)?;
+
+    #[cfg(target_os = "macos")]
+    {
+        let _ = std::process::Command::new("xattr")
+            .args(["-cr"])
+            .arg(dest_dir)
+            .status();
+    }
+
     Ok(())
 }
 
-/// Se o arquivo foi descompactado dentro de uma única subpasta wrapper (ex: camoufox/),
-/// move todo o seu conteúdo para a raiz do diretório de destino.
+/// Achatamento de pasta wrapper se necessário
 pub fn flatten_wrapper_dir(dir: &Path) -> Result<(), AstrofoxError> {
     let entries: Vec<PathBuf> = fs::read_dir(dir)?
         .filter_map(|e| e.ok())
@@ -86,28 +87,4 @@ pub fn flatten_wrapper_dir(dir: &Path) -> Result<(), AstrofoxError> {
     }
 
     Ok(())
-}
-
-/// Aplica permissões executáveis (0o755) no Unix para executáveis e binários auxiliares
-pub fn apply_unix_permissions(base_dir: &Path, exe_path: &Path) {
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let _ = fs::set_permissions(exe_path, fs::Permissions::from_mode(0o755));
-
-        if let Ok(entries) = fs::read_dir(base_dir) {
-            for entry in entries.flatten() {
-                let p = entry.path();
-                if p.is_file() {
-                    let is_executable = p
-                        .metadata()
-                        .map(|m| m.permissions().mode() & 0o111 != 0)
-                        .unwrap_or(false);
-                    if is_executable {
-                        let _ = fs::set_permissions(&p, fs::Permissions::from_mode(0o755));
-                    }
-                }
-            }
-        }
-    }
 }
