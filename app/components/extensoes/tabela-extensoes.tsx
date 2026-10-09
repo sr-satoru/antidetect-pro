@@ -32,7 +32,6 @@ const LoadingSpinner: React.FC<{ message?: string; subMessage?: string }> = ({
 }) => (
   <div className="flex h-72 flex-col items-center justify-center gap-3.5 text-center select-none animate-in fade-in duration-200">
     <div className="relative flex items-center justify-center">
-      <div className="absolute h-10 w-10 rounded-full bg-[#00FF66]/15 blur-sm" />
       <Loader2 size={32} className="animate-spin text-[#00FF66]" />
     </div>
     <div className="flex flex-col items-center gap-1">
@@ -278,7 +277,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 {teamExtensions.map((ext) => (
                   <div
                     key={ext.id}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] p-5 shadow-sm shadow-slate-200/50 hover:shadow-md hover:border-slate-300 dark:hover:border-white/20 dark:hover:bg-[#1E2028] transition-all"
+                    className="group relative flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] p-5 shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-none hover:border-slate-300 dark:hover:border-white/20 dark:hover:bg-[#1E2028] transition-all"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-3">
@@ -533,7 +532,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   return (
                     <div
                       key={recExt.id}
-                      className="group relative flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] p-5 shadow-sm shadow-slate-200/50 hover:shadow-md hover:border-slate-300 dark:hover:border-white/20 dark:hover:bg-[#1E2028] transition-all"
+                      className="group relative flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] p-5 shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-none hover:border-slate-300 dark:hover:border-white/20 dark:hover:bg-[#1E2028] transition-all"
                     >
                       <div>
                         {/* Linha Superior: Ícone, Título e Botão Adicionar/Adicionado */}

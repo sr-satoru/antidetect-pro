@@ -1,0 +1,93 @@
+[
+  {
+    "code": "pt-BR",
+    "label": "🇧🇷 Português (Brasil)",
+    "nativeName": "Português",
+    "acceptLanguage": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
+    "defaultTimezone": "America/Sao_Paulo"
+  },
+  {
+    "code": "pt-PT",
+    "label": "🇵🇹 Português (Portugal)",
+    "nativeName": "Português Europeu",
+    "acceptLanguage": "pt-PT,pt;q=0.9,en-US;q=0.8,en;q=0.7",
+    "defaultTimezone": "Europe/Lisbon"
+  },
+  {
+    "code": "en-US",
+    "label": "🇺🇸 Inglês (Estados Unidos)",
+    "nativeName": "English (US)",
+    "acceptLanguage": "en-US,en;q=0.9",
+    "defaultTimezone": "America/New_York"
+  },
+  {
+    "code": "en-GB",
+    "label": "🇬🇧 Inglês (Reino Unido)",
+    "nativeName": "English (UK)",
+    "acceptLanguage": "en-GB,en-US;q=0.9,en;q=0.8",
+    "defaultTimezone": "Europe/London"
+  },
+  {
+    "code": "es-ES",
+    "label": "🇪🇸 Espanhol (Espanha)",
+    "nativeName": "Español",
+    "acceptLanguage": "es-ES,es;q=0.9,en;q=0.8",
+    "defaultTimezone": "Europe/Madrid"
+  },
+  {
+    "code": "es-MX",
+    "label": "🇲🇽 Espanhol (México / América Latina)",
+    "nativeName": "Español Latinoamericano",
+    "acceptLanguage": "es-419,es;q=0.9,en;q=0.8",
+    "defaultTimezone": "America/Mexico_City"
+  },
+  {
+    "code": "fr-FR",
+    "label": "🇫🇷 Francês (França)",
+    "nativeName": "Français",
+    "acceptLanguage": "fr-FR,fr;q=0.9,en;q=0.8",
+    "defaultTimezone": "Europe/Paris"
+  },
+  {
+    "code": "de-DE",
+    "label": "🇩🇪 Alemão (Alemanha)",
+    "nativeName": "Deutsch",
+    "acceptLanguage": "de-DE,de;q=0.9,en;q=0.8",
+    "defaultTimezone": "Europe/Berlin"
+  },
+  {
+    "code": "it-IT",
+    "label": "🇮🇹 Italiano (Itália)",
+    "nativeName": "Italiano",
+    "acceptLanguage": "it-IT,it;q=0.9,en;q=0.8",
+    "defaultTimezone": "Europe/Rome"
+  },
+  {
+    "code": "nl-NL",
+    "label": "🇳🇱 Holandês (Países Baixos)",
+    "nativeName": "Nederlands",
+    "acceptLanguage": "nl-NL,nl;q=0.9,en;q=0.8",
+    "defaultTimezone": "Europe/Amsterdam"
+  },
+  {
+    "code": "ja-JP",
+    "label": "🇯🇵 Japonês (Japão)",
+    "nativeName": "日本語",
+    "acceptLanguage": "ja,en-US;q=0.9,en;q=0.8",
+    "defaultTimezone": "Asia/Tokyo"
+  },
+  {
+    "code": "ru-RU",
+    "label": "🇷🇺 Russo (Rússia)",
+    "nativeName": "Русский",
+    "acceptLanguage": "ru-RU,ru;q=0.9,en;q=0.8",
+    "defaultTimezone": "Europe/Moscow"
+  },
+  {
+    "code": "zh-CN",
+    "label": "🇨🇳 Chinês Simplificado (China)",
+    "nativeName": "简体中文",
+    "acceptLanguage": "zh-CN,zh;q=0.9,en;q=0.8",
+    "defaultTimezone": "Asia/Shanghai"
+  }
+]

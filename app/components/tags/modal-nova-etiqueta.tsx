@@ -63,7 +63,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/40 dark:bg-black/70 p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-[460px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/90 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E3B]/80 px-6 py-4">

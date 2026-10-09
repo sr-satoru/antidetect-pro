@@ -1,3 +1,4 @@
+use star_multlogin_backend::models::{CreateProfileDto, UpdateProfileDto};
 use star_multlogin_backend::service_database::profiles::quota::check_profile_limit;
 use star_multlogin_backend::service_database::Vault;
 use star_multlogin_backend::ws::WsState;
@@ -291,4 +292,203 @@ async fn test_public_profile_api_strictly_id_and_name() {
     let _ = std::fs::remove_dir_all(temp_dir);
 }
 
+#[tokio::test]
+async fn test_profile_kernel_immutability_on_update() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "star_profile_kernel_immutability_test_{}",
+        std::time::SystemTime::now().elapsed().unwrap().as_nanos()
+    ));
+    let _ = std::fs::create_dir_all(&temp_dir);
+    let vault = Arc::new(Vault::new(&temp_dir).unwrap());
+    let ws = WsState::new();
+    let storage = star_multlogin_backend::service_database::profiles::ProfileService::new(
+        &temp_dir,
+        ws,
+        vault.clone(),
+    );
 
+    // 1. Cria perfil com AstroFox
+    let create_fox = CreateProfileDto {
+        id: None,
+        name: Some("Perfil Fox Original".to_string()),
+        group: Some("Default".to_string()),
+        tags: Some(vec![]),
+        tag_ids: None,
+        notes: Some(String::new()),
+        status: None,
+        kernel: Some("AstroFox".to_string()),
+        browser_version: Some("150".to_string()),
+        os: Some("windows".to_string()),
+        proxy_type: None,
+        proxy_host: None,
+        proxy_port: None,
+        proxy_username: None,
+        proxy_password: None,
+        fingerprint_json: None,
+        extension_mode: None,
+        extension_category: None,
+        extensions: None,
+    };
+    let created_fox = storage.create(create_fox).expect("Falha ao criar perfil Fox");
+    assert_eq!(created_fox.kernel, "AstroFox");
+
+    // 2. Tenta atualizar o kernel para AstroBrowser
+    let update_dto = UpdateProfileDto {
+        name: Some("Perfil Fox Tentativa Troca".to_string()),
+        group: None,
+        notes: None,
+        status: None,
+        tags: None,
+        tag_ids: None,
+        os: None,
+        kernel: Some("AstroBrowser".to_string()),
+        browser_version: None,
+        proxy_type: None,
+        proxy_host: None,
+        proxy_port: None,
+        proxy_username: None,
+        proxy_password: None,
+        fingerprint_json: None,
+        extension_mode: None,
+        extension_category: None,
+        extensions: None,
+    };
+
+    let updated = storage.update(&created_fox.id, update_dto).expect("Falha ao atualizar");
+    assert_eq!(
+        updated.kernel, "AstroFox",
+        "O motor DEVE permanecer AstroFox mesmo se dto solicitar AstroBrowser"
+    );
+
+    let reloaded = storage.get(&created_fox.id).expect("Perfil não encontrado");
+    assert_eq!(
+        reloaded.kernel, "AstroFox",
+        "No banco de dados, o kernel deve permanecer estritamente imutável"
+    );
+
+    let _ = std::fs::remove_dir_all(temp_dir);
+}
+
+#[test]
+fn test_extract_domain_from_url() {
+    use star_multlogin_backend::service_database::profiles::lifecycle::extract_domain_from_url;
+
+    assert_eq!(extract_domain_from_url("https://x.com"), Some("x.com".to_string()));
+    assert_eq!(extract_domain_from_url("https://x.com/home"), Some("x.com".to_string()));
+    assert_eq!(extract_domain_from_url("https://www.facebook.com/login"), Some("facebook.com".to_string()));
+    assert_eq!(extract_domain_from_url("http://facebook.com"), Some("facebook.com".to_string()));
+    assert_eq!(extract_domain_from_url("accounts.google.com"), Some("accounts.google.com".to_string()));
+    assert_eq!(extract_domain_from_url("http://localhost:3000/app"), Some("localhost".to_string()));
+    assert_eq!(extract_domain_from_url("about:blank"), None);
+    assert_eq!(extract_domain_from_url(""), None);
+}
+
+#[test]
+fn test_is_url_in_browser_history_chromium() {
+    use star_multlogin_backend::service_database::profiles::lifecycle::is_url_in_browser_history;
+
+    let temp_dir = std::env::temp_dir().join(format!(
+        "star_hist_chrom_{}",
+        std::time::SystemTime::now().elapsed().unwrap().as_nanos()
+    ));
+    let default_dir = temp_dir.join("Default");
+    std::fs::create_dir_all(&default_dir).unwrap();
+
+    let db_path = default_dir.join("History");
+    let conn = rusqlite::Connection::open(&db_path).unwrap();
+    conn.execute("CREATE TABLE urls (id INTEGER PRIMARY KEY, url TEXT)", []).unwrap();
+    conn.execute("INSERT INTO urls (url) VALUES ('https://x.com/explore')", []).unwrap();
+    drop(conn);
+
+    // Domínio presente no histórico deve retornar true
+    assert!(is_url_in_browser_history(&temp_dir, "AstroBrowser", "https://x.com"));
+    assert!(is_url_in_browser_history(&temp_dir, "AstroBrowser", "x.com"));
+
+    // Domínio não presente deve retornar false
+    assert!(!is_url_in_browser_history(&temp_dir, "AstroBrowser", "https://facebook.com"));
+
+    let _ = std::fs::remove_dir_all(temp_dir);
+}
+
+#[test]
+fn test_is_url_in_browser_history_firefox() {
+    use star_multlogin_backend::service_database::profiles::lifecycle::is_url_in_browser_history;
+
+    let temp_dir = std::env::temp_dir().join(format!(
+        "star_hist_fox_{}",
+        std::time::SystemTime::now().elapsed().unwrap().as_nanos()
+    ));
+    std::fs::create_dir_all(&temp_dir).unwrap();
+
+    let db_path = temp_dir.join("places.sqlite");
+    let conn = rusqlite::Connection::open(&db_path).unwrap();
+    conn.execute("CREATE TABLE moz_places (id INTEGER PRIMARY KEY, url TEXT)", []).unwrap();
+    conn.execute("INSERT INTO moz_places (url) VALUES ('https://www.facebook.com/feed')", []).unwrap();
+    drop(conn);
+
+    // Domínio presente deve retornar true
+    assert!(is_url_in_browser_history(&temp_dir, "AstroFox", "https://facebook.com"));
+    assert!(is_url_in_browser_history(&temp_dir, "AstroFox", "https://www.facebook.com"));
+
+    // Domínio não presente deve retornar false
+    assert!(!is_url_in_browser_history(&temp_dir, "AstroFox", "https://tiktok.com"));
+
+    let _ = std::fs::remove_dir_all(temp_dir);
+}
+
+#[test]
+fn test_resolve_all_initial_urls_multiple_platforms() {
+    use star_multlogin_backend::service_database::profiles::lifecycle::resolve_all_initial_urls;
+    use star_multlogin_backend::models::{Profile, ProfileProxyConfig};
+
+    let profile = Profile {
+        id: "test_multi_plat".to_string(),
+        name: "Multi Platform Test".to_string(),
+        group: "default".to_string(),
+        tags: vec![],
+        notes: String::new(),
+        status: "ready".to_string(),
+        kernel: "AstroBrowser".to_string(),
+        browser_version: "150".to_string(),
+        os: "windows".to_string(),
+        created_at: 0,
+        updated_at: 0,
+        last_launch: None,
+        is_deleted: false,
+        deleted_at: None,
+        proxy: ProfileProxyConfig {
+            mode: "custom".to_string(),
+            proxy_type: "none".to_string(),
+            host: None,
+            port: None,
+            username: None,
+            password: None,
+            rotation_url: None,
+            ip_checker: None,
+            socks_remote_dns: true,
+        },
+        fingerprint_json: serde_json::json!({
+            "platform_accounts": [
+                { "platform": "facebook", "customDomain": "facebook.com" },
+                { "platform": "x", "customDomain": "x.com" },
+                { "platform": "instagram", "customDomain": "instagram.com" },
+                { "platform": "google", "customDomain": "accounts.google.com" },
+                { "platform": "other", "customDomain": "github.com" }
+            ],
+            "open_tabs_urls": "https://bing.com\nhttps://reddit.com"
+        }),
+        extension_mode: None,
+        extension_category: None,
+        extensions: None,
+    };
+
+    let urls = resolve_all_initial_urls(&profile, None);
+    assert_eq!(urls.len(), 7);
+    assert_eq!(urls[0], "https://bing.com");
+    assert_eq!(urls[1], "https://reddit.com");
+    assert_eq!(urls[2], "https://facebook.com");
+    assert_eq!(urls[3], "https://x.com");
+    assert_eq!(urls[4], "https://instagram.com");
+    assert_eq!(urls[5], "https://accounts.google.com");
+    assert_eq!(urls[6], "https://github.com");
+}

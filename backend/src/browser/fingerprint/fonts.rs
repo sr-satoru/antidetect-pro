@@ -2,11 +2,11 @@ use std::collections::{HashMap, HashSet};
 use std::sync::LazyLock;
 
 /// Listas essenciais de fontes autênticas por sistema operacional para spoofing no Camoufox.
-/// Carregadas a partir do catálogo oficial do Camoufox (presets/essential-fonts.json).
+/// Carregadas a partir do catálogo oficial do Camoufox (presets/firefox/essential-fonts.json).
 /// O Camoufox possui um patch C++ (FontAllowlist em additions/camoucfg/MaskConfig.hpp)
 /// que restringe a consulta de fontes apenas às fontes permitidas no CAMOU_CONFIG["fonts"].
 static ESSENTIAL_FONTS: LazyLock<HashMap<String, Vec<String>>> = LazyLock::new(|| {
-    let json_str = include_str!("../../../presets/essential-fonts.json");
+    let json_str = include_str!("../../../presets/firefox/essential-fonts.json");
     serde_json::from_str(json_str).unwrap_or_default()
 });
 

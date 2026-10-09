@@ -66,27 +66,39 @@ export const ExtensoesPage: React.FC = () => {
     }
   };
 
-  const handleSaveExtension = async (data: Partial<ExtensionItem>) => {
-    const payload = {
-      name: data.name || 'Nova Extensão',
-      iconType: data.iconType || 'custom',
-      iconBg: data.iconBg || '#00FF66',
-      enabled: true,
-      status: 'available',
-      description:
-        data.description || 'Extensão adicionada à equipe do Star Multlogin.',
-      provider: data.provider || 'Chrome Web Store',
-      providerUrl: data.providerUrl || 'https://chromewebstore.google.com',
-      tab: 'team',
-    };
-
+  const handleSaveExtension = async (data: any) => {
     try {
-      await api.extensions.create(payload);
+      if (data.file) {
+        toast.info('Fazendo upload e normalizando extensão para Chrome e Firefox...');
+        const formData = new FormData();
+        formData.append('file', data.file);
+        if (data.name) formData.append('name', data.name);
+        if (data.description) formData.append('description', data.description);
+
+        await api.extensions.upload(formData);
+        toast.success('Extensão enviada e normalizada com sucesso!');
+      } else {
+        toast.info('Baixando e normalizando extensão para Chrome e Firefox...');
+        const payload = {
+          name: data.name || 'Nova Extensão',
+          iconType: data.iconType || 'custom',
+          iconBg: data.iconBg || '#00FF66',
+          enabled: true,
+          status: 'available',
+          description:
+            data.description || 'Extensão adicionada à equipe do Star Multlogin.',
+          provider: data.provider || 'Chrome Web Store',
+          providerUrl: data.providerUrl || 'https://chromewebstore.google.com',
+          tab: 'team',
+        };
+
+        await api.extensions.create(payload);
+        toast.success('Extensão cadastrada e pronta para uso!');
+      }
       setIsModalOpen(false);
       await fetchExtensions();
-      toast.success('Extensão cadastrada com sucesso');
     } catch (err: any) {
-      toast.error(`Erro ao cadastrar extensão: ${err.message}`);
+      toast.error(`Erro ao cadastrar extensão: ${err.message || err}`);
     }
   };
 
@@ -99,6 +111,7 @@ export const ExtensoesPage: React.FC = () => {
     );
     if (alreadyExists) return;
 
+    toast.info(`Baixando e preparando ${recExt.name} para Chrome e Firefox...`);
     const payload = {
       name: recExt.name,
       iconType: recExt.iconType,
@@ -115,8 +128,10 @@ export const ExtensoesPage: React.FC = () => {
     try {
       await api.extensions.create(payload);
       await fetchExtensions();
+      toast.success(`${recExt.name} adicionada e compatibilizada com sucesso!`);
     } catch (err: any) {
       console.error('Erro ao adicionar extensão recomendada:', err);
+      toast.error(`Erro ao adicionar ${recExt.name}: ${err.message || err}`);
     }
   };
 

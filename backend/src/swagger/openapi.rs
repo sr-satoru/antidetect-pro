@@ -57,7 +57,7 @@ pub struct ProfileDoc {
     pub notes: String,
     #[schema(example = "ready")]
     pub status: String,
-    #[schema(example = "FlowerBrowser")]
+    #[schema(example = "AstroFox")]
     pub kernel: String,
     #[schema(example = "135.0")]
     pub browser_version: String,
@@ -87,7 +87,7 @@ pub struct CreateProfileDtoDoc {
     #[schema(example = json!([1, 2]))]
     pub tag_ids: Option<Vec<i64>>,
     pub notes: Option<String>,
-    #[schema(example = "FlowerBrowser")]
+    #[schema(example = "AstroFox")]
     pub kernel: Option<String>,
     #[schema(example = "windows")]
     pub os: Option<String>,
@@ -129,9 +129,9 @@ pub struct LaunchResponseDoc {
     pub debug_port: u16,
     #[schema(example = "ws://127.0.0.1:9222/devtools/browser/abc")]
     pub ws_endpoint: Option<String>,
-    #[schema(example = "FlowerBrowser")]
+    #[schema(example = "AstroFox")]
     pub kernel: String,
-    #[schema(example = "Navegador FlowerBrowser iniciado com sucesso (PID: 43210).")]
+    #[schema(example = "Navegador AstroFox iniciado com sucesso (PID: 43210).")]
     pub message: String,
 }
 
@@ -459,7 +459,7 @@ pub async fn doc_delete_profile() {}
     path = "/api/profiles/{id}/launch",
     tag = "Perfis",
     summary = "Iniciar navegador",
-    description = "Lança o motor antidetect FlowerBrowser/Camoufox com a fingerprint isolada e porta de depuração remota.",
+    description = "Lança o motor antidetect AstroFox / AstroBrowser com a fingerprint isolada e porta de depuração remota.",
     params(("id" = String, Path, description = "UUID do perfil")),
     responses((status = 200, description = "Navegador iniciado", body = LaunchResponseDoc))
 )]
@@ -687,7 +687,7 @@ pub async fn doc_list_extension_categories() {}
     get,
     path = "/api/browser/status",
     tag = "Motor do Navegador",
-    summary = "Status do motor FlowerBrowser",
+    summary = "Status do motor AstroFox",
     description = "Retorna a integridade dos binários locais do navegador antidetect e status de download.",
     responses((status = 200, description = "Status do motor", body = BrowserStatusDoc))
 )]
@@ -698,7 +698,7 @@ pub async fn doc_browser_status() {}
     path = "/api/browser/download",
     tag = "Motor do Navegador",
     summary = "Disparar download do motor",
-    description = "Inicia em segundo plano o download e extração dos binários do FlowerBrowser.",
+    description = "Inicia em segundo plano o download e extração dos binários do AstroFox.",
     responses((status = 200, description = "Download iniciado", body = GenericMessageDoc))
 )]
 pub async fn doc_browser_download() {}
@@ -877,7 +877,7 @@ pub async fn doc_auth_logout() {}
         (name = "Proxies", description = "Validação, latência e cadastro seguro de proxies residenciais e móveis"),
         (name = "Etiquetas (Tags)", description = "Organização e categorização visual de perfis"),
         (name = "Extensões", description = "Gestão de extensões e add-ons Firefox e Chrome"),
-        (name = "Motor do Navegador", description = "Monitoramento e download automatizado do FlowerBrowser/Camoufox"),
+        (name = "Motor do Navegador", description = "Monitoramento e download automatizado do AstroFox / AstroBrowser"),
         (name = "Sincronização em Nuvem", description = "Backup bidirecional e reconciliação LWW com servidores Star"),
         (name = "Autenticação", description = "Gerenciamento de credenciais, OAuth2 e sessões de usuário")
     ),

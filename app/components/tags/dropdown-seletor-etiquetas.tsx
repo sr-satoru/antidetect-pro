@@ -10,6 +10,8 @@ interface DropdownSeletorEtiquetasProps {
   selectedTags: string[];
   onToggleTag: (tagName: string) => void;
   onAddNewTag?: (tagName: string, color: string) => Promise<void>;
+  className?: string;
+  fullWidth?: boolean;
 }
 
 export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> = ({
@@ -18,6 +20,8 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
   selectedTags,
   onToggleTag,
   onAddNewTag,
+  className = '',
+  fullWidth = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -159,7 +163,9 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
   return (
     <div
       ref={containerRef}
-      className="animate-in fade-in zoom-in-95 absolute right-0 top-full z-50 mt-1.5 w-[330px] rounded-lg border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#1E2028] shadow-xl shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/80 select-none overflow-hidden duration-100"
+      className={`animate-in fade-in zoom-in-95 absolute top-full z-50 mt-1.5 rounded-lg border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#1E2028] shadow-xl shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/80 select-none overflow-hidden duration-100 ${
+        fullWidth ? 'left-0 right-0 w-full' : 'right-0 w-[330px]'
+      } ${className}`}
     >
       {/* 1. Barra de Busca / Criação */}
       <div className="flex items-center gap-2.5 px-3 py-2.5 border-b border-slate-100 dark:border-[#2C2E3B]">
@@ -299,7 +305,7 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
                     className="h-1.5 w-1.5 rounded-full shrink-0"
                     style={{ backgroundColor: style.color }}
                   />
-                  <span className="truncate max-w-[190px]">{tag.name}</span>
+                  <span className="truncate max-w-[260px] sm:max-w-md">{tag.name}</span>
                 </span>
 
                 {/* Checkmark no lado direito se selecionado */}

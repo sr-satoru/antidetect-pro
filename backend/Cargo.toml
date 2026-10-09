@@ -12,7 +12,7 @@ name = "backend"
 path = "src/main.rs"
 
 [dependencies]
-axum = { version = "0.8.9", features = ["ws"] }
+axum = { version = "0.8.9", features = ["ws", "multipart"] }
 chrono = { version = "0.4.45", features = ["serde"] }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
@@ -35,5 +35,7 @@ zeroize = { version = "1.8", features = ["derive"] }
 utoipa = { version = "6.0", features = ["axum_extras", "chrono", "uuid"] }
 utoipa-swagger-ui = { version = "10.0", features = ["axum"] }
 semver = "1.0"
+async-trait = "0.1"
+tokio-tungstenite = "0.30.0"
 
 

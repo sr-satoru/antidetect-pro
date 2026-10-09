@@ -33,8 +33,9 @@ async function request<T>(
     }
   }
 
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(options.headers as Record<string, string>),
   };
 
@@ -82,11 +83,13 @@ export const http = {
   get: <T>(endpoint: string, config?: { params?: Record<string, any> }) =>
     request<T>(endpoint, {}, config?.params),
 
-  post: <T>(endpoint: string, body?: any) =>
-    request<T>(endpoint, {
+  post: <T>(endpoint: string, body?: any) => {
+    const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+    return request<T>(endpoint, {
       method: 'POST',
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    }),
+      body: isFormData ? body : body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  },
 
   put: <T>(endpoint: string, body?: any) =>
     request<T>(endpoint, {

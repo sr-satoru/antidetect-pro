@@ -1,0 +1,28 @@
+{
+  "audioinput": [
+    {
+      "deviceId": "default",
+      "label": "Default",
+      "groupId": "cc-agrp-default"
+    }
+  ],
+  "audiooutput": [
+    {
+      "deviceId": "default",
+      "label": "Default",
+      "groupId": "cc-agrp-default"
+    }
+  ],
+  "videoinput": [
+    {
+      "deviceId": "camera2-0",
+      "label": "camera2 0, facing back",
+      "groupId": "cc-cgrp-back"
+    },
+    {
+      "deviceId": "camera2-1",
+      "label": "camera2 1, facing front",
+      "groupId": "cc-cgrp-front"
+    }
+  ]
+}

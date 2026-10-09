@@ -1,5 +1,5 @@
 import config from '@/config/perfil.json';
-import { getUserAgents, getGpuOptions } from '@/services/camoufox-presets';
+import { getUserAgents, getGpuOptions, isChromiumKernel } from '@/services/navegador-presets';
 
 /**
  * Mapeia os dados do Perfil vindos da API do backend Rust
@@ -21,8 +21,13 @@ export function profileToFormData(profile: any): any {
   }
 
   const osKey = (profile.os || fp.os || 'linux').toLowerCase();
-  const uas = getUserAgents(osKey);
-  const defaultGpu = getGpuOptions(osKey)[0] || { vendor: 'Google Inc.', renderer: 'Intel(R) HD Graphics' };
+  const isAndroid = osKey === 'android';
+  const rawKernel = profile.kernel || fp.kernel;
+  const kernel = isAndroid || isChromiumKernel(rawKernel)
+    ? 'AstroBrowser'
+    : 'AstroFox';
+  const uas = getUserAgents(osKey, kernel);
+  const defaultGpu = getGpuOptions(osKey, kernel)[0] || { vendor: 'Google Inc.', renderer: 'Intel(R) HD Graphics' };
   const webgl = defaultGpu;
 
   // Normalização de tags (array de strings)
@@ -45,8 +50,8 @@ export function profileToFormData(profile: any): any {
     name: profile.name || '',
     group: profile.group || 'Desagrupado',
     tags: tagsList,
-    kernel: profile.kernel || fp.kernel || 'AstroFox',
-    kernelVersion: profile.browser_version || fp.kernel_version || '150',
+    kernel,
+    kernelVersion: isAndroid ? '150' : (profile.browser_version || fp.kernel_version || '150'),
     os: osKey,
     osVersion: fp.os_version || 'Linux x86_64',
     userAgent: fp.user_agent || uas[0] || '',
@@ -67,7 +72,19 @@ export function profileToFormData(profile: any): any {
 
     // Plataforma
     platformUrl: fp.platform_url || '',
-    platformAccounts: fp.platform_accounts || [],
+    platformAccounts: (Array.isArray(fp.platform_accounts) ? fp.platform_accounts : []).map((acc: any) => {
+      let customDomain = acc.customDomain || '';
+      if (!customDomain && acc.platform && acc.platform !== 'other') {
+        const preset = config.platforms.find((p: any) => p.id === acc.platform);
+        if (preset?.domain) {
+          customDomain = preset.domain;
+        }
+      }
+      return {
+        ...acc,
+        customDomain,
+      };
+    }),
     duplicateCheckRules: fp.duplicate_check_rules || {
       usernamePassword: true,
       cookie: true,

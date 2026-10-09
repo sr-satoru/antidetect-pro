@@ -140,7 +140,7 @@ impl ProfileService {
             tags,
             notes: dto.notes.unwrap_or_default(),
             status: dto.status.unwrap_or_else(|| "ready".to_string()),
-            kernel: dto.kernel.unwrap_or_else(|| "Camoufox".to_string()),
+            kernel: dto.kernel.unwrap_or_else(|| "AstroFox".to_string()),
             browser_version: dto.browser_version.unwrap_or_else(|| "150".to_string()),
             os: dto.os.unwrap_or_else(|| "windows".to_string()),
             created_at: now,
@@ -156,6 +156,34 @@ impl ProfileService {
         };
 
         repository::save_to_db(&self.vault, &profile)?;
+
+        // Se houver cookies no formulário/fingerprint_json, inicializa a sessão criptografada no Star Vault
+        if let Some(raw_cookies) = profile.fingerprint_json.get("cookies").and_then(|v| {
+            if let Some(s) = v.as_str() {
+                Some(s.to_string())
+            } else if v.is_array() || v.is_object() {
+                Some(v.to_string())
+            } else {
+                None
+            }
+        }) {
+            if !raw_cookies.trim().is_empty() {
+                if let Ok(parsed) = crate::extraction_session::fire_fox::parse_cookies_input(&raw_cookies) {
+                    if !parsed.is_empty() {
+                        let session_svc = crate::service_database::sessions::SessionService::new(self.vault.clone());
+                        let count = parsed.len();
+                        let initial_session = crate::extraction_session::UnifiedSession {
+                            cookies: parsed,
+                            local_storage: std::collections::HashMap::new(),
+                            total_cookies: count,
+                            total_storage_items: 0,
+                        };
+                        let _ = session_svc.save_session(&id, &initial_session);
+                    }
+                }
+            }
+        }
+
         self.trigger_auto_sync(&id);
 
         Ok(profile)
@@ -196,8 +224,18 @@ impl ProfileService {
         if let Some(os) = dto.os {
             profile.os = os;
         }
-        if let Some(kernel) = dto.kernel {
-            profile.kernel = kernel;
+        // O motor do navegador (kernel) é estritamente imutável após a criação
+        // para garantir a integridade dos cookies, pastas de sessão e proteção contra antifraude.
+        if let Some(ref kernel) = dto.kernel {
+            if !kernel.is_empty() && kernel != &profile.kernel {
+                tracing::warn!(
+                    "⚠️ [Segurança Antidetect] Tentativa de alterar o motor do perfil '{}' ({}) de '{}' para '{}' foi ignorada. O motor é imutável após a criação.",
+                    profile.name,
+                    id,
+                    profile.kernel,
+                    kernel
+                );
+            }
         }
         if let Some(bv) = dto.browser_version {
             profile.browser_version = bv;
@@ -221,6 +259,34 @@ impl ProfileService {
 
         if let Some(fp) = dto.fingerprint_json {
             profile.fingerprint_json = fp;
+
+            // Se houver cookies no fingerprint_json atualizado, sincroniza com o Star Vault
+            if let Some(raw_cookies) = profile.fingerprint_json.get("cookies").and_then(|v| {
+                if let Some(s) = v.as_str() {
+                    Some(s.to_string())
+                } else if v.is_array() || v.is_object() {
+                    Some(v.to_string())
+                } else {
+                    None
+                }
+            }) {
+                if !raw_cookies.trim().is_empty() {
+                    if let Ok(parsed) = crate::extraction_session::fire_fox::parse_cookies_input(&raw_cookies) {
+                        if !parsed.is_empty() {
+                            let session_svc = crate::service_database::sessions::SessionService::new(self.vault.clone());
+                            let count = parsed.len();
+                            let current = session_svc.load_session(id).unwrap_or(None).unwrap_or_default();
+                            let updated_session = crate::extraction_session::UnifiedSession {
+                                cookies: parsed,
+                                local_storage: current.local_storage,
+                                total_cookies: count,
+                                total_storage_items: current.total_storage_items,
+                            };
+                            let _ = session_svc.save_session(id, &updated_session);
+                        }
+                    }
+                }
+            }
         }
 
         if let Some(mode) = dto.extension_mode {
@@ -364,6 +430,21 @@ impl ProfileService {
         &self.vault
     }
 
+    pub fn get_mcp_token(&self) -> String {
+        let api_keys = crate::service_database::ApiKeyService::new(self.vault.clone());
+        api_keys.get_or_create_token().unwrap_or_else(|_| crate::service_database::api_keys::ApiKeyService::generate_token())
+    }
+
+    pub fn rotate_mcp_token(&self) -> Result<String, String> {
+        let api_keys = crate::service_database::ApiKeyService::new(self.vault.clone());
+        api_keys.rotate_token()
+    }
+
+    pub fn verify_mcp_token(&self, candidate: &str) -> bool {
+        let api_keys = crate::service_database::ApiKeyService::new(self.vault.clone());
+        api_keys.verify_token(candidate)
+    }
+
     pub fn get_process_manager(&self) -> Arc<ProcessManager> {
         self.process_manager.clone()
     }
@@ -399,8 +480,8 @@ impl ProfileService {
             .unwrap_or_default();
 
         let net_setup = crate::network::NetworkSetupResult::default();
-        let config_map = crate::camoufox::common::build_camou_config_map(&profile, None, &[]);
-        let prefs_map = crate::camoufox::common::build_camou_prefs(&profile, None, &net_setup);
+        let config_map = crate::browser::engines::camoufox::common::build_camou_config_map(&profile, None, &[]);
+        let prefs_map = crate::browser::engines::camoufox::common::build_camou_prefs(&profile, None, &net_setup);
 
         let proxy_val = if profile.proxy.proxy_type != "none" {
             if let Some(host) = &profile.proxy.host {

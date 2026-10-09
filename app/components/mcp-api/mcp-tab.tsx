@@ -5,44 +5,52 @@ import {
   Check,
   Terminal,
   Sparkles,
-  Play,
-  CheckCircle2,
   Code2,
   Layers,
   HelpCircle,
 } from 'lucide-react';
 import { BACKEND_PORT } from '@/services/http';
 import { serviceMcp } from '@/services/mcp/service.mcp';
+import { renderCodeWithKeyBlur, sanitizeCodeForCopy } from './code-blur-helper';
 
 interface McpTabProps {
   scriptPath?: string;
   apiPort?: number;
+  token?: string;
+  showToken?: boolean;
+  onRevealKey?: () => void;
 }
 
 export const McpTab: React.FC<McpTabProps> = ({
   apiPort = BACKEND_PORT,
+  token: propToken,
+  showToken = false,
+  onRevealKey,
 }) => {
   const [selectedClient, setSelectedClient] = useState<
     'cursor' | 'antigravity' | 'claude' | 'vscode' | 'windsurf' | 'cli'
   >('cursor');
   const [copiedSnippet, setCopiedSnippet] = useState(false);
-  const [testOutput, setTestOutput] = useState<string | null>(null);
-  const [isTesting, setIsTesting] = useState(false);
-  const [token, setToken] = useState(serviceMcp.getCachedToken());
+  const [internalToken, setInternalToken] = useState(propToken || serviceMcp.getCachedToken());
 
   useEffect(() => {
-    serviceMcp
-      .getInfo()
-      .then((res) => {
-        if (res?.token) {
-          setToken(res.token);
-        }
-      })
-      .catch(() => {});
-  }, []);
+    if (propToken) {
+      setInternalToken(propToken);
+    } else {
+      serviceMcp
+        .getInfo()
+        .then((res) => {
+          if (res?.token) {
+            setInternalToken(res.token);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [propToken]);
 
+  const activeToken = propToken || internalToken;
   const activeHost = '127.0.0.1';
-  const sseUrl = `http://${activeHost}:${apiPort}/mcp/${token}/sse`;
+  const sseUrl = `http://${activeHost}:${apiPort}/mcp/${activeToken}/sse`;
 
   const clientConfigs = useMemo(() => {
     return {
@@ -141,98 +149,44 @@ export const McpTab: React.FC<McpTabProps> = ({
   }, [sseUrl]);
 
   const tools = [
-    { name: 'star_status', desc: 'Verifica se o motor Camoufox e o backend estão ativos e perfis rodando.', tag: 'Status' },
-    { name: 'star_profiles', desc: 'Lista perfis disponíveis sem expor proxies nem credenciais sensíveis.', tag: 'Leitura' },
-    { name: 'star_start_profile', desc: 'Inicia o perfil no Camoufox e devolve ws_endpoint para BiDi/Playwright.', tag: 'Ciclo' },
-    { name: 'star_stop_profile', desc: 'Finaliza o perfil graciosamente persistindo sessão e cookies no Vault.', tag: 'Ciclo' },
-    { name: 'star_get_tabs', desc: 'Inspeciona títulos e URLs de todas as abas abertas em tempo real.', tag: 'Abas' },
-    { name: 'star_open_tab', desc: 'Abre uma nova aba navegando diretamente para a URL desejada.', tag: 'Abas' },
-    { name: 'star_close_tab', desc: 'Fecha uma aba específica do perfil sem encerrar o navegador.', tag: 'Abas' },
-    { name: 'star_click', desc: 'Executa clique humanizado simulando trajeto de mouse e eventos reais.', tag: 'Ação' },
-    { name: 'star_type', desc: 'Digita texto em inputs/textareas disparando eventos de input e change.', tag: 'Ação' },
-    { name: 'star_scroll', desc: 'Rola a página suavemente com animação na direção desejada.', tag: 'Ação' },
-    { name: 'star_read_content', desc: 'Extrai texto visível, título e URL da página ou elemento especificado.', tag: 'Extração' },
-    { name: 'star_screenshot', desc: 'Captura screenshot em PNG Base64 da aba informada.', tag: 'Visual' },
-    { name: 'star_evaluate', desc: 'Executa código JavaScript arbitrário no contexto da aba selecionada.', tag: 'Script' },
+    {
+      name: 'star_profiles',
+      desc: 'Lista os perfis com ID, Nome e Tags para agentes de IA (com filtro opcional por tag).',
+      tag: 'Leitura / Busca',
+    },
+    {
+      name: 'star_launch_profile',
+      desc: 'Inicia o perfil no motor configurado (AstroFox ou AstroBrowser) e retorna PID, porta de depuração e ws_endpoint (CDP/WebSocket).',
+      tag: 'Execução / Start',
+    },
+    {
+      name: 'star_stop_profile',
+      desc: 'Finaliza o perfil graciosamente, fechando o processo do navegador e persistindo a sessão e cookies no Star Vault.',
+      tag: 'Ciclo / Stop',
+    },
   ];
 
   const handleCopySnippet = () => {
-    navigator.clipboard.writeText(clientConfigs[selectedClient].json);
+    const rawJson = clientConfigs[selectedClient].json;
+    // Se a chave estiver oculta/com blur, a chave vai no estado de vazia!
+    const textToCopy = sanitizeCodeForCopy(rawJson, activeToken, showToken);
+    navigator.clipboard.writeText(textToCopy);
     setCopiedSnippet(true);
     setTimeout(() => setCopiedSnippet(false), 2000);
-  };
-
-  const handleRunTest = async () => {
-    setIsTesting(true);
-    setTestOutput(null);
-    try {
-      // Executa chamada real no endpoint HTTP direto do MCP
-      const res = await fetch(`http://127.0.0.1:${apiPort}/mcp/${token}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'initialize',
-          params: { protocolVersion: '2024-11-05', capabilities: {} },
-        }),
-      });
-
-      const json = await res.json();
-      setTestOutput(
-        JSON.stringify(
-          {
-            handshake: '200 OK',
-            protocolVersion: '2024-11-05',
-            transport: 'SSE & HTTP Direto',
-            toolsCount: tools.length,
-            server_response: json,
-          },
-          null,
-          2
-        )
-      );
-    } catch (e: any) {
-      setTestOutput(
-        JSON.stringify(
-          {
-            status: 'Falha na conexão',
-            message: e?.message || 'Não foi possível conectar ao backend MCP',
-            dica: `Certifique-se de que o backend Rust está rodando na porta ${apiPort}.`,
-          },
-          null,
-          2
-        )
-      );
-    } finally {
-      setIsTesting(false);
-    }
   };
 
   return (
     <div className="space-y-5">
       {/* Top Connection Card */}
-      <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 md:p-6 shadow-sm shadow-slate-200/50 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h3 className="text-[16px] font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Bot size={18} className="text-emerald-600 dark:text-[#00FF66]" />
-              Conectar Qualquer IA ou IDE (Protocolo MCP 2024-11-05)
-            </h3>
-            <p className="text-[12px] text-slate-600 dark:text-[#A6A6A6] mt-0.5">
-              Controle nativo do Camoufox diretamente via chat no Cursor, Claude, Antigravity, VS Code, Windsurf e Cline.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleRunTest}
-            disabled={isTesting}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 dark:bg-[#1F212D] dark:hover:bg-[#282B3A] dark:border-white/15 dark:text-[#00FF66] text-[12px] font-bold transition-all shrink-0 active:scale-95 disabled:opacity-50 cursor-pointer"
-          >
-            <Play size={13} className={isTesting ? 'animate-spin' : ''} />
-            <span>{isTesting ? 'Testando Handshake...' : 'Testar Conexão MCP'}</span>
-          </button>
+      <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 md:p-6 shadow-sm dark:shadow-none space-y-4">
+        <div>
+          <h3 className="text-[16px] font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Bot size={18} className="text-emerald-600 dark:text-[#00FF66]" />
+            Conectar Qualquer IA ou IDE (Protocolo MCP 2024-11-05)
+          </h3>
+          <p className="text-[12px] text-slate-600 dark:text-[#A6A6A6] mt-0.5">
+            Controle nativo do Star Multlogin (AstroFox & AstroBrowser) diretamente via chat no Cursor, Claude, Antigravity, VS Code, Windsurf e Cline.
+          </p>
         </div>
 
         {/* Client selector tabs */}
@@ -256,12 +210,13 @@ export const McpTab: React.FC<McpTabProps> = ({
         {/* Snippet box */}
         <div className="relative group">
           <pre className="bg-slate-900 dark:bg-[#0C0D12] border border-slate-800 dark:border-white/10 rounded-xl p-4 text-[12px] font-mono text-slate-100 dark:text-[#EDEDED] overflow-x-auto max-h-[220px] shadow-inner">
-            {clientConfigs[selectedClient].json}
+            {renderCodeWithKeyBlur(clientConfigs[selectedClient].json, activeToken, showToken, onRevealKey)}
           </pre>
           <button
             type="button"
             onClick={handleCopySnippet}
             className="absolute top-2.5 right-2.5 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 dark:bg-[#1E202B] dark:hover:bg-[#282B3A] dark:text-[#00FF66] text-[11px] font-bold border border-slate-700 dark:border-white/10 transition-all cursor-pointer shadow-xs"
+            title={showToken ? "Copiar Config" : "Copiar Config (Chave vazia enquanto oculta)"}
           >
             {copiedSnippet ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
             <span>{copiedSnippet ? 'Copiado!' : 'Copiar Config'}</span>
@@ -272,29 +227,12 @@ export const McpTab: React.FC<McpTabProps> = ({
         <div className="text-[11px] text-slate-500 dark:text-[#A6A6A6]">
           Onde configurar: <code className="text-slate-800 dark:text-white font-mono bg-slate-100 dark:bg-[#181922] border border-slate-200 dark:border-white/10 px-2 py-0.5 rounded">{clientConfigs[selectedClient].pathText}</code>
         </div>
-
-        {/* Test Result Preview */}
-        {testOutput && (
-          <div className="pt-3 border-t border-slate-200 dark:border-white/10 space-y-1.5 animate-fadeIn">
-            <div className="flex items-center justify-between text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={13} /> Resposta do Servidor MCP:
-              </span>
-              <button onClick={() => setTestOutput(null)} className="text-slate-400 hover:text-slate-700 dark:text-[#8E8E93] dark:hover:text-white text-[10px] cursor-pointer">
-                Fechar
-              </button>
-            </div>
-            <pre className="bg-slate-900 dark:bg-[#08090C] border border-slate-800 dark:border-white/10 rounded-xl p-3 text-[11px] font-mono text-slate-200 dark:text-[#DCDCDC] overflow-x-auto shadow-inner">
-              {testOutput}
-            </pre>
-          </div>
-        )}
       </div>
 
       {/* Two clean columns: Prompts & Allowed Tools */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Column 1: Prompts */}
-        <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-3">
+        <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none space-y-3">
           <h4 className="text-[13px] font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
             <Sparkles size={15} className="text-emerald-600 dark:text-[#00FF66]" />
             O Que Pedir Para a IA no Chat:
@@ -302,10 +240,8 @@ export const McpTab: React.FC<McpTabProps> = ({
           <div className="space-y-2">
             {[
               '"Quais perfis estão disponíveis no Star Multlogin?"',
-              '"Inicie o perfil da Shopee e abra a página inicial."',
-              '"Quais abas estão abertas no perfil e qual o título da atual?"',
-              '"Clique no botão de login com seletor button#submit e me avise."',
-              '"Capture uma screenshot da página atual para eu verificar."',
+              '"Inicie o perfil de ID prf_shopee_01 pelo Star Driver."',
+              '"Finalize o perfil prf_shopee_01 e salve a sessão no Vault."',
             ].map((prompt, idx) => (
               <div
                 key={idx}
@@ -321,11 +257,11 @@ export const McpTab: React.FC<McpTabProps> = ({
         </div>
 
         {/* Column 2: Allowed Tools */}
-        <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-3">
+        <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-[13px] font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
               <Code2 size={15} className="text-emerald-600 dark:text-[#00FF66]" />
-              Ferramentas Nativas do Camoufox (MCP Tools):
+              Ferramentas Star Driver (MCP Tools):
             </h4>
             <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20">
               {tools.length} ativas

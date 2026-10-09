@@ -17,7 +17,6 @@ use crate::extraction_session::{
 use crate::launcher::engine::injection::{
     clear_profile_cookies as clear_cookies_engine,
     clear_profile_storage as clear_storage_engine,
-    inject_cookies,
 };
 use crate::service_database::{ProfileStorage, SessionService};
 
@@ -34,11 +33,33 @@ pub async fn get_profile_cookies(
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let profile_dir = storage.get_profile_dir(&id);
     let cookie_db = profile_dir.join("cookies.sqlite");
+    let chromium_cookie_db = profile_dir.join("Default").join("Cookies");
+    let chromium_net_cookie_db = profile_dir.join("Default").join("Network").join("Cookies");
 
     if cookie_db.exists() {
         match extract_cookies(&profile_dir) {
             Ok(stats) => return Ok(Json(stats)),
             Err(err) => return Err((StatusCode::INTERNAL_SERVER_ERROR, err)),
+        }
+    } else if chromium_cookie_db.exists() || chromium_net_cookie_db.exists() {
+        let engine = crate::browser::engines::get_engine("AstroBrowser");
+        if let Ok(session) = engine.extract_session(&profile_dir) {
+            let mut domain_counts: HashMap<String, usize> = HashMap::new();
+            for cookie in &session.cookies {
+                *domain_counts.entry(cookie.domain.clone()).or_insert(0) += 1;
+            }
+
+            let mut domains: Vec<DomainSummary> = domain_counts
+                .into_iter()
+                .map(|(domain, count)| DomainSummary { domain, count })
+                .collect();
+            domains.sort_by(|a, b| b.count.cmp(&a.count).then_with(|| a.domain.cmp(&b.domain)));
+
+            return Ok(Json(CookieStats {
+                total_count: session.cookies.len(),
+                domains,
+                cookies: session.cookies,
+            }));
         }
     }
 
@@ -100,11 +121,18 @@ pub async fn get_profile_session(
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let profile_dir = storage.get_profile_dir(&id);
     let cookie_db = profile_dir.join("cookies.sqlite");
+    let chromium_cookie_db = profile_dir.join("Default").join("Cookies");
+    let chromium_net_cookie_db = profile_dir.join("Default").join("Network").join("Cookies");
 
     if cookie_db.exists() {
         match extract_unified_session(&profile_dir) {
             Ok(session) => return Ok(Json(session)),
             Err(err) => return Err((StatusCode::INTERNAL_SERVER_ERROR, err)),
+        }
+    } else if chromium_cookie_db.exists() || chromium_net_cookie_db.exists() {
+        let engine = crate::browser::engines::get_engine("AstroBrowser");
+        if let Ok(session) = engine.extract_session(&profile_dir) {
+            return Ok(Json(session));
         }
     }
 
@@ -127,12 +155,18 @@ pub async fn import_profile_cookies(
         Err(err) => return Err((StatusCode::BAD_REQUEST, err)),
     };
 
+    let profile = storage
+        .get(&id)
+        .ok_or_else(|| (StatusCode::NOT_FOUND, "Perfil não encontrado".to_string()))?;
+
     let profile_dir = storage.get_profile_dir(&id);
     let session_svc = SessionService::new(storage.vault().clone());
 
-    // 1. Injeta nos arquivos do Camoufox (se a pasta existir ou estiver aberto)
+    // 1. Injeta nos arquivos do motor correspondente (Camoufox ou Clearcote)
     let _ = std::fs::create_dir_all(&profile_dir);
-    let import_res = inject_cookies(&profile_dir, &parsed_cookies)
+    let engine = crate::browser::engines::get_engine(&profile.kernel);
+    let import_res = engine
+        .inject_session(&profile_dir, &parsed_cookies)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     // 2. Persiste de forma atômica e criptografada no Star Vault
@@ -159,7 +193,16 @@ pub async fn clear_profile_cookies(
     Path(id): Path<String>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let profile_dir = storage.get_profile_dir(&id);
-    let deleted = clear_cookies_engine(&profile_dir).unwrap_or(0);
+    let profile = storage.get(&id);
+    let kernel = profile.map(|p| p.kernel).unwrap_or_else(|| "AstroFox".to_string());
+
+    let deleted = if kernel == "AstroBrowser" {
+        let _ = std::fs::remove_file(profile_dir.join("Default").join("Cookies"));
+        let _ = std::fs::remove_file(profile_dir.join("Default").join("Network").join("Cookies"));
+        0
+    } else {
+        clear_cookies_engine(&profile_dir).unwrap_or(0)
+    };
 
     let session_svc = SessionService::new(storage.vault().clone());
     if let Ok(Some(mut session)) = session_svc.load_session(&id) {

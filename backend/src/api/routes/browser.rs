@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use axum::{
-    extract::State,
+    extract::{Query, State},
     http::StatusCode,
     response::IntoResponse,
     Json,
@@ -8,7 +8,8 @@ use axum::{
 use serde::{Deserialize, Serialize};
 
 use crate::browser_downloader::{
-    platform, BrowserDownloadService, BrowserManifest, DownloadStatus, EngineHealthStatus,
+    detector, platform, BrowserDownloadService, BrowserManifest, DownloadStatus, EngineHealthStatus,
+    EngineKind,
 };
 
 #[derive(Clone)]
@@ -17,9 +18,18 @@ pub struct BrowserRouteState {
     pub data_dir: std::path::PathBuf,
 }
 
+#[derive(Deserialize, Default)]
+pub struct DownloadQuery {
+    pub engine: Option<String>,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct BrowserStatusResponse {
     pub health: EngineHealthStatus,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub health_clearcote: Option<EngineHealthStatus>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub health_camoufox: Option<EngineHealthStatus>,
     pub download: DownloadStatus,
     pub platform: String,
     pub os_name: String,
@@ -36,8 +46,14 @@ pub struct GenericMessageResponse {
 /// GET /api/browser/status
 pub async fn get_browser_status(
     State(state): State<BrowserRouteState>,
+    Query(query): Query<DownloadQuery>,
 ) -> impl IntoResponse {
-    let (health, download) = state.service.get_status().await;
+    let req_engine = query.engine.as_deref().and_then(EngineKind::from_str);
+    let (health, download) = match req_engine {
+        Some(eng) => state.service.get_engine_status(eng).await,
+        None => state.service.get_status().await,
+    };
+
     let platform = platform::get_current_platform_key().unwrap_or_else(|_| "unknown".to_string());
     let os_name = platform::get_os_display_name().to_string();
 
@@ -57,8 +73,13 @@ pub async fn get_browser_status(
         None => true,
     };
 
+    let health_clearcote = Some(detector::check_clearcote_health(&state.data_dir));
+    let health_camoufox = Some(detector::check_engine_health(&state.data_dir));
+
     Json(BrowserStatusResponse {
         health,
+        health_clearcote,
+        health_camoufox,
         download,
         platform,
         os_name,
@@ -70,20 +91,27 @@ pub async fn get_browser_status(
 /// POST /api/browser/download
 pub async fn trigger_browser_download(
     State(state): State<BrowserRouteState>,
+    Query(query): Query<DownloadQuery>,
 ) -> impl IntoResponse {
-    match state.service.start_download().await {
+    let engine = query
+        .engine
+        .as_deref()
+        .and_then(EngineKind::from_str)
+        .unwrap_or(EngineKind::Clearcote);
+
+    match state.service.start_download_engine(engine).await {
         Ok(_) => (
             StatusCode::OK,
             Json(GenericMessageResponse {
                 success: true,
-                message: "Download do motor iniciado com sucesso.".to_string(),
+                message: format!("Download do motor '{}' iniciado com sucesso.", engine.as_str()),
             }),
         ),
         Err(err) => (
             StatusCode::CONFLICT,
             Json(GenericMessageResponse {
                 success: false,
-                message: err,
+                message: err.to_string(),
             }),
         ),
     }
@@ -97,7 +125,7 @@ pub async fn get_browser_manifest(
         Ok(manifest) => (StatusCode::OK, Json(manifest)).into_response(),
         Err(err) => (
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(serde_json::json!({ "error": err })),
+            Json(serde_json::json!({ "error": err.to_string() })),
         )
             .into_response(),
     }

@@ -1,5 +1,6 @@
 import React from 'react';
-import { getRandomPreset } from '@/services/camoufox-presets';
+import { getRandomPreset } from '@/services/navegador-presets';
+import { generateDeviceName, generateMacAddress } from './impressoes';
 
 interface PreviasProps {
   formData: any;
@@ -8,7 +9,9 @@ interface PreviasProps {
 
 export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   const handleRegenerateFingerprint = () => {
-    const preset = getRandomPreset(formData.os);
+    const currentOs = formData.os || 'windows';
+    const currentKernel = formData.kernel || 'AstroFox';
+    const preset = getRandomPreset(currentOs, currentKernel);
 
     onChange('userAgent', preset.userAgent);
     onChange('platform', preset.platform);
@@ -25,6 +28,18 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
     onChange('webglSeed', preset.webglSeed);
     onChange('audioSeed', preset.audioSeed);
     onChange('clientRectsSeed', preset.clientRectsSeed);
+    if (preset.deviceMemory) {
+      onChange('deviceMemory', preset.deviceMemory);
+    }
+    if (preset.userAgentData) {
+      onChange('userAgentData', preset.userAgentData);
+    }
+    if (preset.kernelVersion) {
+      onChange('kernelVersion', preset.kernelVersion);
+    }
+    onChange('deviceName', generateDeviceName(currentOs));
+    onChange('macAddress', generateMacAddress(currentOs));
+    onChange('screenResolution', 'Com base no User-Agent');
     onChange('mediaDevicesCount', {
       micros: preset.media.mics.length,
       webcams: preset.media.camera ? 1 : 0,
@@ -49,21 +64,20 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   };
 
   const rows = [
-    ...(formData.platformAccounts && formData.platformAccounts.length > 0
+    ...(formData.openTabsUrls && formData.openTabsUrls.trim()
       ? [
-          {
-            label: 'Plataforma',
-            value: formData.platformAccounts
-              .map((a: any) =>
-                a.platform === 'other' ? a.customDomain || 'Outro' : a.platform,
-              )
-              .join(', '),
-          },
-        ]
+        {
+          label: 'Abas Específicas',
+          value: formData.openTabsUrls.split('\n')[0].trim(),
+          isMono: true,
+        },
+      ]
       : []),
     {
       label: 'Browser Kernel',
-      value: `${formData.kernel || 'AstroFox'} [Firefox ${formData.kernelVersion || '150'}]`,
+      value: formData.kernel === 'AstroBrowser'
+        ? `AstroBrowser [Chromium ${formData.kernelVersion || '150'}]`
+        : `AstroFox [Firefox ${formData.kernelVersion || '150'}]`,
     },
     {
       label: 'Sistema / Arquitetura',
@@ -103,11 +117,13 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
     },
     {
       label: 'Resolução do Ecrã',
-      value: `${formData.customScreenWidth || 1920} × ${formData.customScreenHeight || 1080} (DPR ${formData.devicePixelRatio || 1})`,
+      value: `${formData.screenResolution || `${formData.customScreenWidth || 1920} × ${formData.customScreenHeight || 1080}`} (DPR ${formData.devicePixelRatio || 1})`,
     },
     {
       label: 'Metadados WebGL',
-      value: `${formData.webglRenderer || 'Intel(R) HD Graphics'} (${formData.webglVendor || 'Google Inc.'})`,
+      value: formData.webglMetadataMode === 'default'
+        ? 'Predefinição'
+        : `${formData.webglRenderer || 'Intel(R) HD Graphics'} (${formData.webglVendor || 'Google Inc.'})`,
     },
     {
       label: 'CPU / Processador',
@@ -124,6 +140,15 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
     {
       label: 'RAM',
       value: `${formData.ramGb || 8} GB`,
+    },
+    {
+      label: 'Nome do dispositivo',
+      value: formData.deviceNameMode === 'default' ? 'Predefinição' : formData.deviceName || 'Gerado automaticamente',
+    },
+    {
+      label: 'MAC Address',
+      value: formData.macAddressMode === 'default' ? 'Predefinição' : formData.macAddress || 'Gerado automaticamente',
+      isMono: true,
     },
     {
       label: 'Canvas',
@@ -182,18 +207,18 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   ];
 
   return (
-    <div className="flex w-full shrink-0 flex-col justify-between rounded-xl border border-slate-200 dark:border-[#333540] bg-slate-50 dark:bg-[#212228] p-5 shadow-sm shadow-slate-200/50 dark:shadow-lg lg:sticky lg:top-0 lg:w-[370px]">
-      <div>
+    <div className="flex h-[calc(100vh-215px)] max-h-[850px] min-h-[500px] w-full flex-col justify-between rounded-xl border border-slate-200 dark:border-[#333540] bg-slate-50 dark:bg-[#212228] p-5 shadow-sm dark:shadow-none overflow-hidden">
+      <div className="flex flex-1 min-h-0 flex-col">
         {/* Header do card com título e botão New fingerprint */}
-        <div className="mb-3.5 flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E38] pb-3.5">
+        <div className="mb-3.5 shrink-0 flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E38] pb-3.5">
           <h3 className="text-[14px] font-semibold tracking-wide text-slate-900 dark:text-[#E5E7EB]">
-            Visão Geral (Camoufox)
+            Visão Geral ({formData.kernel === 'AstroBrowser' ? 'AstroBrowser' : 'AstroFox'})
           </h3>
           <button
             type="button"
             onClick={handleRegenerateFingerprint}
             className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-medium text-emerald-600 hover:text-emerald-700 dark:text-[#00FF66] transition-colors dark:hover:text-[#00FF66]/80"
-            title="Sorteia uma máquina real completa do catálogo oficial do Camoufox"
+            title="Sorteia uma máquina real completa do catálogo oficial"
           >
             {/* Ícone Shuffle */}
             <svg
@@ -215,19 +240,19 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
           </button>
         </div>
 
-        {/* Lista de parâmetros chave-valor com scroll sutil */}
-        <div className="max-h-[calc(100vh-220px)] space-y-2.5 overflow-y-auto pr-1 text-[11.5px]">
+        {/* Lista de parâmetros chave-valor com scroll sutil e quebra de linha fluida (sem scroll horizontal) */}
+        <div className="flex-1 min-h-0 space-y-3 overflow-y-auto overflow-x-hidden pr-1.5 text-[12.5px] scrollbar-thin overscroll-contain">
           {rows.map((row, idx) => (
             <div
               key={idx}
-              className="grid grid-cols-[125px_1fr] items-start gap-2 leading-[1.35]"
+              className="grid grid-cols-[130px_minmax(0,1fr)] items-start gap-2.5 leading-snug"
             >
-              <span className="font-normal text-slate-500 dark:text-[#8E92A2] select-none">
+              <span className="shrink-0 font-normal text-slate-500 dark:text-[#8E92A2] select-none text-[12px]">
                 {row.label}
               </span>
               <span
-                className={`text-right leading-tight font-normal break-words text-slate-800 dark:text-[#D3D6E0] ${
-                  row.isMono ? 'font-mono text-[10.5px] opacity-90' : ''
+                className={`min-w-0 text-right leading-snug font-normal break-words [overflow-wrap:anywhere] text-slate-800 dark:text-[#D3D6E0] ${
+                  row.isMono ? 'font-mono text-[11.5px] opacity-90' : 'text-[12.5px]'
                 }`}
               >
                 {row.value}
@@ -238,7 +263,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       </div>
 
       {/* Rodapé da prévia */}
-      <div className="mt-6 border-t border-slate-200 dark:border-[#2C2E38] pt-4 text-[11px] text-slate-500 dark:text-[#8E92A2]">
+      <div className="mt-4 shrink-0 border-t border-slate-200 dark:border-[#2C2E38] pt-3 text-[11px] text-slate-500 dark:text-[#8E92A2]">
         Presets oficiais carregados de{' '}
         <span className="font-medium text-emerald-600 dark:text-[#00FF66]">
           backend/presets
@@ -248,3 +273,5 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
     </div>
   );
 };
+
+export default Previas;

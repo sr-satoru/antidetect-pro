@@ -6,7 +6,23 @@ use std::collections::HashMap;
 use std::sync::LazyLock;
 
 static PRESETS_V150: LazyLock<HashMap<String, Vec<Value>>> = LazyLock::new(|| {
-    let json_str = include_str!("../../../presets/fingerprint-presets-v150.json");
+    let json_str = include_str!("../../../presets/firefox/fingerprint-presets-v150.json");
+    let val: Value = serde_json::from_str(json_str).unwrap_or(Value::Null);
+    if let Some(obj) = val.get("presets").and_then(|p| p.as_object()) {
+        let mut map = HashMap::new();
+        for (k, v) in obj {
+            if let Some(arr) = v.as_array() {
+                map.insert(k.clone(), arr.clone());
+            }
+        }
+        map
+    } else {
+        HashMap::new()
+    }
+});
+
+static CHROMIUM_PRESETS: LazyLock<HashMap<String, Vec<Value>>> = LazyLock::new(|| {
+    let json_str = include_str!("../../../presets/chromium/fingerprint-presets.json");
     let val: Value = serde_json::from_str(json_str).unwrap_or(Value::Null);
     if let Some(obj) = val.get("presets").and_then(|p| p.as_object()) {
         let mut map = HashMap::new();
@@ -22,23 +38,24 @@ static PRESETS_V150: LazyLock<HashMap<String, Vec<Value>>> = LazyLock::new(|| {
 });
 
 static ESSENTIAL_FONTS: LazyLock<HashMap<String, Vec<String>>> = LazyLock::new(|| {
-    let json_str = include_str!("../../../presets/essential-fonts.json");
+    let json_str = include_str!("../../../presets/firefox/essential-fonts.json");
     serde_json::from_str(json_str).unwrap_or_default()
 });
 
 static ALL_FONTS: LazyLock<HashMap<String, Vec<String>>> = LazyLock::new(|| {
-    let json_str = include_str!("../../../presets/fonts.json");
+    let json_str = include_str!("../../../presets/firefox/fonts.json");
     serde_json::from_str(json_str).unwrap_or_default()
 });
 
 static MEDIA_DEVICES: LazyLock<Value> = LazyLock::new(|| {
-    let json_str = include_str!("../../../presets/media-devices.json");
+    let json_str = include_str!("../../../presets/common/media-devices.json");
     serde_json::from_str(json_str).unwrap_or(Value::Null)
 });
 
 #[derive(Debug, Deserialize)]
 pub struct OsQuery {
     pub os: Option<String>,
+    pub kernel: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -69,7 +86,12 @@ fn normalize_os(os: Option<&str>) -> &'static str {
     }
 }
 
-fn map_preset_value(os: &str, raw: &Value) -> CoherentPresetDto {
+fn is_chromium_kernel(kernel: Option<&str>) -> bool {
+    let k = kernel.unwrap_or("").trim().to_lowercase();
+    k.contains("astrobrowser") || k.contains("chrom") || k.contains("blink") || k.contains("clear")
+}
+
+fn map_preset_value(os: &str, raw: &Value, is_chromium: bool) -> CoherentPresetDto {
     let nav = raw.get("navigator");
     let screen = raw.get("screen");
     let webgl = raw.get("webgl");
@@ -78,10 +100,18 @@ fn map_preset_value(os: &str, raw: &Value) -> CoherentPresetDto {
     let ua = nav
         .and_then(|n| n.get("userAgent"))
         .and_then(|v| v.as_str())
-        .unwrap_or(match os {
-            "windows" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0",
-            "macos" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:150.0) Gecko/20100101 Firefox/150.0",
-            _ => "Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0",
+        .unwrap_or(if is_chromium {
+            match os {
+                "windows" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.7871.114 Safari/537.36",
+                "macos" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.7871.114 Safari/537.36",
+                _ => "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.7871.114 Safari/537.36",
+            }
+        } else {
+            match os {
+                "windows" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:150.0) Gecko/20100101 Firefox/150.0",
+                "macos" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:150.0) Gecko/20100101 Firefox/150.0",
+                _ => "Mozilla/5.0 (X11; Linux x86_64; rv:150.0) Gecko/20100101 Firefox/150.0",
+            }
         })
         .to_string();
 
@@ -196,37 +226,51 @@ fn map_preset_value(os: &str, raw: &Value) -> CoherentPresetDto {
     }
 }
 
-/// GET /api/fingerprints/random?os=windows
+/// GET /api/fingerprints/random?os=windows&kernel=AstroBrowser
 pub async fn get_random_preset(Query(query): Query<OsQuery>) -> impl IntoResponse {
     let os = normalize_os(query.os.as_deref());
+    let is_chrom = is_chromium_kernel(query.kernel.as_deref());
     let mut rng = rand::thread_rng();
 
-    if let Some(presets) = PRESETS_V150.get(os) {
+    let presets_source = if is_chrom {
+        &*CHROMIUM_PRESETS
+    } else {
+        &*PRESETS_V150
+    };
+
+    if let Some(presets) = presets_source.get(os) {
         if let Some(picked) = presets.choose(&mut rng) {
-            return Json(map_preset_value(os, picked)).into_response();
+            return Json(map_preset_value(os, picked, is_chrom)).into_response();
         }
     }
 
     // Caso o array esteja vazio por algum motivo, gera fallback coerente
-    Json(map_preset_value(os, &Value::Null)).into_response()
+    Json(map_preset_value(os, &Value::Null, is_chrom)).into_response()
 }
 
-/// GET /api/fingerprints/presets?os=windows
+/// GET /api/fingerprints/presets?os=windows&kernel=AstroBrowser
 pub async fn list_presets(Query(query): Query<OsQuery>) -> impl IntoResponse {
+    let is_chrom = is_chromium_kernel(query.kernel.as_deref());
+    let presets_source = if is_chrom {
+        &*CHROMIUM_PRESETS
+    } else {
+        &*PRESETS_V150
+    };
+
     if let Some(requested_os) = query.os {
         let os = normalize_os(Some(&requested_os));
-        let list: Vec<CoherentPresetDto> = PRESETS_V150
+        let list: Vec<CoherentPresetDto> = presets_source
             .get(os)
-            .map(|arr| arr.iter().map(|item| map_preset_value(os, item)).collect())
+            .map(|arr| arr.iter().map(|item| map_preset_value(os, item, is_chrom)).collect())
             .unwrap_or_default();
         return Json(list).into_response();
     }
 
     // Todos os presets organizados por SO
     let mut all: Vec<CoherentPresetDto> = Vec::new();
-    for (os, arr) in PRESETS_V150.iter() {
+    for (os, arr) in presets_source.iter() {
         for item in arr {
-            all.push(map_preset_value(os, item));
+            all.push(map_preset_value(os, item, is_chrom));
         }
     }
     Json(all).into_response()

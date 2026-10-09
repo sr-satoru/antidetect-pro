@@ -59,7 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
               </div>
               <div className="flex flex-col leading-tight min-w-0">
                 <span className="font-bold text-[14px] tracking-tight text-slate-900 dark:text-white truncate">
-                  AstroFox888
+                  Super Star
                 </span>
                 <span className="text-[9.5px] uppercase tracking-wider font-semibold text-slate-400 dark:text-[#7C8092] truncate">
                   Multilogin

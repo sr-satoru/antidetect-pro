@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
-import { Key, Copy, Check, Eye, EyeOff, RefreshCw, ShieldCheck, Lock, Globe } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Key, Copy, Check, Eye, EyeOff, ShieldCheck, Lock, Globe } from 'lucide-react';
+import { BACKEND_PORT } from '@/services/http';
+import { serviceMcp } from '@/services/mcp/service.mcp';
 
 interface TokenBarProps {
   apiPort?: number;
   token?: string;
-  onRefreshToken?: () => void;
 }
 
 export const TokenBar: React.FC<TokenBarProps> = ({
-  apiPort = 18922,
-  token = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
-  onRefreshToken,
+  apiPort = BACKEND_PORT,
+  token: propToken,
 }) => {
+  const [token, setToken] = useState<string>(propToken || serviceMcp.getCachedToken());
   const [showToken, setShowToken] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
+
+  useEffect(() => {
+    if (propToken) {
+      setToken(propToken);
+    } else {
+      serviceMcp.getInfo()
+        .then((res) => {
+          if (res?.token) setToken(res.token);
+        })
+        .catch(() => {});
+    }
+  }, [propToken]);
 
   const baseUrl = `http://127.0.0.1:${apiPort}`;
 
@@ -31,7 +44,7 @@ export const TokenBar: React.FC<TokenBarProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm shadow-slate-200/50 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4 transition-all">
+    <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none space-y-4 transition-all">
       {/* Top row: Title and Security Badges */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-white/10">
         <div className="flex items-center gap-3">
@@ -117,16 +130,6 @@ export const TokenBar: React.FC<TokenBarProps> = ({
               >
                 {copiedToken ? <Check size={15} className="text-emerald-600 dark:text-emerald-400" /> : <Copy size={15} />}
               </button>
-              {onRefreshToken && (
-                <button
-                  type="button"
-                  onClick={onRefreshToken}
-                  className="p-1.5 text-slate-400 hover:text-amber-600 dark:text-[#B0B0B0] dark:hover:text-amber-400 hover:bg-slate-200/60 dark:hover:bg-[#1E202B] rounded-lg transition-all ml-1 border-l border-slate-200 dark:border-white/10 pl-2 cursor-pointer"
-                  title="Gerar novo token"
-                >
-                  <RefreshCw size={15} />
-                </button>
-              )}
             </div>
           </div>
         </div>

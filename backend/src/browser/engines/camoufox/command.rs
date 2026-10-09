@@ -1,7 +1,4 @@
-pub mod common;
-pub mod linux;
-pub mod macos;
-pub mod windows;
+use super::{linux, macos, windows};
 
 use std::path::Path;
 use tracing::info;

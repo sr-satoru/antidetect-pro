@@ -48,7 +48,7 @@ async fn test_import_extensions_mode_none() {
     };
 
     let client = reqwest::Client::new();
-    let result = import_profile_extensions(&profile, &temp_dir, &temp_dir, &client).await.unwrap();
+    let result = import_profile_extensions(&profile, &temp_dir, &temp_dir, &client, "camoufox").await.unwrap();
     assert!(result.is_empty());
 
     let _ = fs::remove_dir_all(&temp_dir);
@@ -110,7 +110,42 @@ async fn test_import_extensions_fallback_enrichment() {
         .timeout(std::time::Duration::from_millis(500))
         .build()
         .unwrap_or_default();
-    let _ = import_profile_extensions(&profile, &temp_dir, &temp_dir, &client).await;
+    let _ = import_profile_extensions(&profile, &temp_dir, &temp_dir, &client, "camoufox").await;
 
     let _ = fs::remove_dir_all(&temp_dir);
+}
+
+#[test]
+fn test_cws_id_extraction() {
+    use star_multlogin_backend::extensions::universal::extract_cws_id;
+    assert_eq!(
+        extract_cws_id("https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh"),
+        Some("eimadpbcbfnmbkopoojfekhnkhdbieeh".to_string())
+    );
+    assert_eq!(
+        extract_cws_id("https://chrome.google.com/webstore/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?hl=pt"),
+        Some("ddkjiahejlhfcafbddmgiahcphecmpfh".to_string())
+    );
+    assert_eq!(
+        extract_cws_id("eimadpbcbfnmbkopoojfekhnkhdbieeh"),
+        Some("eimadpbcbfnmbkopoojfekhnkhdbieeh".to_string())
+    );
+    assert_eq!(extract_cws_id("invalid-id"), None);
+}
+
+#[test]
+fn test_find_zip_offset() {
+    use star_multlogin_backend::extensions::universal::find_zip_offset;
+    // Padrão ZIP nativo
+    let zip_bytes = b"PK\x03\x04restofdata";
+    assert_eq!(find_zip_offset(zip_bytes), Some(0));
+
+    // CRX3 simulado com cabeçalho
+    let mut crx3_data = Vec::new();
+    crx3_data.extend_from_slice(b"Cr24");
+    crx3_data.extend_from_slice(&3u32.to_le_bytes()); // version 3
+    crx3_data.extend_from_slice(&8u32.to_le_bytes()); // header size = 8
+    crx3_data.extend_from_slice(b"12345678"); // 8 bytes protobuf
+    crx3_data.extend_from_slice(b"PK\x03\x04zipcontent");
+    assert_eq!(find_zip_offset(&crx3_data), Some(20)); // 12 + 8
 }

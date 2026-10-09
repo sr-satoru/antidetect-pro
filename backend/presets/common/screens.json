@@ -1,0 +1,125 @@
+[
+  {
+    "id": "1080p",
+    "label": "1920 × 1080 (Full HD • Mais comum mundialmente)",
+    "width": 1920,
+    "height": 1080,
+    "aspectRatio": "16:9",
+    "defaultDpr": 1.0,
+    "supportedDpr": [
+      1.0,
+      1.25
+    ],
+    "category": "desktop",
+    "popularity": 0.4
+  },
+  {
+    "id": "laptop_hd",
+    "label": "1366 × 768 (HD Básico • Laptops tradicionais)",
+    "width": 1366,
+    "height": 768,
+    "aspectRatio": "16:9",
+    "defaultDpr": 1.0,
+    "supportedDpr": [
+      1.0
+    ],
+    "category": "laptop",
+    "popularity": 0.18
+  },
+  {
+    "id": "laptop_fhd_scaled",
+    "label": "1536 × 864 (Laptop 1080p com Escala 125%)",
+    "width": 1536,
+    "height": 864,
+    "aspectRatio": "16:9",
+    "defaultDpr": 1.25,
+    "supportedDpr": [
+      1.25
+    ],
+    "category": "laptop",
+    "popularity": 0.12
+  },
+  {
+    "id": "2k_qhd",
+    "label": "2560 × 1440 (2K QHD • Monitores Gamers)",
+    "width": 2560,
+    "height": 1440,
+    "aspectRatio": "16:9",
+    "defaultDpr": 1.0,
+    "supportedDpr": [
+      1.0,
+      1.25,
+      1.5
+    ],
+    "category": "desktop",
+    "popularity": 0.1
+  },
+  {
+    "id": "mac_16_10",
+    "label": "1440 × 900 (WXGA+ • MacBooks e Monitores 16:10)",
+    "width": 1440,
+    "height": 900,
+    "aspectRatio": "16:10",
+    "defaultDpr": 1.0,
+    "supportedDpr": [
+      1.0,
+      2.0
+    ],
+    "category": "laptop",
+    "popularity": 0.06
+  },
+  {
+    "id": "wsxga_plus",
+    "label": "1680 × 1050 (WSXGA+ • Proporção 16:10)",
+    "width": 1680,
+    "height": 1050,
+    "aspectRatio": "16:10",
+    "defaultDpr": 1.0,
+    "supportedDpr": [
+      1.0,
+      2.0
+    ],
+    "category": "desktop",
+    "popularity": 0.04
+  },
+  {
+    "id": "hd_plus",
+    "label": "1600 × 900 (HD+ • Monitores 20 polegadas)",
+    "width": 1600,
+    "height": 900,
+    "aspectRatio": "16:9",
+    "defaultDpr": 1.0,
+    "supportedDpr": [
+      1.0
+    ],
+    "category": "desktop",
+    "popularity": 0.03
+  },
+  {
+    "id": "4k_uhd",
+    "label": "3840 × 2160 (4K UHD • Altíssima Definição)",
+    "width": 3840,
+    "height": 2160,
+    "aspectRatio": "16:9",
+    "defaultDpr": 1.5,
+    "supportedDpr": [
+      1.5,
+      2.0
+    ],
+    "category": "desktop",
+    "popularity": 0.05
+  },
+  {
+    "id": "hd_720p",
+    "label": "1280 × 720 (HD Standard)",
+    "width": 1280,
+    "height": 720,
+    "aspectRatio": "16:9",
+    "defaultDpr": 1.0,
+    "supportedDpr": [
+      1.0
+    ],
+    "category": "desktop",
+    "popularity": 0.02
+  }
+]

@@ -27,7 +27,7 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-black/85 p-6 backdrop-blur-xs select-none"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-black/85 p-6 select-none"
       onClick={onClose}
     >
       <div

@@ -13,6 +13,12 @@ pub const NONCE_LEN: usize = 12;
 pub const SALT_LEN: usize = 32;
 pub const PBKDF2_ROUNDS: u32 = 100_000;
 
+pub const KEY_LEN: usize = 32;
+
+pub fn vault_key_path(data_dir: &Path) -> PathBuf {
+    data_dir.join(".vault_key")
+}
+
 pub fn vault_salt_path(data_dir: &Path) -> PathBuf {
     data_dir.join(".vault_salt")
 }
@@ -46,10 +52,26 @@ pub fn ensure_vault_salt(data_dir: &Path) -> Result<[u8; SALT_LEN], std::io::Err
     Ok(salt)
 }
 
-/// Deriva uma chave de 256 bits vinculada ao sistema operacional / hardware da máquina
+/// Deriva ou carrega a chave mestra de 256 bits do cofre.
+/// Projetado para ser 100% PORTÁTIL: a chave mestra reside em `.vault_key` dentro do `data_dir`
+/// (no próprio HD/SSD), permitindo desplugar o HD e espetar em qualquer máquina sem perda de acesso.
 pub fn derive_vault_key(data_dir: &Path) -> Result<ProtectedKey, std::io::Error> {
+    let key_file = vault_key_path(data_dir);
+
+    // 1. Se a chave mestra portátil já existe no diretório do HD, carrega diretamente!
+    if let Ok(bytes) = std::fs::read(&key_file) {
+        if bytes.len() == KEY_LEN {
+            let mut raw_key = [0u8; KEY_LEN];
+            raw_key.copy_from_slice(&bytes);
+            return Ok(ProtectedKey::new(raw_key));
+        }
+    }
+
+    // 2. Se a chave portátil ainda não existe no HD:
+    // Garante o salt
     let salt = ensure_vault_salt(data_dir)?;
 
+    // Inicializa a semente compatível com a máquina para preservar dados existentes
     let mut machine_seed = String::new();
 
     #[cfg(target_os = "linux")]
@@ -75,8 +97,22 @@ pub fn derive_vault_key(data_dir: &Path) -> Result<ProtectedKey, std::io::Error>
         machine_seed = "star_secure_vault_hardware_root_seed".to_string();
     }
 
-    let mut raw_key = [0u8; 32];
+    let mut raw_key = [0u8; KEY_LEN];
     pbkdf2_hmac::<Sha256>(machine_seed.as_bytes(), &salt, PBKDF2_ROUNDS, &mut raw_key);
+
+    // Salva a chave de forma definitiva em .vault_key dentro do HD (com permissão restrita 0600)
+    // A partir de agora, ela viaja junto com o HD para qualquer máquina sem depender do host!
+    if let Some(parent) = key_file.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    let _ = std::fs::write(&key_file, &raw_key);
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let perms = std::fs::Permissions::from_mode(0o600);
+        let _ = std::fs::set_permissions(&key_file, perms);
+    }
 
     Ok(ProtectedKey::new(raw_key))
 }

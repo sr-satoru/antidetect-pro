@@ -137,7 +137,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
   if (!isOpen) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 dark:bg-black/70 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 dark:bg-black/70 p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-[680px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/90 overflow-hidden flex flex-col max-h-[85vh]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E3B]/80 px-6 py-4 shrink-0">
@@ -203,7 +203,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         {/* Tabela de Etiquetas */}
         <div className="flex-1 overflow-y-auto">
           {/* Cabeçalho da Tabela */}
-          <div className="flex items-center border-b border-slate-200 dark:border-[#2C2E3B]/70 bg-slate-100/90 dark:bg-[#171821]/80 px-6 py-2.5 text-xs font-semibold text-slate-600 dark:text-[#8E92A2] select-none sticky top-0 z-10 backdrop-blur-xs">
+          <div className="flex items-center border-b border-slate-200 dark:border-[#2C2E3B] bg-slate-100 dark:bg-[#171821] px-6 py-2.5 text-xs font-semibold text-slate-600 dark:text-[#8E92A2] select-none sticky top-0 z-10">
             <div className="w-9 flex items-center justify-center">
               <Checkbox
                 checked={isAllSelected}

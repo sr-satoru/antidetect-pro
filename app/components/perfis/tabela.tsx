@@ -201,7 +201,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             </button>
 
             {isPageDropdownOpen && (
-              <div className="absolute bottom-full right-0 mb-1.5 z-50 min-w-[95px] overflow-hidden rounded-md border border-slate-200 dark:border-[#3E404D] bg-white dark:bg-[#1A1B21] py-1 shadow-lg shadow-slate-200/60 dark:shadow-2xl animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute bottom-full right-0 mb-1.5 z-50 min-w-[95px] overflow-hidden rounded-md border border-slate-200 dark:border-[#3E404D] bg-white dark:bg-[#1A1B21] py-1 shadow-lg shadow-slate-200/60 dark:shadow-2xl dark:shadow-black/80 animate-in fade-in zoom-in-95 duration-100">
                 {['10', '20', '50', '100'].map((size) => (
                   <button
                     key={size}

@@ -114,12 +114,8 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen w-screen flex flex-col bg-[#08090C] text-[#E1E4EA] select-none overflow-x-hidden font-sans">
-      {/* Luzes de ambientação sutis */}
-      <div className="pointer-events-none absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-[#00FF66]/8 blur-[160px]" />
-      <div className="pointer-events-none absolute top-1/2 -right-40 h-[500px] w-[500px] rounded-full bg-white/[0.03] blur-[160px]" />
-
       {/* Header superior da página centralizado */}
-      <header className="relative z-10 w-full h-16 border-b border-[#232530] bg-[#101116]/80 backdrop-blur-md px-6 flex items-center justify-center">
+      <header className="relative z-10 w-full h-16 border-b border-[#232530] bg-[#101116] px-6 flex items-center justify-center">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#00FF66] to-[#00D655] shadow-md shadow-[#00FF66]/20">
             <Star size={18} className="fill-black stroke-black" />
@@ -136,9 +132,7 @@ export const LoginPage: React.FC = () => {
       {/* Conteúdo Principal da Página: Layout 2 Colunas (Formulário na Esquerda com foco prioritário) */}
       <main className="relative z-10 flex-1 max-w-6xl w-full mx-auto px-6 sm:px-10 py-8 sm:py-14 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
         {/* Coluna 1 (Esquerda): Painel de Conexão / Formulário em Primeiro Plano */}
-        <div className="w-full max-w-[430px] rounded-2xl border border-white/20 bg-[#12131A] p-7 sm:p-8 shadow-2xl shadow-black/90 backdrop-blur-xl relative overflow-hidden">
-          {/* Luz de destaque ambiente dentro do card */}
-          <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-[#00FF66]/10 blur-3xl" />
+        <div className="w-full max-w-[430px] rounded-2xl border border-white/15 bg-[#12131A] p-7 sm:p-8 shadow-2xl shadow-black/90 relative overflow-hidden">
 
           {/* Cabeçalho do Card */}
           <div className="flex items-center gap-3.5 mb-6">

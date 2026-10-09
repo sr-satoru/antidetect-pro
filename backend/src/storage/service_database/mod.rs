@@ -1,3 +1,4 @@
+pub mod api_keys;
 pub mod data;
 pub mod extension_categories;
 pub mod profiles;
@@ -5,6 +6,7 @@ pub mod proxies;
 pub mod sessions;
 pub mod tags;
 
+pub use api_keys::ApiKeyService;
 pub use data::Vault;
 pub use extension_categories::ExtensionCategoryService;
 pub use profiles::ProfileService;
@@ -23,4 +25,5 @@ pub type ProxyStorage = ProxyService;
 pub type TagStorage = TagService;
 pub type ExtensionCategoryStorage = ExtensionCategoryService;
 pub type SessionStorage = SessionService;
+pub type ApiKeyStorage = ApiKeyService;
 

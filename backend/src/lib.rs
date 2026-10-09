@@ -15,9 +15,15 @@ pub mod storage;
 pub mod sync;
 pub mod swagger;
 
+#[path = "mcp__publicApi/mod.rs"]
+pub mod mcp_public_api;
+
+#[allow(non_snake_case)]
+pub use mcp_public_api as mcp__publicApi;
+
 // Re-exportações e Aliases para 100% de compatibilidade com testes e rotas existentes
 pub use browser::browser_downloader;
-pub use browser::camoufox;
+pub use browser::engines::camoufox;
 pub use browser::extensions;
 pub use browser::extraction_session;
 pub use browser::fingerprint;
@@ -144,6 +150,7 @@ pub fn build_app_router(
 
     let extension_routes = Router::new()
         .route("/", get(routes::extensions::list_extensions).post(routes::extensions::create_extension))
+        .route("/upload", post(routes::extensions::upload_extension))
         .route("/{id}", put(routes::extensions::update_extension).delete(routes::extensions::delete_extension))
         .route("/catalog", get(routes::extensions::get_catalog))
         .with_state(extension_storage);
@@ -211,16 +218,12 @@ pub fn build_app_router(
         .route("/fonts", get(routes::fingerprints::get_fonts))
         .route("/media-devices", get(routes::fingerprints::get_media_devices));
 
-    let mcp_routes = Router::new()
-        .route("/info", get(routes::mcp::get_mcp_info))
-        .route("/{token}", post(routes::mcp::handle_mcp_jsonrpc))
-        .route("/{token}/sse", get(routes::mcp::handle_mcp_sse))
-        .with_state(profile_storage.clone());
+    let mcp_routes = mcp_public_api::router(profile_storage.clone());
 
     let app = Router::new()
         .nest("/api/profiles", profile_routes.clone())
         .nest("/api/v1/profiles", profile_routes)
-        .route("/api/v1/status", get(routes::mcp::get_mcp_status).with_state(profile_storage.clone()))
+        .route("/api/v1/status", get(mcp_public_api::get_mcp_status).with_state(profile_storage.clone()))
         .nest("/mcp", mcp_routes)
         .nest("/api/fingerprints", fingerprint_routes)
         .nest("/api/cloud-sync", cloud_sync_routes)

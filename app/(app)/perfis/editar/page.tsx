@@ -99,34 +99,41 @@ export const EditarPerfilPage: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] shadow-sm shadow-slate-200/50 dark:shadow-xl">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] shadow-sm dark:shadow-none">
       {/* Abas Superiores Modulares */}
       <PerfilTabsHeader activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Grid Rolável com Re-importação de Todos os Módulos do Criar Perfil */}
-      <div className="flex flex-1 flex-col items-start gap-6 overflow-y-auto p-5 lg:flex-row lg:gap-8 lg:p-7">
-        {activeTab === 'geral' && (
-          <GeralTab formData={formData} onChange={handleChange} />
-        )}
+      {/* Grid Principal com Scroll à direita do Previas */}
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-thin p-5 lg:p-7">
+        <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
+          {/* Coluna Esquerda: Formulário */}
+          <div className="flex-1 min-w-0">
+            {activeTab === 'geral' && (
+              <GeralTab formData={formData} onChange={handleChange} isEditing={true} />
+            )}
 
-        {activeTab === 'proxy' && (
-          <ProxyTab formData={formData} onChange={handleChange} />
-        )}
+            {activeTab === 'proxy' && (
+              <ProxyTab formData={formData} onChange={handleChange} />
+            )}
 
-        {activeTab === 'impressao' && (
-          <ImpressaoDigitalTab formData={formData} onChange={handleChange} />
-        )}
+            {activeTab === 'impressao' && (
+              <ImpressaoDigitalTab formData={formData} onChange={handleChange} />
+            )}
 
-        {activeTab === 'plataforma' && (
-          <PlataformaTab formData={formData} onChange={handleChange} />
-        )}
+            {activeTab === 'plataforma' && (
+              <PlataformaTab formData={formData} onChange={handleChange} />
+            )}
 
-        {activeTab === 'avancado' && (
-          <AvancadoTab formData={formData} onChange={handleChange} />
-        )}
+            {activeTab === 'avancado' && (
+              <AvancadoTab formData={formData} onChange={handleChange} />
+            )}
+          </div>
 
-        {/* Coluna Direita: Prévias */}
-        <Previas formData={formData} onChange={handleChange} />
+          {/* Coluna Direita: Prévias Sticky à esquerda do Scroll Principal */}
+          <div className="w-full lg:w-[390px] shrink-0 sticky top-0 self-start">
+            <Previas formData={formData} onChange={handleChange} />
+          </div>
+        </div>
       </div>
 
       {/* Rodapé Modular com Salvar/Cancelar */}

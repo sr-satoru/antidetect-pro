@@ -237,6 +237,7 @@ pub async fn launch_profile(
     match storage.launch_with_options(&id, cdp, initial_url).await {
         Ok((profile, pid, debug_port, ws_endpoint)) => Ok(Json(serde_json::json!({
             "status": "launched",
+            "profile": profile,
             "profile_id": profile.id,
             "pid": pid,
             "debug_port": debug_port,

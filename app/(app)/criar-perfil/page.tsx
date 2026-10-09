@@ -11,16 +11,18 @@ import { api } from '@/services/index.api';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 
-import { getRandomPreset } from '@/services/camoufox-presets';
+import { getRandomPreset } from '@/services/navegador-presets';
 
 const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
-  const preset = getRandomPreset(suggestedOS);
+  const isAndroid = suggestedOS === 'android';
+  const initialKernel = isAndroid ? 'AstroBrowser' : 'AstroFox';
+  const preset = getRandomPreset(suggestedOS, initialKernel);
 
   return {
     name: '',
     group: 'Desagrupado',
     tags: [] as string[],
-    kernel: 'AstroFox',
+    kernel: initialKernel,
     kernelVersion: '150',
     os: preset.os,
     osVersion: preset.osVersion,
@@ -61,7 +63,7 @@ const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
     customAccuracy: 1000,
     displayLanguageMode: 'language',
     screenResolutionMode: 'default',
-    screenResolution: `${preset.customScreenWidth} × ${preset.customScreenHeight} (DPR ${preset.devicePixelRatio})`,
+    screenResolution: 'Com base no User-Agent',
     customScreenWidth: preset.customScreenWidth,
     customScreenHeight: preset.customScreenHeight,
     devicePixelRatio: preset.devicePixelRatio,
@@ -163,11 +165,10 @@ export const CriarPerfilPage: React.FC = () => {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`relative cursor-pointer pb-3 text-[13.5px] tracking-wide transition-all ${
-                isActive
-                  ? 'font-semibold text-slate-900 dark:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:bg-emerald-600 dark:after:bg-white after:content-[""]'
-                  : 'text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-[#C4C7D5]'
-              }`}
+              className={`relative cursor-pointer pb-3 text-[13.5px] tracking-wide transition-all ${isActive
+                ? 'font-semibold text-slate-900 dark:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:bg-emerald-600 dark:after:bg-white after:content-[""]'
+                : 'text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-[#C4C7D5]'
+                }`}
             >
               {tab.label}
             </button>
@@ -175,30 +176,37 @@ export const CriarPerfilPage: React.FC = () => {
         })}
       </div>
 
-      {/* Corpo com Grid rolável: Conteúdo ativo (Esquerda) e Prévias (Direita) */}
-      <div className="flex flex-1 flex-col items-start gap-6 overflow-y-auto p-5 lg:flex-row lg:gap-8 lg:p-7">
-        {activeTab === 'geral' && (
-          <GeralTab formData={formData} onChange={handleChange} />
-        )}
+      {/* Corpo Principal com Scroll à direita do Previas */}
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-thin p-5 lg:p-7">
+        <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
+          {/* Coluna Esquerda: Formulário */}
+          <div className="flex-1 min-w-0">
+            {activeTab === 'geral' && (
+              <GeralTab formData={formData} onChange={handleChange} />
+            )}
 
-        {activeTab === 'proxy' && (
-          <ProxyTab formData={formData} onChange={handleChange} />
-        )}
+            {activeTab === 'proxy' && (
+              <ProxyTab formData={formData} onChange={handleChange} />
+            )}
 
-        {activeTab === 'impressao' && (
-          <ImpressaoDigitalTab formData={formData} onChange={handleChange} />
-        )}
+            {activeTab === 'impressao' && (
+              <ImpressaoDigitalTab formData={formData} onChange={handleChange} />
+            )}
 
-        {activeTab === 'plataforma' && (
-          <PlataformaTab formData={formData} onChange={handleChange} />
-        )}
+            {activeTab === 'plataforma' && (
+              <PlataformaTab formData={formData} onChange={handleChange} />
+            )}
 
-        {activeTab === 'avancado' && (
-          <AvancadoTab formData={formData} onChange={handleChange} />
-        )}
+            {activeTab === 'avancado' && (
+              <AvancadoTab formData={formData} onChange={handleChange} />
+            )}
+          </div>
 
-        {/* Coluna da Direita: Painel Visão Geral (Prévias) */}
-        <Previas formData={formData} onChange={handleChange} />
+          {/* Coluna Direita: Prévias Sticky à esquerda do Scroll Principal */}
+          <div className="w-full lg:w-[390px] shrink-0 sticky top-0 self-start">
+            <Previas formData={formData} onChange={handleChange} />
+          </div>
+        </div>
       </div>
 
       {/* Rodapé fixado na base com botões OK e Cancelar e suporte */}

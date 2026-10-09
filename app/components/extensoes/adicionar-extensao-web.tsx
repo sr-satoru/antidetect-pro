@@ -146,7 +146,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
                   adicionar a extensão.
                 </li>
                 <li>
-                  2. Recomendado para perfis configurados com o motor <strong className="text-slate-900 dark:text-white">Chromium (SunBrowser)</strong>.
+                  2. Recomendado para perfis configurados com o motor <strong className="text-slate-900 dark:text-white">Chromium (AstroBrowser)</strong>.
                 </li>
                 <li>
                   3. Visite a{' '}

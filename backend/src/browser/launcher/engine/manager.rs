@@ -5,7 +5,7 @@ use tracing::info;
 
 use crate::models::Profile;
 use crate::ws::{WsEvent, WsState};
-use super::{cdp, prefs, watcher};
+use super::{cdp, watcher};
 use crate::launcher::sys;
 
 /// Gerenciador de processos e orquestrador do ciclo de vida do navegador.
@@ -65,6 +65,12 @@ impl ProcessManager {
         crate::browser_downloader::resolve_engine_binary(data_dir)
     }
 
+    /// Resolve o executável para um kernel específico (AstroFox / AstroBrowser)
+    pub fn resolve_kernel_binary(data_dir: &Path, kernel: &str) -> Result<PathBuf, String> {
+        let engine = crate::browser::engines::get_engine(kernel);
+        engine.resolve_binary(data_dir)
+    }
+
     /// Dispara o navegador Camoufox para o perfil com suporte opcional a depuração CDP
     pub async fn launch_with_cdp(
         &self,
@@ -97,24 +103,23 @@ impl ProcessManager {
             }
         }
 
-        let binary_path = Self::resolve_browser_binary(data_dir)?;
+        let engine = crate::browser::engines::get_engine(&profile.kernel);
+        let binary_path = engine.resolve_binary(data_dir)?;
         let profile_dir = if data_dir.ends_with("profiles") {
             data_dir.join(&profile.id).join("profile")
         } else {
             data_dir.join("profiles").join(&profile.id).join("profile")
         };
 
-        // Remove travas de perfil órfãs do Firefox (parent.lock / .parentlock)
-        // para prevenir a janela de erro "O Firefox já está em execução" após crashes
-        let _ = std::fs::remove_file(profile_dir.join("parent.lock"));
-        let _ = std::fs::remove_file(profile_dir.join(".parentlock"));
-        let _ = std::fs::remove_file(profile_dir.join("lock"));
+        // Remove travas de perfil específicas do motor
+        engine.clear_profile_locks(&profile_dir);
 
-        // Prepara configurações e extensões
-        let (net_setup, all_addon_paths, proxy_ip) = prefs::prepare_profile_dir(&profile_dir, profile, data_dir, &self.client, cdp).await?;
+        // Prepara configurações e extensões via engine desacoplada
+        let prep = engine.prepare_profile_dir(&profile_dir, profile, data_dir, &self.client, cdp).await?;
 
-        // Seleciona porta CDP se solicitado
-        let debug_port = if cdp {
+        // Seleciona porta CDP se solicitado ou se for AstroBrowser (para sincronização de cookies 100% resiliente)
+        let is_chromium = engine.kernel_name() == "AstroBrowser";
+        let debug_port = if cdp || is_chromium {
             let port = cdp::pick_available_port();
             let _ = std::fs::remove_file(profile_dir.join("DevToolsActivePort"));
             Some(port)
@@ -123,19 +128,17 @@ impl ProcessManager {
         };
 
         info!(
-            "🚀 Disparando Camoufox para o perfil '{}' ({}) via {:?} (CDP: {:?}, URL: {:?})",
-            profile.name, profile.id, binary_path, debug_port, initial_url
+            "🚀 Disparando motor '{}' para o perfil '{}' ({}) via {:?} (CDP: {:?}, URL: {:?})",
+            engine.kernel_name(), profile.name, profile.id, binary_path, debug_port, initial_url
         );
 
-        // Constrói o comando do processo através do módulo multiplataforma camoufox
-        let mut cmd = crate::camoufox::build_browser_command(
+        // Constrói o comando do processo através da engine desacoplada
+        let mut cmd = engine.build_launch_command(
             &binary_path,
             &profile_dir,
             profile,
             debug_port,
-            &net_setup,
-            &all_addon_paths,
-            proxy_ip.as_deref(),
+            &prep,
             initial_url,
         )?;
 
@@ -144,7 +147,7 @@ impl ProcessManager {
         })?;
 
         let pid = child.id().unwrap_or(0);
-        info!("✅ Camoufox iniciado com PID {} para o perfil {}", pid, profile.id);
+        info!("✅ Motor '{}' iniciado com PID {} para o perfil {}", engine.kernel_name(), pid, profile.id);
 
         {
             self.running.lock().unwrap().insert(profile.id.clone(), pid);
@@ -154,7 +157,7 @@ impl ProcessManager {
             }
         }
 
-        if let Some(relay) = net_setup.relay {
+        if let Some(relay) = prep.net_setup.relay {
             self.relays.lock().unwrap().insert(profile.id.clone(), relay);
         }
 
@@ -166,10 +169,26 @@ impl ProcessManager {
 
         // Polling do WebSocket CDP
         let ws_endpoint = if let Some(port) = debug_port {
-            cdp::wait_for_devtools_endpoint(port).await
+            cdp::wait_for_devtools_endpoint(port, &self.client, is_chromium).await
         } else {
             None
         };
+
+        // Para AstroBrowser (Chromium), injeta cookies vivos diretamente na memória do CookieMonster
+        if is_chromium {
+            if let Some(ws_url) = ws_endpoint.as_deref() {
+                let vault_opt = self.vault.lock().unwrap().clone();
+                if let Some(v) = vault_opt {
+                    let session_svc = crate::service_database::SessionService::new(v);
+                    if let Ok(Some(session)) = session_svc.load_session(&profile.id) {
+                        if !session.cookies.is_empty() {
+                            info!("🍪 [Clearcote/CDP] Injetando {} cookies vivos na memória do motor", session.cookies.len());
+                            let _ = cdp::inject_cookies_via_cdp(ws_url, &session.cookies).await;
+                        }
+                    }
+                }
+            }
+        }
 
         let meta_file = if data_dir.ends_with("profiles") {
             data_dir.join(&profile.id).join("metadata.json")
@@ -177,13 +196,14 @@ impl ProcessManager {
             data_dir.join("profiles").join(&profile.id).join("metadata.json")
         };
 
-        // Delega o monitoramento de ciclo de vida em background para o watcher.rs
+        // Delega o monitoramento de ciclo de vida em background para o watcher.rs com a engine
         watcher::spawn_lifecycle_watcher(
             child,
             pid,
             profile.id.clone(),
             profile_dir,
             meta_file,
+            engine,
             self.running.clone(),
             self.profile_dirs.clone(),
             self.ports.clone(),
@@ -268,5 +288,20 @@ impl ProcessManager {
         }
 
         false
+    }
+
+    /// Consulta cookies descriptografados em tempo real do navegador via porta CDP ativa
+    pub async fn fetch_live_cdp_cookies(&self, profile_id: &str) -> Result<Vec<crate::extraction_session::UnifiedCookie>, String> {
+        let port = {
+            let pmap = self.ports.lock().unwrap();
+            pmap.get(profile_id).copied()
+        };
+        if let Some(port) = port {
+            let ws_url_opt = cdp::wait_for_devtools_endpoint(port, &self.client, false).await;
+            if let Some(ws_url) = ws_url_opt {
+                return cdp::fetch_cookies_via_cdp(&ws_url).await;
+            }
+        }
+        Err("Endpoint CDP não disponível para este perfil".to_string())
     }
 }

@@ -1,0 +1,480 @@
+{
+  "nvidia": [
+    {
+      "model": "GeForce RTX 3050",
+      "deviceId": "0x00002507",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3050 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3050/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3050",
+      "deviceId": "0x00002582",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3050 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3050/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3050 6GB Laptop GPU",
+      "deviceId": "0x000025EC",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3050 6GB Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3050 6GB Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3050 Laptop GPU",
+      "deviceId": "0x000025A2",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3050 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3050 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3050 Ti Laptop GPU",
+      "deviceId": "0x000025A0",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3050 Ti Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3060",
+      "deviceId": "0x00002487",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3060/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3060",
+      "deviceId": "0x00002503",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3060/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3060",
+      "deviceId": "0x00002504",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3060/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3060 Laptop GPU",
+      "deviceId": "0x00002520",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3060 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3060 Laptop GPU",
+      "deviceId": "0x00002560",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3060 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3060 Ti",
+      "deviceId": "0x00002486",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3060 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3060 Ti",
+      "deviceId": "0x00002489",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3060 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3060 Ti",
+      "deviceId": "0x000024C9",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3060 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3070",
+      "deviceId": "0x00002484",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3070/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3070",
+      "deviceId": "0x00002488",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3070/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3070 Ti",
+      "deviceId": "0x00002482",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3070 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3070 Ti Laptop GPU",
+      "deviceId": "0x000024A0",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Ti Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3070 Ti Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3080",
+      "deviceId": "0x00002206",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3080/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3080",
+      "deviceId": "0x0000220A",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3080/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3080",
+      "deviceId": "0x00002216",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3080/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3080 Laptop GPU",
+      "deviceId": "0x0000249C",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3080 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3080 Laptop GPU",
+      "deviceId": "0x000024DC",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3080 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3080 Ti",
+      "deviceId": "0x00002208",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3080 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3080 Ti Laptop GPU",
+      "deviceId": "0x00002420",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3080 Ti Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3080 Ti Laptop GPU",
+      "deviceId": "0x00002460",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 Ti Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3080 Ti Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3090",
+      "deviceId": "0x00002204",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3090 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3090/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 3090 Ti",
+      "deviceId": "0x00002203",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3090 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 3090 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4050 Laptop GPU",
+      "deviceId": "0x000028A1",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4050 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4050 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4050 Laptop GPU",
+      "deviceId": "0x000028E1",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4050 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4050 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4060",
+      "deviceId": "0x00002882",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4060/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4060 Laptop GPU",
+      "deviceId": "0x000028A0",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4060 Laptop GPU",
+      "deviceId": "0x000028E0",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4060 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4060 Ti",
+      "deviceId": "0x00002803",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4060 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4060 Ti",
+      "deviceId": "0x00002805",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4060 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4060 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4070",
+      "deviceId": "0x00002786",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4070/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4070 Laptop GPU",
+      "deviceId": "0x00002820",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4070 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4070 Laptop GPU",
+      "deviceId": "0x00002860",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4070 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4070 SUPER",
+      "deviceId": "0x00002783",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 SUPER Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4070 SUPER/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4070 Ti",
+      "deviceId": "0x00002782",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4070 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4070 Ti SUPER",
+      "deviceId": "0x00002705",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Ti SUPER Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4070 Ti SUPER/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4080",
+      "deviceId": "0x00002704",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4080 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4080/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4080 Laptop GPU",
+      "deviceId": "0x000027A0",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4080 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4080 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4080 Laptop GPU",
+      "deviceId": "0x000027E0",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4080 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4080 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4080 SUPER",
+      "deviceId": "0x00002702",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4080 SUPER Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4080 SUPER/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4090",
+      "deviceId": "0x00002684",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4090/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4090 Laptop GPU",
+      "deviceId": "0x00002717",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4090 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 4090 Laptop GPU",
+      "deviceId": "0x00002757",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4090 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 4090 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5070",
+      "deviceId": "0x00002F04",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5070 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5070/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5070 Ti",
+      "deviceId": "0x00002C05",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5070 Ti Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5070 Ti/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5070 Ti Laptop GPU",
+      "deviceId": "0x00002F18",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5070 Ti Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5070 Ti Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5070 Ti Laptop GPU",
+      "deviceId": "0x00002F58",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5070 Ti Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5070 Ti Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5080",
+      "deviceId": "0x00002C02",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5080/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5080 Laptop GPU",
+      "deviceId": "0x00002C19",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5080 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5080 Laptop GPU",
+      "deviceId": "0x00002C59",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5080 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5090",
+      "deviceId": "0x00002B85",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5090 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5090/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5090 Laptop GPU",
+      "deviceId": "0x00002C18",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5090 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5090 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    },
+    {
+      "model": "GeForce RTX 5090 Laptop GPU",
+      "deviceId": "0x00002C58",
+      "vendor": "Google Inc. (NVIDIA)",
+      "rendererWindows": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5090 Laptop GPU Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Google Inc. (NVIDIA Corporation) - NVIDIA GeForce RTX 5090 Laptop GPU/PCIe/SSE2, OpenGL 4.5.0"
+    }
+  ],
+  "macos": [
+    {
+      "model": "Apple M1",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M1, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M1 Pro",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M1 Pro, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M2",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M2, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M2 Max",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M2 Max, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M2 Pro",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M2 Pro, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M3",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M3, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M3 Max",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M3 Max, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M3 Pro",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M3 Pro, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M4",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M4, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M4 Max",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M4 Max, OpenGL 4.1)"
+    },
+    {
+      "model": "Apple M4 Pro",
+      "vendor": "Google Inc. (Apple)",
+      "renderer": "ANGLE (Apple, Apple M4 Pro, OpenGL 4.1)"
+    }
+  ],
+  "integrated": [
+    {
+      "model": "Intel UHD Graphics 770",
+      "vendor": "Google Inc. (Intel)",
+      "rendererWindows": "ANGLE (Intel, Intel(R) UHD Graphics 770 (0xA780) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Mesa Intel(R) UHD Graphics 770 (ADL-S GT1)"
+    },
+    {
+      "model": "Intel Iris Xe Graphics",
+      "vendor": "Google Inc. (Intel)",
+      "rendererWindows": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x9A49) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "Mesa Intel(R) Iris(R) Xe Graphics (TGL GT2)"
+    },
+    {
+      "model": "AMD Radeon Graphics",
+      "vendor": "Google Inc. (AMD)",
+      "rendererWindows": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x000015D8) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "rendererLinux": "AMD Radeon Graphics (RADV RENOIR)"
+    }
+  ]
+}

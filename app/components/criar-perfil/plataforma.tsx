@@ -120,23 +120,46 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
     };
   }, [isAddDropdownOpen]);
 
+  const formatDomainToUrl = (domain?: string): string => {
+    if (!domain) return '';
+    const trimmed = domain.trim();
+    if (!trimmed) return '';
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+    return `https://${trimmed}`;
+  };
+
   // Adicionar uma nova conta selecionando a plataforma do dropdown
   const handleSelectPlatformToAdd = (preset: any) => {
+    const domain = preset.requiresCustomDomain ? '' : preset.domain;
     const newAccount = {
       id: String(Date.now()),
       platform: preset.id,
-      customDomain: preset.requiresCustomDomain ? '' : preset.domain,
+      customDomain: domain,
       username: '',
       password: '',
       twoFactorKey: '',
     };
-    onChange('platformAccounts', [...accounts, newAccount]);
+    const updated = [...accounts, newAccount];
+    onChange('platformAccounts', updated);
+
+    // Registra a URL da plataforma selecionada de forma independente
+    if (domain) {
+      onChange('platformUrl', formatDomainToUrl(domain));
+    }
     setIsAddDropdownOpen(false);
   };
 
   const handleRemoveAccount = (index: number) => {
     const updated = accounts.filter((_: any, i: number) => i !== index);
     onChange('platformAccounts', updated);
+    if (updated.length === 0) {
+      onChange('platformUrl', '');
+    } else {
+      const firstDomain = updated[0]?.customDomain;
+      if (firstDomain) {
+        onChange('platformUrl', formatDomainToUrl(firstDomain));
+      }
+    }
   };
 
   const handleUpdateAccount = (index: number, updates: any) => {
@@ -152,6 +175,11 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
       return merged;
     });
     onChange('platformAccounts', updated);
+
+    const changedDomain = updated[index]?.customDomain;
+    if (changedDomain && changedDomain.trim()) {
+      onChange('platformUrl', formatDomainToUrl(changedDomain));
+    }
   };
 
   const duplicateRules = formData.duplicateCheckRules || {

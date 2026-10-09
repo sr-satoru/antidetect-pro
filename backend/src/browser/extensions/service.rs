@@ -69,7 +69,172 @@ impl ExtensionStorage {
         serde_json::from_str::<ExtensionItem>(&content).ok()
     }
 
-    pub fn create(&self, dto: CreateExtensionDto) -> Result<ExtensionItem, String> {
+    pub fn save_uploaded_extension(
+        &self,
+        file_name: &str,
+        bytes: &[u8],
+        name_override: Option<String>,
+        desc_override: Option<String>,
+    ) -> Result<ExtensionItem, String> {
+        let id = Self::now_millis();
+        let storage_dir = self.data_dir.join("storage").join(id.to_string());
+        let _ = fs::create_dir_all(&storage_dir);
+
+        let clean_base = Path::new(file_name)
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("extensao");
+
+        let info = super::universal::process_extension_binary(bytes, &storage_dir, clean_base)?;
+
+        let final_name = name_override
+            .filter(|n| !n.trim().is_empty())
+            .unwrap_or_else(|| {
+                if !info.name.is_empty() && info.name != clean_base {
+                    info.name
+                } else {
+                    clean_base.to_string()
+                }
+            });
+
+        let final_desc = desc_override
+            .filter(|d| !d.trim().is_empty())
+            .unwrap_or(info.description);
+
+        let is_xpi = file_name.to_lowercase().ends_with(".xpi");
+        let is_crx = file_name.to_lowercase().ends_with(".crx");
+        let provider = if is_xpi {
+            "Firefox Add-on (.xpi)"
+        } else if is_crx {
+            "Chrome Extension (.crx)"
+        } else {
+            "Pacote Local (.zip)"
+        };
+
+        let icon_type = if is_xpi { "firefox" } else if is_crx { "chrome" } else { "custom" };
+
+        let item = ExtensionItem {
+            id,
+            name: final_name,
+            icon_type: Some(icon_type.to_string()),
+            icon_url: None,
+            icon_bg: Some("#00FF66".to_string()),
+            enabled: true,
+            status: "available".to_string(),
+            description: final_desc,
+            provider: provider.to_string(),
+            provider_url: None,
+            tab: "team".to_string(),
+            version: Some(info.version),
+        };
+
+        self.save_extension(&item)?;
+        info!("✅ Extensão carregada por arquivo e normalizada: '{}' (ID: {})", item.name, item.id);
+        Ok(item)
+    }
+
+    pub async fn import_from_web_url(
+        &self,
+        url: &str,
+        name_override: Option<String>,
+        desc_override: Option<String>,
+    ) -> Result<ExtensionItem, String> {
+        let trimmed_url = url.trim();
+        let id = Self::now_millis();
+        let storage_dir = self.data_dir.join("storage").join(id.to_string());
+        let _ = fs::create_dir_all(&storage_dir);
+
+        // 1. Tenta identificar se é Chrome Web Store
+        if let Some(cws_id) = super::universal::extract_cws_id(trimmed_url) {
+            let bytes = super::universal::download_cws_crx(&cws_id, &self.client).await?;
+            let info = super::universal::process_extension_binary(&bytes, &storage_dir, &cws_id)?;
+
+            let final_name = name_override
+                .filter(|n| !n.trim().is_empty())
+                .unwrap_or(info.name);
+
+            let final_desc = desc_override
+                .filter(|d| !d.trim().is_empty())
+                .unwrap_or(info.description);
+
+            let item = ExtensionItem {
+                id,
+                name: final_name,
+                icon_type: Some("chrome".to_string()),
+                icon_url: None,
+                icon_bg: Some("#00FF66".to_string()),
+                enabled: true,
+                status: "available".to_string(),
+                description: final_desc,
+                provider: "Chrome Web Store".to_string(),
+                provider_url: Some(trimmed_url.to_string()),
+                tab: "team".to_string(),
+                version: Some(info.version),
+            };
+
+            self.save_extension(&item)?;
+            info!("✅ Extensão da Chrome Web Store importada e normalizada: '{}' (ID: {})", item.name, item.id);
+            return Ok(item);
+        }
+
+        // 2. Tenta identificar se é Mozilla AMO
+        let cache_dir = self.data_dir.join("cache");
+        let (cached_xpi, _api_guid) = super::import_extensions_web::downloader::download_and_cache_xpi(
+            trimmed_url,
+            &cache_dir,
+            &self.client,
+        ).await?;
+
+        let bytes = fs::read(&cached_xpi)
+            .map_err(|e| format!("Falha ao ler arquivo .xpi baixado: {e}"))?;
+
+        let slug = super::import_extensions_web::downloader::extract_amo_slug(trimmed_url)
+            .unwrap_or_else(|| "amo-ext".to_string());
+
+        let info = super::universal::process_extension_binary(&bytes, &storage_dir, &slug)?;
+
+        let final_name = name_override
+            .filter(|n| !n.trim().is_empty())
+            .unwrap_or(info.name);
+
+        let final_desc = desc_override
+            .filter(|d| !d.trim().is_empty())
+            .unwrap_or(info.description);
+
+        let item = ExtensionItem {
+            id,
+            name: final_name,
+            icon_type: Some("firefox".to_string()),
+            icon_url: None,
+            icon_bg: Some("#FF5500".to_string()),
+            enabled: true,
+            status: "available".to_string(),
+            description: final_desc,
+            provider: "Firefox Add-ons".to_string(),
+            provider_url: Some(trimmed_url.to_string()),
+            tab: "team".to_string(),
+            version: Some(info.version),
+        };
+
+        self.save_extension(&item)?;
+        info!("✅ Extensão do Firefox AMO importada e normalizada: '{}' (ID: {})", item.name, item.id);
+        Ok(item)
+    }
+
+    pub async fn create(&self, dto: CreateExtensionDto) -> Result<ExtensionItem, String> {
+        // Se houver uma provider_url válida da web, tenta importar e preparar o binário imediatamente
+        if let Some(ref url) = dto.provider_url {
+            let trimmed = url.trim();
+            if !trimmed.is_empty() && trimmed != "#" && (trimmed.starts_with("http://") || trimmed.starts_with("https://")) {
+                match self.import_from_web_url(trimmed, dto.name.clone(), dto.description.clone()).await {
+                    Ok(item) => return Ok(item),
+                    Err(err) => {
+                        tracing::warn!("Falha ao pré-importar binário da web ({trimmed}): {err}. Salvando apenas metadados como fallback.");
+                    }
+                }
+            }
+        }
+
         let id = dto.id.unwrap_or_else(Self::now_millis);
 
         let item = ExtensionItem {
@@ -126,6 +291,10 @@ impl ExtensionStorage {
         let path = self.data_dir.join(format!("{id}.json"));
         if path.exists() {
             fs::remove_file(path).map_err(|e| e.to_string())?;
+        }
+        let storage_dir = self.data_dir.join("storage").join(format!("{id}"));
+        if storage_dir.exists() {
+            let _ = fs::remove_dir_all(storage_dir);
         }
         info!("Extensão {} removida da equipe", id);
         Ok(())

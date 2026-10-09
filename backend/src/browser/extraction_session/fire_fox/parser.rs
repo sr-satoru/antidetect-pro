@@ -1,6 +1,7 @@
 use crate::extraction_session::UnifiedCookie;
 
-/// Analisa entrada de texto contendo cookies nos formatos JSON (Puppeteer / EditThisCookie) ou Netscape cookies.txt
+/// Analisa entrada de texto contendo cookies nos formatos JSON (Puppeteer / EditThisCookie / Cookie-Editor),
+/// Netscape cookies.txt ou formato Name=Value (cabeçalho / pares separados por ponto-e-vírgula ou quebra de linha)
 pub fn parse_cookies_input(raw_content: &str) -> Result<Vec<UnifiedCookie>, String> {
     let mut parsed_cookies = Vec::new();
     let trimmed = raw_content.trim();
@@ -9,74 +10,94 @@ pub fn parse_cookies_input(raw_content: &str) -> Result<Vec<UnifiedCookie>, Stri
         return Err("Conteúdo de cookies fornecido está vazio".to_string());
     }
 
-    // 1. Tenta analisar como JSON (Puppeteer / EditThisCookie / Cookie-Editor)
-    if trimmed.starts_with('[') {
+    // Função auxiliar para extrair cookie de um objeto JSON
+    let parse_json_cookie_obj = |item: &serde_json::Value| -> Option<UnifiedCookie> {
+        let name = item
+            .get("name")
+            .and_then(|v| v.as_str())
+            .unwrap_or_default()
+            .to_string();
+        let value = item
+            .get("value")
+            .and_then(|v| v.as_str())
+            .unwrap_or_default()
+            .to_string();
+        let domain = item
+            .get("domain")
+            .or_else(|| item.get("host"))
+            .and_then(|v| v.as_str())
+            .unwrap_or_default()
+            .to_string();
+        let path = item
+            .get("path")
+            .and_then(|v| v.as_str())
+            .unwrap_or("/")
+            .to_string();
+
+        let expiry = item
+            .get("expirationDate")
+            .or_else(|| item.get("expires"))
+            .and_then(|v| {
+                v.as_i64()
+                    .or_else(|| v.as_f64().map(|f| f as i64))
+            });
+
+        let is_secure = item
+            .get("secure")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        let is_http_only = item
+            .get("httpOnly")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+
+        let same_site = item
+            .get("sameSite")
+            .and_then(|v| v.as_str())
+            .unwrap_or("None")
+            .to_string();
+
+        if !name.is_empty() {
+            Some(UnifiedCookie {
+                name,
+                value,
+                domain,
+                path,
+                expiry,
+                is_secure,
+                is_http_only,
+                same_site,
+            })
+        } else {
+            None
+        }
+    };
+
+    // 1. Tenta analisar como JSON (Array ou Objeto)
+    if trimmed.starts_with('[') || trimmed.starts_with('{') {
         if let Ok(val) = serde_json::from_str::<serde_json::Value>(trimmed) {
             if let Some(arr) = val.as_array() {
                 for item in arr {
-                    let name = item
-                        .get("name")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or_default()
-                        .to_string();
-                    let value = item
-                        .get("value")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or_default()
-                        .to_string();
-                    let domain = item
-                        .get("domain")
-                        .or_else(|| item.get("host"))
-                        .and_then(|v| v.as_str())
-                        .unwrap_or_default()
-                        .to_string();
-                    let path = item
-                        .get("path")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("/")
-                        .to_string();
-
-                    let expiry = item
-                        .get("expirationDate")
-                        .or_else(|| item.get("expires"))
-                        .and_then(|v| {
-                            v.as_i64()
-                                .or_else(|| v.as_f64().map(|f| f as i64))
-                        });
-
-                    let is_secure = item
-                        .get("secure")
-                        .and_then(|v| v.as_bool())
-                        .unwrap_or(false);
-                    let is_http_only = item
-                        .get("httpOnly")
-                        .and_then(|v| v.as_bool())
-                        .unwrap_or(false);
-
-                    let same_site = item
-                        .get("sameSite")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("None")
-                        .to_string();
-
-                    if !name.is_empty() && !domain.is_empty() {
-                        parsed_cookies.push(UnifiedCookie {
-                            name,
-                            value,
-                            domain,
-                            path,
-                            expiry,
-                            is_secure,
-                            is_http_only,
-                            same_site,
-                        });
+                    if let Some(cookie) = parse_json_cookie_obj(item) {
+                        parsed_cookies.push(cookie);
                     }
+                }
+            } else if let Some(obj) = val.as_object() {
+                // Objeto com campo "cookies": [...]
+                if let Some(arr) = obj.get("cookies").and_then(|c| c.as_array()) {
+                    for item in arr {
+                        if let Some(cookie) = parse_json_cookie_obj(item) {
+                            parsed_cookies.push(cookie);
+                        }
+                    }
+                } else if let Some(cookie) = parse_json_cookie_obj(&val) {
+                    parsed_cookies.push(cookie);
                 }
             }
         }
     }
 
-    // 2. Se não parseou como JSON, tenta como Netscape cookies.txt
+    // 2. Se não parseou como JSON, tenta como Netscape cookies.txt (tab-separated)
     if parsed_cookies.is_empty() {
         for line in trimmed.lines() {
             let line = line.trim();
@@ -92,7 +113,7 @@ pub fn parse_cookies_input(raw_content: &str) -> Result<Vec<UnifiedCookie>, Stri
                 let name = parts[5].to_string();
                 let value = parts[6].to_string();
 
-                if !name.is_empty() && !domain.is_empty() {
+                if !name.is_empty() {
                     parsed_cookies.push(UnifiedCookie {
                         name,
                         value,
@@ -108,8 +129,37 @@ pub fn parse_cookies_input(raw_content: &str) -> Result<Vec<UnifiedCookie>, Stri
         }
     }
 
+    // 3. Se ainda vazio, tenta formato Name=Value (separado por ';' ou novas linhas)
     if parsed_cookies.is_empty() {
-        return Err("Nenhum cookie válido encontrado no formato JSON ou Netscape".to_string());
+        // Divide tanto por ';' quanto por quebras de linha
+        let segments: Vec<&str> = trimmed
+            .split(|c| c == ';' || c == '\n' || c == '\r')
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .collect();
+
+        for seg in segments {
+            if let Some((k, v)) = seg.split_once('=') {
+                let k = k.trim().to_string();
+                let v = v.trim().to_string();
+                if !k.is_empty() && !k.starts_with('#') {
+                    parsed_cookies.push(UnifiedCookie {
+                        name: k,
+                        value: v,
+                        domain: "".to_string(),
+                        path: "/".to_string(),
+                        expiry: None,
+                        is_secure: false,
+                        is_http_only: false,
+                        same_site: "Lax".to_string(),
+                    });
+                }
+            }
+        }
+    }
+
+    if parsed_cookies.is_empty() {
+        return Err("Nenhum cookie válido encontrado no formato JSON, Netscape ou Name=Value".to_string());
     }
 
     Ok(parsed_cookies)

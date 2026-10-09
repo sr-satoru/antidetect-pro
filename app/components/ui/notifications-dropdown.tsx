@@ -112,7 +112,7 @@ export const NotificationsDropdown: React.FC = () => {
 
       {/* Popover / Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl border border-slate-200 dark:border-[#2B2D38] bg-white/95 dark:bg-[#181920]/95 backdrop-blur-xl shadow-xl shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/90 z-50 overflow-hidden flex flex-col text-left animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl border border-slate-200 dark:border-[#2B2D38] bg-white dark:bg-[#181920] shadow-xl shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/90 z-50 overflow-hidden flex flex-col text-left animate-in fade-in zoom-in-95 duration-150">
           {/* Header do Dropdown */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-[#2B2D38] bg-slate-50/80 dark:bg-[#15161D]">
             <div className="flex items-center gap-2">

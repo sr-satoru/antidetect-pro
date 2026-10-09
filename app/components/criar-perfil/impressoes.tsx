@@ -17,7 +17,7 @@ import {
   getMediaDevicesForOs,
   getRandomPreset,
   GpuOption,
-} from '@/services/camoufox-presets';
+} from '@/services/navegador-presets';
 
 
 function randomAlphanumeric(length: number): string {
@@ -142,14 +142,12 @@ const FormRow: React.FC<{
   alignTop?: boolean;
 }> = ({ label, children, alignTop = false }) => (
   <div
-    className={`flex flex-col gap-2 pt-1 sm:flex-row sm:gap-4 ${
-      alignTop ? 'sm:items-start' : 'sm:items-center'
-    }`}
+    className={`flex flex-col gap-2 pt-1 sm:flex-row sm:gap-4 ${alignTop ? 'sm:items-start' : 'sm:items-center'
+      }`}
   >
     <label
-      className={`shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[150px] sm:text-right ${
-        alignTop ? 'pt-2' : ''
-      }`}
+      className={`shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[150px] sm:text-right ${alignTop ? 'pt-2' : ''
+        }`}
     >
       {label}
     </label>
@@ -176,11 +174,10 @@ const SegmentedGroup: React.FC<{
           key={item.id}
           type="button"
           onClick={() => onChange(item.id)}
-          className={`cursor-pointer rounded-md px-3 py-1.5 text-[12px] font-medium transition-all select-none ${
-            isSelected
+          className={`cursor-pointer rounded-md px-3 py-1.5 text-[12px] font-medium transition-all select-none ${isSelected
               ? 'border border-slate-300 dark:border-white/10 bg-white text-slate-900 dark:bg-white/[0.09] font-semibold dark:text-white shadow-xs'
               : 'border border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 dark:text-[#8E92A2] dark:hover:bg-white/[0.04] dark:hover:text-white'
-          }`}
+            }`}
         >
           {item.label}
         </button>
@@ -215,26 +212,25 @@ const ShuffleInput: React.FC<{
   maxWidthClass = 'max-w-md',
   placeholder = '',
 }) => (
-  <div className={`flex ${maxWidthClass} items-center gap-2`}>
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      className={`flex-1 rounded-md border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] px-3.5 py-2 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5C6070] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs ${
-        mono ? 'font-mono' : ''
-      }`}
-    />
-    <button
-      type="button"
-      onClick={onShuffle}
-      className="flex h-[37px] w-[37px] shrink-0 cursor-pointer items-center justify-center rounded-md border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 text-emerald-600 dark:bg-white/[0.05] dark:text-[#00FF66] shadow-2xs transition-all dark:hover:border-white/20 dark:hover:bg-white/10 active:scale-95"
-      title={title}
-    >
-      <Shuffle size={14} />
-    </button>
-  </div>
-);
+    <div className={`flex ${maxWidthClass} items-center gap-2`}>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`flex-1 rounded-md border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] px-3.5 py-2 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5C6070] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs ${mono ? 'font-mono' : ''
+          }`}
+      />
+      <button
+        type="button"
+        onClick={onShuffle}
+        className="flex h-[37px] w-[37px] shrink-0 cursor-pointer items-center justify-center rounded-md border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 text-emerald-600 dark:bg-white/[0.05] dark:text-[#00FF66] shadow-2xs transition-all dark:hover:border-white/20 dark:hover:bg-white/10 active:scale-95"
+        title={title}
+      >
+        <Shuffle size={14} />
+      </button>
+    </div>
+  );
 
 const NoisePill: React.FC<{
   label: string;
@@ -248,22 +244,19 @@ const NoisePill: React.FC<{
       className="group flex cursor-pointer items-center gap-2 py-1 select-none"
     >
       <div
-        className={`h-4 w-8 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${
-          checked
+        className={`h-4 w-8 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${checked
             ? 'bg-emerald-500 dark:bg-[#00FF66] shadow-[0_0_8px_rgba(16,185,129,0.35)] dark:shadow-[0_0_8px_rgba(0,255,102,0.35)]'
             : 'bg-slate-300 dark:bg-[#333541]'
-        }`}
+          }`}
       >
         <div
-          className={`h-3 w-3 rounded-full transition-transform duration-200 ease-in-out ${
-            checked ? 'translate-x-4 bg-white dark:bg-[#090A0F]' : 'translate-x-0 bg-white'
-          }`}
+          className={`h-3 w-3 rounded-full transition-transform duration-200 ease-in-out ${checked ? 'translate-x-4 bg-white dark:bg-[#090A0F]' : 'translate-x-0 bg-white'
+            }`}
         />
       </div>
       <span
-        className={`text-[12.5px] transition-colors ${
-          checked ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 group-hover:text-slate-900 dark:text-[#8E92A2] dark:group-hover:text-[#C5C9D7]'
-        }`}
+        className={`text-[12.5px] transition-colors ${checked ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 group-hover:text-slate-900 dark:text-[#8E92A2] dark:group-hover:text-[#C5C9D7]'
+          }`}
       >
         {label}
       </span>
@@ -324,9 +317,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
         <span className="truncate">{value || placeholder}</span>
         <ChevronDown
           size={14}
-          className={`shrink-0 text-slate-400 dark:text-[#7E8294] transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : ''
-          }`}
+          className={`shrink-0 text-slate-400 dark:text-[#7E8294] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
+            }`}
         />
       </button>
 
@@ -376,11 +368,10 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                       onChange(opt);
                       setIsOpen(false);
                     }}
-                    className={`flex items-center justify-between px-2.5 py-1.5 text-[12px] rounded cursor-pointer transition-colors ${
-                      isSelected
+                    className={`flex items-center justify-between px-2.5 py-1.5 text-[12px] rounded cursor-pointer transition-colors ${isSelected
                         ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium'
                         : 'text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-100 dark:hover:bg-white/5'
-                    }`}
+                      }`}
                   >
                     <span className="truncate">{opt}</span>
                     {isSelected && <Check size={12} className="shrink-0 text-emerald-600 dark:text-emerald-400 ml-2" />}
@@ -404,10 +395,11 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
   onChange,
 }) => {
   const currentOs = (formData.os || 'windows').toLowerCase();
-  const gpuList = getGpuOptions(currentOs);
-  const screenOptions = getScreenResolutions(currentOs);
-  const cpuCoresList = getCpuCoreOptions(currentOs);
-  const osFonts = getFontsForOs(currentOs);
+  const currentKernel = formData.kernel || 'AstroFox';
+  const gpuList = getGpuOptions(currentOs, currentKernel);
+  const screenOptions = getScreenResolutions(currentOs, currentKernel);
+  const cpuCoresList = getCpuCoreOptions(currentOs, currentKernel);
+  const osFonts = getFontsForOs(currentOs, currentKernel);
 
   // Sincroniza e garante dados realistas caso os campos estejam vazios ou inconsistentes com o SO
   useEffect(() => {
@@ -433,7 +425,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
     if (!formData.macAddress) {
       onChange('macAddress', generateMacAddress(currentOs));
     }
-  }, [currentOs]);
+  }, [currentOs, currentKernel]);
 
   const handleShuffleRenderer = () => {
     if (gpuList.length === 0) return;
@@ -498,15 +490,15 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
       {(() => {
         const isLatInvalid = Boolean(
           formData.customLatitude &&
-            (isNaN(Number(formData.customLatitude)) ||
-              Number(formData.customLatitude) < -90 ||
-              Number(formData.customLatitude) > 90)
+          (isNaN(Number(formData.customLatitude)) ||
+            Number(formData.customLatitude) < -90 ||
+            Number(formData.customLatitude) > 90)
         );
         const isLngInvalid = Boolean(
           formData.customLongitude &&
-            (isNaN(Number(formData.customLongitude)) ||
-              Number(formData.customLongitude) < -180 ||
-              Number(formData.customLongitude) > 180)
+          (isNaN(Number(formData.customLongitude)) ||
+            Number(formData.customLongitude) < -180 ||
+            Number(formData.customLongitude) > 180)
         );
 
         return (
@@ -530,7 +522,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                       type="radio"
                       name="locationPermission"
                       checked={formData.locationPermission === perm.id}
-                      onChange={() => {}}
+                      onChange={() => { }}
                       className="cursor-pointer accent-[#00FF66]"
                     />
                     <span>{perm.text}</span>
@@ -556,11 +548,10 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         onChange={(e) =>
                           onChange('customLatitude', e.target.value)
                         }
-                        className={`w-full rounded-md bg-white dark:bg-[#16171D] px-3 py-2 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:outline-none ${
-                          isLatInvalid
+                        className={`w-full rounded-md bg-white dark:bg-[#16171D] px-3 py-2 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:outline-none ${isLatInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
                             : 'border border-slate-300 dark:border-white/10 focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10'
-                        }`}
+                          }`}
                       />
                       {isLatInvalid && (
                         <span className="mt-1 block text-[11px] leading-tight text-[#F87171]">
@@ -577,11 +568,10 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         onChange={(e) =>
                           onChange('customLongitude', e.target.value)
                         }
-                        className={`w-full rounded-md bg-white dark:bg-[#16171D] px-3 py-2 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:outline-none ${
-                          isLngInvalid
+                        className={`w-full rounded-md bg-white dark:bg-[#16171D] px-3 py-2 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:outline-none ${isLngInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
                             : 'border border-slate-300 dark:border-white/10 focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10'
-                        }`}
+                          }`}
                       />
                       {isLngInvalid && (
                         <span className="mt-1 block text-[11px] leading-tight text-[#F87171]">
@@ -646,7 +636,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
         {formData.screenResolutionMode === 'default' && (
           <div className="max-w-md">
             <Select
-              value={formData.screenResolution}
+              value={formData.screenResolution || 'Com base no User-Agent'}
               onChange={(e) => {
                 const label = e.target.value;
                 onChange('screenResolution', label);
@@ -655,6 +645,11 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                   onChange('customScreenWidth', sel.width);
                   onChange('customScreenHeight', sel.height);
                   onChange('devicePixelRatio', sel.dpr);
+                } else if (label === 'Com base no User-Agent') {
+                  const defaultPreset = getRandomPreset(currentOs, currentKernel);
+                  onChange('customScreenWidth', defaultPreset.customScreenWidth);
+                  onChange('customScreenHeight', defaultPreset.customScreenHeight);
+                  onChange('devicePixelRatio', defaultPreset.devicePixelRatio);
                 }
               }}
             >

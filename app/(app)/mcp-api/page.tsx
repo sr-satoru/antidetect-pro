@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Bot,
   Terminal,
@@ -8,9 +8,26 @@ import { CompactCredentials } from '@/components/mcp-api/compact-credentials';
 import { McpTab } from '@/components/mcp-api/mcp-tab';
 import { ApiTab } from '@/components/mcp-api/api-tab';
 import { AutomationTab } from '@/components/mcp-api/automation-tab';
+import { serviceMcp } from '@/services/mcp/service.mcp';
 
 export const McpApiPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'mcp' | 'automation' | 'api'>('mcp');
+  const [showToken, setShowToken] = useState(false);
+  const [token, setToken] = useState<string>(serviceMcp.getCachedToken());
+
+  useEffect(() => {
+    serviceMcp.getInfo()
+      .then((res) => {
+        if (res?.token) {
+          setToken(res.token);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleToggleShowToken = () => {
+    setShowToken((prev) => !prev);
+  };
 
   return (
     <div className="h-full flex flex-col space-y-4 overflow-y-auto pr-1">
@@ -32,11 +49,16 @@ export const McpApiPage: React.FC = () => {
         </div>
 
         {/* Ultra-clean Compact Credentials Bar */}
-        <CompactCredentials />
+        <CompactCredentials
+          token={token}
+          showToken={showToken}
+          onToggleShowToken={handleToggleShowToken}
+          onTokenChange={setToken}
+        />
       </div>
 
       {/* Modern Segmented Navigation Pill (3 Tabs) */}
-      <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-[#13141B] border border-slate-200 dark:border-white/10 rounded-2xl w-fit shrink-0 shadow-sm dark:shadow-lg">
+      <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-[#13141B] border border-slate-200 dark:border-white/10 rounded-2xl w-fit shrink-0 shadow-sm dark:shadow-none">
         <button
           type="button"
           onClick={() => setActiveTab('mcp')}
@@ -79,9 +101,27 @@ export const McpApiPage: React.FC = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 pb-4">
-        {activeTab === 'mcp' && <McpTab />}
-        {activeTab === 'automation' && <AutomationTab />}
-        {activeTab === 'api' && <ApiTab />}
+        {activeTab === 'mcp' && (
+          <McpTab
+            token={token}
+            showToken={showToken}
+            onRevealKey={() => setShowToken(true)}
+          />
+        )}
+        {activeTab === 'automation' && (
+          <AutomationTab
+            token={token}
+            showToken={showToken}
+            onRevealKey={() => setShowToken(true)}
+          />
+        )}
+        {activeTab === 'api' && (
+          <ApiTab
+            token={token}
+            showToken={showToken}
+            onRevealKey={() => setShowToken(true)}
+          />
+        )}
       </div>
     </div>
   );

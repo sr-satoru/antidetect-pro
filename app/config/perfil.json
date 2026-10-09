@@ -34,7 +34,7 @@
     {
       "id": "android",
       "label": "Android",
-      "desc": "Android Mobile: Em breve. Suporte a identidade móvel em desenvolvimento."
+      "desc": "Android Mobile: Emulação nativa de smartphones (Pixel 7, Galaxy S23/A54) com touch, Mali/Adreno e Client Hints mobile."
     },
     {
       "id": "ios",

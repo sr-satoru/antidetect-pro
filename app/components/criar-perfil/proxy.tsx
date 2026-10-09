@@ -94,7 +94,7 @@ const IpCheckerField: React.FC<{
             />
           </button>
           {open && (
-            <div className="absolute top-full right-0 left-0 z-30 mt-1 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] py-1 shadow-2xl backdrop-blur-md">
+            <div className="absolute top-full right-0 left-0 z-30 mt-1 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] py-1 shadow-2xl">
               {config.ipCheckers.map((checker) => (
                 <div
                   key={checker}
@@ -328,10 +328,10 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
 
               {/* Menu Dropdown de Proxies */}
               {showProxyDropdown && (
-                <div className="absolute top-full right-0 left-0 z-50 mt-1.5 max-h-64 overflow-y-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] shadow-2xl backdrop-blur-md [scrollbar-width:thin]">
+                <div className="absolute top-full right-0 left-0 z-50 mt-1.5 max-h-64 overflow-y-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] shadow-2xl [scrollbar-width:thin]">
                   {/* Busca se houver mais de 3 proxies */}
                   {savedProxies.length > 3 && (
-                    <div className="sticky top-0 z-10 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#14151B] p-2 backdrop-blur-xs">
+                    <div className="sticky top-0 z-10 border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] p-2">
                       <div className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] px-2.5 py-1.5 text-xs">
                         <Search size={13} className="shrink-0 text-slate-400 dark:text-[#8E92A2]" />
                         <input
@@ -492,7 +492,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                   />
                 </button>
                 {showTypeDropdown && (
-                  <div className="absolute top-full right-0 left-0 z-30 mt-1 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] py-1 shadow-2xl backdrop-blur-md">
+                  <div className="absolute top-full right-0 left-0 z-30 mt-1 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] py-1 shadow-2xl">
                     {(formData.proxyMode === 'custom'
                       ? config.proxyTypes
                       : config.rotatingProtocols.map((p) => ({

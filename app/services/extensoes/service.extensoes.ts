@@ -31,6 +31,9 @@ export const serviceExtensoes = {
 
   create: (data: any) => http.post<any>('/api/extensions', data),
 
+  upload: (formData: FormData) =>
+    http.post<any>('/api/extensions/upload', formData),
+
   update: (id: string | number, data: any) =>
     http.put<any>(`/api/extensions/${id}`, data),
 

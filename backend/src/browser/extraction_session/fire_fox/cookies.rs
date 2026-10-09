@@ -9,13 +9,13 @@ pub fn get_cookie_db_path(profile_dir: &Path) -> PathBuf {
     profile_dir.join("cookies.sqlite")
 }
 
-/// Formata uma URI válida do SQLite compatível com Windows e Unix em modo somente-leitura imutável
+/// Formata uma URI válida do SQLite compatível com Windows e Unix em modo somente-leitura (permitindo leitura do WAL)
 pub fn format_sqlite_uri(path: &Path) -> String {
     let p_str = path.to_string_lossy().replace('\\', "/");
     if p_str.starts_with('/') {
-        format!("file:{}?mode=ro&immutable=1", p_str)
+        format!("file:{}?mode=ro", p_str)
     } else {
-        format!("file:///{}?mode=ro&immutable=1", p_str)
+        format!("file:///{}?mode=ro", p_str)
     }
 }
 

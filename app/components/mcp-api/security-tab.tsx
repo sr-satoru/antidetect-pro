@@ -63,7 +63,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ apiPort = 18922 }) => 
   return (
     <div className="space-y-5">
       {/* Top Status Card */}
-      <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 md:p-6 shadow-sm shadow-slate-200/50 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 md:p-6 shadow-sm dark:shadow-none flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <ShieldCheck size={22} />
@@ -104,7 +104,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ apiPort = 18922 }) => 
         {securityLayers.map((layer, idx) => (
           <div
             key={layer.id}
-            className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-4 space-y-2 hover:border-slate-300 dark:hover:border-white/20 transition-all shadow-sm shadow-slate-200/50 dark:shadow-[0_8px_25px_-5px_rgba(0,0,0,0.6)]"
+            className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-4 space-y-2 hover:border-slate-300 dark:hover:border-white/20 transition-all shadow-sm dark:shadow-none"
           >
             <div className="flex items-center justify-between gap-2">
               <span className="text-[13px] font-bold text-slate-900 dark:text-white flex items-center gap-2">

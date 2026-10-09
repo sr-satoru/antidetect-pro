@@ -131,7 +131,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
   if (!isOpen || !profile) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 dark:bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 dark:bg-black/70 p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-[680px] min-h-[520px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl dark:shadow-black/90 overflow-hidden flex flex-col max-h-[85vh]">
         {/* Toolbar de Ações com botão fechar */}
         <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-slate-200 dark:border-[#2C2E3B]/70 bg-slate-50 dark:bg-[#16171E]/60 shrink-0">
@@ -202,7 +202,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
         {/* Tabela de Etiquetas do Sistema */}
         <div className="flex-1 overflow-y-auto">
           {/* Cabeçalho da Tabela */}
-          <div className="flex items-center border-b border-slate-200 dark:border-[#2C2E3B]/70 bg-slate-100/90 dark:bg-[#171821]/80 px-6 py-2.5 text-xs font-semibold text-slate-600 dark:text-[#8E92A2] select-none sticky top-0 z-10 backdrop-blur-xs">
+          <div className="flex items-center border-b border-slate-200 dark:border-[#2C2E3B] bg-slate-100 dark:bg-[#171821] px-6 py-2.5 text-xs font-semibold text-slate-600 dark:text-[#8E92A2] select-none sticky top-0 z-10">
             <div className="w-9 flex items-center">
               <span className="text-[11px] text-slate-400 dark:text-[#717585]">#</span>
             </div>

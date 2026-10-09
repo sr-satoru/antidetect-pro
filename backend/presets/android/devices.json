@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "source": "clearcote-c++-patch-002",
+  "devices": [
+    {
+      "id": "pixel-7",
+      "brand": "Google",
+      "model": "Pixel 7",
+      "androidVersion": "14",
+      "platformVersion": "14.0.0",
+      "screen": {
+        "width": 412,
+        "height": 915,
+        "dpr": 2.625,
+        "colorDepth": 24,
+        "colorGamut": "p3",
+        "dynamicRange": "high"
+      },
+      "hardware": {
+        "cpuCores": 8,
+        "memoryGb": 8,
+        "maxTouchPoints": 5
+      },
+      "webgl": {
+        "vendor": "Google Inc. (ARM)",
+        "renderer": "ANGLE (ARM, Mali-G710, OpenGL ES 3.2)",
+        "maxTextureSize": 16384
+      },
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "pointer": "coarse",
+      "hover": "none",
+      "weight": 0.5
+    },
+    {
+      "id": "galaxy-s23",
+      "brand": "Samsung",
+      "model": "SM-S911B",
+      "androidVersion": "14",
+      "platformVersion": "14.0.0",
+      "screen": {
+        "width": 360,
+        "height": 780,
+        "dpr": 3.0,
+        "colorDepth": 24,
+        "colorGamut": "p3",
+        "dynamicRange": "high"
+      },
+      "hardware": {
+        "cpuCores": 8,
+        "memoryGb": 8,
+        "maxTouchPoints": 5
+      },
+      "webgl": {
+        "vendor": "Google Inc. (Qualcomm)",
+        "renderer": "ANGLE (Qualcomm, Adreno (TM) 740, OpenGL ES 3.2)",
+        "maxTextureSize": 16384
+      },
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "pointer": "coarse",
+      "hover": "none",
+      "weight": 0.3
+    },
+    {
+      "id": "galaxy-a54",
+      "brand": "Samsung",
+      "model": "SM-A546B",
+      "androidVersion": "14",
+      "platformVersion": "14.0.0",
+      "screen": {
+        "width": 412,
+        "height": 892,
+        "dpr": 2.625,
+        "colorDepth": 24,
+        "colorGamut": "p3",
+        "dynamicRange": "high"
+      },
+      "hardware": {
+        "cpuCores": 8,
+        "memoryGb": 8,
+        "maxTouchPoints": 5
+      },
+      "webgl": {
+        "vendor": "Google Inc. (ARM)",
+        "renderer": "ANGLE (ARM, Mali-G68 MC4, OpenGL ES 3.2)",
+        "maxTextureSize": 8192
+      },
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "pointer": "coarse",
+      "hover": "none",
+      "weight": 0.2
+    }
+  ]
+}

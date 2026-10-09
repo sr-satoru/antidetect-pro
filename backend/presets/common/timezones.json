@@ -1,0 +1,152 @@
+[
+  {
+    "value": "America/Sao_Paulo",
+    "label": "America/Sao_Paulo (GMT-3 • Brasil Brasília)",
+    "offset": -3,
+    "country": "BR"
+  },
+  {
+    "value": "America/Manaus",
+    "label": "America/Manaus (GMT-4 • Brasil Amazonas)",
+    "offset": -4,
+    "country": "BR"
+  },
+  {
+    "value": "America/Fortaleza",
+    "label": "America/Fortaleza (GMT-3 • Brasil Nordeste)",
+    "offset": -3,
+    "country": "BR"
+  },
+  {
+    "value": "America/New_York",
+    "label": "America/New_York (GMT-5 • EUA Leste / Wall St)",
+    "offset": -5,
+    "country": "US"
+  },
+  {
+    "value": "America/Chicago",
+    "label": "America/Chicago (GMT-6 • EUA Central)",
+    "offset": -6,
+    "country": "US"
+  },
+  {
+    "value": "America/Denver",
+    "label": "America/Denver (GMT-7 • EUA Montanhas)",
+    "offset": -7,
+    "country": "US"
+  },
+  {
+    "value": "America/Los_Angeles",
+    "label": "America/Los_Angeles (GMT-8 • EUA Costa Oeste / Califórnia)",
+    "offset": -8,
+    "country": "US"
+  },
+  {
+    "value": "America/Toronto",
+    "label": "America/Toronto (GMT-5 • Canadá Leste)",
+    "offset": -5,
+    "country": "CA"
+  },
+  {
+    "value": "America/Mexico_City",
+    "label": "America/Mexico_City (GMT-6 • México)",
+    "offset": -6,
+    "country": "MX"
+  },
+  {
+    "value": "America/Argentina/Buenos_Aires",
+    "label": "America/Argentina/Buenos_Aires (GMT-3 • Argentina)",
+    "offset": -3,
+    "country": "AR"
+  },
+  {
+    "value": "Europe/London",
+    "label": "Europe/London (GMT+0 • Reino Unido)",
+    "offset": 0,
+    "country": "GB"
+  },
+  {
+    "value": "Europe/Lisbon",
+    "label": "Europe/Lisbon (GMT+0 • Portugal)",
+    "offset": 0,
+    "country": "PT"
+  },
+  {
+    "value": "Europe/Madrid",
+    "label": "Europe/Madrid (GMT+1 • Espanha)",
+    "offset": 1,
+    "country": "ES"
+  },
+  {
+    "value": "Europe/Paris",
+    "label": "Europe/Paris (GMT+1 • França)",
+    "offset": 1,
+    "country": "FR"
+  },
+  {
+    "value": "Europe/Berlin",
+    "label": "Europe/Berlin (GMT+1 • Alemanha)",
+    "offset": 1,
+    "country": "DE"
+  },
+  {
+    "value": "Europe/Rome",
+    "label": "Europe/Rome (GMT+1 • Itália)",
+    "offset": 1,
+    "country": "IT"
+  },
+  {
+    "value": "Europe/Amsterdam",
+    "label": "Europe/Amsterdam (GMT+1 • Holanda)",
+    "offset": 1,
+    "country": "NL"
+  },
+  {
+    "value": "Europe/Dublin",
+    "label": "Europe/Dublin (GMT+0 • Irlanda)",
+    "offset": 0,
+    "country": "IE"
+  },
+  {
+    "value": "Europe/Warsaw",
+    "label": "Europe/Warsaw (GMT+1 • Polônia)",
+    "offset": 1,
+    "country": "PL"
+  },
+  {
+    "value": "Europe/Moscow",
+    "label": "Europe/Moscow (GMT+3 • Rússia)",
+    "offset": 3,
+    "country": "RU"
+  },
+  {
+    "value": "Asia/Dubai",
+    "label": "Asia/Dubai (GMT+4 • Emirados Árabes)",
+    "offset": 4,
+    "country": "AE"
+  },
+  {
+    "value": "Asia/Tokyo",
+    "label": "Asia/Tokyo (GMT+9 • Japão)",
+    "offset": 9,
+    "country": "JP"
+  },
+  {
+    "value": "Asia/Shanghai",
+    "label": "Asia/Shanghai (GMT+8 • China)",
+    "offset": 8,
+    "country": "CN"
+  },
+  {
+    "value": "Asia/Singapore",
+    "label": "Asia/Singapore (GMT+8 • Singapura)",
+    "offset": 8,
+    "country": "SG"
+  },
+  {
+    "value": "Australia/Sydney",
+    "label": "Australia/Sydney (GMT+10 • Austrália)",
+    "offset": 10,
+    "country": "AU"
+  }
+]

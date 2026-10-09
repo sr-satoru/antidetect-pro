@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { CloudUpload, FileArchive, Image as ImageIcon } from 'lucide-react';
 
 export interface ExtensaoArquivoFormValues {
+  file?: File;
   fileName?: string;
   name: string;
   intro: string;
@@ -10,7 +11,7 @@ export interface ExtensaoArquivoFormValues {
 
 interface AdicionarExtensaoArquivoProps {
   values: ExtensaoArquivoFormValues;
-  onChange: (field: keyof ExtensaoArquivoFormValues, value: string) => void;
+  onChange: (field: keyof ExtensaoArquivoFormValues, value: any) => void;
 }
 
 export const AdicionarExtensaoArquivo: React.FC<
@@ -22,6 +23,7 @@ export const AdicionarExtensaoArquivo: React.FC<
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      onChange('file', file);
       onChange('fileName', file.name);
       if (!values.name) {
         // Sugere o nome sem a extensão

@@ -26,12 +26,17 @@ pub async fn import_profile_extensions(
     profile_dir: &Path,
     data_dir: &Path,
     client: &reqwest::Client,
+    engine_type: &str,
 ) -> Result<Vec<String>, String> {
     let mode = profile.extension_mode.as_deref().unwrap_or("team");
     if mode == "none" {
         info!("Perfil {} configurado sem extensões ('none').", profile.id);
         return Ok(Vec::new());
     }
+
+    let is_chromium = engine_type.eq_ignore_ascii_case("clearcote")
+        || engine_type.eq_ignore_ascii_case("chromium")
+        || engine_type.eq_ignore_ascii_case("astrobrowser");
 
     let extensions_dir = profile_dir.join("extensions");
     fs::create_dir_all(&extensions_dir)
@@ -45,6 +50,8 @@ pub async fn import_profile_extensions(
 
     let cache_dir = root_dir.join("cache").join("extensions");
     let _ = fs::create_dir_all(&cache_dir);
+    let storage_base = root_dir.join("extensions").join("storage");
+    let _ = fs::create_dir_all(&storage_base);
 
     // 1. Identifica a biblioteca da equipe para enriquecimento (<data_dir>/extensions/*.json)
     let team_library = load_team_library(&root_dir.join("extensions"));
@@ -105,55 +112,88 @@ pub async fn import_profile_extensions(
     }
 
     info!(
-        "📦 Processando {} extensão(ões) para o perfil '{}' ({})",
+        "📦 Processando {} extensão(ões) para o perfil '{}' ({}) no motor '{}'",
         targets.len(),
         profile.name,
-        profile.id
+        profile.id,
+        engine_type
     );
 
     let mut installed_paths: Vec<String> = Vec::new();
 
-    // 3. Para cada extensão alvo, garante download no cache e cópia para a pasta do perfil
+    // 3. Para cada extensão alvo, prepara os arquivos adequados para a engine
     for target in targets {
-        let url_str = target
-            .provider_url
-            .as_deref()
-            .map(str::trim)
-            .filter(|u| !u.is_empty() && *u != "#")
-            .map(String::from)
-            .or_else(|| {
-                target
-                    .guid_hint
-                    .as_deref()
-                    .map(str::trim)
-                    .filter(|gid| !gid.is_empty() && !gid.starts_with("local_") && gid.parse::<u64>().is_err())
-                    .map(String::from)
-            });
+        let matched_team_ext = target.guid_hint.as_deref().and_then(|gid| {
+            team_library.iter().find(|t| t.id.to_string() == gid)
+        }).or_else(|| {
+            team_library.iter().find(|t| t.name.eq_ignore_ascii_case(&target.name))
+        });
 
-        let Some(target_source) = url_str else {
-            warn!("⚠️ Extensão '{}' ignorada: nenhuma URL ou slug do AMO encontrado.", target.name);
-            continue;
+        let target_storage_dir = if let Some(m) = matched_team_ext {
+            storage_base.join(m.id.to_string())
+        } else if let Some(gid) = target.guid_hint.as_deref().filter(|g| g.parse::<u64>().is_ok()) {
+            storage_base.join(gid)
+        } else {
+            let slug = target.name.to_lowercase().replace(' ', "-");
+            storage_base.join(&slug)
         };
 
-        match downloader::download_and_cache_xpi(&target_source, &cache_dir, client).await {
-            Ok((cached_xpi, api_guid)) => {
-                let addon_id = api_guid
-                    .or_else(|| manifest::extract_addon_id_from_xpi(&cached_xpi))
-                    .or(target.guid_hint)
-                    .unwrap_or_else(|| {
-                        cached_xpi
-                            .file_stem()
-                            .and_then(|s| s.to_str())
-                            .unwrap_or("ext")
-                            .to_string()
-                    });
+        let unpacked_dir = target_storage_dir.join("unpacked");
+        let package_xpi = target_storage_dir.join("package.xpi");
 
-                let dest_file = extensions_dir.join(format!("{addon_id}.xpi"));
-                if !dest_file.exists() {
-                    if let Err(e) = fs::copy(&cached_xpi, &dest_file) {
-                        warn!("Falha ao copiar extensão '{}' para o perfil: {}", target.name, e);
-                        continue;
+        // Se a extensão já está pronta no storage central
+        let is_ready = unpacked_dir.join("manifest.json").is_file() && package_xpi.is_file();
+
+        if !is_ready {
+            // Tenta obter o binário via URL da Chrome Web Store ou Firefox AMO
+            let url_opt = target.provider_url.as_deref().or_else(|| {
+                matched_team_ext.and_then(|m| m.provider_url.as_deref())
+            });
+
+            if let Some(url_str) = url_opt.filter(|u| !u.trim().is_empty() && *u != "#") {
+                if let Some(cws_id) = crate::browser::extensions::universal::extract_cws_id(url_str) {
+                    if let Ok(bytes) = crate::browser::extensions::universal::download_cws_crx(&cws_id, client).await {
+                        let _ = crate::browser::extensions::universal::process_extension_binary(&bytes, &target_storage_dir, &cws_id);
                     }
+                } else if let Ok((cached_xpi, _)) = downloader::download_and_cache_xpi(url_str, &cache_dir, client).await {
+                    if let Ok(bytes) = fs::read(&cached_xpi) {
+                        let slug = downloader::extract_amo_slug(url_str).unwrap_or_else(|| "ext".to_string());
+                        let _ = crate::browser::extensions::universal::process_extension_binary(&bytes, &target_storage_dir, &slug);
+                    }
+                }
+            } else if let Some(gid) = target.guid_hint.as_deref() {
+                // Tenta inferir pelo slug
+                if let Ok((cached_xpi, _)) = downloader::download_and_cache_xpi(gid, &cache_dir, client).await {
+                    if let Ok(bytes) = fs::read(&cached_xpi) {
+                        let _ = crate::browser::extensions::universal::process_extension_binary(&bytes, &target_storage_dir, gid);
+                    }
+                }
+            }
+        }
+
+        if is_chromium {
+            // 4A. CHROMIUM / CLEARCOTE: Exige diretório descompactado contendo manifest.json
+            if unpacked_dir.join("manifest.json").is_file() {
+                let abs_unpacked = unpacked_dir
+                    .canonicalize()
+                    .unwrap_or(unpacked_dir)
+                    .to_string_lossy()
+                    .to_string();
+                info!("✅ [Chromium] Extensão '{}' pronta (unpacked): {abs_unpacked}", target.name);
+                installed_paths.push(abs_unpacked);
+            } else {
+                warn!("⚠️ [Chromium] Extensão '{}' não possui diretório unpacked com manifest.json válido", target.name);
+            }
+        } else {
+            // 4B. FIREFOX / CAMOUFOX: Exige arquivo .xpi com Gecko ID presente
+            if package_xpi.is_file() {
+                let gecko_id = manifest::extract_addon_id_from_xpi(&package_xpi)
+                    .or_else(|| target.guid_hint.clone())
+                    .unwrap_or_else(|| format!("{}@star-multilogin.local", target.name.to_lowercase().replace(' ', "-")));
+
+                let dest_file = extensions_dir.join(format!("{gecko_id}.xpi"));
+                if !dest_file.exists() {
+                    let _ = fs::copy(&package_xpi, &dest_file);
                 }
 
                 let absolute_path = dest_file
@@ -162,11 +202,10 @@ pub async fn import_profile_extensions(
                     .to_string_lossy()
                     .to_string();
 
-                info!("✅ Extensão '{}' instalada no perfil: {addon_id} -> {absolute_path}", target.name);
+                info!("✅ [Firefox] Extensão '{}' instalada no perfil: {gecko_id} -> {absolute_path}", target.name);
                 installed_paths.push(absolute_path);
-            }
-            Err(err) => {
-                warn!("⚠️ Não foi possível carregar extensão '{}' ({target_source}): {err}", target.name);
+            } else {
+                warn!("⚠️ [Firefox] Pacote .xpi não encontrado para extensão '{}'", target.name);
             }
         }
     }

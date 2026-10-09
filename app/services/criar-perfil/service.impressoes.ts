@@ -4,6 +4,7 @@
  */
 
 import { http } from '../http';
+import config from '@/config/perfil.json';
 
 export interface ImpressaoDigitalData {
   // Proxy associado
@@ -136,11 +137,23 @@ export function extrairImpressaoDigitalLimpa(formData: any): ImpressaoDigitalDat
       : [],
     extensions: Array.isArray(formData.extensions) ? formData.extensions : [],
     platform_url: formData.platformUrl || undefined,
-    platform_accounts: formData.platformAccounts || [],
+    platform_accounts: (Array.isArray(formData.platformAccounts) ? formData.platformAccounts : []).map((acc: any) => {
+      let customDomain = acc.customDomain || '';
+      if (!customDomain && acc.platform && acc.platform !== 'other') {
+        const preset = config.platforms.find((p: any) => p.id === acc.platform);
+        if (preset?.domain) {
+          customDomain = preset.domain;
+        }
+      }
+      return {
+        ...acc,
+        customDomain,
+      };
+    }),
     open_tabs_urls: formData.openTabsUrls || undefined,
     cookies: formData.cookies || undefined,
 
-    kernel: formData.kernel || 'AstroFox',
+    kernel: (formData.os || '').toLowerCase() === 'android' ? 'AstroBrowser' : (formData.kernel || 'AstroFox'),
     kernel_version: formData.kernelVersion || '150',
     os: (formData.os || 'windows').toLowerCase(),
     os_version: formData.osVersion || 'Linux x86_64',
@@ -266,7 +279,7 @@ export const impressaoDigitalService = {
       status: 'ready',
 
       // 3. Atalhos diretos para a tabela de listagem
-      kernel: formData.kernel || 'AstroFox',
+      kernel: (formData.os || '').toLowerCase() === 'android' ? 'AstroBrowser' : (formData.kernel || 'AstroFox'),
       browser_version: formData.kernelVersion || '150',
       os: (formData.os || 'windows').toLowerCase(),
       proxy_type: formData.proxyType || 'none',

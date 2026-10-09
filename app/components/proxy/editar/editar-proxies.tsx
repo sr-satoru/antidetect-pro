@@ -120,7 +120,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 select-none">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 dark:bg-black/85 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-black/60 dark:bg-black/85 transition-opacity"
         onClick={onClose}
       />
 

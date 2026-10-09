@@ -96,7 +96,7 @@ pub struct Profile {
     pub status: String, // "ready" | "running" | "error"
 
     #[serde(default = "default_kernel")]
-    pub kernel: String, // "FlowerBrowser" (Camoufox) | "SunBrowser"
+    pub kernel: String, // "AstroFox" | "AstroBrowser"
     #[serde(default = "default_kernel_version")]
     pub browser_version: String,
     #[serde(default = "default_os")]
@@ -116,7 +116,7 @@ pub struct Profile {
     #[serde(default)]
     pub proxy: ProfileProxyConfig,
 
-    // Impressão digital bruta / estruturada do Camoufox
+    // Impressão digital bruta / estruturada
     #[serde(default = "default_json_obj")]
     pub fingerprint_json: serde_json::Value,
 
@@ -136,7 +136,7 @@ fn default_status() -> String {
     "ready".to_string()
 }
 fn default_kernel() -> String {
-    "FlowerBrowser".to_string()
+    "AstroFox".to_string()
 }
 fn default_kernel_version() -> String {
     "150".to_string()

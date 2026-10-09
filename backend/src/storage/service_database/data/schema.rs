@@ -10,13 +10,13 @@ pub fn init_tables(conn: &Connection) -> Result<(), rusqlite::Error> {
             value TEXT NOT NULL
         );
 
-        -- Tabela isolada de perfis de navegadores antidetect (Camoufox / Chromium)
+        -- Tabela isolada de perfis de navegadores antidetect (AstroFox / AstroBrowser)
         CREATE TABLE IF NOT EXISTS profiles (
             id TEXT PRIMARY KEY,
             name TEXT NOT NULL,
             group_name TEXT NOT NULL DEFAULT 'Desagrupado',
             status TEXT NOT NULL DEFAULT 'ready',
-            kernel TEXT NOT NULL DEFAULT 'Camoufox',
+            kernel TEXT NOT NULL DEFAULT 'AstroFox',
             browser_version TEXT NOT NULL DEFAULT '150',
             os TEXT NOT NULL DEFAULT 'linux',
             payload_enc BLOB NOT NULL,

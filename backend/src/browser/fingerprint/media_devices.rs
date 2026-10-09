@@ -2,7 +2,7 @@ use std::sync::LazyLock;
 use serde_json::Value;
 
 static MEDIA_DEVICES_PRESET: LazyLock<Value> = LazyLock::new(|| {
-    let s = include_str!("../../../presets/media-devices.json");
+    let s = include_str!("../../../presets/common/media-devices.json");
     serde_json::from_str(s).unwrap_or(Value::Null)
 });
 

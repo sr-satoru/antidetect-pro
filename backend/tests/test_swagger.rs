@@ -24,9 +24,25 @@ async fn test_swagger_module_structure_and_spec_generation() {
 
 #[tokio::test]
 async fn test_mcp_handshake_and_info() {
-    let res = star_multlogin_backend::api::routes::mcp::get_mcp_info().await;
-    // Valida que o endpoint de MCP info retorna formato esperado
+    let temp_dir = std::env::temp_dir().join(format!(
+        "star_mcp_test_{}",
+        std::time::SystemTime::now().elapsed().unwrap().as_nanos()
+    ));
+    let vault = std::sync::Arc::new(star_multlogin_backend::service_database::Vault::new(&temp_dir).unwrap());
+    let ws = star_multlogin_backend::ws::WsState::new();
+    let storage = std::sync::Arc::new(star_multlogin_backend::service_database::ProfileStorage::new(&temp_dir, ws, vault));
+
+    let res = star_multlogin_backend::api::routes::mcp::get_mcp_info(axum::extract::State(storage.clone())).await;
+    // Valida que o endpoint de MCP info retorna formato esperado e dinamicamente gerado
     let axum::Json(val) = res;
-    assert!(val["token"].as_str().unwrap().starts_with("star_sec_"));
-    assert_eq!(val["server_url"], "http://127.0.0.1:3001");
+    let token = val["token"].as_str().unwrap();
+    assert!(token.starts_with("star_sec_"));
+    assert!(token.len() >= 32, "Token deve ter entropia suficiente");
+    assert_eq!(val["server_url"], "http://127.0.0.1:12540");
+    assert_eq!(val["mcp_url"], format!("http://127.0.0.1:12540/mcp/{token}/sse"));
+
+    // Valida que o token foi persistido e verificado
+    assert!(storage.verify_mcp_token(token));
+
+    let _ = std::fs::remove_dir_all(temp_dir);
 }

@@ -27,7 +27,7 @@ export interface ExecuteTestResult {
   isSimulated?: boolean;
 }
 
-export const DEFAULT_MCP_TOKEN = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904';
+export const DEFAULT_MCP_TOKEN = '';
 
 // Cache em memória do token MCP para a sessão atual (sem tocar no localStorage)
 let cachedMcpInfo: McpInfoResponse | null = null;
@@ -45,10 +45,21 @@ export const serviceMcp = {
   },
 
   /**
-   * Retorna o token em memória se já consultado, ou o token padrão do Star Multlogin
+   * Rotaciona/regenera o token de autenticação no banco SQLite Star Vault
+   */
+  rotateToken: async (): Promise<McpInfoResponse> => {
+    const info = await http.post<McpInfoResponse>('/mcp/rotate-token', {});
+    if (info?.token) {
+      cachedMcpInfo = info;
+    }
+    return info;
+  },
+
+  /**
+   * Retorna o token em memória se já consultado
    */
   getCachedToken: (): string => {
-    return cachedMcpInfo?.token || DEFAULT_MCP_TOKEN;
+    return cachedMcpInfo?.token || '';
   },
 
   /**

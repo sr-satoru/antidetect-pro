@@ -1,0 +1,1069 @@
+{
+  "version": 1,
+  "engine": "clearcote-android-c++-patches",
+  "count": 18,
+  "presets": [
+    {
+      "id": "android-pixel-7-134",
+      "kernel": "AstroBrowser",
+      "browserVersion": "134",
+      "deviceModel": "Pixel 7",
+      "androidVersion": "14",
+      "fingerprintSeed": "100007919",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.36 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "134"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "134"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "Pixel 7"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 915,
+        "availWidth": 412,
+        "availHeight": 915,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G710, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-pixel-7-133",
+      "kernel": "AstroBrowser",
+      "browserVersion": "133",
+      "deviceModel": "Pixel 7",
+      "androidVersion": "14",
+      "fingerprintSeed": "100015838",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.6943.142 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "133"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "133"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "Pixel 7"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 915,
+        "availWidth": 412,
+        "availHeight": 915,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G710, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-pixel-7-132",
+      "kernel": "AstroBrowser",
+      "browserVersion": "132",
+      "deviceModel": "Pixel 7",
+      "androidVersion": "14",
+      "fingerprintSeed": "100023757",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.6834.160 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "132"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "132"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "Pixel 7"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 915,
+        "availWidth": 412,
+        "availHeight": 915,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G710, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-pixel-7-131",
+      "kernel": "AstroBrowser",
+      "browserVersion": "131",
+      "deviceModel": "Pixel 7",
+      "androidVersion": "14",
+      "fingerprintSeed": "100031676",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.265 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "131"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "131"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "Pixel 7"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 915,
+        "availWidth": 412,
+        "availHeight": 915,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G710, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-pixel-7-130",
+      "kernel": "AstroBrowser",
+      "browserVersion": "130",
+      "deviceModel": "Pixel 7",
+      "androidVersion": "14",
+      "fingerprintSeed": "100039595",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.116 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "130"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "130"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "Pixel 7"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 915,
+        "availWidth": 412,
+        "availHeight": 915,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G710, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-pixel-7-150",
+      "kernel": "AstroBrowser",
+      "browserVersion": "150",
+      "deviceModel": "Pixel 7",
+      "androidVersion": "14",
+      "fingerprintSeed": "100047514",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.7871.114 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "150"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "150"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "Pixel 7"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 915,
+        "availWidth": 412,
+        "availHeight": 915,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G710, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-s23-134",
+      "kernel": "AstroBrowser",
+      "browserVersion": "134",
+      "deviceModel": "SM-S911B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100055433",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-S911B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.36 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "134"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "134"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-S911B"
+        }
+      },
+      "screen": {
+        "width": 360,
+        "height": 780,
+        "availWidth": 360,
+        "availHeight": 780,
+        "colorDepth": 24,
+        "devicePixelRatio": 3.0
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (Qualcomm)",
+        "unmaskedRenderer": "ANGLE (Qualcomm, Adreno (TM) 740, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-s23-133",
+      "kernel": "AstroBrowser",
+      "browserVersion": "133",
+      "deviceModel": "SM-S911B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100063352",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-S911B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.6943.142 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "133"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "133"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-S911B"
+        }
+      },
+      "screen": {
+        "width": 360,
+        "height": 780,
+        "availWidth": 360,
+        "availHeight": 780,
+        "colorDepth": 24,
+        "devicePixelRatio": 3.0
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (Qualcomm)",
+        "unmaskedRenderer": "ANGLE (Qualcomm, Adreno (TM) 740, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-s23-132",
+      "kernel": "AstroBrowser",
+      "browserVersion": "132",
+      "deviceModel": "SM-S911B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100071271",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-S911B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.6834.160 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "132"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "132"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-S911B"
+        }
+      },
+      "screen": {
+        "width": 360,
+        "height": 780,
+        "availWidth": 360,
+        "availHeight": 780,
+        "colorDepth": 24,
+        "devicePixelRatio": 3.0
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (Qualcomm)",
+        "unmaskedRenderer": "ANGLE (Qualcomm, Adreno (TM) 740, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-s23-131",
+      "kernel": "AstroBrowser",
+      "browserVersion": "131",
+      "deviceModel": "SM-S911B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100079190",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-S911B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.265 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "131"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "131"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-S911B"
+        }
+      },
+      "screen": {
+        "width": 360,
+        "height": 780,
+        "availWidth": 360,
+        "availHeight": 780,
+        "colorDepth": 24,
+        "devicePixelRatio": 3.0
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (Qualcomm)",
+        "unmaskedRenderer": "ANGLE (Qualcomm, Adreno (TM) 740, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-s23-130",
+      "kernel": "AstroBrowser",
+      "browserVersion": "130",
+      "deviceModel": "SM-S911B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100087109",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-S911B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.116 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "130"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "130"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-S911B"
+        }
+      },
+      "screen": {
+        "width": 360,
+        "height": 780,
+        "availWidth": 360,
+        "availHeight": 780,
+        "colorDepth": 24,
+        "devicePixelRatio": 3.0
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (Qualcomm)",
+        "unmaskedRenderer": "ANGLE (Qualcomm, Adreno (TM) 740, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-s23-150",
+      "kernel": "AstroBrowser",
+      "browserVersion": "150",
+      "deviceModel": "SM-S911B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100095028",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-S911B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.7871.114 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "150"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "150"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-S911B"
+        }
+      },
+      "screen": {
+        "width": 360,
+        "height": 780,
+        "availWidth": 360,
+        "availHeight": 780,
+        "colorDepth": 24,
+        "devicePixelRatio": 3.0
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (Qualcomm)",
+        "unmaskedRenderer": "ANGLE (Qualcomm, Adreno (TM) 740, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-a54-134",
+      "kernel": "AstroBrowser",
+      "browserVersion": "134",
+      "deviceModel": "SM-A546B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100102947",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-A546B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.36 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "134"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "134"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-A546B"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 892,
+        "availWidth": 412,
+        "availHeight": 892,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G68 MC4, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-a54-133",
+      "kernel": "AstroBrowser",
+      "browserVersion": "133",
+      "deviceModel": "SM-A546B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100110866",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-A546B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.6943.142 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "133"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "133"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-A546B"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 892,
+        "availWidth": 412,
+        "availHeight": 892,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G68 MC4, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-a54-132",
+      "kernel": "AstroBrowser",
+      "browserVersion": "132",
+      "deviceModel": "SM-A546B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100118785",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-A546B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.6834.160 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "132"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "132"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-A546B"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 892,
+        "availWidth": 412,
+        "availHeight": 892,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G68 MC4, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-a54-131",
+      "kernel": "AstroBrowser",
+      "browserVersion": "131",
+      "deviceModel": "SM-A546B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100126704",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-A546B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.265 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "131"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "131"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-A546B"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 892,
+        "availWidth": 412,
+        "availHeight": 892,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G68 MC4, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-a54-130",
+      "kernel": "AstroBrowser",
+      "browserVersion": "130",
+      "deviceModel": "SM-A546B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100134623",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-A546B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.116 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "130"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "130"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-A546B"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 892,
+        "availWidth": 412,
+        "availHeight": 892,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G68 MC4, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    },
+    {
+      "id": "android-galaxy-a54-150",
+      "kernel": "AstroBrowser",
+      "browserVersion": "150",
+      "deviceModel": "SM-A546B",
+      "androidVersion": "14",
+      "fingerprintSeed": "100142542",
+      "navigator": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 14; SM-A546B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.7871.114 Mobile Safari/537.36",
+        "platform": "Linux armv8l",
+        "hardwareConcurrency": 8,
+        "deviceMemory": 8,
+        "maxTouchPoints": 5,
+        "userAgentData": {
+          "brands": [
+            {
+              "brand": "Chromium",
+              "version": "150"
+            },
+            {
+              "brand": "Google Chrome",
+              "version": "150"
+            },
+            {
+              "brand": "Not?A_Brand",
+              "version": "99"
+            }
+          ],
+          "mobile": true,
+          "platform": "Android",
+          "platformVersion": "14.0.0",
+          "architecture": "",
+          "bitness": "64",
+          "model": "SM-A546B"
+        }
+      },
+      "screen": {
+        "width": 412,
+        "height": 892,
+        "availWidth": 412,
+        "availHeight": 892,
+        "colorDepth": 24,
+        "devicePixelRatio": 2.625
+      },
+      "webgl": {
+        "unmaskedVendor": "Google Inc. (ARM)",
+        "unmaskedRenderer": "ANGLE (ARM, Mali-G68 MC4, OpenGL ES 3.2)"
+      },
+      "mobile": true,
+      "pointer": "coarse",
+      "hover": "none",
+      "orientation": {
+        "type": "portrait-primary",
+        "angle": 0
+      },
+      "colorGamut": "p3",
+      "dynamicRange": "high",
+      "speechVoices": []
+    }
+  ]
+}

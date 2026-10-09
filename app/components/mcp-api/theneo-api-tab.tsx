@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Terminal,
   Copy,
@@ -16,11 +16,15 @@ import {
   AlertCircle,
   FileJson,
 } from 'lucide-react';
+import { BACKEND_PORT } from '@/services/http';
 import { serviceMcp } from '@/services/mcp/service.mcp';
+import { renderCodeWithKeyBlur, sanitizeCodeForCopy } from './code-blur-helper';
 
 interface TheneoApiTabProps {
   apiPort?: number;
   token?: string;
+  showToken?: boolean;
+  onRevealKey?: () => void;
 }
 
 interface EndpointParam {
@@ -45,9 +49,25 @@ interface EndpointDef {
 }
 
 export const TheneoApiTab: React.FC<TheneoApiTabProps> = ({
-  apiPort = 18922,
-  token = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
+  apiPort = BACKEND_PORT,
+  token: propToken,
+  showToken = false,
+  onRevealKey,
 }) => {
+  const [token, setToken] = useState<string>(propToken || serviceMcp.getCachedToken());
+
+  useEffect(() => {
+    if (propToken) {
+      setToken(propToken);
+    } else {
+      serviceMcp.getInfo()
+        .then((res) => {
+          if (res?.token) setToken(res.token);
+        })
+        .catch(() => {});
+    }
+  }, [propToken]);
+
   const baseUrl = `http://127.0.0.1:${apiPort}`;
 
   const endpoints: EndpointDef[] = [
@@ -69,7 +89,7 @@ export const TheneoApiTab: React.FC<TheneoApiTabProps> = ({
       ],
       mockResponse: {
         ok: true,
-        engine: 'camoufox',
+        engine: 'AstroFox / AstroBrowser',
         version: '2.1.0',
         running_count: 2,
         active_profiles: ['prf_8921a', 'prf_7142b'],
@@ -381,7 +401,9 @@ await page.goto('${testParamUrl}');`;
   };
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(getCodeSnippet());
+    const rawCode = getCodeSnippet();
+    const textToCopy = sanitizeCodeForCopy(rawCode, token, showToken);
+    navigator.clipboard.writeText(textToCopy);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
@@ -423,7 +445,7 @@ await page.goto('${testParamUrl}');`;
   return (
     <div className="space-y-5">
       {/* Top Banner: Theneo / Stripe style docs */}
-      <div className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#13141C] border border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#00FF66]/15 text-[#00FF66] border border-[#00FF66]/30">
@@ -451,7 +473,7 @@ await page.goto('${testParamUrl}');`;
         {/* ========================================================================= */}
         {/* COLUNA 1: Navegação Lateral (Endpoints Tree & Search) [3 Colunas no Desktop] */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-3 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4">
+        <div className="lg:col-span-3 bg-[#13141C] border border-white/10 rounded-2xl p-4 shadow-sm dark:shadow-none space-y-4">
           {/* Search Box */}
           <div className="relative">
             <Search size={14} className="absolute left-3 top-2.5 text-[#8E8E93]" />
@@ -488,7 +510,7 @@ await page.goto('${testParamUrl}');`;
                           }}
                           className={`w-full text-left px-2.5 py-2 rounded-xl transition-all flex items-center justify-between gap-2 text-[12px] ${
                             isSelected
-                              ? 'bg-[#1F212D] text-[#00FF66] font-bold border border-white/15 shadow-sm'
+                              ? 'bg-[#1F212D] text-[#00FF66] font-bold border border-white/15 shadow-sm dark:shadow-none'
                               : 'text-[#D4D4D8] hover:bg-white/[0.04] hover:text-white border border-transparent'
                           }`}
                         >
@@ -520,7 +542,7 @@ await page.goto('${testParamUrl}');`;
         {/* ========================================================================= */}
         {/* COLUNA 2: Documentação Técnica Central (Params, Body, Specs) [5 Colunas]  */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-5 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-5">
+        <div className="lg:col-span-5 bg-[#13141C] border border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none space-y-5">
           {/* Endpoint Header */}
           <div className="space-y-2 pb-4 border-b border-white/10">
             <div className="flex items-center gap-2 flex-wrap">
@@ -616,7 +638,7 @@ await page.goto('${testParamUrl}');`;
         {/* ========================================================================= */}
         {/* COLUNA 3: Code Console & Interactive Playground Theneo [4 Colunas]         */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-4 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4">
+        <div className="lg:col-span-4 bg-[#13141C] border border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-white/10">
             <h4 className="text-[13px] font-bold text-white flex items-center gap-1.5">
               <Terminal size={15} className="text-[#00FF66]" />
@@ -636,7 +658,7 @@ await page.goto('${testParamUrl}');`;
                 onClick={() => setSelectedLang(lang)}
                 className={`flex-1 py-1 px-2 rounded-lg text-[11px] font-bold transition-all text-center ${
                   selectedLang === lang
-                    ? 'bg-[#1F212D] text-[#00FF66] shadow-sm border border-white/15'
+                    ? 'bg-[#1F212D] text-[#00FF66] shadow-sm dark:shadow-none border border-white/15'
                     : 'text-[#A0A0A0] hover:text-white hover:bg-white/[0.04]'
                 }`}
               >
@@ -648,12 +670,13 @@ await page.goto('${testParamUrl}');`;
           {/* Code Snippet Box */}
           <div className="relative group">
             <pre className="bg-[#0C0D12] border border-white/10 rounded-xl p-3.5 text-[11px] font-mono text-[#F0F0F0] overflow-x-auto max-h-[220px] leading-relaxed shadow-inner">
-              {getCodeSnippet()}
+              {renderCodeWithKeyBlur(getCodeSnippet(), token, showToken, onRevealKey)}
             </pre>
             <button
               type="button"
               onClick={handleCopyCode}
-              className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#1E202B] hover:bg-[#282B3A] text-[#00FF66] text-[10px] font-bold border border-white/10 transition-all shadow-sm"
+              className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#1E202B] hover:bg-[#282B3A] text-[#00FF66] text-[10px] font-bold border border-white/10 transition-all shadow-sm dark:shadow-none"
+              title={showToken ? "Copiar" : "Copiar (Chave vazia enquanto oculta)"}
             >
               {copiedCode ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
               <span>{copiedCode ? 'Copiado!' : 'Copiar'}</span>

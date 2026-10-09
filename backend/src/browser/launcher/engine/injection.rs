@@ -22,7 +22,12 @@ pub fn ensure_cookie_db_schema(db_path: &Path) -> Result<(), String> {
         .map_err(|e| format!("Falha ao abrir/criar banco de cookies: {e}"))?;
 
     conn.execute_batch(
-        "CREATE TABLE IF NOT EXISTS moz_cookies (
+        "CREATE TABLE IF NOT EXISTS moz_meta (
+            key TEXT NOT NULL PRIMARY KEY,
+            value TEXT
+        );
+        INSERT OR IGNORE INTO moz_meta (key, value) VALUES ('version', '14');
+        CREATE TABLE IF NOT EXISTS moz_cookies (
             id INTEGER PRIMARY KEY,
             originAttributes TEXT NOT NULL DEFAULT '',
             name TEXT,
@@ -43,7 +48,7 @@ pub fn ensure_cookie_db_schema(db_path: &Path) -> Result<(), String> {
         );
         CREATE INDEX IF NOT EXISTS moz_basedomain ON moz_cookies (host);",
     )
-    .map_err(|e| format!("Falha ao inicializar tabela moz_cookies: {e}"))?;
+    .map_err(|e| format!("Falha ao inicializar tabela moz_cookies e moz_meta: {e}"))?;
 
     Ok(())
 }

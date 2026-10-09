@@ -1,0 +1,55 @@
+{
+  "tier1_entry": {
+    "label": "Tier 1: Entrada / VPS Nuvem / Laptop Básico",
+    "cores": [
+      4,
+      6,
+      8
+    ],
+    "memoryGb": [
+      4,
+      8
+    ],
+    "weight": 0.62
+  },
+  "tier2_mainstream": {
+    "label": "Tier 2: Desktop Intermediário / Laptop Gamer",
+    "cores": [
+      8,
+      12,
+      16
+    ],
+    "memoryGb": [
+      8,
+      16
+    ],
+    "weight": 0.3
+  },
+  "tier3_highend": {
+    "label": "Tier 3: Desktop Alto Desempenho",
+    "cores": [
+      12,
+      16,
+      20
+    ],
+    "memoryGb": [
+      16,
+      32
+    ],
+    "weight": 0.06
+  },
+  "tier4_workstation": {
+    "label": "Tier 4: Workstation / Entusiasta",
+    "cores": [
+      16,
+      20,
+      24,
+      32
+    ],
+    "memoryGb": [
+      32,
+      64
+    ],
+    "weight": 0.02
+  }
+}

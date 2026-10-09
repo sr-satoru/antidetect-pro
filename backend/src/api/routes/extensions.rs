@@ -28,7 +28,51 @@ pub async fn create_extension(
     State(storage): State<Arc<ExtensionStorage>>,
     Json(payload): Json<CreateExtensionDto>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
-    match storage.create(payload) {
+    match storage.create(payload).await {
+        Ok(item) => Ok((StatusCode::CREATED, Json(item))),
+        Err(err) => Err((StatusCode::BAD_REQUEST, err)),
+    }
+}
+
+pub async fn upload_extension(
+    State(storage): State<Arc<ExtensionStorage>>,
+    mut multipart: axum::extract::Multipart,
+) -> Result<impl IntoResponse, (StatusCode, String)> {
+    let mut file_bytes: Option<Vec<u8>> = None;
+    let mut file_name = "extensao.zip".to_string();
+    let mut name_override: Option<String> = None;
+    let mut desc_override: Option<String> = None;
+
+    while let Ok(Some(field)) = multipart.next_field().await {
+        let field_name = field.name().unwrap_or("").to_string();
+        if field_name == "file" {
+            if let Some(filename) = field.file_name() {
+                file_name = filename.to_string();
+            }
+            match field.bytes().await {
+                Ok(bytes) => file_bytes = Some(bytes.to_vec()),
+                Err(e) => return Err((StatusCode::BAD_REQUEST, format!("Erro ao ler bytes do arquivo: {e}"))),
+            }
+        } else if field_name == "name" {
+            if let Ok(text) = field.text().await {
+                if !text.trim().is_empty() {
+                    name_override = Some(text.trim().to_string());
+                }
+            }
+        } else if field_name == "description" {
+            if let Ok(text) = field.text().await {
+                if !text.trim().is_empty() {
+                    desc_override = Some(text.trim().to_string());
+                }
+            }
+        }
+    }
+
+    let Some(bytes) = file_bytes else {
+        return Err((StatusCode::BAD_REQUEST, "Nenhum arquivo enviado no campo 'file'".to_string()));
+    };
+
+    match storage.save_uploaded_extension(&file_name, &bytes, name_override, desc_override) {
         Ok(item) => Ok((StatusCode::CREATED, Json(item))),
         Err(err) => Err((StatusCode::BAD_REQUEST, err)),
     }

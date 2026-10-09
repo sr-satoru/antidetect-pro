@@ -38,6 +38,7 @@ pub async fn prepare_profile_dir(
         profile_dir,
         data_dir,
         client,
+        &profile.kernel,
     )
     .await?;
 

@@ -14,10 +14,13 @@ import {
 } from 'lucide-react';
 import { BACKEND_PORT } from '@/services/http';
 import { serviceMcp } from '@/services/mcp/service.mcp';
+import { renderCodeWithKeyBlur, sanitizeCodeForCopy } from './code-blur-helper';
 
 interface ApiTabProps {
   apiPort?: number;
   token?: string;
+  showToken?: boolean;
+  onRevealKey?: () => void;
 }
 
 type SupportedLang = 'curl' | 'ruby' | 'python' | 'php' | 'java' | 'node' | 'go' | 'dotnet';
@@ -35,11 +38,13 @@ interface EndpointItem {
 export const ApiTab: React.FC<ApiTabProps> = ({
   apiPort = BACKEND_PORT,
   token: initialToken,
+  showToken = false,
+  onRevealKey,
 }) => {
   const [token, setToken] = useState(initialToken || serviceMcp.getCachedToken());
 
   React.useEffect(() => {
-    if (!initialToken || initialToken.includes('8f92a10b48c34791')) {
+    if (!initialToken) {
       serviceMcp.getInfo()
         .then((res) => {
           if (res?.token) {
@@ -47,6 +52,8 @@ export const ApiTab: React.FC<ApiTabProps> = ({
           }
         })
         .catch(() => {});
+    } else {
+      setToken(initialToken);
     }
   }, [initialToken]);
 
@@ -71,16 +78,16 @@ export const ApiTab: React.FC<ApiTabProps> = ({
     },
     {
       id: 'get_playwright_options',
-      name: 'Playwright: Opções Nativa Camoufox',
+      name: 'Playwright: Opções Nativas (Star Driver)',
       method: 'GET',
       path: '/api/profiles/{id}/playwright',
-      desc: 'Retorna manifesto completo com user_data_dir, executable_path, configs de hardware e prefs para execução nativa no Camoufox (zero BiDi).',
+      desc: 'Retorna manifesto completo com user_data_dir, executable_path, configs de hardware e prefs para execução nativa no Star Driver (zero BiDi).',
       mockResponse: {
         profile_id: 'prf_shopee_01',
         name: 'Shopee Ads',
         os: 'windows',
         user_data_dir: '/dados/profiles/prf_shopee_01/profile',
-        executable_path: '/binarios/camoufox/camoufox',
+        executable_path: '/binarios/astrofox/astrofox',
         config: {
           'geolocation:latitude': -23.55,
           'geolocation:longitude': -46.63,
@@ -94,10 +101,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
     },
     {
       id: 'start_profile',
-      name: 'Iniciar Perfil (Camoufox GUI)',
+      name: 'Iniciar Perfil (Star Driver GUI)',
       method: 'POST',
       path: '/api/profiles/{id}/launch',
-      desc: 'Inicia o perfil com janela gráfica, cookies, proxy e camuflagem de hardware no Camoufox.',
+      desc: 'Inicia o perfil com janela gráfica, cookies, proxy e camuflagem de hardware no AstroFox / AstroBrowser.',
       sampleBody: {
         id: 'prf_shopee_01',
       },
@@ -105,8 +112,8 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         status: 'launched',
         profile_id: 'prf_shopee_01',
         pid: 15820,
-        kernel: 'FlowerBrowser',
-        message: 'Navegador FlowerBrowser iniciado com sucesso (PID: 15820).',
+        kernel: 'AstroFox',
+        message: 'Navegador AstroFox iniciado com sucesso (PID: 15820).',
       },
     },
     {
@@ -140,11 +147,11 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       name: 'Verificar Saúde do Motor',
       method: 'GET',
       path: '/api/v1/status',
-      desc: 'Verifica a integridade do motor FlowerBrowser/Camoufox e quantos perfis estão abertos no momento.',
+      desc: 'Verifica a integridade do motor AstroFox / AstroBrowser e quantos perfis estão abertos no momento.',
       mockResponse: {
         ok: true,
         status: 'ready',
-        engine: 'FlowerBrowser (Camoufox)',
+        engine: 'AstroFox / AstroBrowser',
         version: '2.1.0',
         running_count: 0,
         loopback_only: true,
@@ -401,7 +408,9 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   const rawCode = lines.join('\n');
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(rawCode);
+    // Se a chave estiver com blur ativo (oculta), a chave vai no estado de vazia
+    const textToCopy = sanitizeCodeForCopy(rawCode, token, showToken);
+    navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -416,7 +425,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm shadow-slate-200/50 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col md:flex-row min-h-[580px]">
+    <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm dark:shadow-none flex flex-col md:flex-row min-h-[580px]">
       {/* PAINEL ESQUERDO: Lista de Endpoints para Navegação */}
       <div className="w-full md:w-[260px] bg-slate-50 dark:bg-[#101117] border-b md:border-b-0 md:border-r border-slate-200 dark:border-white/10 p-3.5 flex flex-col shrink-0 space-y-3">
         <div className="flex items-center justify-between px-2">
@@ -476,7 +485,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         {/* ========================================================================= */}
         {/* CARD 1: Base URL                                                          */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121319] shadow-sm">
+        <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121319] shadow-sm dark:shadow-none">
           {/* Header Bar */}
           <div className="bg-slate-100 dark:bg-[#181922] px-5 py-3 border-b border-slate-200 dark:border-white/10">
             <h3 className="text-[13px] font-bold text-slate-900 dark:text-white tracking-wide">Base URL</h3>
@@ -503,7 +512,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         {/* ========================================================================= */}
         {/* CARD 2: Language Box (Tabs com Ícones em Cima e Texto Embaixo)              */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121319] shadow-sm">
+        <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121319] shadow-sm dark:shadow-none">
           {/* Header Bar */}
           <div className="bg-slate-100 dark:bg-[#181922] px-5 py-3 border-b border-slate-200 dark:border-white/10">
             <h3 className="text-[13px] font-bold text-slate-900 dark:text-white tracking-wide">Language Box</h3>
@@ -546,7 +555,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         {/* ========================================================================= */}
         {/* CARD 3: Code Box com Linhas Numeradas e Botão 'Try in API Explorer'         */}
         {/* ========================================================================= */}
-        <div className="rounded-2xl overflow-hidden border border-slate-800 dark:border-white/10 bg-slate-950 dark:bg-[#0C0D12] shadow-2xl relative">
+        <div className="rounded-2xl overflow-hidden border border-slate-800 dark:border-white/10 bg-slate-950 dark:bg-[#0C0D12] shadow-2xl dark:shadow-none relative">
           {/* Code Header Inside */}
           <div className="px-5 py-3.5 flex items-center justify-between border-b border-slate-800 dark:border-white/10 bg-slate-900/90 dark:bg-[#161722]/80">
             <div className="flex items-center gap-2.5 font-mono text-[13px]">
@@ -568,7 +577,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                 type="button"
                 onClick={handleCopy}
                 className="text-[#9E9E9E] hover:text-white p-1 transition-colors cursor-pointer"
-                title="Copiar código"
+                title={showToken ? "Copiar código" : "Copiar código (Chave vazia enquanto oculta)"}
               >
                 {copied ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
               </button>
@@ -621,7 +630,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                             : 'text-[#E0E0E0]'
                     }
                   >
-                    {line}
+                    {renderCodeWithKeyBlur(line, token, showToken, onRevealKey)}
                   </div>
                 );
               })}
@@ -633,7 +642,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             <button
               type="button"
               onClick={() => setShowExplorer(!showExplorer)}
-              className="bg-slate-800 hover:bg-slate-700 active:scale-95 text-white text-[12px] font-bold px-4 py-2 rounded-xl border border-slate-700 dark:bg-[#181922] dark:hover:bg-[#202230] dark:border-white/10 shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+              className="bg-slate-800 hover:bg-slate-700 active:scale-95 text-white text-[12px] font-bold px-4 py-2 rounded-xl border border-slate-700 dark:bg-[#181922] dark:hover:bg-[#202230] dark:border-white/10 shadow-md dark:shadow-none transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <span>Try in API Explorer</span>
             </button>
@@ -642,7 +651,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
 
         {/* EXPANSÃO DO "API EXPLORER" (Quando clica no botão Try in API Explorer) */}
         {showExplorer && (
-          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121319] p-5 shadow-xl shadow-slate-900/10 dark:shadow-[0_12px_40px_-5px_rgba(0,0,0,0.8)] space-y-4 animate-fadeIn">
+          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#121319] p-5 shadow-xl shadow-slate-900/10 dark:shadow-none space-y-4 animate-fadeIn">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/[0.08]">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">

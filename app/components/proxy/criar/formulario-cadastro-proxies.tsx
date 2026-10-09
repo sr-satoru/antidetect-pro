@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { ChevronDown, Check, Plus, Info, Terminal } from 'lucide-react';
-import { serviceTags, TagItem } from '@/services/tags/service.tags';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ChevronDown, Info, Terminal } from 'lucide-react';
+import { serviceTags } from '@/services/tags/service.tags';
+import { DropdownSeletorEtiquetas } from '@/components/tags/dropdown-seletor-etiquetas';
+import { TagBadge } from '@/components/tags/tag-badge';
 
 export interface FormularioCadastroProxiesProps {
   proxyType: string;
@@ -23,61 +25,17 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
   rawText,
   setRawText,
 }) => {
-  const [availableTags, setAvailableTags] = useState<TagItem[]>([]);
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false);
-  const [tagSearch, setTagSearch] = useState('');
-  const tagDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Carrega tags disponíveis do backend
+  // Precarrega tags para obter cores no cache
   useEffect(() => {
-    serviceTags
-      .list()
-      .then((list) => {
-        setAvailableTags(Array.isArray(list) ? list : []);
-      })
-      .catch(console.error);
+    serviceTags.list().catch(console.error);
   }, []);
-
-  // Fecha dropdown de tags ao clicar fora
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        tagDropdownRef.current &&
-        !tagDropdownRef.current.contains(e.target as Node)
-      ) {
-        setTagDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const filteredTags = useMemo(() => {
-    if (!tagSearch.trim()) return availableTags;
-    return availableTags.filter((t) =>
-      t.name.toLowerCase().includes(tagSearch.toLowerCase()),
-    );
-  }, [availableTags, tagSearch]);
 
   const handleToggleTag = (name: string) => {
     setSelectedTags((prev) =>
       prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name],
     );
-  };
-
-  const handleCreateTag = async () => {
-    if (!tagSearch.trim()) return;
-    try {
-      const newTag = await serviceTags.create({
-        name: tagSearch.trim(),
-        color: '#00FF66',
-      });
-      setAvailableTags((prev) => [...prev, newTag]);
-      setSelectedTags((prev) => [...prev, newTag.name]);
-      setTagSearch('');
-    } catch {
-      // Ignora silenciosamente
-    }
   };
 
   const lineCount = useMemo(() => {
@@ -223,33 +181,28 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
         </div>
 
         {/* Linha 2: Tags */}
-        <div className="relative flex flex-col gap-1.5" ref={tagDropdownRef}>
+        <div className="relative flex flex-col gap-1.5">
           <label className="text-[12px] font-medium text-slate-600 dark:text-[#A6ABB9]">
             Etiquetas / Tags
           </label>
           <div
             onClick={() => setTagDropdownOpen((prev) => !prev)}
-            className="flex min-h-[38px] flex-1 cursor-pointer flex-wrap items-center justify-between gap-1.5 rounded-lg border border-slate-300 dark:border-white/10 bg-white dark:bg-[#16171D] px-3.5 py-1.5 text-[12.5px] text-slate-900 dark:text-white transition-all hover:border-slate-400 dark:hover:border-white/20 shadow-xs"
+            onMouseDown={(e) => e.stopPropagation()}
+            className={`flex min-h-[38px] flex-1 cursor-pointer flex-wrap items-center justify-between gap-1.5 rounded-lg border px-3.5 py-1.5 text-[12.5px] text-slate-900 dark:text-white transition-all shadow-xs ${
+              tagDropdownOpen
+                ? 'border-emerald-500 ring-1 ring-emerald-500/20 dark:border-white/40 dark:ring-white/10 bg-white dark:bg-[#16171D]'
+                : 'border-slate-300 dark:border-white/10 bg-white dark:bg-[#16171D] hover:border-slate-400 dark:hover:border-white/20'
+            }`}
           >
             <div className="flex flex-wrap items-center gap-1.5">
               {selectedTags.length > 0 ? (
                 selectedTags.map((tag) => (
-                  <span
+                  <TagBadge
                     key={tag}
-                    className="flex items-center gap-1.5 rounded-md border border-slate-200 dark:border-white/10 bg-slate-100 text-slate-800 dark:bg-[#242632] dark:text-white px-2.5 py-1 text-[11px] font-medium shadow-2xs"
-                  >
-                    <span>{tag}</span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleTag(tag);
-                      }}
-                      className="cursor-pointer text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white"
-                    >
-                      ×
-                    </button>
-                  </span>
+                    name={tag}
+                    color={serviceTags.getColorByName(tag)}
+                    onRemove={() => handleToggleTag(tag)}
+                  />
                 ))
               ) : (
                 <span className="text-[12px] text-slate-400 dark:text-[#6C7082]">
@@ -257,70 +210,21 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
                 </span>
               )}
             </div>
-            <ChevronDown size={14} className="text-slate-400 dark:text-[#7E8294]" />
+            <ChevronDown
+              size={14}
+              className={`text-slate-400 dark:text-[#7E8294] transition-transform duration-200 ${
+                tagDropdownOpen ? 'rotate-180 text-emerald-500 dark:text-white' : ''
+              }`}
+            />
           </div>
 
-          {/* Dropdown de Tags */}
-          {tagDropdownOpen && (
-            <div className="absolute top-full right-0 left-0 z-30 mt-1 max-h-56 overflow-y-auto rounded-xl border border-slate-200 dark:border-white/15 bg-white dark:bg-[#171820] p-2 shadow-xl animate-in fade-in zoom-in-95 duration-100">
-              <input
-                type="text"
-                placeholder="Pesquisar ou criar etiqueta..."
-                value={tagSearch}
-                onChange={(e) => setTagSearch(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleCreateTag();
-                  }
-                }}
-                className="mb-2 w-full rounded-lg border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#101116] px-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7082] focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-hidden"
-              />
-
-              <div className="space-y-1">
-                {filteredTags.map((t) => {
-                  const isSelected = selectedTags.includes(t.name);
-                  return (
-                    <div
-                      key={t.id || t.name}
-                      onClick={() => handleToggleTag(t.name)}
-                      className={`flex cursor-pointer items-center justify-between rounded-lg px-2.5 py-1.5 text-xs transition-colors ${
-                        isSelected
-                          ? 'bg-emerald-50 text-emerald-700 font-medium dark:bg-[#252835] dark:text-white'
-                          : 'text-slate-700 dark:text-[#C8CBD4] hover:bg-slate-100 dark:hover:bg-[#20222B] hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{ backgroundColor: t.color || '#00FF66' }}
-                        />
-                        {t.name}
-                      </span>
-                      {isSelected && (
-                        <Check size={13} className="text-emerald-600 dark:text-[#00FF66]" />
-                      )}
-                    </div>
-                  );
-                })}
-
-                {tagSearch.trim() &&
-                  !filteredTags.some(
-                    (t) =>
-                      t.name.toLowerCase() ===
-                      tagSearch.trim().toLowerCase(),
-                  ) && (
-                    <div
-                      onClick={handleCreateTag}
-                      className="flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:text-[#00FF66] dark:hover:bg-[#00FF66]/10 transition-colors"
-                    >
-                      <Plus size={13} />
-                      <span>Criar etiqueta &quot;{tagSearch.trim()}&quot;</span>
-                    </div>
-                  )}
-              </div>
-            </div>
-          )}
+          <DropdownSeletorEtiquetas
+            isOpen={tagDropdownOpen}
+            onClose={() => setTagDropdownOpen(false)}
+            selectedTags={selectedTags}
+            onToggleTag={handleToggleTag}
+            fullWidth
+          />
         </div>
 
         {/* Linha 3: Textarea com Contador */}

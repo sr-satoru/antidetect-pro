@@ -82,7 +82,7 @@ export const BrowserDownloadModal: React.FC = () => {
   const currentStep = getStageStepNumber(stage);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-black/75 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-black/75 p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-lg bg-white dark:bg-[#0F1015] border border-slate-200 dark:border-[#242633] rounded-2xl shadow-2xl shadow-slate-900/15 dark:shadow-2xl overflow-hidden flex flex-col">
         {/* Top Header */}
         <div className="px-5 py-4 border-b border-slate-200 dark:border-[#1E202B] flex items-center justify-between bg-slate-50 dark:bg-[#13151D]/60">

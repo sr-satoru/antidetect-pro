@@ -8,10 +8,10 @@ pub mod crypto {
 }
 
 pub mod kdf {
-    pub use super::database::crypto::{derive_vault_key, ensure_vault_salt, vault_salt_path};
+    pub use super::database::crypto::{derive_vault_key, ensure_vault_salt, vault_key_path, vault_salt_path};
 }
 
-pub use database::crypto::{derive_vault_key, encrypt_payload, ensure_vault_salt};
+pub use database::crypto::{derive_vault_key, encrypt_payload, ensure_vault_salt, vault_key_path};
 pub use database::descrypto::decrypt_payload;
 pub use memory_guard::{harden_process_memory, ProtectedKey};
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Code,
   Copy,
@@ -12,71 +12,91 @@ import {
   Boxes,
   Zap,
 } from 'lucide-react';
+import { BACKEND_PORT } from '@/services/http';
+import { serviceMcp } from '@/services/mcp/service.mcp';
+import { renderCodeWithKeyBlur, sanitizeCodeForCopy } from './code-blur-helper';
 
 interface AutomationTabProps {
   apiPort?: number;
   token?: string;
+  showToken?: boolean;
+  onRevealKey?: () => void;
 }
 
 export const AutomationTab: React.FC<AutomationTabProps> = ({
-  apiPort = 18922,
-  token = 'star_sec_8f92a10b48c34791a82f091c7823e4590d1e345f8a213904',
+  apiPort = BACKEND_PORT,
+  token: propToken,
+  showToken = false,
+  onRevealKey,
 }) => {
-  const [selectedRecipe, setSelectedRecipe] = useState<string>('basic_connect');
+  const [token, setToken] = useState<string>(propToken || serviceMcp.getCachedToken());
+  const [selectedRecipe, setSelectedRecipe] = useState<string>('astrofox_sync');
   const [selectedLang, setSelectedLang] = useState<'python' | 'node'>('python');
   const [copiedCode, setCopiedCode] = useState(false);
+
+  useEffect(() => {
+    if (propToken) {
+      setToken(propToken);
+    } else {
+      serviceMcp.getInfo()
+        .then((res) => {
+          if (res?.token) setToken(res.token);
+        })
+        .catch(() => {});
+    }
+  }, [propToken]);
 
   const baseUrl = `http://127.0.0.1:${apiPort}`;
 
   const recipes = [
     {
-      id: 'basic_connect',
-      title: '1. Biblioteca Nativa Camoufox',
-      tag: 'Recomendado',
-      desc: 'Inicia o perfil usando a SDK oficial do Camoufox com Juggler nativo (Zero BiDi).',
+      id: 'astrofox_sync',
+      title: '1. Star Driver: AstroFox (Firefox)',
+      tag: 'Firefox / Juggler',
+      desc: 'Execução nativa de alta performance no motor Firefox (AstroFox) com isolamento total de fingerprint.',
+    },
+    {
+      id: 'astrobrowser_sync',
+      title: '2. Star Driver: AstroBrowser (Chromium)',
+      tag: 'Chromium / Chrome',
+      desc: 'Execução nativa no motor Chromium (AstroBrowser) com camuflagem de hardware, WebGL e áudio.',
     },
     {
       id: 'multi_profile',
-      title: '2. Automação Multi-Perfis Paralela',
+      title: '3. Automação Multi-Perfis Paralela',
       tag: 'Concorrência',
       desc: 'Dispara múltiplos perfis simultaneamente com pastas isoladas e proxies residenciais.',
     },
     {
       id: 'session_cookies',
-      title: '3. Aquecimento & Coleta de Cookies',
+      title: '4. Aquecimento & Coleta de Cookies',
       tag: 'Persistência',
-      desc: 'Navega humanizado, acumula cookies e salva automaticamente na pasta do perfil.',
-    },
-    {
-      id: 'tag_dispatch',
-      title: '4. Seleção Inteligente por Tags (IA / Bot)',
-      tag: 'Agentes & Tags',
-      desc: 'Filtra perfis públicos pelas tags de negócio e executa tarefas sob demanda.',
+      desc: 'Navega humanizado, acumula cookies e salva automaticamente no cofre do perfil.',
     },
   ];
 
   const recipeCodes: Record<string, { python: string; node: string }> = {
-    basic_connect: {
+    astrofox_sync: {
       python: `#!/usr/bin/env python3
 """
-Automação Nativa com Camoufox + Star Multlogin (Zero BiDi)
-Usa o driver Juggler nativo do Camoufox carregando todos os dados do perfil salvo.
+Automação Oficial com Star Driver (Motor Firefox / AstroFox)
+Usa o driver Juggler nativo do AstroFox carregando todos os dados do perfil salvo.
+Instalação: pip install star-driver (ou motor-fire)
 """
 import requests
-from camoufox.sync_api import Camoufox
+from astrofox import AstroFox
 
 API_BASE = "${baseUrl}"
-# (Dica: Você pode puxar o ID, Nome e Tags pelo endpoint público: requests.get(f"{API_BASE}/api/profiles/public?name=Meu Perfil"))
 PROFILE_ID = "seu_perfil_id_aqui"
 
 # 1. Obtém as configurações e diretório do perfil no Star Multlogin
 res = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright")
 opts = res.json()
 
-print(f"🦊 Carregando perfil '{opts.get('name')}' via Camoufox...")
+print(f"🦊 Carregando perfil '{opts.get('name')}' via Star Driver AstroFox...")
 
-# 2. Executa direto na biblioteca nativa do Camoufox (zero erros de BiDi/CDP)
-with Camoufox(
+# 2. Executa direto no driver AstroFox nativo (zero erros de BiDi/CDP)
+with AstroFox(
     executable_path=opts.get("executable_path") or None,
     user_data_dir=opts["user_data_dir"],
     persistent_context=True,
@@ -91,11 +111,10 @@ with Camoufox(
     page.goto("https://bot.sannysoft.com")
     print("✅ Página carregada com sucesso:", page.title())
 `,
-      node: `// Node.js: Automação Nativa com @camoufox/camoufox (Zero BiDi)
-import { Camoufox } from '@camoufox/camoufox';
+      node: `// Node.js: Automação com Playwright conectando ao Star Driver (Motor Firefox)
+import { firefox } from 'playwright';
 
 const API_BASE = '${baseUrl}';
-// (Dica: Você pode puxar o ID, Nome e Tags pelo endpoint público: await fetch(\`\${API_BASE}/api/profiles/public?name=Meu Perfil\`))
 const PROFILE_ID = 'seu_perfil_id_aqui';
 
 async function main() {
@@ -103,24 +122,78 @@ async function main() {
   const res = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/playwright\`);
   const opts = await res.json();
 
-  console.log(\`🦊 Carregando perfil '\${opts.name}' via Camoufox...\`);
+  console.log(\`🦊 Carregando perfil '\${opts.name}' via Star Driver...\`);
 
-  // 2. Executa via biblioteca nativa do Camoufox com contexto persistente
-  const browser = await Camoufox({
-    executable_path: opts.executable_path || undefined,
-    user_data_dir: opts.user_data_dir,
-    persistent_context: true,
-    os: opts.os,
-    proxy: opts.proxy || undefined,
-    config: opts.config,
-    firefox_user_prefs: opts.firefox_user_prefs,
-    humanize: true,
+  // 2. Executa via Playwright persistente com camuflagem de fingerprint
+  const context = await firefox.launchPersistentContext(opts.user_data_dir, {
+    executablePath: opts.executable_path || undefined,
     headless: false,
+    proxy: opts.proxy || undefined,
+    viewport: null,
   });
 
-  const page = browser.pages()[0] || await browser.newPage();
+  const page = context.pages()[0] || await context.newPage();
   await page.goto('https://bot.sannysoft.com');
   console.log('✅ Título da página:', await page.title());
+}
+
+main();
+`,
+    },
+
+    astrobrowser_sync: {
+      python: `#!/usr/bin/env python3
+"""
+Automação Oficial com Star Driver (Motor Chromium / AstroBrowser)
+Inicia o binário Chromium seguro com perfis persistentes e camuflagem ativa.
+Instalação: pip install astrobrowser (ou motor-chromium)
+"""
+import requests
+from astrobrowser import launch_persistent_context
+
+API_BASE = "${baseUrl}"
+PROFILE_ID = "seu_perfil_id_aqui"
+
+# 1. Puxa as diretrizes do perfil no Star Multlogin
+res = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright")
+opts = res.json()
+
+print(f"🚀 Carregando perfil '{opts.get('name')}' via AstroBrowser...")
+
+# 2. Executa via AstroBrowser nativo com a pasta de dados do perfil
+context = launch_persistent_context(
+    user_data_dir=opts["user_data_dir"],
+    executable_path=opts.get("executable_path") or None,
+    headless=False,
+    proxy=opts.get("proxy"),
+)
+
+page = context.pages[0] if context.pages else context.new_page()
+page.goto("https://bot.sannysoft.com")
+print("✅ Título da página:", page.title())
+context.close()
+`,
+      node: `// Node.js: Automação Chromium via CDP / Playwright
+import { chromium } from 'playwright';
+
+const API_BASE = '${baseUrl}';
+const PROFILE_ID = 'seu_perfil_id_aqui';
+
+async function main() {
+  // 1. Inicia o perfil via API do Star Multlogin com CDP ativado
+  const launchRes = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/launch?cdp=true\`, {
+    method: 'POST'
+  });
+  const data = await launchRes.json();
+  console.log(\`🚀 Conectando via CDP ao AstroBrowser na porta \${data.debug_port}...\`);
+
+  // 2. Conecta ao navegador ativo
+  const browser = await chromium.connectOverCDP(data.ws_endpoint);
+  const context = browser.contexts()[0];
+  const page = context.pages()[0] || await context.newPage();
+
+  await page.goto('https://bot.sannysoft.com');
+  console.log('✅ Conectado com sucesso:', await page.title());
 }
 
 main();
@@ -130,12 +203,12 @@ main();
     multi_profile: {
       python: `#!/usr/bin/env python3
 """
-Automação Paralela em Múltiplos Perfis com Camoufox Nativo (Zero BiDi)
+Automação Paralela em Múltiplos Perfis com Star Driver AstroFox
 Executa múltiplos perfis simultaneamente usando ThreadPool e pastas de dados isoladas.
 """
 import concurrent.futures
 import requests
-from camoufox.sync_api import Camoufox
+from astrofox import AstroFox
 
 API_BASE = "${baseUrl}"
 
@@ -149,7 +222,7 @@ def run_profile(profile_id):
     opts = requests.get(f"{API_BASE}/api/profiles/{profile_id}/playwright").json()
     print(f"🦊 Iniciando perfil '{opts.get('name')}' em paralelo...")
 
-    with Camoufox(
+    with AstroFox(
         executable_path=opts.get("executable_path") or None,
         user_data_dir=opts["user_data_dir"],
         persistent_context=True,
@@ -168,8 +241,8 @@ def run_profile(profile_id):
 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
     executor.map(run_profile, target_ids)
 `,
-      node: `// Node.js: Execução Multi-Perfis Concorrente com @camoufox/camoufox
-import { Camoufox } from '@camoufox/camoufox';
+      node: `// Node.js: Execução Multi-Perfis Concorrente com Playwright
+import { firefox } from 'playwright';
 
 const API_BASE = '${baseUrl}';
 
@@ -178,22 +251,16 @@ async function runProfile(profileId) {
   const opts = await res.json();
 
   console.log(\`🦊 [\${opts.name}] Iniciando...\`);
-  const browser = await Camoufox({
-    executable_path: opts.executable_path || undefined,
-    user_data_dir: opts.user_data_dir,
-    persistent_context: true,
-    os: opts.os,
-    proxy: opts.proxy || undefined,
-    config: opts.config,
-    firefox_user_prefs: opts.firefox_user_prefs,
-    humanize: true,
+  const context = await firefox.launchPersistentContext(opts.user_data_dir, {
+    executablePath: opts.executable_path || undefined,
     headless: false,
+    proxy: opts.proxy || undefined,
   });
 
-  const page = browser.pages()[0] || await browser.newPage();
+  const page = context.pages()[0] || await context.newPage();
   await page.goto('https://bot.sannysoft.com');
   console.log(\`✅ [\${opts.name}] Concluído:\`, await page.title());
-  await browser.close();
+  await context.close();
 }
 
 async function main() {
@@ -212,12 +279,12 @@ main();
     session_cookies: {
       python: `#!/usr/bin/env python3
 """
-Aquecimento de Perfil & Coleta de Cookies com Camoufox Nativo
+Aquecimento de Perfil & Coleta de Cookies com AstroFox Nativo
 Com persistent_context=True, todas as sessões e cookies são salvos automaticamente no disco.
 """
 import time
 import requests
-from camoufox.sync_api import Camoufox
+from astrofox import AstroFox
 
 API_BASE = "${baseUrl}"
 PROFILE_ID = "seu_perfil_id_aqui"
@@ -225,8 +292,8 @@ PROFILE_ID = "seu_perfil_id_aqui"
 # 1. Puxa as diretrizes do perfil
 opts = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright").json()
 
-# 2. Inicia o navegador Camoufox nativo
-with Camoufox(
+# 2. Inicia o navegador AstroFox nativo
+with AstroFox(
     executable_path=opts.get("executable_path") or None,
     user_data_dir=opts["user_data_dir"],
     persistent_context=True,
@@ -251,11 +318,11 @@ with Camoufox(
     cookies = browser.contexts[0].cookies() if browser.contexts else []
     print(f"🍪 Cookies na sessão ativa: {len(cookies)}")
 
-# Ao sair do bloco 'with', o Camoufox grava e sincroniza tudo na pasta do perfil!
+# Ao sair do bloco 'with', o AstroFox grava e sincroniza tudo na pasta do perfil!
 print("✅ Sessões e cookies persistidos automaticamente no Star Multlogin!")
 `,
-      node: `// Node.js: Aquecimento de Perfil & Persistência Nativa Camoufox
-import { Camoufox } from '@camoufox/camoufox';
+      node: `// Node.js: Aquecimento de Perfil & Persistência Nativa
+import { firefox } from 'playwright';
 
 const API_BASE = '${baseUrl}';
 const PROFILE_ID = 'seu_perfil_id_aqui';
@@ -264,152 +331,70 @@ async function warmUp() {
   const res = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/playwright\`);
   const opts = await res.json();
 
-  const browser = await Camoufox({
-    executable_path: opts.executable_path || undefined,
-    user_data_dir: opts.user_data_dir,
-    persistent_context: true,
-    os: opts.os,
-    proxy: opts.proxy || undefined,
-    config: opts.config,
-    firefox_user_prefs: opts.firefox_user_prefs,
-    humanize: true,
+  const context = await firefox.launchPersistentContext(opts.user_data_dir, {
+    executablePath: opts.executable_path || undefined,
     headless: false,
+    proxy: opts.proxy || undefined,
   });
 
-  const page = browser.pages()[0] || await browser.newPage();
+  const page = context.pages()[0] || await context.newPage();
   await page.goto('https://mercadolivre.com.br', { waitUntil: 'networkidle' });
   await page.mouse.wheel(0, 400);
 
   // Fecha o navegador sincronizando cookies e armazenamento no disco
-  await browser.close();
+  await context.close();
   console.log('✅ Cookies e dados da sessão salvos no diretório do perfil!');
 }
 
 warmUp();
 `,
     },
-
-    tag_dispatch: {
-      python: `#!/usr/bin/env python3
-"""
-Seleção por Tags para Agentes de IA & Pipelines
-Usa o endpoint público GET /api/profiles/public?tag=... que expõe apenas ID, Nome e Tags.
-"""
-import requests
-from camoufox.sync_api import Camoufox
-
-API_BASE = "${baseUrl}"
-TAG_FILTRO = "aquecimento"
-
-# 1. Agente consulta apenas perfis que possuem a tag desejada
-res = requests.get(f"{API_BASE}/api/profiles/public", params={"tag": TAG_FILTRO})
-perfis_alvo = res.json()
-
-print(f"🎯 Perfis encontrados com a tag '{TAG_FILTRO}':", len(perfis_alvo))
-
-for perfil in perfis_alvo:
-    print(f"\\n🚀 Executando perfil: {perfil['name']} (ID: {perfil['id']}) [Tags: {perfil.get('tags', [])}]")
-    
-    # 2. Carrega configuração nativa para o perfil filtrado
-    opts = requests.get(f"{API_BASE}/api/profiles/{perfil['id']}/playwright").json()
-    
-    with Camoufox(
-        executable_path=opts.get("executable_path") or None,
-        user_data_dir=opts["user_data_dir"],
-        persistent_context=True,
-        os=opts["os"],
-        proxy=opts.get("proxy"),
-        config=opts.get("config"),
-        humanize=True,
-        headless=False,
-    ) as browser:
-        page = browser.pages[0] if browser.pages else browser.new_page()
-        page.goto("https://bot.sannysoft.com")
-        print(f"✅ Concluído: {perfil['name']} - Título:", page.title())
-`,
-      node: `// Node.js: Seleção por Tags e Execução para Agentes de IA
-import { Camoufox } from '@camoufox/camoufox';
-
-const API_BASE = '${baseUrl}';
-const TAG_FILTRO = 'aquecimento';
-
-async function runTaggedAutomation() {
-  // 1. Consulta pública por tags (zero vazamento de cofre ou credenciais)
-  const res = await fetch(\`\${API_BASE}/api/profiles/public?tag=\${TAG_FILTRO}\`);
-  const profiles = await res.json();
-
-  console.log(\`🎯 Perfis com a tag '\${TAG_FILTRO}':\`, profiles.length);
-
-  for (const p of profiles) {
-    console.log(\`🚀 Executando \${p.name} (ID: \${p.id})...\`);
-    const optsRes = await fetch(\`\${API_BASE}/api/profiles/\${p.id}/playwright\`);
-    const opts = await optsRes.json();
-
-    const browser = await Camoufox({
-      executable_path: opts.executable_path || undefined,
-      user_data_dir: opts.user_data_dir,
-      persistent_context: true,
-      os: opts.os,
-      proxy: opts.proxy || undefined,
-      config: opts.config,
-      humanize: true,
-      headless: false,
-    });
-
-    const page = browser.pages()[0] || await browser.newPage();
-    await page.goto('https://bot.sannysoft.com');
-    console.log(\`✅ [\${p.name}] Concluído:\`, await page.title());
-    await browser.close();
-  }
-}
-
-runTaggedAutomation();
-`,
-    },
   };
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(recipeCodes[selectedRecipe][selectedLang]);
+    const rawCode = recipeCodes[selectedRecipe][selectedLang];
+    const textToCopy = sanitizeCodeForCopy(rawCode, token, showToken);
+    navigator.clipboard.writeText(textToCopy);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
   return (
     <div className="space-y-6">
-      {/* Prerequisites Banner */}
-      <div className="bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Prerequisites Banner - Sem blur de fundo */}
+      <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-[#00FF66]/15 border border-[#00FF66]/30 flex items-center justify-center text-[#00FF66] shrink-0 shadow-[0_0_15px_rgba(0,255,102,0.18)]">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-[#00FF66]/15 border border-emerald-200 dark:border-[#00FF66]/30 flex items-center justify-center text-emerald-600 dark:text-[#00FF66] shrink-0">
             <Zap size={20} />
           </div>
           <div>
-            <h3 className="text-[15px] font-bold text-white flex items-center gap-2">
-              Cookbook de Automação Playwright & Camoufox (Zero BiDi)
-              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                Driver Nativo
+            <h3 className="text-[15px] font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              SDK Star Driver: AstroFox (Firefox) & AstroBrowser (Chromium)
+              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                Driver Oficial
               </span>
             </h3>
-            <p className="text-[12px] text-[#B5B5B5] mt-0.5 max-w-2xl leading-relaxed">
-              O Camoufox inicializa diretamente o perfil configurado no Star Multlogin com Juggler nativo, proxy residencial e camuflagem de hardware <strong>sem erros de BiDi ou portas CDP</strong>.
+            <p className="text-[12px] text-slate-600 dark:text-[#B5B5B5] mt-0.5 max-w-2xl leading-relaxed">
+              O Star Driver inicializa diretamente o perfil configurado no Star Multlogin com <strong>AstroFox</strong> ou <strong>AstroBrowser</strong>, com proxy residencial e camuflagem de hardware sem erros de compatibilidade.
             </p>
           </div>
         </div>
 
         {/* Command Badge */}
-        <div className="bg-[#0C0D12] border border-white/10 rounded-xl px-3.5 py-2 font-mono text-[11px] text-[#D8D8D8] shrink-0">
-          <span className="text-[#A0A0A0] block text-[9px] uppercase font-bold font-sans">
-            Instalação Recomendada:
+        <div className="bg-slate-50 dark:bg-[#0C0D12] border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2 font-mono text-[11px] text-slate-800 dark:text-[#D8D8D8] shrink-0">
+          <span className="text-slate-500 dark:text-[#A0A0A0] block text-[9px] uppercase font-bold font-sans">
+            Instalação da SDK:
           </span>
-          <code>pip install camoufox requests</code>
+          <code>pip install star-driver astrobrowser requests</code>
         </div>
       </div>
 
       {/* Main Grid: Recipe Selector on Left, Code on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Recipe Selector */}
-        <div className="lg:col-span-4 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-3">
-          <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-[#A0A0A0] px-1 flex items-center gap-1.5">
-            <Boxes size={14} className="text-[#00FF66]" />
+        {/* Left Column: Recipe Selector - Sem blur */}
+        <div className="lg:col-span-4 bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm dark:shadow-none space-y-3">
+          <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-[#A0A0A0] px-1 flex items-center gap-1.5">
+            <Boxes size={14} className="text-emerald-600 dark:text-[#00FF66]" />
             Cenários de Automação
           </h4>
 
@@ -422,19 +407,19 @@ runTaggedAutomation();
                   onClick={() => setSelectedRecipe(r.id)}
                   className={`p-3 rounded-xl border cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-[#1F212D] border-white/20 shadow-md text-[#00FF66]'
-                      : 'bg-[#181922] border-white/10 hover:bg-[#202230] hover:border-white/15'
+                      ? 'bg-emerald-50/70 border-emerald-300 dark:bg-[#1F212D] dark:border-white/20 shadow-xs text-emerald-800 dark:text-[#00FF66]'
+                      : 'bg-slate-50/80 border-slate-200 hover:bg-slate-100 dark:bg-[#181922] dark:border-white/10 dark:hover:bg-[#202230] dark:hover:border-white/15'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`text-[13px] font-bold ${isSelected ? 'text-[#00FF66]' : 'text-white'}`}>
+                    <span className={`text-[13px] font-bold ${isSelected ? 'text-emerald-700 dark:text-[#00FF66]' : 'text-slate-900 dark:text-white'}`}>
                       {r.title}
                     </span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#0C0D12] text-[#C4C4C4] border border-white/10 shrink-0">
+                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white dark:bg-[#0C0D12] text-slate-700 dark:text-[#C4C4C4] border border-slate-200 dark:border-white/10 shrink-0">
                       {r.tag}
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#B8B8B8] mt-1 leading-snug">
+                  <p className="text-[11px] text-slate-600 dark:text-[#B8B8B8] mt-1 leading-snug">
                     {r.desc}
                   </p>
                 </div>
@@ -443,28 +428,28 @@ runTaggedAutomation();
           </div>
         </div>
 
-        {/* Right Column: Code Display */}
-        <div className="lg:col-span-8 bg-[#13141C] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-[0_12px_40px_-5px_rgba(0,0,0,0.7)] space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
+        {/* Right Column: Code Display - Sem blur */}
+        <div className="lg:col-span-8 bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-white/10">
             <div>
-              <h4 className="text-[14px] font-bold text-white flex items-center gap-2">
-                <FileCode size={16} className="text-[#00FF66]" />
+              <h4 className="text-[14px] font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <FileCode size={16} className="text-emerald-600 dark:text-[#00FF66]" />
                 {recipes.find((r) => r.id === selectedRecipe)?.title}
               </h4>
-              <p className="text-[12px] text-[#B5B5B5]">
+              <p className="text-[12px] text-slate-600 dark:text-[#B5B5B5]">
                 Copie o script e execute no seu ambiente local com Python ou Node.js.
               </p>
             </div>
 
             {/* Language Switcher */}
-            <div className="flex items-center gap-1.5 p-1 bg-[#0C0D12] border border-white/10 rounded-xl backdrop-blur-sm">
+            <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-[#0C0D12] border border-slate-200 dark:border-white/10 rounded-xl">
               <button
                 type="button"
                 onClick={() => setSelectedLang('python')}
                 className={`py-1.5 px-3 rounded-lg text-[12px] font-bold transition-all ${
                   selectedLang === 'python'
-                    ? 'bg-[#1F212D] text-[#00FF66] font-bold shadow-sm border border-white/15'
-                    : 'text-[#A6A6A6] hover:text-white'
+                    ? 'bg-white text-emerald-700 shadow-xs border border-slate-200 dark:bg-[#1F212D] dark:text-[#00FF66] dark:border-white/15'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-[#A6A6A6] dark:hover:text-white'
                 }`}
               >
                 Python (Playwright)
@@ -474,8 +459,8 @@ runTaggedAutomation();
                 onClick={() => setSelectedLang('node')}
                 className={`py-1.5 px-3 rounded-lg text-[12px] font-bold transition-all ${
                   selectedLang === 'node'
-                    ? 'bg-[#1F212D] text-[#00FF66] font-bold shadow-sm border border-white/15'
-                    : 'text-[#A6A6A6] hover:text-white'
+                    ? 'bg-white text-emerald-700 shadow-xs border border-slate-200 dark:bg-[#1F212D] dark:text-[#00FF66] dark:border-white/15'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-[#A6A6A6] dark:hover:text-white'
                 }`}
               >
                 Node.js
@@ -485,13 +470,14 @@ runTaggedAutomation();
 
           {/* Code Editor Container */}
           <div className="relative group">
-            <pre className="bg-[#0C0D12] border border-white/10 rounded-xl p-4 text-[12px] font-mono text-[#F0F0F0] overflow-x-auto max-h-[440px] leading-relaxed shadow-inner">
-              {recipeCodes[selectedRecipe][selectedLang]}
+            <pre className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-[12px] font-mono text-[#F0F0F0] overflow-x-auto max-h-[440px] leading-relaxed shadow-inner">
+              {renderCodeWithKeyBlur(recipeCodes[selectedRecipe][selectedLang], token, showToken, onRevealKey)}
             </pre>
             <button
               type="button"
               onClick={handleCopyCode}
-              className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1E202B] hover:bg-[#282B3A] text-[#00FF66] text-[12px] font-bold border border-white/10 transition-all shadow-sm"
+              className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1E202B] hover:bg-[#282B3A] text-[#00FF66] text-[12px] font-bold border border-white/10 transition-all shadow-sm dark:shadow-none cursor-pointer"
+              title={showToken ? "Copiar Script" : "Copiar Script (Chave vazia enquanto oculta)"}
             >
               {copiedCode ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
               <span>{copiedCode ? 'Copiado!' : 'Copiar Script'}</span>
@@ -499,9 +485,9 @@ runTaggedAutomation();
           </div>
 
           {/* Quick Info Footer */}
-          <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[11px] text-[#A6A6A6]">
-            <span>Endereço da API: <strong className="text-white font-mono">{baseUrl}</strong></span>
-            <span className="text-emerald-400 flex items-center gap-1">
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-white/10 text-[11px] text-slate-500 dark:text-[#A6A6A6]">
+            <span>Endereço da API: <strong className="text-slate-900 dark:text-white font-mono">{baseUrl}</strong></span>
+            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
               <ShieldCheck size={13} />
               Isolamento Anti-Origin Ativo
             </span>

@@ -3,7 +3,7 @@ use tracing::info;
 use crate::models::Profile;
 use crate::network::NetworkSetupResult;
 use super::fontconfig::setup_linux_fontconfig;
-use crate::camoufox::common::{chunk_environment_variable, build_camou_config_map, build_camou_prefs};
+use crate::browser::engines::camoufox::common::{chunk_environment_variable, build_camou_config_map, build_camou_prefs};
 
 const LINUX_CHUNK_SIZE: usize = 32767;
 
@@ -95,9 +95,13 @@ pub fn build_linux_command(
         cmd.env(k, v);
     }
 
-    // 9. URL inicial opcional
+    // 9. URLs iniciais opcionais (suporta múltiplas URLs)
     if let Some(u) = initial_url.filter(|s| !s.trim().is_empty()) {
-        cmd.arg(u);
+        for single in u.split_whitespace() {
+            if !single.is_empty() {
+                cmd.arg(single);
+            }
+        }
     }
 
     Ok(cmd)

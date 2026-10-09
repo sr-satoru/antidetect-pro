@@ -52,22 +52,30 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
 
   const handleConfirm = () => {
     if (activeTab === 'file') {
+      if (!fileValues.file) {
+        toast.warning('Por favor, selecione um arquivo de extensão (.zip, .xpi ou .crx).');
+        return;
+      }
       if (!fileValues.name.trim()) {
         toast.warning('Por favor, informe o nome da extensão.');
         return;
       }
       const isXpi = fileValues.fileName?.toLowerCase().endsWith('.xpi');
+      const isCrx = fileValues.fileName?.toLowerCase().endsWith('.crx');
       onSave({
+        file: fileValues.file,
+        fileName: fileValues.fileName,
         name: fileValues.name.trim(),
         description:
           fileValues.intro.trim() ||
           (isXpi
             ? 'Extensão nativa do Firefox (.xpi) carregada manualmente.'
+            : isCrx
+            ? 'Extensão do Chrome (.crx) carregada manualmente.'
             : 'Extensão carregada manualmente por arquivo.'),
-        iconType: isXpi ? 'firefox' : 'custom',
+        iconType: isXpi ? 'firefox' : isCrx ? 'chrome' : 'custom',
         iconBg: '#00FF66',
-        provider: isXpi ? 'Firefox Add-on (.xpi)' : 'Pacote Local',
-        providerUrl: '#',
+        provider: isXpi ? 'Firefox Add-on (.xpi)' : isCrx ? 'Chrome Extension (.crx)' : 'Pacote Local',
         tab: 'team',
         enabled: true,
         status: 'available',
@@ -134,7 +142,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 transition-opacity"
         onClick={onClose}
       />
 
