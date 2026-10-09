@@ -475,13 +475,45 @@ impl ProfileService {
         let profile = self.get(id).ok_or_else(|| "Perfil não encontrado".to_string())?;
         let profile_dir = self.get_profile_dir(id);
         let root_dir = self.data_dir.parent().unwrap_or(&self.data_dir);
-        let binary_path = crate::browser_downloader::resolve_engine_binary(root_dir)
-            .map(|p| p.to_string_lossy().to_string())
-            .unwrap_or_default();
+        let binary_path = if profile.kernel == "AstroBrowser" || profile.kernel == "Clearcote" {
+            crate::browser_downloader::resolve_clearcote_binary(root_dir)
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_default()
+        } else {
+            crate::browser_downloader::resolve_engine_binary(root_dir)
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_default()
+        };
 
         let net_setup = crate::network::NetworkSetupResult::default();
-        let config_map = crate::browser::engines::camoufox::common::build_camou_config_map(&profile, None, &[]);
+        let mut config_map = crate::browser::engines::camoufox::common::build_camou_config_map(&profile, None, &[]);
         let prefs_map = crate::browser::engines::camoufox::common::build_camou_prefs(&profile, None, &net_setup);
+
+        // 1. Sanitizar webGl:renderer para AstroFox/Camoufox no Linux
+        if let Some(renderer_val) = config_map.get_mut("webGl:renderer") {
+            if let Some(renderer_str) = renderer_val.as_str() {
+                if (profile.os == "linux" || profile.os == "lin")
+                    && !renderer_str.ends_with(", or similar")
+                    && renderer_str != "Generic Renderer"
+                    && renderer_str != "Mozilla"
+                {
+                    *renderer_val = serde_json::Value::String(format!("{}, or similar", renderer_str));
+                }
+            }
+        }
+
+        // 2. Remover chaves que não são propriedades do MaskConfig
+        config_map.remove("navigator.languages");
+
+        let is_running = self.is_running(id);
+        let debug_port = self.process_manager.get_debug_port(id);
+        let ws_endpoint = debug_port.map(|port| {
+            if profile.kernel == "AstroBrowser" || profile.kernel == "Clearcote" {
+                format!("http://127.0.0.1:{}", port)
+            } else {
+                format!("ws://127.0.0.1:{}/session", port)
+            }
+        });
 
         let proxy_val = if profile.proxy.proxy_type != "none" {
             if let Some(host) = &profile.proxy.host {
@@ -502,6 +534,7 @@ impl ProfileService {
         Ok(serde_json::json!({
             "profile_id": profile.id,
             "name": profile.name,
+            "kernel": profile.kernel,
             "os": profile.os,
             "executable_path": binary_path,
             "user_data_dir": profile_dir.to_string_lossy().to_string(),
@@ -510,6 +543,10 @@ impl ProfileService {
             "firefox_user_prefs": prefs_map,
             "headless": false,
             "humanize": true,
+            "i_know_what_im_doing": true,
+            "is_running": is_running,
+            "debug_port": debug_port,
+            "ws_endpoint": ws_endpoint,
         }))
     }
 }

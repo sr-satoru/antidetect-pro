@@ -240,8 +240,18 @@ pub fn build_camou_config(
         .filter(|s| !s.trim().is_empty())
         .unwrap_or(default_webgl.1);
 
+    let normalized_renderer = if (os == "linux" || os == "lin")
+        && !webgl_renderer.ends_with(", or similar")
+        && webgl_renderer != "Generic Renderer"
+        && webgl_renderer != "Mozilla"
+    {
+        format!("{}, or similar", webgl_renderer)
+    } else {
+        webgl_renderer.to_string()
+    };
+
     config.insert("webGl:vendor".to_string(), Value::String(webgl_vendor.to_string()));
-    config.insert("webGl:renderer".to_string(), Value::String(webgl_renderer.to_string()));
+    config.insert("webGl:renderer".to_string(), Value::String(normalized_renderer));
 
     // 5. Anti-Fingerprint Seeds com Gating por hardware_noise
     let noise_obj = fp.get("hardware_noise");
@@ -292,13 +302,7 @@ pub fn build_camou_config(
 
     config.insert("navigator.language".to_string(), Value::String(primary_lang.to_string()));
 
-    let langs_arr: Vec<Value> = custom_lang
-        .split(',')
-        .map(|s| s.split(';').next().unwrap_or("").trim())
-        .filter(|s| !s.is_empty())
-        .map(|s| Value::String(s.to_string()))
-        .collect();
-    config.insert("navigator.languages".to_string(), Value::Array(langs_arr));
+    // navigator.language e locale são as propriedades oficiais reconhecidas por MaskConfig (properties.json)
 
     if let Some(dash) = primary_lang.find('-') {
         let lang = &primary_lang[..dash];
