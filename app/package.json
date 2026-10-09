@@ -1,11 +1,7 @@
 {
   "name": "star-multlogin-app",
   "private": true,
-<<<<<<< HEAD
   "version": "0.1.33",
-=======
-  "version": "0.1.31",
->>>>>>> 22777c9 (refactor: rename browser engine from astrofox to astrobrowser)
   "type": "module",
   "scripts": {
     "dev": "vite",
