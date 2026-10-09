@@ -531,11 +531,23 @@ impl ProfileService {
             None
         };
 
+        let fp = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
+        let custom_lang = fp
+            .get("custom_language")
+            .and_then(|v| v.as_str())
+            .unwrap_or("pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7");
+        let primary_lang = custom_lang
+            .split(',')
+            .next()
+            .map(|s| s.split(';').next().unwrap_or("pt-BR").trim())
+            .unwrap_or("pt-BR");
+
         Ok(serde_json::json!({
             "profile_id": profile.id,
             "name": profile.name,
             "kernel": profile.kernel,
             "os": profile.os,
+            "locale": primary_lang,
             "executable_path": binary_path,
             "user_data_dir": profile_dir.to_string_lossy().to_string(),
             "proxy": proxy_val,

@@ -55,3 +55,4 @@ app-data/
 *.vault
 donutbrowser
 clearcote-browser
+.cursor
