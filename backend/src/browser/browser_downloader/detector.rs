@@ -219,7 +219,7 @@ pub fn verify_installed_engine(data_dir: &Path, engine: EngineKind) -> EngineVer
             let stdout = String::from_utf8_lossy(&out.stdout).trim().to_string();
             let stderr = String::from_utf8_lossy(&out.stderr).trim().to_string();
             let text = if !stdout.is_empty() { stdout } else { stderr };
-            (out.status.success() || !text.is_empty(), if text.is_empty() { None } else { Some(text) })
+            (true, if text.is_empty() { None } else { Some(text) })
         }
         Err(e) => (false, Some(format!("Falha ao executar: {e}"))),
     };

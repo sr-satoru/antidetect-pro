@@ -8,7 +8,17 @@ pub fn get_target_dir(data_dir: &Path) -> PathBuf {
     } else {
         data_dir
     };
-    base.join("binaries").join("astrofox")
+
+    let binaries = base.join("binaries");
+    let candidate_dirs = ["astrofox", "camoufox", "firefox"];
+    for dir in &candidate_dirs {
+        let path = binaries.join(dir);
+        if path.exists() && path.is_dir() {
+            return path;
+        }
+    }
+
+    binaries.join("astrofox")
 }
 
 /// Retorna o caminho do executável principal no Windows

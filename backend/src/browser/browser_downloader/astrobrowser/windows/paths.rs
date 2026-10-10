@@ -8,12 +8,31 @@ pub fn get_target_dir(data_dir: &Path) -> PathBuf {
     } else {
         data_dir
     };
-    base.join("binaries").join("astrobrowser")
+
+    let binaries = base.join("binaries");
+    let candidate_dirs = ["astrobrowser", "clearcote", "chrome"];
+    for dir in &candidate_dirs {
+        let path = binaries.join(dir);
+        if path.exists() && path.is_dir() {
+            return path;
+        }
+    }
+
+    binaries.join("astrobrowser")
 }
 
 /// Retorna o caminho do executável principal no Windows
 pub fn get_executable_path(target_dir: &Path) -> PathBuf {
-    let candidates = ["chrome.exe", "clearcote.exe", "astrobrowser.exe", "chrome", "clearcote"];
+    let candidates = [
+        "chrome.exe",
+        "clearcote.exe",
+        "astrobrowser.exe",
+        "star-chromium.exe",
+        "chromium.exe",
+        "chrome",
+        "clearcote",
+        "star-chromium",
+    ];
 
     // 1. Checa diretamente na raiz do target_dir
     for name in &candidates {
