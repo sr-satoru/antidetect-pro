@@ -48,8 +48,14 @@ pub fn build_clearcote_flags(
         .map(|s| s.to_string())
         .collect::<Vec<_>>();
 
-    if webrtc_mode == "off" || webrtc_mode == "disabled" {
-        disabled_features.push("WebRtcHideLocalIpsWithMdns".to_string());
+    let valid_addons = addon_paths
+        .iter()
+        .filter(|p| !p.trim().is_empty())
+        .map(|p| p.trim().to_string())
+        .collect::<Vec<_>>();
+
+    if !valid_addons.is_empty() {
+        disabled_features.push("ExtensionManifestV2Deprecation".to_string());
     }
 
     flags.push(format!("--disable-features={}", disabled_features.join(",")));
@@ -179,7 +185,6 @@ pub fn build_clearcote_flags(
         .collect::<Vec<_>>();
     if !valid_addons.is_empty() {
         flags.push(format!("--load-extension={}", valid_addons.join(",")));
-        flags.push("--disable-features=ExtensionManifestV2Deprecation".to_string());
     }
 
     // 12. Hook personalizado se especificado
