@@ -12,6 +12,7 @@ pub enum AstrobrowserError {
     IoError(String),
     Cancelled,
     AlreadyRunning,
+    EngineInUse(String),
     Io(std::io::Error),
     Json(serde_json::Error),
 }
@@ -33,6 +34,7 @@ impl fmt::Display for AstrobrowserError {
             Self::IoError(msg) => write!(f, "Erro de E/S no AstroBrowser: {msg}"),
             Self::Cancelled => write!(f, "Download do AstroBrowser cancelado pelo usuário."),
             Self::AlreadyRunning => write!(f, "Já existe um download do AstroBrowser em andamento."),
+            Self::EngineInUse(msg) => write!(f, "{msg}"),
             Self::Io(err) => write!(f, "Erro de E/S de disco no AstroBrowser: {err}"),
             Self::Json(err) => write!(f, "Erro JSON no AstroBrowser: {err}"),
         }

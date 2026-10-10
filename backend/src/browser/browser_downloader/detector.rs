@@ -268,3 +268,31 @@ pub fn verify_installed_engine(data_dir: &Path, engine: EngineKind) -> EngineVer
         checked_at: now,
     }
 }
+
+/// Verifica se o executável do motor está atualmente em uso por algum processo ativo
+pub fn is_executable_running(exe_path: &Path) -> bool {
+    if !exe_path.exists() {
+        return false;
+    }
+    // Tenta abrir o arquivo com permissão de escrita sem truncar
+    match fs::OpenOptions::new().write(true).open(exe_path) {
+        Ok(_) => false,
+        Err(err) => {
+            #[cfg(target_os = "windows")]
+            {
+                // Código 32: ERROR_SHARING_VIOLATION, Código 5: ERROR_ACCESS_DENIED
+                if let Some(code) = err.raw_os_error() {
+                    return code == 32 || code == 5;
+                }
+            }
+            #[cfg(unix)]
+            {
+                // Código 26: ETXTBSY (Text file busy)
+                if let Some(code) = err.raw_os_error() {
+                    return code == 26;
+                }
+            }
+            err.kind() == std::io::ErrorKind::PermissionDenied
+        }
+    }
+}

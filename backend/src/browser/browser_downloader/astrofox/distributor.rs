@@ -242,14 +242,19 @@ pub async fn download_astrofox(
         .map(|p| p.to_path_buf())
         .unwrap_or_else(|| data_dir.join("binaries"));
 
+    // Trava de segurança: impede corromper arquivos se o motor já estiver rodando
+    let existing_exe = ops.get_executable_path(&target_dir);
+    if crate::browser_downloader::detector::is_executable_running(&existing_exe) {
+        return Err(AstrofoxError::EngineInUse(
+            "O motor AstroFox (Firefox) está em execução. Feche todas as janelas e perfis abertos antes de instalar ou atualizar.".to_string(),
+        ));
+    }
+
     tokio::fs::create_dir_all(&binaries_dir)
         .await
         .map_err(|e| AstrofoxError::IoError(format!("Falha ao criar diretório binaries: {e}")))?;
 
-    let staging_dir = binaries_dir.join(".astrofox-staging");
     let temp_archive = binaries_dir.join(format!("{}.download", artifact.filename));
-
-    let _ = tokio::fs::remove_dir_all(&staging_dir).await;
     let _ = tokio::fs::remove_file(&temp_archive).await;
 
     // 1. Download com streaming e progresso
@@ -352,16 +357,16 @@ pub async fn download_astrofox(
         .await
         .map_err(|e| AstrofoxError::IoError(format!("Falha ao renomear arquivo temporário: {e}")))?;
 
-    // 2. Extração via SO
-    info!("📦 Extraindo AstroFox em {:?} via módulo do SO...", staging_dir);
+    // 2. Extração direta via SO (sem renomear pastas para evitar bloqueios de antivírus/Defender)
+    info!("📦 Extraindo AstroFox diretamente em {:?} via módulo do SO...", target_dir);
     let _ = event_sender.send(BrowserDownloadEvent::Extracting { progress_percent: 100.0 });
-    tokio::fs::create_dir_all(&staging_dir)
+    tokio::fs::create_dir_all(&target_dir)
         .await
-        .map_err(|e| AstrofoxError::IoError(format!("Falha ao criar staging: {e}")))?;
+        .map_err(|e| AstrofoxError::IoError(format!("Falha ao criar pasta de destino: {e}")))?;
 
-    ops.extract_archive(&final_archive, &staging_dir).await?;
+    ops.extract_archive(&final_archive, &target_dir).await?;
 
-    // 3. Grava installed.json e .version
+    // 3. Grava installed.json e .version diretamente na pasta final
     let installed_info = serde_json::json!({
         "engine_name": "camoufox",
         "version": ASTROFOX_RELEASE_TAG,
@@ -371,34 +376,44 @@ pub async fn download_astrofox(
         "executable": artifact.exe_name,
     });
     let _ = tokio::fs::write(
-        staging_dir.join("installed.json"),
+        target_dir.join("installed.json"),
         serde_json::to_string_pretty(&installed_info).unwrap_or_default(),
     )
     .await;
 
-    let _ = tokio::fs::write(staging_dir.join(".version"), ASTROFOX_RELEASE_TAG).await;
+    let _ = tokio::fs::write(target_dir.join(".version"), ASTROFOX_RELEASE_TAG).await;
 
-    // 4. Promoção atômica
+    // 4. Limpeza do arquivo de download e eventuais sobras antigas de staging/backup
     let _ = tokio::fs::remove_file(&final_archive).await;
+    let _ = tokio::fs::remove_dir_all(binaries_dir.join(".astrofox-staging")).await;
+    let _ = tokio::fs::remove_dir_all(binaries_dir.join(".astrofox-backup")).await;
 
-    if target_dir.exists() {
-        let backup_dir = binaries_dir.join(".astrofox-backup");
-        let _ = tokio::fs::remove_dir_all(&backup_dir).await;
-        let _ = tokio::fs::rename(&target_dir, &backup_dir).await;
+    // 5. No Windows: remove o alternate data stream Zone.Identifier se existir (desbloqueio SmartScreen)
+    let final_exe = ops.get_executable_path(&target_dir);
+    #[cfg(target_os = "windows")]
+    {
+        if final_exe.exists() {
+            if let Some(file_name) = final_exe.file_name() {
+                let zone_stream = final_exe.with_file_name(format!("{}:Zone.Identifier", file_name.to_string_lossy()));
+                let _ = std::fs::remove_file(zone_stream);
+            }
+        }
     }
 
-    tokio::fs::rename(&staging_dir, &target_dir)
-        .await
-        .map_err(|e| {
-            AstrofoxError::IoError(format!("Falha ao promover staging para produção: {e}"))
-        })?;
+    let _ = crate::browser_downloader::path_registry::register_engine(
+        data_dir,
+        "camoufox",
+        ASTROFOX_CAMOUFOX_VERSION,
+        &target_dir,
+        &final_exe,
+    );
 
     info!("✨ AstroFox instalado com sucesso em {:?}", target_dir);
     let _ = event_sender.send(BrowserDownloadEvent::Completed {
         version: ASTROFOX_RELEASE_TAG.to_string(),
     });
 
-    Ok(ops.get_executable_path(&target_dir))
+    Ok(final_exe)
 }
 
 /// Constrói o manifesto de motor para o AstroFox

@@ -16,6 +16,7 @@ pub enum BrowserDownloadError {
     IoError(String),
     Cancelled,
     AlreadyRunning,
+    EngineInUse(String),
     Io(std::io::Error),
     Json(serde_json::Error),
 }
@@ -40,6 +41,7 @@ impl fmt::Display for BrowserDownloadError {
             Self::IoError(msg) => write!(f, "Erro de sistema de arquivos: {msg}"),
             Self::Cancelled => write!(f, "Download cancelado pelo usuário."),
             Self::AlreadyRunning => write!(f, "Já existe um download em andamento."),
+            Self::EngineInUse(msg) => write!(f, "{msg}"),
             Self::Io(err) => write!(f, "Erro de E/S de disco: {err}"),
             Self::Json(err) => write!(f, "Erro JSON: {err}"),
         }

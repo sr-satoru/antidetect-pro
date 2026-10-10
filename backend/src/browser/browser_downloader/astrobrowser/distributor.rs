@@ -232,14 +232,19 @@ pub async fn download_astrobrowser(
         .map(|p| p.to_path_buf())
         .unwrap_or_else(|| data_dir.join("binaries"));
 
+    // Trava de segurança: impede corromper arquivos se o motor já estiver rodando
+    let existing_exe = ops.get_executable_path(&target_dir);
+    if crate::browser_downloader::detector::is_executable_running(&existing_exe) {
+        return Err(AstrobrowserError::EngineInUse(
+            "O motor AstroBrowser (Chromium) está em execução. Feche todas as janelas e perfis abertos antes de instalar ou atualizar.".to_string(),
+        ));
+    }
+
     tokio::fs::create_dir_all(&binaries_dir)
         .await
         .map_err(|e| AstrobrowserError::IoError(format!("Falha ao criar diretório binaries: {e}")))?;
 
-    let staging_dir = binaries_dir.join(".astrobrowser-staging");
     let temp_archive = binaries_dir.join(format!("{}.download", artifact.filename));
-
-    let _ = tokio::fs::remove_dir_all(&staging_dir).await;
     let _ = tokio::fs::remove_file(&temp_archive).await;
 
     // 1. Download com streaming e progresso
@@ -347,16 +352,16 @@ pub async fn download_astrobrowser(
     let _ = event_sender.send(BrowserDownloadEvent::Verifying);
     verifier::verify_file_sha256(&final_archive, artifact.sha256)?;
 
-    // 3. Extração via SO
-    info!("📦 Extraindo AstroBrowser em {:?} via módulo do SO...", staging_dir);
+    // 3. Extração direta via SO (sem renomear pastas para evitar bloqueios de antivírus/Defender)
+    info!("📦 Extraindo AstroBrowser diretamente em {:?} via módulo do SO...", target_dir);
     let _ = event_sender.send(BrowserDownloadEvent::Extracting { progress_percent: 100.0 });
-    tokio::fs::create_dir_all(&staging_dir)
+    tokio::fs::create_dir_all(&target_dir)
         .await
-        .map_err(|e| AstrobrowserError::IoError(format!("Falha ao criar staging: {e}")))?;
+        .map_err(|e| AstrobrowserError::IoError(format!("Falha ao criar pasta de destino: {e}")))?;
 
-    ops.extract_archive(&final_archive, &staging_dir).await?;
+    ops.extract_archive(&final_archive, &target_dir).await?;
 
-    // 4. Grava installed.json e .version
+    // 4. Grava installed.json e .version diretamente na pasta final
     let installed_info = serde_json::json!({
         "engine_name": "clearcote",
         "version": ASTROBROWSER_CHROMIUM_VERSION,
@@ -366,34 +371,44 @@ pub async fn download_astrobrowser(
         "executable": artifact.exe_name,
     });
     let _ = tokio::fs::write(
-        staging_dir.join("installed.json"),
+        target_dir.join("installed.json"),
         serde_json::to_string_pretty(&installed_info).unwrap_or_default(),
     )
     .await;
 
-    let _ = tokio::fs::write(staging_dir.join(".version"), ASTROBROWSER_RELEASE_TAG).await;
+    let _ = tokio::fs::write(target_dir.join(".version"), ASTROBROWSER_RELEASE_TAG).await;
 
-    // 5. Promoção atômica
+    // 5. Limpeza do arquivo de download e eventuais sobras antigas de staging/backup
     let _ = tokio::fs::remove_file(&final_archive).await;
+    let _ = tokio::fs::remove_dir_all(binaries_dir.join(".astrobrowser-staging")).await;
+    let _ = tokio::fs::remove_dir_all(binaries_dir.join(".astrobrowser-backup")).await;
 
-    if target_dir.exists() {
-        let backup_dir = binaries_dir.join(".astrobrowser-backup");
-        let _ = tokio::fs::remove_dir_all(&backup_dir).await;
-        let _ = tokio::fs::rename(&target_dir, &backup_dir).await;
+    // 6. No Windows: remove o alternate data stream Zone.Identifier se existir (desbloqueio SmartScreen)
+    let final_exe = ops.get_executable_path(&target_dir);
+    #[cfg(target_os = "windows")]
+    {
+        if final_exe.exists() {
+            if let Some(file_name) = final_exe.file_name() {
+                let zone_stream = final_exe.with_file_name(format!("{}:Zone.Identifier", file_name.to_string_lossy()));
+                let _ = std::fs::remove_file(zone_stream);
+            }
+        }
     }
 
-    tokio::fs::rename(&staging_dir, &target_dir)
-        .await
-        .map_err(|e| {
-            AstrobrowserError::IoError(format!("Falha ao promover staging para produção: {e}"))
-        })?;
+    let _ = crate::browser_downloader::path_registry::register_engine(
+        data_dir,
+        "clearcote",
+        ASTROBROWSER_CHROMIUM_VERSION,
+        &target_dir,
+        &final_exe,
+    );
 
     info!("✨ AstroBrowser instalado com sucesso em {:?}", target_dir);
     let _ = event_sender.send(BrowserDownloadEvent::Completed {
         version: ASTROBROWSER_RELEASE_TAG.to_string(),
     });
 
-    Ok(ops.get_executable_path(&target_dir))
+    Ok(final_exe)
 }
 
 /// Constrói o manifesto de motor para o AstroBrowser
