@@ -143,7 +143,33 @@ impl ProcessManager {
         )?;
 
         let child = cmd.spawn().map_err(|e| {
-            format!("Falha ao executar {:?}: {}", binary_path, e)
+            let os_code = e.raw_os_error();
+            // Windows Error 225: ERROR_VIRUS_INFECTED
+            // Windows Error 1260: ERROR_ACCESS_DISABLED_BY_POLICY
+            // Windows Error 5: ERROR_ACCESS_DENIED (frequente se o antivírus bloqueou ou colocou em quarentena)
+            let is_antivirus_likely = match os_code {
+                Some(225) | Some(1260) => true,
+                Some(5) if !binary_path.exists() => true,
+                _ => false,
+            };
+
+            if is_antivirus_likely {
+                tracing::warn!(
+                    "⚠️ [Segurança/Antivírus] Possível bloqueio detectado pelo Windows Defender / Antivírus ao executar {:?}! Código OS: {:?} - {}",
+                    binary_path,
+                    os_code,
+                    e
+                );
+            } else {
+                tracing::error!(
+                    "❌ Falha ao executar processo do motor em {:?}: {} (Código OS: {:?})",
+                    binary_path,
+                    e,
+                    os_code
+                );
+            }
+
+            format!("Falha ao executar {:?}: {} (Código OS: {:?})", binary_path, e, os_code)
         })?;
 
         let pid = child.id().unwrap_or(0);

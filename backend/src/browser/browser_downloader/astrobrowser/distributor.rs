@@ -394,6 +394,11 @@ pub async fn download_astrobrowser(
                 let zone_stream = final_exe.with_file_name(format!("{}:Zone.Identifier", file_name.to_string_lossy()));
                 let _ = std::fs::remove_file(zone_stream);
             }
+        } else {
+            tracing::warn!(
+                "⚠️ [Segurança/Antivírus] O executável {:?} não foi encontrado após a extração! O Windows Defender ou Antivírus pode tê-lo bloqueado ou colocado em quarentena.",
+                final_exe
+            );
         }
     }
 
