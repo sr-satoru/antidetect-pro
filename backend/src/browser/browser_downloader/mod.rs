@@ -3,6 +3,7 @@ pub mod astrofox;
 pub mod detector;
 pub mod error;
 pub mod manifest;
+pub mod path_registry;
 pub mod platform;
 pub mod service;
 pub mod traits;

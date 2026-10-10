@@ -55,6 +55,17 @@ pub fn build_clearcote_command(
                 .replace("-", "_");
             cmd.env("LANGUAGE", lang);
         }
+
+        #[cfg(target_os = "windows")]
+        {
+            let mut path_var = std::env::var("PATH").unwrap_or_default();
+            if !path_var.is_empty() {
+                path_var = format!("{};{}", parent_dir.display(), path_var);
+            } else {
+                path_var = parent_dir.display().to_string();
+            }
+            cmd.env("PATH", path_var);
+        }
     }
 
     let flags = build_clearcote_flags(

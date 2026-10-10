@@ -192,11 +192,20 @@ export const UpdateCenterDropdown: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-[#0F1015] border border-slate-200/60 dark:border-[#1E202B]">
-                <span className="text-slate-600 dark:text-[#A0A4B4]">Motores (Chromium & Firefox)</span>
-                {hasPendingEngines ? (
-                  <span className="text-amber-500 font-semibold text-[11px]">Download Pendente</span>
+                <span className="text-slate-600 dark:text-[#A0A4B4]">AstroBrowser (Chromium)</span>
+                {isClearcoteInstalled ? (
+                  <span className="text-emerald-500 font-semibold text-[11px]">Operacional</span>
                 ) : (
-                  <span className="text-emerald-500 font-semibold text-[11px]">Operacionais</span>
+                  <span className="text-amber-500 font-semibold text-[11px]">Download Pendente</span>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-[#0F1015] border border-slate-200/60 dark:border-[#1E202B]">
+                <span className="text-slate-600 dark:text-[#A0A4B4]">AstroFox (Firefox)</span>
+                {isCamoufoxInstalled ? (
+                  <span className="text-emerald-500 font-semibold text-[11px]">Operacional</span>
+                ) : (
+                  <span className="text-amber-500 font-semibold text-[11px]">Download Pendente</span>
                 )}
               </div>
             </div>

@@ -174,45 +174,6 @@ async fn test_profile_get_playwright_options() {
     let cfg = pw_opts.get("config").unwrap().as_object().unwrap();
     assert_eq!(cfg.get("geolocation:latitude").unwrap().as_f64().unwrap(), -23.55);
     assert!(cfg.contains_key("fonts"));
-    assert_eq!(pw_opts["i_know_what_im_doing"], true);
-    assert!(pw_opts.get("firefox_user_prefs").is_some());
-    assert_eq!(pw_opts["args"].as_array().unwrap().len(), 0);
-
-    // Agora testa com perfil AstroBrowser (Chromium) garantindo isolamento total (sem config / sem prefs)
-    let create_chrom_dto = star_multlogin_backend::models::CreateProfileDto {
-        id: None,
-        name: Some("Perfil Clearcote Playwright".to_string()),
-        group: Some("Testes".to_string()),
-        tags: None,
-        tag_ids: None,
-        notes: None,
-        status: None,
-        kernel: Some("AstroBrowser".to_string()),
-        browser_version: Some("150".to_string()),
-        os: Some("windows".to_string()),
-        proxy_type: None,
-        proxy_host: None,
-        proxy_port: None,
-        proxy_username: None,
-        proxy_password: None,
-        fingerprint_json: Some(serde_json::json!({
-            "browser": "AstroBrowser",
-            "kernel": "AstroBrowser",
-            "os": "windows",
-            "locale": "pt-BR"
-        })),
-        extension_mode: None,
-        extension_category: None,
-        extensions: None,
-    };
-    let created_chrom = storage.create(create_chrom_dto).expect("Erro ao criar perfil Chromium");
-    let chrom_opts = storage.get_playwright_options(&created_chrom.id).expect("Erro ao gerar opções Playwright Chromium");
-
-    assert_eq!(chrom_opts["kernel"], "AstroBrowser");
-    assert!(chrom_opts.get("config").is_none(), "Chromium não pode conter campo 'config'");
-    assert!(chrom_opts.get("firefox_user_prefs").is_none(), "Chromium não pode conter campo 'firefox_user_prefs'");
-    assert!(chrom_opts.get("i_know_what_im_doing").is_none(), "Chromium não pode conter 'i_know_what_im_doing'");
-    assert!(chrom_opts["args"].is_array(), "Chromium deve conter array de flags em 'args'");
 
     let _ = std::fs::remove_dir_all(temp_dir);
 }

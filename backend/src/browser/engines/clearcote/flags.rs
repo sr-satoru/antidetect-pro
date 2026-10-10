@@ -48,6 +48,10 @@ pub fn build_clearcote_flags(
         .map(|s| s.to_string())
         .collect::<Vec<_>>();
 
+    if webrtc_mode == "off" || webrtc_mode == "disabled" {
+        disabled_features.push("WebRtcHideLocalIpsWithMdns".to_string());
+    }
+
     let valid_addons = addon_paths
         .iter()
         .filter(|p| !p.trim().is_empty())
