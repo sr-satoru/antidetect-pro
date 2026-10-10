@@ -67,15 +67,18 @@ impl PlatformOperations for LinuxOperations {
         let metadata = fs::metadata(&exe_path)
             .map_err(|e| AstrobrowserError::IoError(format!("Falha ao ler metadata do executável: {e}")))?;
 
-        if metadata.len() < 5_000_000 {
+        if metadata.len() < 100_000 {
             return Ok(EngineHealthStatus::Broken {
                 reason: format!("Executável Chromium incompleto ou truncado (apenas {} bytes).", metadata.len()),
             });
         }
 
-        let icu = target_dir.join("icudtl.dat");
-        let pak = target_dir.join("resources.pak");
-        if !icu.exists() || !pak.exists() {
+        let exe_dir = exe_path.parent().unwrap_or(target_dir);
+        let icu = exe_dir.join("icudtl.dat");
+        let pak = exe_dir.join("resources.pak");
+        let icu_root = target_dir.join("icudtl.dat");
+        let pak_root = target_dir.join("resources.pak");
+        if (!icu.exists() && !icu_root.exists()) || (!pak.exists() && !pak_root.exists()) {
             return Ok(EngineHealthStatus::Broken {
                 reason: "Arquivos vitais do Chromium (icudtl.dat ou resources.pak) ausentes.".to_string(),
             });

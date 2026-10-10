@@ -43,12 +43,14 @@ pub fn extract_zip(zip_path: &Path, dest_dir: &Path) -> Result<(), AstrobrowserE
         }
     }
 
+    // No Windows, preservamos a árvore original extraída sem forçar renomeações perigosas.
+    // O sistema de detecção e lançamento (command.rs) já suporta e localiza o executável em qualquer subpasta.
     flatten_wrapper_dir(dest_dir)?;
     Ok(())
 }
 
-/// Se o arquivo foi descompactado dentro de uma única subpasta wrapper,
-/// move todo o seu conteúdo para a raiz do diretório de destino.
+/// Achatamento suave e não-destrutivo: no Windows, os arquivos são mantidos intactos
+/// em sua estrutura extraída para evitar quebras por locks do sistema operacional ou antivírus.
 pub fn flatten_wrapper_dir(dir: &Path) -> Result<(), AstrobrowserError> {
     let entries: Vec<PathBuf> = fs::read_dir(dir)?
         .filter_map(|e| e.ok())
@@ -67,20 +69,20 @@ pub fn flatten_wrapper_dir(dir: &Path) -> Result<(), AstrobrowserError> {
         .cloned()
         .collect();
 
+    // Se houver wrapper, tenta mover apenas se o destino não existir, sem quebrar
     if subdirs.len() == 1 {
         let wrapper = &subdirs[0];
-        let sub_entries: Vec<PathBuf> = fs::read_dir(wrapper)?
-            .filter_map(|e| e.ok())
-            .map(|e| e.path())
-            .collect();
-
-        for item in sub_entries {
-            if let Some(file_name) = item.file_name() {
-                let target = dir.join(file_name);
-                let _ = fs::rename(&item, target);
+        if let Ok(sub_entries) = fs::read_dir(wrapper) {
+            for item in sub_entries.flatten() {
+                if let Some(file_name) = item.file_name().to_str() {
+                    let target = dir.join(file_name);
+                    if !target.exists() {
+                        let _ = fs::rename(item.path(), &target);
+                    }
+                }
             }
+            let _ = fs::remove_dir(wrapper);
         }
-        let _ = fs::remove_dir(wrapper);
     }
 
     Ok(())

@@ -57,7 +57,7 @@ impl PlatformOperations for WindowsOperations {
         let metadata = fs::metadata(&exe_path)
             .map_err(|e| AstrobrowserError::IoError(format!("Falha ao ler metadata do executável: {e}")))?;
 
-        if metadata.len() < 5_000_000 {
+        if metadata.len() < 100_000 {
             return Ok(EngineHealthStatus::Broken {
                 reason: format!("Executável incompleto (apenas {} bytes)", metadata.len()),
             });
@@ -67,13 +67,26 @@ impl PlatformOperations for WindowsOperations {
         let icu = exe_dir.join("icudtl.dat");
         let pak = exe_dir.join("resources.pak");
         let v8_snap = exe_dir.join("v8_context_snapshot.bin");
+        let icu_target = target_dir.join("icudtl.dat");
+        let pak_target = target_dir.join("resources.pak");
 
-        let has_vital_files = icu.exists() || pak.exists() || v8_snap.exists() || fs::read_dir(exe_dir).ok().map(|entries| {
-            entries.flatten().any(|e| {
-                let ext = e.path().extension().and_then(|x| x.to_str()).unwrap_or("").to_lowercase();
-                ext == "pak" || ext == "dat" || ext == "bin" || ext == "dll"
-            })
-        }).unwrap_or(false);
+        let has_vital_files = icu.exists()
+            || pak.exists()
+            || v8_snap.exists()
+            || icu_target.exists()
+            || pak_target.exists()
+            || fs::read_dir(exe_dir).ok().map(|entries| {
+                entries.flatten().any(|e| {
+                    let ext = e.path().extension().and_then(|x| x.to_str()).unwrap_or("").to_lowercase();
+                    ext == "pak" || ext == "dat" || ext == "bin" || ext == "dll"
+                })
+            }).unwrap_or(false)
+            || fs::read_dir(target_dir).ok().map(|entries| {
+                entries.flatten().any(|e| {
+                    let ext = e.path().extension().and_then(|x| x.to_str()).unwrap_or("").to_lowercase();
+                    ext == "pak" || ext == "dat" || ext == "bin" || ext == "dll"
+                })
+            }).unwrap_or(false);
 
         if !has_vital_files {
             return Ok(EngineHealthStatus::Broken {
@@ -83,6 +96,11 @@ impl PlatformOperations for WindowsOperations {
 
         let version = fs::read_to_string(target_dir.join("installed.json"))
             .or_else(|_| fs::read_to_string(exe_dir.join("installed.json")))
+            .or_else(|_| {
+                target_dir.parent()
+                    .map(|p| fs::read_to_string(p.join("installed.json")))
+                    .unwrap_or_else(|| Err(std::io::Error::new(std::io::ErrorKind::NotFound, "")))
+            })
             .ok()
             .and_then(|s| serde_json::from_str::<serde_json::Value>(&s).ok())
             .and_then(|j| j.get("version").and_then(|v| v.as_str().map(|v| v.to_string())))

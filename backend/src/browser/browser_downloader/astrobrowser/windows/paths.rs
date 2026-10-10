@@ -54,9 +54,59 @@ pub const DIRECTORY_CANDIDATES: [&str; 9] = [
     "chromium",
 ];
 
+/// Resolve o data_dir canônico a partir do target_dir ou de qualquer subdiretório
+fn resolve_data_dir_from_target(target_dir: &Path) -> &Path {
+    let mut curr = target_dir;
+    while let Some(parent) = curr.parent() {
+        if curr.file_name().and_then(|s| s.to_str()) == Some("binaries") {
+            return parent;
+        }
+        if parent.join("engine_paths.json").exists() {
+            return parent;
+        }
+        curr = parent;
+    }
+    target_dir
+}
+
+/// Busca recursiva por executáveis do Clearcote em até 3 níveis de subpastas
+fn find_executable_in_tree(dir: &Path, depth: usize, max_depth: usize) -> Option<PathBuf> {
+    if depth > max_depth {
+        return None;
+    }
+    if let Ok(entries) = fs::read_dir(dir) {
+        let mut subdirs = Vec::new();
+        // 1. Procura na pasta atual pelos nomes candidatos prioritários
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_file() {
+                if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                    for cand in &EXECUTABLE_CANDIDATES {
+                        if name.eq_ignore_ascii_case(cand) {
+                            return Some(path);
+                        }
+                    }
+                }
+            } else if path.is_dir() {
+                let dname = path.file_name().and_then(|n| n.to_str()).unwrap_or("");
+                if !dname.starts_with('.') && dname != "__MACOSX" {
+                    subdirs.push(path);
+                }
+            }
+        }
+        // 2. Busca recursiva em subpastas (ex: chrome-win64, clearcote, chrome-win)
+        for sub in subdirs {
+            if let Some(found) = find_executable_in_tree(&sub, depth + 1, max_depth) {
+                return Some(found);
+            }
+        }
+    }
+    None
+}
+
 /// Retorna o diretório de destino do AstroBrowser no Windows com consulta ao registro persistente e auto-descoberta
 pub fn get_target_dir(data_dir: &Path) -> PathBuf {
-    // 1. Consulta o registro persistente engine_paths.json
+    // 1. Consulta o registro persistente engine_paths.json (aceita clearcote ou astrobrowser)
     if let Some(reg) = path_registry::get_registered_engine(data_dir, "clearcote") {
         if reg.target_dir.exists() && reg.target_dir.is_dir() {
             return reg.target_dir;
@@ -88,11 +138,8 @@ pub fn get_target_dir(data_dir: &Path) -> PathBuf {
         for entry in entries.flatten() {
             let p = entry.path();
             if p.is_dir() {
-                for exe in &EXECUTABLE_CANDIDATES {
-                    let candidate = p.join(exe);
-                    if candidate.exists() && candidate.is_file() {
-                        return p;
-                    }
+                if let Some(_) = find_executable_in_tree(&p, 0, 2) {
+                    return p;
                 }
             }
         }
@@ -112,59 +159,28 @@ pub fn get_target_dir(data_dir: &Path) -> PathBuf {
 
 /// Retorna o caminho do executável principal no Windows
 pub fn get_executable_path(target_dir: &Path) -> PathBuf {
-    // 1. Tenta recuperar do registro persistente se target_dir pertencer ao data_dir
-    let possible_data_dir = if target_dir.ends_with("binaries") {
-        target_dir.parent().unwrap_or(target_dir)
-    } else if let Some(bin_dir) = target_dir.parent() {
-        bin_dir.parent().unwrap_or(bin_dir)
-    } else {
-        target_dir
-    };
+    let possible_data_dir = resolve_data_dir_from_target(target_dir);
 
+    // 1. Tenta recuperar do registro persistente
     if let Some(reg) = path_registry::get_registered_engine(possible_data_dir, "clearcote") {
         if reg.executable_path.exists() && reg.executable_path.is_file() {
             return reg.executable_path;
         }
     }
 
-    // 2. Checa diretamente na raiz do target_dir
-    for name in &EXECUTABLE_CANDIDATES {
-        let p = target_dir.join(name);
-        if p.exists() && p.is_file() {
-            let _ = path_registry::register_engine(
-                possible_data_dir,
-                "clearcote",
-                "150.0.7871.114",
-                target_dir,
-                &p,
-            );
-            return p;
-        }
+    // 2. Busca na raiz e em qualquer subpasta (ex: chrome-win64, clearcote-windows)
+    if let Some(found_exe) = find_executable_in_tree(target_dir, 0, 3) {
+        let _ = path_registry::register_engine(
+            possible_data_dir,
+            "clearcote",
+            "150.0.7871.114",
+            target_dir,
+            &found_exe,
+        );
+        return found_exe;
     }
 
-    // 3. Checa em subdiretórios de 1º nível (ex: wrapper de descompactação como chrome-win)
-    if let Ok(entries) = fs::read_dir(target_dir) {
-        for entry in entries.flatten() {
-            let p = entry.path();
-            if p.is_dir() {
-                for name in &EXECUTABLE_CANDIDATES {
-                    let sub_p = p.join(name);
-                    if sub_p.exists() && sub_p.is_file() {
-                        let _ = path_registry::register_engine(
-                            possible_data_dir,
-                            "clearcote",
-                            "150.0.7871.114",
-                            target_dir,
-                            &sub_p,
-                        );
-                        return sub_p;
-                    }
-                }
-            }
-        }
-    }
-
-    // 4. Varredura por qualquer .exe com has_sibling_dll
+    // 3. Varredura flexível por qualquer .exe acompanhado de dlls/paks
     if let Ok(entries) = fs::read_dir(target_dir) {
         for entry in entries.flatten() {
             let p = entry.path();

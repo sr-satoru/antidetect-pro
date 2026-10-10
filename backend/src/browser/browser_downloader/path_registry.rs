@@ -62,20 +62,58 @@ pub fn save_registry(data_dir: &Path, data: &EngineRegistryData) -> Result<(), S
     Ok(())
 }
 
+/// Retorna apelidos/sinônimos conhecidos para o mesmo motor de navegação
+fn get_engine_key_candidates(engine_key: &str) -> Vec<&'static str> {
+    if engine_key.eq_ignore_ascii_case("clearcote") || engine_key.eq_ignore_ascii_case("astrobrowser") {
+        vec!["clearcote", "astrobrowser"]
+    } else if engine_key.eq_ignore_ascii_case("camoufox") || engine_key.eq_ignore_ascii_case("astrofox") {
+        vec!["camoufox", "astrofox"]
+    } else {
+        vec![]
+    }
+}
+
 /// Obtém informações do motor registrado, validando se o executável ainda existe fisicamente no disco.
-/// Se o arquivo não existir mais, limpa o registro obsoleto (self-healing).
+/// Se o arquivo não existir mais, limpa o registro obsoleto (self-healing com tolerância a locks transitórios).
 pub fn get_registered_engine(data_dir: &Path, engine_key: &str) -> Option<RegisteredEngineInfo> {
     let mut data = load_registry(data_dir);
-    if let Some(info) = data.engines.get(engine_key).cloned() {
-        if info.executable_path.exists() && info.executable_path.is_file() {
-            return Some(info);
-        } else {
-            info!(
-                "🧹 Limpando registro obsoleto do motor '{}': {:?} não existe mais no disco.",
-                engine_key, info.executable_path
-            );
-            data.engines.remove(engine_key);
-            let _ = save_registry(data_dir, &data);
+
+    // Constrói lista de chaves candidatas (chave original + sinônimos como clearcote/astrobrowser)
+    let mut candidate_keys = vec![engine_key];
+    for alias in get_engine_key_candidates(engine_key) {
+        if !candidate_keys.contains(&alias) {
+            candidate_keys.push(alias);
+        }
+    }
+
+    for key in candidate_keys {
+        if let Some(info) = data.engines.get(key).cloned() {
+            if info.executable_path.exists() && info.executable_path.is_file() {
+                return Some(info);
+            } else {
+                // Tolerância a locks no Windows: se o diretório pai ainda existe, tenta localizar alternativas
+                if let Some(parent) = info.executable_path.parent() {
+                    if parent.exists() && parent.is_dir() {
+                        for cand in &["chrome.exe", "clearcote.exe", "star-engine.exe", "camoufox.exe", "chrome", "star-engine"] {
+                            let alt = parent.join(cand);
+                            if alt.exists() && alt.is_file() {
+                                let mut updated = info.clone();
+                                updated.executable_path = alt;
+                                data.engines.insert(key.to_string(), updated.clone());
+                                let _ = save_registry(data_dir, &data);
+                                return Some(updated);
+                            }
+                        }
+                    }
+                }
+
+                info!(
+                    "🧹 Limpando registro obsoleto do motor '{}': {:?} não existe mais no disco.",
+                    key, info.executable_path
+                );
+                data.engines.remove(key);
+                let _ = save_registry(data_dir, &data);
+            }
         }
     }
     None
@@ -92,16 +130,24 @@ pub fn register_engine(
     let mut data = load_registry(data_dir);
     let now = chrono::Utc::now().to_rfc3339();
 
-    data.engines.insert(
-        engine_key.to_string(),
-        RegisteredEngineInfo {
-            engine: engine_key.to_string(),
-            version: version.to_string(),
-            target_dir: target_dir.to_path_buf(),
-            executable_path: exe_path.to_path_buf(),
-            last_verified: now,
-        },
-    );
+    let entry = RegisteredEngineInfo {
+        engine: engine_key.to_string(),
+        version: version.to_string(),
+        target_dir: target_dir.to_path_buf(),
+        executable_path: exe_path.to_path_buf(),
+        last_verified: now,
+    };
+
+    data.engines.insert(engine_key.to_string(), entry.clone());
+
+    // Também registra sob chaves sinônimas para compatibilidade total (ex: clearcote <-> astrobrowser)
+    for alias in get_engine_key_candidates(engine_key) {
+        if alias != engine_key {
+            let mut alias_entry = entry.clone();
+            alias_entry.engine = alias.to_string();
+            data.engines.insert(alias.to_string(), alias_entry);
+        }
+    }
 
     save_registry(data_dir, &data)?;
     info!(
@@ -114,7 +160,16 @@ pub fn register_engine(
 /// Invalida/remove um motor do registro
 pub fn invalidate_engine(data_dir: &Path, engine_key: &str) {
     let mut data = load_registry(data_dir);
+    let mut changed = false;
     if data.engines.remove(engine_key).is_some() {
+        changed = true;
+    }
+    for alias in get_engine_key_candidates(engine_key) {
+        if data.engines.remove(alias).is_some() {
+            changed = true;
+        }
+    }
+    if changed {
         let _ = save_registry(data_dir, &data);
     }
 }

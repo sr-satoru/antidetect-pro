@@ -10,7 +10,24 @@ pub fn get_target_dir(data_dir: &Path) -> PathBuf {
     base.join("binaries").join("astrobrowser")
 }
 
-/// Retorna o caminho do executável principal no Linux
+/// Retorna o caminho do executável principal no Linux (com suporte a subpastas de descompactação)
 pub fn get_executable_path(target_dir: &Path) -> PathBuf {
-    target_dir.join("chrome")
+    let direct = target_dir.join("chrome");
+    if direct.exists() && direct.is_file() {
+        return direct;
+    }
+
+    if let Ok(entries) = std::fs::read_dir(target_dir) {
+        for entry in entries.flatten() {
+            let p = entry.path();
+            if p.is_dir() {
+                let sub = p.join("chrome");
+                if sub.exists() && sub.is_file() {
+                    return sub;
+                }
+            }
+        }
+    }
+
+    direct
 }
