@@ -160,6 +160,10 @@ impl ProcessManager {
                     os_code,
                     e
                 );
+                format!(
+                    "Bloqueado pelo Windows Defender / Antivírus (Código OS: {:?}). O executável do navegador foi impedido de iniciar ou colocado em quarentena. Libere o arquivo no Histórico de Proteção da Segurança do Windows.",
+                    os_code.unwrap_or(0)
+                )
             } else {
                 tracing::error!(
                     "❌ Falha ao executar processo do motor em {:?}: {} (Código OS: {:?})",
@@ -167,9 +171,8 @@ impl ProcessManager {
                     e,
                     os_code
                 );
+                format!("Falha ao executar {:?}: {} (Código OS: {:?})", binary_path, e, os_code)
             }
-
-            format!("Falha ao executar {:?}: {} (Código OS: {:?})", binary_path, e, os_code)
         })?;
 
         let pid = child.id().unwrap_or(0);

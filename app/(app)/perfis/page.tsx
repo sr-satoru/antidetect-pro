@@ -256,10 +256,11 @@ export const PerfisPage: React.FC = () => {
                 : p,
             ),
           );
-          // Adiciona notificação silenciosa na central do Header
+          // Adiciona notificação na central do Header com destaque para bloqueio de antivírus
+          const isAntivirus = typeof err?.message === 'string' && (err.message.includes('Windows Defender') || err.message.includes('Antivírus'));
           serviceNotifications.add({
-            title: `Falha ao Iniciar "${target.name || 'Perfil'}"`,
-            description: err.message || 'Erro ao inicializar o motor do navegador.',
+            title: isAntivirus ? `🛡️ Bloqueio de Antivírus: "${target.name || 'Perfil'}"` : `Falha ao Iniciar "${target.name || 'Perfil'}"`,
+            description: err?.message || 'Erro ao inicializar o motor do navegador.',
             type: 'error',
           });
         });
