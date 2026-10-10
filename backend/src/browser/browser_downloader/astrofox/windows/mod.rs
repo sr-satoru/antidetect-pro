@@ -50,7 +50,7 @@ impl PlatformOperations for WindowsOperations {
         let exe_path = paths::get_executable_path(target_dir);
         if !exe_path.exists() {
             return Ok(EngineHealthStatus::Missing {
-                reason: format!("Executável star-engine.exe não encontrado em {:?}", target_dir),
+                reason: format!("Executável do AstroFox/Gecko não encontrado em {:?}", target_dir),
             });
         }
 
@@ -63,9 +63,10 @@ impl PlatformOperations for WindowsOperations {
             });
         }
 
-        let omni = target_dir.join("omni.ja");
-        let omni_sub = target_dir.join("browser").join("omni.ja");
-        let has_xul = target_dir.join("xul.dll").exists();
+        let exe_dir = exe_path.parent().unwrap_or(target_dir);
+        let omni = exe_dir.join("omni.ja");
+        let omni_sub = exe_dir.join("browser").join("omni.ja");
+        let has_xul = exe_dir.join("xul.dll").exists();
         if !omni.exists() && !omni_sub.exists() && !has_xul {
             return Ok(EngineHealthStatus::Broken {
                 reason: "Arquivos vitais do Gecko (omni.ja / xul.dll) ausentes.".to_string(),
@@ -73,6 +74,7 @@ impl PlatformOperations for WindowsOperations {
         }
 
         let version = fs::read_to_string(target_dir.join("installed.json"))
+            .or_else(|_| fs::read_to_string(exe_dir.join("installed.json")))
             .ok()
             .and_then(|s| serde_json::from_str::<serde_json::Value>(&s).ok())
             .and_then(|j| j.get("version").and_then(|v| v.as_str().map(|v| v.to_string())))

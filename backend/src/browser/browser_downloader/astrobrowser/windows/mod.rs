@@ -50,7 +50,7 @@ impl PlatformOperations for WindowsOperations {
         let exe_path = paths::get_executable_path(target_dir);
         if !exe_path.exists() {
             return Ok(EngineHealthStatus::Missing {
-                reason: format!("Executável chrome.exe não encontrado em {:?}", target_dir),
+                reason: format!("Executável do AstroBrowser/Chromium não encontrado em {:?}", target_dir),
             });
         }
 
@@ -63,15 +63,26 @@ impl PlatformOperations for WindowsOperations {
             });
         }
 
-        let icu = target_dir.join("icudtl.dat");
-        let pak = target_dir.join("resources.pak");
-        if !icu.exists() || !pak.exists() {
+        let exe_dir = exe_path.parent().unwrap_or(target_dir);
+        let icu = exe_dir.join("icudtl.dat");
+        let pak = exe_dir.join("resources.pak");
+        let v8_snap = exe_dir.join("v8_context_snapshot.bin");
+
+        let has_vital_files = icu.exists() || pak.exists() || v8_snap.exists() || fs::read_dir(exe_dir).ok().map(|entries| {
+            entries.flatten().any(|e| {
+                let ext = e.path().extension().and_then(|x| x.to_str()).unwrap_or("").to_lowercase();
+                ext == "pak" || ext == "dat" || ext == "bin" || ext == "dll"
+            })
+        }).unwrap_or(false);
+
+        if !has_vital_files {
             return Ok(EngineHealthStatus::Broken {
-                reason: "Arquivos vitais do Chromium (icudtl.dat ou resources.pak) ausentes.".to_string(),
+                reason: "Arquivos vitais do Chromium (icudtl.dat, resources.pak ou bibliotecas) ausentes.".to_string(),
             });
         }
 
         let version = fs::read_to_string(target_dir.join("installed.json"))
+            .or_else(|_| fs::read_to_string(exe_dir.join("installed.json")))
             .ok()
             .and_then(|s| serde_json::from_str::<serde_json::Value>(&s).ok())
             .and_then(|j| j.get("version").and_then(|v| v.as_str().map(|v| v.to_string())))

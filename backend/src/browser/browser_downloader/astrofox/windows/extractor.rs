@@ -63,8 +63,20 @@ pub fn flatten_wrapper_dir(dir: &Path) -> Result<(), AstrofoxError> {
         .map(|e| e.path())
         .collect();
 
-    if entries.len() == 1 && entries[0].is_dir() {
-        let wrapper = &entries[0];
+    let subdirs: Vec<PathBuf> = entries
+        .iter()
+        .filter(|p| {
+            if !p.is_dir() {
+                return false;
+            }
+            let name = p.file_name().and_then(|n| n.to_str()).unwrap_or("");
+            !name.starts_with('.') && name != "__MACOSX"
+        })
+        .cloned()
+        .collect();
+
+    if subdirs.len() == 1 {
+        let wrapper = &subdirs[0];
         let sub_entries: Vec<PathBuf> = fs::read_dir(wrapper)?
             .filter_map(|e| e.ok())
             .map(|e| e.path())

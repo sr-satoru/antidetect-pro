@@ -28,30 +28,56 @@ pub enum EngineHealthStatus {
 
 /// Helper para compatibilidade: localiza executável do Clearcote em um diretório
 pub fn find_clearcote_executable(engine_dir: &Path) -> Option<PathBuf> {
-    #[cfg(windows)]
-    let target = engine_dir.join("chrome.exe");
-    #[cfg(not(windows))]
-    let target = engine_dir.join("chrome");
-
-    if target.exists() && target.is_file() {
-        Some(target)
-    } else {
-        None
+    let candidates = ["chrome.exe", "clearcote.exe", "astrobrowser.exe", "chrome", "clearcote"];
+    for name in &candidates {
+        let target = engine_dir.join(name);
+        if target.exists() && target.is_file() {
+            return Some(target);
+        }
     }
+
+    if let Ok(entries) = fs::read_dir(engine_dir) {
+        for entry in entries.flatten() {
+            let p = entry.path();
+            if p.is_dir() {
+                for name in &candidates {
+                    let target = p.join(name);
+                    if target.exists() && target.is_file() {
+                        return Some(target);
+                    }
+                }
+            }
+        }
+    }
+
+    None
 }
 
 /// Helper para compatibilidade: localiza executável do Camoufox em um diretório
 pub fn find_or_standardize_executable(engine_dir: &Path) -> Option<PathBuf> {
-    #[cfg(windows)]
-    let target = engine_dir.join("star-engine.exe");
-    #[cfg(not(windows))]
-    let target = engine_dir.join("star-engine");
-
-    if target.exists() && target.is_file() {
-        Some(target)
-    } else {
-        None
+    let candidates = ["star-engine.exe", "camoufox.exe", "astrofox.exe", "firefox.exe", "star-engine", "camoufox", "firefox"];
+    for name in &candidates {
+        let target = engine_dir.join(name);
+        if target.exists() && target.is_file() {
+            return Some(target);
+        }
     }
+
+    if let Ok(entries) = fs::read_dir(engine_dir) {
+        for entry in entries.flatten() {
+            let p = entry.path();
+            if p.is_dir() {
+                for name in &candidates {
+                    let target = p.join(name);
+                    if target.exists() && target.is_file() {
+                        return Some(target);
+                    }
+                }
+            }
+        }
+    }
+
+    None
 }
 
 /// Retorna o diretório base canônico onde os arquivos de um motor específico residem
