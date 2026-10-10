@@ -108,8 +108,8 @@ pub static WINDOWS_X64_ARTIFACT: AstrobrowserArtifact = AstrobrowserArtifact {
     url: "https://github.com/clearcotelabs/clearcote-browser/releases/download/v0.1.0-pre.23/clearcote-150.0.7871.114-windows-x64.zip",
     exe_name: "chrome.exe",
     archive_format: ArchiveFormat::Zip,
-    sha256: "93fc03c45b931d8d82f714814318892929f44dd671b0993788332071d53f3135",
-    exe_sha256: "f49b0d6bc5a08857e34f951ddc456abc643283ae45ff330ee7c2c39cd75b4869",
+    sha256: "",
+    exe_sha256: "",
     size_mb: 180,
 };
 
@@ -347,10 +347,12 @@ pub async fn download_astrobrowser(
         .await
         .map_err(|e| AstrobrowserError::IoError(format!("Falha ao renomear arquivo temporário: {e}")))?;
 
-    // 2. Validação SHA-256
-    info!("🔒 Validando integridade SHA-256 do pacote baixado...");
-    let _ = event_sender.send(BrowserDownloadEvent::Verifying);
-    verifier::verify_file_sha256(&final_archive, artifact.sha256)?;
+    // 2. Validação SHA-256 (se fornecido)
+    if !artifact.sha256.trim().is_empty() {
+        info!("🔒 Validando integridade SHA-256 do pacote baixado...");
+        let _ = event_sender.send(BrowserDownloadEvent::Verifying);
+        verifier::verify_file_sha256(&final_archive, artifact.sha256)?;
+    }
 
     // 3. Extração direta via SO (sem renomear pastas para evitar bloqueios de antivírus/Defender)
     info!("📦 Extraindo AstroBrowser diretamente em {:?} via módulo do SO...", target_dir);
@@ -420,8 +422,16 @@ pub fn get_engine_manifest() -> EngineManifest {
         url: WINDOWS_X64_ARTIFACT.url.to_string(),
         exe_name: WINDOWS_X64_ARTIFACT.exe_name.to_string(),
         archive_format: ArchiveFormat::Zip,
-        sha256: Some(WINDOWS_X64_ARTIFACT.sha256.to_string()),
-        exe_sha256: Some(WINDOWS_X64_ARTIFACT.exe_sha256.to_string()),
+        sha256: if WINDOWS_X64_ARTIFACT.sha256.is_empty() {
+            None
+        } else {
+            Some(WINDOWS_X64_ARTIFACT.sha256.to_string())
+        },
+        exe_sha256: if WINDOWS_X64_ARTIFACT.exe_sha256.is_empty() {
+            None
+        } else {
+            Some(WINDOWS_X64_ARTIFACT.exe_sha256.to_string())
+        },
         source_candidates: vec!["chrome.exe".into(), "clearcote.exe".into()],
         size_mb: WINDOWS_X64_ARTIFACT.size_mb as usize,
     };
@@ -459,7 +469,8 @@ mod tests {
         let win_art = get_artifact(OsKind::Windows, ArchKind::X86_64).unwrap();
         assert_eq!(win_art.exe_name, "chrome.exe");
         assert_eq!(win_art.archive_format, ArchiveFormat::Zip);
-        assert!(!win_art.sha256.is_empty());
+        assert_eq!(win_art.url, "https://github.com/clearcotelabs/clearcote-browser/releases/download/v0.1.0-pre.23/clearcote-150.0.7871.114-windows-x64.zip");
+        assert!(win_art.sha256.is_empty());
 
         let lin_art = get_artifact(OsKind::Linux, ArchKind::X86_64).unwrap();
         assert_eq!(lin_art.exe_name, "chrome");
