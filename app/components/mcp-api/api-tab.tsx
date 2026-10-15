@@ -9,6 +9,7 @@ import {
   Play,
   Send,
   CheckCircle2,
+  AlertCircle,
   ChevronRight,
   ExternalLink,
 } from 'lucide-react';
@@ -32,7 +33,7 @@ interface EndpointItem {
   path: string;
   desc: string;
   sampleBody?: Record<string, any>;
-  mockResponse: Record<string, any>;
+  mockResponse: Record<string, any> | Array<any>;
 }
 
 export const ApiTab: React.FC<ApiTabProps> = ({
@@ -63,25 +64,66 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   const endpoints: EndpointItem[] = [
     {
       id: 'get_public_profiles',
-      name: 'Puxar Perfil Público (ID, Nome & Tags)',
+      name: '1. Puxar Perfil Público (Agentes)',
       method: 'GET',
       path: '/api/profiles/public',
-      desc: 'Puxa o ID, Nome e Tags do perfil para controle inteligente de agentes de IA sem expor credenciais ou cofre. Aceita ?id=, ?name= ou ?tag=.',
+      desc: 'Consulta minimalista de perfis por ?tag=, ?name= ou ?id=. Retorna estritamente { id, name, tags } sem expor credenciais, senhas de proxy ou cofre.',
       sampleBody: {
         tag: 'shopee',
       },
-      mockResponse: {
-        id: 'prf_shopee_01',
-        name: 'Shopee Ads',
-        tags: ['shopee', 'aquecimento'],
+      mockResponse: [
+        {
+          id: 'prf_shopee_01',
+          name: 'Shopee Ads',
+          tags: ['shopee', 'aquecimento'],
+        },
+      ],
+    },
+    {
+      id: 'post_public_profiles',
+      name: '2. Busca Avançada de Perfil Público',
+      method: 'POST',
+      path: '/api/profiles/public',
+      desc: 'Busca pública de perfis via payload JSON estrito { "tag": "...", "name": "...", "id": "..." } com retorno seguro.',
+      sampleBody: {
+        tag: 'shopee',
       },
+      mockResponse: [
+        {
+          id: 'prf_shopee_01',
+          name: 'Shopee Ads',
+          tags: ['shopee', 'aquecimento'],
+        },
+      ],
+    },
+    {
+      id: 'list_mcp_profiles',
+      name: '3. Listar Perfis Operacionais (MCP)',
+      method: 'GET',
+      path: '/mcp/profiles',
+      desc: 'Lista operacional completa para automações com status em tempo real (running / ready), kernel (AstroFox / AstroBrowser), tags e datas, com credenciais confidenciais ocultas.',
+      mockResponse: [
+        {
+          id: 'prf_shopee_01',
+          name: 'Shopee Ads',
+          kernel: 'AstroFox',
+          browser_version: '135',
+          os: 'windows',
+          group: 'E-commerce',
+          tags: ['shopee'],
+          status: 'ready',
+          running: false,
+          created_at: 1729000000,
+          updated_at: 1729000000,
+        },
+      ],
     },
     {
       id: 'get_playwright_options',
-      name: 'Playwright: Opções Nativas (Star Driver)',
+      name: '4. Opções Nativas Playwright (Zero BiDi)',
       method: 'GET',
       path: '/api/profiles/{id}/playwright',
-      desc: 'Retorna manifesto completo com user_data_dir, executable_path, configs de hardware e prefs para execução nativa no Star Driver (zero BiDi).',
+      desc: 'Retorna o manifesto de execução nativa com user_data_dir, executable_path, configs de hardware e prefs para execução direta sem conflitos de driver.',
       mockResponse: {
         profile_id: 'prf_shopee_01',
         name: 'Shopee Ads',
@@ -89,8 +131,6 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         user_data_dir: '/dados/profiles/prf_shopee_01/profile',
         executable_path: '/binarios/astrofox/astrofox',
         config: {
-          'geolocation:latitude': -23.55,
-          'geolocation:longitude': -46.63,
           'navigator:oscpu': 'Windows NT 10.0; Win64; x64',
           fonts: ['Arial', 'Calibri'],
         },
@@ -100,54 +140,46 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       },
     },
     {
-      id: 'start_profile',
-      name: 'Iniciar Perfil (Star Driver GUI)',
+      id: 'launch_profile',
+      name: '5. Iniciar Perfil (Star Driver)',
       method: 'POST',
-      path: '/api/profiles/{id}/launch',
-      desc: 'Inicia o perfil com janela gráfica, cookies, proxy e camuflagem de hardware no AstroFox / AstroBrowser.',
+      path: '/mcp/profiles/{id}/launch',
+      desc: 'Inicia o perfil no banco local expondo a porta de depuração CDP/WebSocket e camuflagem de hardware ativa.',
       sampleBody: {
-        id: 'prf_shopee_01',
+        cdp: true,
+        url: 'https://bot.sannysoft.com',
       },
       mockResponse: {
         status: 'launched',
         profile_id: 'prf_shopee_01',
-        pid: 15820,
+        name: 'Shopee Ads',
         kernel: 'AstroFox',
-        message: 'Navegador AstroFox iniciado com sucesso (PID: 15820).',
+        pid: 15820,
+        debug_port: 18922,
+        ws_endpoint: 'ws://127.0.0.1:18922/session',
+        message: "Navegador 'Shopee Ads' (AstroFox) iniciado com sucesso no PID 15820.",
       },
     },
     {
       id: 'stop_profile',
-      name: 'Encerrar Perfil & Salvar',
+      name: '6. Encerrar Perfil & Salvar Cookies',
       method: 'POST',
-      path: '/api/profiles/{id}/stop',
-      desc: 'Encerra o processo do navegador de forma graciosa e salva novos cookies/storage no cofre local.',
-      sampleBody: {
-        id: 'prf_shopee_01',
-      },
+      path: '/mcp/profiles/{id}/stop',
+      desc: 'Finaliza o processo do navegador e força a gravação e sincronização dos cookies e dados da sessão no cofre local.',
+      sampleBody: {},
       mockResponse: {
         status: 'stopped',
         profile_id: 'prf_shopee_01',
-        message: 'Navegador finalizado com sucesso.',
+        name: 'Shopee Ads',
+        message: "Perfil 'Shopee Ads' finalizado com sucesso.",
       },
     },
     {
-      id: 'list_profiles',
-      name: 'Listar Todos os Perfis',
-      method: 'GET',
-      path: '/api/profiles',
-      desc: 'Lista todos os perfis cadastrados com tags, proxies associados e status.',
-      mockResponse: [
-        { id: 'prf_shopee_01', name: 'Shopee Ads', status: 'ready', proxy: 'res-br:1080' },
-        { id: 'prf_ml_02', name: 'Mercado Livre Farm', status: 'ready' },
-      ],
-    },
-    {
       id: 'get_status',
-      name: 'Verificar Saúde do Motor',
+      name: '7. Verificar Saúde do Motor',
       method: 'GET',
       path: '/api/v1/status',
-      desc: 'Verifica a integridade do motor AstroFox / AstroBrowser e quantos perfis estão abertos no momento.',
+      desc: 'Healthcheck do serviço local, confirmando se o motor AstroFox / AstroBrowser está pronto e quantos perfis estão em execução.',
       mockResponse: {
         ok: true,
         status: 'ready',
@@ -169,6 +201,8 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   const [testParamId, setTestParamId] = useState('prf_shopee_01');
   const [isExecuting, setIsExecuting] = useState(false);
   const [apiResponse, setApiResponse] = useState<any>(null);
+  const [executionStatus, setExecutionStatus] = useState<number | null>(null);
+  const [executionTimeMs, setExecutionTimeMs] = useState<number | null>(null);
 
   // Idiomas da Language Box (Idêntico ao print)
   const languages: { id: SupportedLang; name: string; icon: React.ReactNode }[] = [
@@ -179,15 +213,6 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         <span className="font-mono font-black text-[13px] tracking-tight text-white px-0.5">
           curl://
         </span>
-      ),
-    },
-    {
-      id: 'ruby',
-      name: 'Ruby',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#E0115F">
-          <path d="M12 2L3 9l9 13 9-13-9-7zm0 2.8L18.4 9H5.6L12 4.8zM5.1 10.5h4.6l-3 7.8-1.6-7.8zm6.1 0h1.6l-0.8 8.6-0.8-8.6zm3.1 0h4.6l-1.6 7.8-3-7.8z" />
-        </svg>
       ),
     },
     {
@@ -203,6 +228,33 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             fill="#FFD438"
             d="M12.1 22c3.1 0 4.9-1.4 4.9-3.2v-2.4h-5v-.8h6.8c1.8 0 3.2-1.4 3.2-3.6 0-2.4-1.4-3.7-3.2-3.7h-1.4v1.9c0 2-1.7 3.7-3.7 3.7h-5v2.5c0 2 1.9 3.6 4.9 3.6h-1.5zm1.8-1.6c-.5 0-.9-.4-.9-.9s.4-.9.9-.9.9.4.9.9-.4.9-.9.9z"
           />
+        </svg>
+      ),
+    },
+    {
+      id: 'node',
+      name: 'Node.js',
+      icon: (
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#339933">
+          <path d="M12 2l9 5.2v10.4L12 23l-9-5.4V7.2L12 2zm0 2.3L4.9 8.4v7.2L12 19.7l7.1-4.1V8.4L12 4.3z" />
+        </svg>
+      ),
+    },
+    {
+      id: 'go',
+      name: 'Go',
+      icon: (
+        <svg className="w-6 h-5" viewBox="0 0 24 24" fill="#00ADD8">
+          <path d="M1.8 10.5c.3-.8.7-1.5 1.3-2.1 1-1 2.3-1.6 3.8-1.6 2.3 0 4 1.4 4.5 3.5H9.1c-.4-1.2-1.3-1.9-2.3-1.9-1.5 0-2.6 1.2-2.6 3.1s1.1 3.1 2.6 3.1c1.2 0 2.1-.7 2.4-1.8H6.5V11h4.9v4.2c-.8 1.1-2.4 2-4.5 2-3 0-5.1-2-5.1-4.7v-2zM15 14.6c0 1.6 1.3 2.6 3 2.6s3-1 3-2.6-1.3-2.6-3-2.6-3 1-3 2.6zm-1.8 0c0-2.6 2.1-4.4 4.8-4.4s4.8 1.8 4.8 4.4-2.1 4.4-4.8 4.4-4.8-1.8-4.8-4.4z" />
+        </svg>
+      ),
+    },
+    {
+      id: 'ruby',
+      name: 'Ruby',
+      icon: (
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#E0115F">
+          <path d="M12 2L3 9l9 13 9-13-9-7zm0 2.8L18.4 9H5.6L12 4.8zM5.1 10.5h4.6l-3 7.8-1.6-7.8zm6.1 0h1.6l-0.8 8.6-0.8-8.6zm3.1 0h4.6l-1.6 7.8-3-7.8z" />
         </svg>
       ),
     },
@@ -232,24 +284,6 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       ),
     },
     {
-      id: 'node',
-      name: 'Node.js',
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#339933">
-          <path d="M12 2l9 5.2v10.4L12 23l-9-5.4V7.2L12 2zm0 2.3L4.9 8.4v7.2L12 19.7l7.1-4.1V8.4L12 4.3z" />
-        </svg>
-      ),
-    },
-    {
-      id: 'go',
-      name: 'Go',
-      icon: (
-        <svg className="w-6 h-5" viewBox="0 0 24 24" fill="#00ADD8">
-          <path d="M1.8 10.5c.3-.8.7-1.5 1.3-2.1 1-1 2.3-1.6 3.8-1.6 2.3 0 4 1.4 4.5 3.5H9.1c-.4-1.2-1.3-1.9-2.3-1.9-1.5 0-2.6 1.2-2.6 3.1s1.1 3.1 2.6 3.1c1.2 0 2.1-.7 2.4-1.8H6.5V11h4.9v4.2c-.8 1.1-2.4 2-4.5 2-3 0-5.1-2-5.1-4.7v-2zM15 14.6c0 1.6 1.3 2.6 3 2.6s3-1 3-2.6-1.3-2.6-3-2.6-3 1-3 2.6zm-1.8 0c0-2.6 2.1-4.4 4.8-4.4s4.8 1.8 4.8 4.4-2.1 4.4-4.8 4.4-4.8-1.8-4.8-4.4z" />
-        </svg>
-      ),
-    },
-    {
       id: 'dotnet',
       name: '.NET',
       icon: (
@@ -265,6 +299,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
     const ep = selectedEndpoint;
     const resolvedPath = ep.path.replace('{id}', testParamId);
     const fullUrl = `${baseUrl}${resolvedPath}`;
+    const payloadJson = JSON.stringify(ep.sampleBody || { id: testParamId }, null, 2);
 
     if (selectedLang === 'curl') {
       if (ep.method === 'GET') {
@@ -276,13 +311,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       }
       return [
         `curl --location '${fullUrl}' \\`,
-        `--header 'Authorization: Bearer' \\`,
+        `--header 'Authorization: Bearer ${token}' \\`,
         `--header 'Accept: application/json' \\`,
         `--header 'Content-Type: application/json' \\`,
-        `--data '{`,
-        `  "id": "${testParamId}",`,
-        `  "headless": false`,
-        `}'`,
+        `--data '${JSON.stringify(ep.sampleBody || { id: testParamId })}'`,
       ];
     }
 
@@ -292,7 +324,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
           `import requests`,
           ``,
           `url = '${fullUrl}'`,
-          `headers = { 'Authorization': 'Bearer ${token}' }`,
+          `headers = {`,
+          `    'Authorization': 'Bearer ${token}',`,
+          `    'Accept': 'application/json'`,
+          `}`,
           `response = requests.get(url, headers=headers)`,
           `print(response.json())`,
         ];
@@ -302,10 +337,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         ``,
         `url = '${fullUrl}'`,
         `headers = {`,
-        `  'Authorization': 'Bearer ${token}',`,
-        `  'Content-Type': 'application/json'`,
+        `    'Authorization': 'Bearer ${token}',`,
+        `    'Content-Type': 'application/json'`,
         `}`,
-        `payload = { 'id': '${testParamId}', 'headless': False }`,
+        `payload = ${payloadJson.replace(/"/g, "'").replace(/true/g, 'True').replace(/false/g, 'False')}`,
         `response = requests.post(url, json=payload, headers=headers)`,
         `print(response.json())`,
       ];
@@ -315,7 +350,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       if (ep.method === 'GET') {
         return [
           `const res = await fetch('${fullUrl}', {`,
-          `  headers: { 'Authorization': 'Bearer ${token}' }`,
+          `  headers: {`,
+          `    'Authorization': 'Bearer ${token}',`,
+          `    'Accept': 'application/json'`,
+          `  }`,
           `});`,
           `const data = await res.json();`,
           `console.log(data);`,
@@ -328,9 +366,41 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         `    'Authorization': 'Bearer ${token}',`,
         `    'Content-Type': 'application/json'`,
         `  },`,
-        `  body: JSON.stringify({ id: '${testParamId}', headless: false })`,
+        `  body: JSON.stringify(${payloadJson})`,
         `});`,
         `console.log(await res.json());`,
+      ];
+    }
+
+    if (selectedLang === 'go') {
+      if (ep.method === 'GET') {
+        return [
+          `package main`,
+          `import ("fmt"; "net/http"; "io")`,
+          `func main() {`,
+          `  req, _ := http.NewRequest("GET", "${fullUrl}", nil)`,
+          `  req.Header.Set("Authorization", "Bearer ${token}")`,
+          `  req.Header.Set("Accept", "application/json")`,
+          `  resp, _ := http.DefaultClient.Do(req)`,
+          `  defer resp.Body.Close()`,
+          `  body, _ := io.ReadAll(resp.Body)`,
+          `  fmt.Println(string(body))`,
+          `}`,
+        ];
+      }
+      return [
+        `package main`,
+        `import ("fmt"; "net/http"; "strings"; "io")`,
+        `func main() {`,
+        `  payload := strings.NewReader(\`${payloadJson}\`)`,
+        `  req, _ := http.NewRequest("POST", "${fullUrl}", payload)`,
+        `  req.Header.Set("Authorization", "Bearer ${token}")`,
+        `  req.Header.Set("Content-Type", "application/json")`,
+        `  resp, _ := http.DefaultClient.Do(req)`,
+        `  defer resp.Body.Close()`,
+        `  body, _ := io.ReadAll(resp.Body)`,
+        `  fmt.Println(string(body))`,
+        `}`,
       ];
     }
 
@@ -341,10 +411,13 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         `require 'json'`,
         ``,
         `uri = URI.parse('${fullUrl}')`,
-        `request = Net::HTTP::Post.new(uri)`,
+        `request = Net::HTTP::${ep.method === 'GET' ? 'Get' : 'Post'}.new(uri)`,
         `request['Authorization'] = 'Bearer ${token}'`,
-        `request['Content-Type'] = 'application/json'`,
-        `request.body = JSON.dump({ id: '${testParamId}' })`,
+        `request['Accept'] = 'application/json'`,
+        ...(ep.method === 'POST' ? [
+          `request['Content-Type'] = 'application/json'`,
+          `request.body = JSON.dump(${payloadJson})`,
+        ] : []),
         `response = Net::HTTP.start(uri.hostname, uri.port) { |http| http.request(request) }`,
         `puts response.body`,
       ];
@@ -358,7 +431,12 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         `  CURLOPT_URL => '${fullUrl}',`,
         `  CURLOPT_RETURNTRANSFER => true,`,
         `  CURLOPT_CUSTOMREQUEST => '${ep.method}',`,
-        `  CURLOPT_HTTPHEADER => array('Authorization: Bearer ${token}'),`,
+        `  CURLOPT_HTTPHEADER => array(`,
+        `    'Authorization: Bearer ${token}',`,
+        `    'Accept: application/json',`,
+        ...(ep.method === 'POST' ? [`    'Content-Type: application/json',`] : []),
+        `  ),`,
+        ...(ep.method === 'POST' ? [`  CURLOPT_POSTFIELDS => '${JSON.stringify(ep.sampleBody || { id: testParamId })}',`] : []),
         `));`,
         `$response = curl_exec($curl);`,
         `curl_close($curl);`,
@@ -371,24 +449,17 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         `HttpRequest request = HttpRequest.newBuilder()`,
         `    .uri(URI.create("${fullUrl}"))`,
         `    .header("Authorization", "Bearer ${token}")`,
-        `    .header("Content-Type", "application/json")`,
-        `    .method("${ep.method}", HttpRequest.BodyPublishers.noBody())`,
+        `    .header("Accept", "application/json")`,
+        ...(ep.method === 'POST' ? [
+          `    .header("Content-Type", "application/json")`,
+          `    .method("POST", HttpRequest.BodyPublishers.ofString("${payloadJson.replace(/"/g, '\\"')}"))`,
+        ] : [
+          `    .method("GET", HttpRequest.BodyPublishers.noBody())`,
+        ]),
         `    .build();`,
         `HttpResponse<String> response = HttpClient.newHttpClient()`,
         `    .send(request, HttpResponse.BodyHandlers.ofString());`,
-      ];
-    }
-
-    if (selectedLang === 'go') {
-      return [
-        `package main`,
-        `import ("fmt"; "net/http")`,
-        `func main() {`,
-        `  req, _ := http.NewRequest("${ep.method}", "${fullUrl}", nil)`,
-        `  req.Header.Set("Authorization", "Bearer ${token}")`,
-        `  resp, _ := http.DefaultClient.Do(req)`,
-        `  fmt.Println(resp.Status)`,
-        `}`,
+        `System.out.println(response.body());`,
       ];
     }
 
@@ -396,7 +467,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       return [
         `using var client = new HttpClient();`,
         `client.DefaultRequestHeaders.Add("Authorization", "Bearer ${token}");`,
-        `var res = await client.GetAsync("${fullUrl}");`,
+        `client.DefaultRequestHeaders.Add("Accept", "application/json");`,
+        ep.method === 'GET'
+          ? `var res = await client.GetAsync("${fullUrl}");`
+          : `var content = new StringContent(@"${payloadJson.replace(/"/g, '""')}", System.Text.Encoding.UTF8, "application/json");\nvar res = await client.PostAsync("${fullUrl}", content);`,
         `Console.WriteLine(await res.Content.ReadAsStringAsync());`,
       ];
     }
@@ -408,20 +482,57 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   const rawCode = lines.join('\n');
 
   const handleCopy = () => {
-    // Se a chave estiver com blur ativo (oculta), a chave vai no estado de vazia
     const textToCopy = sanitizeCodeForCopy(rawCode, token, showToken);
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleExecuteInExplorer = () => {
+  const handleExecuteInExplorer = async () => {
     setIsExecuting(true);
     setApiResponse(null);
-    setTimeout(() => {
+    setExecutionStatus(null);
+    setExecutionTimeMs(null);
+
+    const ep = selectedEndpoint;
+    const resolvedPath = ep.path.replace('{id}', testParamId);
+    const fullUrl = `${baseUrl}${resolvedPath}`;
+    const startTime = performance.now();
+
+    try {
+      const headers: Record<string, string> = {
+        'Accept': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      if (ep.method === 'POST') {
+        headers['Content-Type'] = 'application/json';
+      }
+
+      const res = await fetch(fullUrl, {
+        method: ep.method,
+        headers,
+        body: ep.method === 'POST' ? JSON.stringify(ep.sampleBody || { id: testParamId }) : undefined,
+      });
+
+      const elapsed = Math.round(performance.now() - startTime);
+      setExecutionTimeMs(elapsed);
+      setExecutionStatus(res.status);
+
+      const json = await res.json().catch(() => ({ status: res.statusText }));
+      setApiResponse(json);
+    } catch (err: any) {
+      const elapsed = Math.round(performance.now() - startTime);
+      setExecutionTimeMs(elapsed);
+      setExecutionStatus(0);
+      setApiResponse({
+        error: 'Falha na conexão',
+        message: err.message || `Não foi possível conectar ao backend local em ${fullUrl}`,
+      });
+    } finally {
       setIsExecuting(false);
-      setApiResponse(selectedEndpoint.mockResponse);
-    }, 400);
+    }
   };
 
   return (
@@ -696,16 +807,29 @@ export const ApiTab: React.FC<ApiTabProps> = ({
               </div>
             </div>
 
-            {/* Live Response Box */}
-            {apiResponse && (
+            {/* Live Response Box Real */}
+            {apiResponse !== null && (
               <div className="space-y-1.5 pt-2 animate-fadeIn">
-                <div className="flex items-center justify-between text-[11px] font-mono text-emerald-600 dark:text-emerald-400">
-                  <span className="flex items-center gap-1.5 font-bold">
-                    <CheckCircle2 size={13} /> Status: 200 OK
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span
+                    className={`flex items-center gap-1.5 font-bold ${
+                      executionStatus && executionStatus >= 200 && executionStatus < 300
+                        ? 'text-emerald-600 dark:text-emerald-400'
+                        : 'text-rose-600 dark:text-rose-400'
+                    }`}
+                  >
+                    {executionStatus && executionStatus >= 200 && executionStatus < 300 ? (
+                      <CheckCircle2 size={13} />
+                    ) : (
+                      <AlertCircle size={13} />
+                    )}
+                    Status: {executionStatus ? `${executionStatus} ${executionStatus === 200 ? 'OK' : executionStatus === 401 ? 'Unauthorized' : ''}` : 'Erro de Conexão'}
                   </span>
-                  <span className="text-slate-400 dark:text-[#8E8E93]">18ms</span>
+                  {executionTimeMs !== null && (
+                    <span className="text-slate-400 dark:text-[#8E8E93]">{executionTimeMs}ms</span>
+                  )}
                 </div>
-                <pre className="bg-slate-900 dark:bg-[#08090C] border border-slate-800 dark:border-white/10 rounded-xl p-3.5 text-[11px] font-mono text-slate-200 dark:text-[#DCDCDC] overflow-x-auto shadow-inner">
+                <pre className="bg-slate-900 dark:bg-[#08090C] border border-slate-800 dark:border-white/10 rounded-xl p-3.5 text-[11px] font-mono text-slate-200 dark:text-[#DCDCDC] overflow-x-auto shadow-inner max-h-[280px]">
                   {JSON.stringify(apiResponse, null, 2)}
                 </pre>
               </div>

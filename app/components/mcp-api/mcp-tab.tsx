@@ -151,8 +151,13 @@ export const McpTab: React.FC<McpTabProps> = ({
   const tools = [
     {
       name: 'star_profiles',
-      desc: 'Lista os perfis com ID, Nome e Tags para agentes de IA (com filtro opcional por tag).',
+      desc: 'Lista os perfis cadastrados com ID, Nome e Tags para agentes de IA (com filtro opcional por tag).',
       tag: 'Leitura / Busca',
+    },
+    {
+      name: 'star_get_profile',
+      desc: 'Consulta detalhes operacionais de um perfil específico pelo ID (status, versão, kernel, tags).',
+      tag: 'Leitura / Detalhes',
     },
     {
       name: 'star_launch_profile',
@@ -168,9 +173,7 @@ export const McpTab: React.FC<McpTabProps> = ({
 
   const handleCopySnippet = () => {
     const rawJson = clientConfigs[selectedClient].json;
-    // Se a chave estiver oculta/com blur, a chave vai no estado de vazia!
-    const textToCopy = sanitizeCodeForCopy(rawJson, activeToken, showToken);
-    navigator.clipboard.writeText(textToCopy);
+    navigator.clipboard.writeText(rawJson);
     setCopiedSnippet(true);
     setTimeout(() => setCopiedSnippet(false), 2000);
   };

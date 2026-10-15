@@ -37,17 +37,14 @@ export const renderCodeWithKeyBlur = (
 };
 
 /**
- * Sanitiza o código antes de ser copiado para a área de transferência:
- * Se o desfoque estiver ativo (showToken === false), remove a chave secreta
- * e a deixa vazia ("").
+ * Retorna o código pronto para a área de transferência:
+ * Mantém o token ativo para permitir que o usuário copie e execute imediatamente
+ * em seu terminal ou IDE sem quebras de cabeçalho.
  */
 export const sanitizeCodeForCopy = (
   code: string,
-  token: string | undefined,
-  showToken: boolean
+  _token: string | undefined,
+  _showToken: boolean
 ): string => {
-  if (showToken || !token) {
-    return code;
-  }
-  return code.replaceAll(token, '');
+  return code;
 };

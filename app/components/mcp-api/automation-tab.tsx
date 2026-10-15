@@ -87,10 +87,16 @@ import requests
 from astrofox import AstroFox
 
 API_BASE = "${baseUrl}"
+API_TOKEN = "${token}"
 PROFILE_ID = "seu_perfil_id_aqui"
 
-# 1. Obtém as configurações e diretório do perfil no Star Multlogin
-res = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright")
+headers = {
+    "Authorization": f"Bearer {API_TOKEN}",
+    "Accept": "application/json"
+}
+
+# 1. Obtém as configurações e diretório do perfil no Star Multlogin (com token)
+res = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright", headers=headers)
 opts = res.json()
 
 print(f"🦊 Carregando perfil '{opts.get('name')}' via Star Driver AstroFox...")
@@ -116,11 +122,17 @@ with AstroFox(
 import { firefox } from 'playwright';
 
 const API_BASE = '${baseUrl}';
+const API_TOKEN = '${token}';
 const PROFILE_ID = 'seu_perfil_id_aqui';
 
 async function main() {
-  // 1. Obtém as opções e pasta do perfil do Star Multlogin
-  const res = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/playwright\`);
+  // 1. Obtém as opções e pasta do perfil do Star Multlogin (com autenticação)
+  const res = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/playwright\`, {
+    headers: {
+      'Authorization': \`Bearer \${API_TOKEN}\`,
+      'Accept': 'application/json'
+    }
+  });
   const opts = await res.json();
 
   console.log(\`🦊 Carregando perfil '\${opts.name}' via Star Driver...\`);
@@ -153,17 +165,22 @@ Instalação: pip install astrobrowser (ou clearcote)
 import sys
 import requests
 
-# 1. Suporte universal: aceita tanto 'astrobrowser' quanto o SDK oficial 'clearcote'
 try:
     from astrobrowser import launch_persistent_context
 except ImportError:
     from clearcote import launch_persistent_context
 
 API_BASE = "${baseUrl}"
+API_TOKEN = "${token}"
 PROFILE_ID = "seu_perfil_id_aqui"
 
-# 2. Puxa as diretrizes do perfil no Star Multlogin
-res = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright")
+headers = {
+    "Authorization": f"Bearer {API_TOKEN}",
+    "Accept": "application/json"
+}
+
+# 1. Puxa as diretrizes do perfil no Star Multlogin (com token)
+res = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright", headers=headers)
 if res.status_code != 200:
     print(f"❌ Erro ao buscar perfil ({res.status_code}): {res.text}")
     sys.exit(1)
@@ -171,13 +188,13 @@ if res.status_code != 200:
 opts = res.json()
 print(f"🚀 Carregando perfil '{opts.get('name')}' via AstroBrowser...")
 
-# 3. Filtra --user-data-dir dos args para não conflitar com o Playwright
+# 2. Filtra --user-data-dir dos args para não conflitar com o Playwright
 profile_args = [
     arg for arg in opts.get("args", [])
     if not arg.startswith("--user-data-dir=")
 ]
 
-# 4. Executa via AstroBrowser nativo com fingerprint completo aplicado
+# 3. Executa via AstroBrowser nativo com fingerprint completo aplicado
 context = launch_persistent_context(
     user_data_dir=opts["user_data_dir"],
     executable_path=opts.get("executable_path") or None,
@@ -188,13 +205,12 @@ context = launch_persistent_context(
     humanize=opts.get("humanize", True),
 )
 
-# 5. Abre nova aba dedicada e traz para o foco da tela
+# 4. Abre nova aba dedicada e traz para o foco da tela
 page = context.new_page()
 page.bring_to_front()
 page.goto("https://bot.sannysoft.com")
 print("✅ Título da página:", page.title())
 
-# 6. Mantém aberto para interação
 input("Pressione Enter no terminal para encerrar o perfil...")
 context.close()
 `,
@@ -202,12 +218,17 @@ context.close()
 import { chromium } from 'playwright';
 
 const API_BASE = '${baseUrl}';
+const API_TOKEN = '${token}';
 const PROFILE_ID = 'seu_perfil_id_aqui';
 
 async function main() {
-  // 1. Inicia o perfil via API do Star Multlogin com CDP ativado
-  const launchRes = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/launch?cdp=true\`, {
-    method: 'POST'
+  // 1. Inicia o perfil via API do Star Multlogin com CDP ativado e token
+  const launchRes = await fetch(\`\${API_BASE}/mcp/profiles/\${PROFILE_ID}/launch?cdp=true\`, {
+    method: 'POST',
+    headers: {
+      'Authorization': \`Bearer \${API_TOKEN}\`,
+      'Content-Type': 'application/json'
+    }
   });
   const data = await launchRes.json();
   console.log(\`🚀 Conectando via CDP ao AstroBrowser na porta \${data.debug_port}...\`);
@@ -232,22 +253,28 @@ main();
       python: `#!/usr/bin/env python3
 """
 Automação Paralela em Múltiplos Perfis com Star Driver AstroFox
-Executa múltiplos perfis simultaneamente usando ThreadPool e pastas de dados isoladas.
+Executa múltiplos perfis simultaneamente usando ThreadPool e dados isolados.
 """
 import concurrent.futures
 import requests
 from astrofox import AstroFox
 
 API_BASE = "${baseUrl}"
+API_TOKEN = "${token}"
 
-# 1. Puxa perfis cadastrados pelo endpoint público (com suporte a tags)
-res = requests.get(f"{API_BASE}/api/profiles/public")
+headers = {
+    "Authorization": f"Bearer {API_TOKEN}",
+    "Accept": "application/json"
+}
+
+# 1. Puxa perfis cadastrados pelo endpoint público com suporte a tags e token
+res = requests.get(f"{API_BASE}/api/profiles/public", headers=headers)
 profiles = res.json()
 target_ids = [p["id"] for p in profiles[:3]]
 
 def run_profile(profile_id):
-    # Obtém as opções específicas do perfil (caminho dos dados, proxy, resolução)
-    opts = requests.get(f"{API_BASE}/api/profiles/{profile_id}/playwright").json()
+    # Obtém as opções do perfil com token
+    opts = requests.get(f"{API_BASE}/api/profiles/{profile_id}/playwright", headers=headers).json()
     print(f"🦊 Iniciando perfil '{opts.get('name')}' em paralelo...")
 
     with AstroFox(
@@ -273,9 +300,15 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
 import { firefox } from 'playwright';
 
 const API_BASE = '${baseUrl}';
+const API_TOKEN = '${token}';
+
+const headers = {
+  'Authorization': \`Bearer \${API_TOKEN}\`,
+  'Accept': 'application/json'
+};
 
 async function runProfile(profileId) {
-  const res = await fetch(\`\${API_BASE}/api/profiles/\${profileId}/playwright\`);
+  const res = await fetch(\`\${API_BASE}/api/profiles/\${profileId}/playwright\`, { headers });
   const opts = await res.json();
 
   console.log(\`🦊 [\${opts.name}] Iniciando...\`);
@@ -292,7 +325,8 @@ async function runProfile(profileId) {
 }
 
 async function main() {
-  const publicRes = await fetch(\`\${API_BASE}/api/profiles/public\`);
+  // Puxa os perfis do endpoint público autenticado
+  const publicRes = await fetch(\`\${API_BASE}/api/profiles/public\`, { headers });
   const profiles = await publicRes.json();
   const targetIds = profiles.slice(0, 3).map(p => p.id);
 
@@ -315,10 +349,16 @@ import requests
 from astrofox import AstroFox
 
 API_BASE = "${baseUrl}"
+API_TOKEN = "${token}"
 PROFILE_ID = "seu_perfil_id_aqui"
 
-# 1. Puxa as diretrizes do perfil
-opts = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright").json()
+headers = {
+    "Authorization": f"Bearer {API_TOKEN}",
+    "Accept": "application/json"
+}
+
+# 1. Puxa as diretrizes do perfil com token
+opts = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright", headers=headers).json()
 
 # 2. Inicia o navegador AstroFox nativo
 with AstroFox(
@@ -334,11 +374,9 @@ with AstroFox(
 ) as browser:
     page = browser.pages[0] if browser.pages else browser.new_page()
 
-    # Navega com fingerprint realista
     page.goto("https://mercadolivre.com.br")
     page.wait_for_load_state("networkidle")
 
-    # Rolagem e interação humanizada (anti-detect)
     for _ in range(3):
         page.mouse.wheel(0, 300)
         time.sleep(1.2)
@@ -353,10 +391,16 @@ print("✅ Sessões e cookies persistidos automaticamente no Star Multlogin!")
 import { firefox } from 'playwright';
 
 const API_BASE = '${baseUrl}';
+const API_TOKEN = '${token}';
 const PROFILE_ID = 'seu_perfil_id_aqui';
 
 async function warmUp() {
-  const res = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/playwright\`);
+  const res = await fetch(\`\${API_BASE}/api/profiles/\${PROFILE_ID}/playwright\`, {
+    headers: {
+      'Authorization': \`Bearer \${API_TOKEN}\`,
+      'Accept': 'application/json'
+    }
+  });
   const opts = await res.json();
 
   const context = await firefox.launchPersistentContext(opts.user_data_dir, {
