@@ -492,3 +492,58 @@ fn test_resolve_all_initial_urls_multiple_platforms() {
     assert_eq!(urls[5], "https://accounts.google.com");
     assert_eq!(urls[6], "https://github.com");
 }
+
+#[tokio::test]
+async fn test_public_profile_endpoint_authentication() {
+    use axum::extract::{Query, State};
+    use axum::http::{header, HeaderMap, StatusCode};
+    use star_multlogin_backend::api::routes::profiles::get_public_profiles;
+    use star_multlogin_backend::models::PublicProfileQuery;
+    use star_multlogin_backend::service_database::ProfileStorage;
+
+    let temp_dir = std::env::temp_dir().join(format!(
+        "star_public_auth_test_{}",
+        std::time::SystemTime::now().elapsed().unwrap().as_nanos()
+    ));
+    let _ = std::fs::create_dir_all(&temp_dir);
+    let vault = Arc::new(Vault::new(&temp_dir).unwrap());
+    let ws = WsState::new();
+    let storage = Arc::new(ProfileStorage::new(&temp_dir, ws, vault));
+
+    let token = storage.get_mcp_token();
+
+    // 1. Sem header de autenticação -> DEVE retornar 401 Unauthorized
+    let no_headers = HeaderMap::new();
+    let res_no_auth = get_public_profiles(
+        State(storage.clone()),
+        no_headers,
+        Query(PublicProfileQuery { id: None, name: None, tag: None }),
+    ).await;
+    assert!(res_no_auth.is_err());
+    let (status, _) = res_no_auth.unwrap_err();
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+
+    // 2. Com token inválido (TOKEN_AQUI) -> DEVE retornar 401 Unauthorized
+    let mut invalid_headers = HeaderMap::new();
+    invalid_headers.insert(header::AUTHORIZATION, "Bearer TOKEN_AQUI".parse().unwrap());
+    let res_invalid = get_public_profiles(
+        State(storage.clone()),
+        invalid_headers,
+        Query(PublicProfileQuery { id: None, name: None, tag: None }),
+    ).await;
+    assert!(res_invalid.is_err());
+    let (status, _) = res_invalid.unwrap_err();
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+
+    // 3. Com token válido real do cofre -> DEVE retornar 200 OK
+    let mut valid_headers = HeaderMap::new();
+    valid_headers.insert(header::AUTHORIZATION, format!("Bearer {token}").parse().unwrap());
+    let res_valid = get_public_profiles(
+        State(storage.clone()),
+        valid_headers,
+        Query(PublicProfileQuery { id: None, name: None, tag: None }),
+    ).await;
+    assert!(res_valid.is_ok());
+
+    let _ = std::fs::remove_dir_all(temp_dir);
+}
