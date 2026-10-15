@@ -107,7 +107,8 @@ with AstroFox(
     humanize=True,
     headless=False,
 ) as browser:
-    page = browser.pages[0] if browser.pages else browser.new_page()
+    page = browser.new_page()
+    page.bring_to_front()
     page.goto("https://bot.sannysoft.com")
     print("✅ Página carregada com sucesso:", page.title())
 `,
@@ -132,7 +133,8 @@ async function main() {
     viewport: null,
   });
 
-  const page = context.pages()[0] || await context.newPage();
+  const page = await context.newPage();
+  await page.bringToFront();
   await page.goto('https://bot.sannysoft.com');
   console.log('✅ Título da página:', await page.title());
 }
@@ -146,31 +148,54 @@ main();
 """
 Automação Oficial com Star Driver (Motor Chromium / AstroBrowser)
 Inicia o binário Chromium seguro com perfis persistentes e camuflagem ativa.
-Instalação: pip install astrobrowser (ou motor-chromium)
+Instalação: pip install astrobrowser (ou clearcote)
 """
+import sys
 import requests
-from astrobrowser import launch_persistent_context
+
+# 1. Suporte universal: aceita tanto 'astrobrowser' quanto o SDK oficial 'clearcote'
+try:
+    from astrobrowser import launch_persistent_context
+except ImportError:
+    from clearcote import launch_persistent_context
 
 API_BASE = "${baseUrl}"
 PROFILE_ID = "seu_perfil_id_aqui"
 
-# 1. Puxa as diretrizes do perfil no Star Multlogin
+# 2. Puxa as diretrizes do perfil no Star Multlogin
 res = requests.get(f"{API_BASE}/api/profiles/{PROFILE_ID}/playwright")
-opts = res.json()
+if res.status_code != 200:
+    print(f"❌ Erro ao buscar perfil ({res.status_code}): {res.text}")
+    sys.exit(1)
 
+opts = res.json()
 print(f"🚀 Carregando perfil '{opts.get('name')}' via AstroBrowser...")
 
-# 2. Executa via AstroBrowser nativo com a pasta de dados do perfil
+# 3. Filtra --user-data-dir dos args para não conflitar com o Playwright
+profile_args = [
+    arg for arg in opts.get("args", [])
+    if not arg.startswith("--user-data-dir=")
+]
+
+# 4. Executa via AstroBrowser nativo com fingerprint completo aplicado
 context = launch_persistent_context(
     user_data_dir=opts["user_data_dir"],
     executable_path=opts.get("executable_path") or None,
     headless=False,
+    args=profile_args,
     proxy=opts.get("proxy"),
+    locale=opts.get("locale"),
+    humanize=opts.get("humanize", True),
 )
 
-page = context.pages[0] if context.pages else context.new_page()
+# 5. Abre nova aba dedicada e traz para o foco da tela
+page = context.new_page()
+page.bring_to_front()
 page.goto("https://bot.sannysoft.com")
 print("✅ Título da página:", page.title())
+
+# 6. Mantém aberto para interação
+input("Pressione Enter no terminal para encerrar o perfil...")
 context.close()
 `,
       node: `// Node.js: Automação Chromium via CDP / Playwright
@@ -190,7 +215,10 @@ async function main() {
   // 2. Conecta ao navegador ativo
   const browser = await chromium.connectOverCDP(data.ws_endpoint);
   const context = browser.contexts()[0];
-  const page = context.pages()[0] || await context.newPage();
+
+  // 3. Abre nova aba e traz para o primeiro plano da tela
+  const page = await context.newPage();
+  await page.bringToFront();
 
   await page.goto('https://bot.sannysoft.com');
   console.log('✅ Conectado com sucesso:', await page.title());
@@ -385,7 +413,7 @@ warmUp();
           <span className="text-slate-500 dark:text-[#A0A0A0] block text-[9px] uppercase font-bold font-sans">
             Instalação da SDK:
           </span>
-          <code>pip install star-driver astrobrowser requests</code>
+          <code>pip install star-driver astrobrowser clearcote requests</code>
         </div>
       </div>
 
