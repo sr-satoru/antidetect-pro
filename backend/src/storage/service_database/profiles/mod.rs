@@ -90,7 +90,7 @@ impl ProfileService {
         name: Option<&str>,
         tag: Option<&str>,
     ) -> Vec<crate::models::PublicProfileDto> {
-        repository::get_public(&self.vault, id, name, tag)
+        repository::get_public(&self.vault, &self.process_manager, id, name, tag)
     }
 
     pub fn create(&self, dto: CreateProfileDto) -> Result<Profile, String> {

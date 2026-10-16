@@ -201,13 +201,45 @@ pub struct UpdateProfileDto {
     pub extensions: Option<serde_json::Value>,
 }
 
-/// DTO público minimalista de perfil (ID, Nome e Tags para controle de agentes)
+/// Tag pública higienizada com nome e cor
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct PublicTagDto {
+    pub name: String,
+    pub color: String,
+}
+
+impl From<&TagRef> for PublicTagDto {
+    fn from(t: &TagRef) -> Self {
+        Self {
+            name: t.name.clone(),
+            color: t.color.clone(),
+        }
+    }
+}
+
+impl From<TagRef> for PublicTagDto {
+    fn from(t: TagRef) -> Self {
+        Self {
+            name: t.name,
+            color: t.color,
+        }
+    }
+}
+
+/// DTO público higienizado de perfil (sem credenciais de proxy, cookies ou storage)
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct PublicProfileDto {
     pub id: String,
     pub name: String,
-    #[serde(default)]
-    pub tags: Vec<String>,
+    pub kernel: String,
+    pub browser_version: String,
+    pub os: String,
+    pub group: String,
+    pub tags: Vec<PublicTagDto>,
+    pub status: String,
+    pub running: bool,
+    pub created_at: i64,
+    pub updated_at: i64,
 }
 
 /// Parâmetros de consulta e busca da API pública

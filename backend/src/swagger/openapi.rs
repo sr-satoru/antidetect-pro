@@ -35,13 +35,36 @@ pub struct ProfileTagRefDoc {
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
-pub struct PublicProfileDoc {
-    #[schema(example = "e87f1390-1c32-4e4f-b644-8cb312d471ac")]
-    pub id: String,
-    #[schema(example = "Perfil Campanha #1")]
+pub struct PublicTagDoc {
+    #[schema(example = "shopee")]
     pub name: String,
-    #[schema(example = json!(["shopee", "comprador"]))]
-    pub tags: Vec<String>,
+    #[schema(example = "#ff5722")]
+    pub color: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct PublicProfileDoc {
+    #[schema(example = "516495ca-d7fc-4103-aa5f-d6e12e5731f7")]
+    pub id: String,
+    #[schema(example = "Shopee Ads")]
+    pub name: String,
+    #[schema(example = "AstroFox")]
+    pub kernel: String,
+    #[schema(example = "135")]
+    pub browser_version: String,
+    #[schema(example = "windows")]
+    pub os: String,
+    #[schema(example = "E-commerce")]
+    pub group: String,
+    pub tags: Vec<PublicTagDoc>,
+    #[schema(example = "ready")]
+    pub status: String,
+    #[schema(example = false)]
+    pub running: bool,
+    #[schema(example = 1729000000)]
+    pub created_at: i64,
+    #[schema(example = 1729000000)]
+    pub updated_at: i64,
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
@@ -845,6 +868,7 @@ pub async fn doc_auth_logout() {}
     components(
         schemas(
             PublicProfileDoc,
+            PublicTagDoc,
             ProfileTagRefDoc,
             ProfileDoc,
             ProfileProxyConfigDoc,

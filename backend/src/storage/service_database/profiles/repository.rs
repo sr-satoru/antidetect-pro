@@ -277,9 +277,10 @@ pub fn permanent_delete(
 }
 
 /// Consulta pública ultra-rápida e segura de perfis (ID, Nome e Tags para controle de agentes)
-/// Descriptografa apenas o campo de tags sem vazar credenciais ou proxies
+/// Consulta pública ultra-rápida e segura de perfis (higienizada sem credenciais ou proxies)
 pub fn get_public(
     vault: &Arc<Vault>,
+    pm: &ProcessManager,
     id: Option<&str>,
     name: Option<&str>,
     tag: Option<&str>,
@@ -329,28 +330,47 @@ pub fn get_public(
 
     let mut list = Vec::new();
     while let Ok(Some(row)) = rows.next() {
-        if let (Ok(id_val), Ok(name_val)) = (row.get::<_, String>(0), row.get::<_, String>(1)) {
-            let mut tags: Vec<String> = Vec::new();
-            if let Ok(payload_enc) = row.get::<_, Vec<u8>>(2) {
-                if let Ok(decrypted) = decrypt_payload(vault.key().as_ref(), &payload_enc) {
-                    if let Ok(profile) = serde_json::from_slice::<Profile>(&decrypted) {
-                        tags = profile.tags.into_iter().map(|t| t.name).collect();
+        if let Ok(payload_enc) = row.get::<_, Vec<u8>>(2) {
+            if let Ok(decrypted) = decrypt_payload(vault.key().as_ref(), &payload_enc) {
+                if let Ok(profile) = serde_json::from_slice::<Profile>(&decrypted) {
+                    if let Some(t_filter) = tag {
+                        let term = t_filter.trim().to_lowercase();
+                        if !profile.tags.iter().any(|t| t.name.to_lowercase() == term) {
+                            continue;
+                        }
                     }
+
+                    let is_running = pm.is_running(&profile.id);
+                    let status = if is_running {
+                        "running".to_string()
+                    } else {
+                        profile.status
+                    };
+
+                    let tags = profile
+                        .tags
+                        .into_iter()
+                        .map(|t| crate::models::PublicTagDto {
+                            name: t.name,
+                            color: t.color,
+                        })
+                        .collect();
+
+                    list.push(PublicProfileDto {
+                        id: profile.id,
+                        name: profile.name,
+                        kernel: profile.kernel,
+                        browser_version: profile.browser_version,
+                        os: profile.os,
+                        group: profile.group,
+                        tags,
+                        status,
+                        running: is_running,
+                        created_at: profile.created_at,
+                        updated_at: profile.updated_at,
+                    });
                 }
             }
-
-            if let Some(t_filter) = tag {
-                let term = t_filter.trim().to_lowercase();
-                if !tags.iter().any(|t| t.to_lowercase() == term) {
-                    continue;
-                }
-            }
-
-            list.push(PublicProfileDto {
-                id: id_val,
-                name: name_val,
-                tags,
-            });
         }
     }
 

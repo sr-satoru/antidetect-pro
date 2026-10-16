@@ -302,3 +302,74 @@ async fn test_dev_handshake_flow() {
         .unwrap();
     assert_eq!(profiles_res.status(), 200);
 }
+
+#[tokio::test]
+async fn test_get_public_profiles_exact_format() {
+    let (base_url, _nm, storage, _guard) = spawn_test_server().await;
+    let client = reqwest::Client::new();
+
+    // Cria perfil de teste com id específico
+    let _ = storage
+        .create(star_multlogin_backend::models::CreateProfileDto {
+            id: Some("516495ca-d7fc-4103-aa5f-d6e12e5731f7".to_string()),
+            name: Some("Shopee Ads".to_string()),
+            group: Some("E-commerce".to_string()),
+            tags: Some(vec!["shopee".to_string()]),
+            tag_ids: None,
+            notes: Some("Segredo absoluto".to_string()),
+            status: Some("ready".to_string()),
+            kernel: Some("AstroFox".to_string()),
+            browser_version: Some("135".to_string()),
+            os: Some("windows".to_string()),
+            proxy_type: Some("socks5".to_string()),
+            proxy_host: Some("1.2.3.4".to_string()),
+            proxy_port: Some(1080),
+            proxy_username: Some("u".to_string()),
+            proxy_password: Some("p".to_string()),
+            fingerprint_json: None,
+            extension_mode: None,
+            extension_category: None,
+            extensions: None,
+        })
+        .unwrap();
+
+    let token = storage.get_mcp_token();
+
+    // Consulta GET /api/profiles/public com token de autorização
+    let res = client
+        .get(format!("{}/api/profiles/public", base_url))
+        .header("Authorization", format!("Bearer {}", token))
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(res.status(), 200);
+
+    let list: serde_json::Value = res.json().await.unwrap();
+    assert!(list.is_array());
+    assert!(!list.as_array().unwrap().is_empty());
+
+    let item = &list[0];
+    assert_eq!(item["id"], "516495ca-d7fc-4103-aa5f-d6e12e5731f7");
+    assert_eq!(item["name"], "Shopee Ads");
+    assert_eq!(item["kernel"], "AstroFox");
+    assert_eq!(item["browser_version"], "135");
+    assert_eq!(item["os"], "windows");
+    assert_eq!(item["group"], "E-commerce");
+    assert_eq!(item["status"], "ready");
+    assert_eq!(item["running"], false);
+    assert!(item["created_at"].is_number());
+    assert!(item["updated_at"].is_number());
+
+    // Tags com objeto { name, color }
+    assert!(item["tags"].is_array());
+    assert_eq!(item["tags"][0]["name"], "shopee");
+    assert!(item["tags"][0]["color"].is_string());
+
+    // NENHUM campo sensível exposto
+    assert!(item.get("proxy").is_none());
+    assert!(item.get("proxy_host").is_none());
+    assert!(item.get("proxy_password").is_none());
+    assert!(item.get("notes").is_none());
+    assert!(item.get("cookies").is_none());
+    assert!(item.get("fingerprint_json").is_none());
+}

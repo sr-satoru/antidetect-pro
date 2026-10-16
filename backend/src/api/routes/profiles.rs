@@ -102,12 +102,15 @@ pub async fn get_profile_playwright(
 /// Exige token Bearer válido no header Authorization.
 /// Aceita ESTRITAMENTE os parâmetros `id`, `name` e/ou `tag`.
 /// Qualquer outro campo é rejeitado pelo deserializador.
-/// Retorna estritamente `{ "id": "...", "name": "...", "tags": [...] }` ou a lista pública resumida.
+/// Endpoint público higienizado (GET /api/profiles/public)
+/// Exige token Bearer válido no header Authorization.
+/// Aceita opcionalmente os parâmetros de busca `id`, `name` e/ou `tag`.
+/// Retorna a lista de perfis higienizados (sem credenciais de proxies, cookies ou storage).
 pub async fn get_public_profiles(
     State(storage): State<Arc<ProfileStorage>>,
     headers: HeaderMap,
     Query(params): Query<PublicProfileQuery>,
-) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+) -> Result<Json<Vec<PublicProfileDto>>, (StatusCode, Json<serde_json::Value>)> {
     authenticate_public_request(&storage, &headers)?;
 
     let id_opt = params.id.as_deref().map(str::trim).filter(|s| !s.is_empty());
@@ -115,29 +118,10 @@ pub async fn get_public_profiles(
     let tag_opt = params.tag.as_deref().map(str::trim).filter(|s| !s.is_empty());
 
     let results = storage.get_public(id_opt, name_opt, tag_opt);
-
-    if id_opt.is_some() || name_opt.is_some() {
-        if let Some(profile) = results.into_iter().next() {
-            Ok(Json(serde_json::json!({
-                "id": profile.id,
-                "name": profile.name,
-                "tags": profile.tags,
-            })))
-        } else {
-            Err((
-                StatusCode::NOT_FOUND,
-                Json(serde_json::json!({
-                    "error": "Perfil não encontrado"
-                })),
-            ))
-        }
-    } else {
-        let list: Vec<PublicProfileDto> = results;
-        Ok(Json(serde_json::json!(list)))
-    }
+    Ok(Json(results))
 }
 
-/// Endpoint público minimalista (POST /api/profiles/public)
+/// Endpoint público higienizado (POST /api/profiles/public)
 /// Exige token Bearer válido no header Authorization.
 /// Aceita ESTRITAMENTE o corpo JSON com `id`, `name` e/ou `tag`.
 /// Qualquer outro campo no payload é rejeitado com erro 422/400 (deny_unknown_fields).
@@ -156,11 +140,7 @@ pub async fn lookup_public_profile(
 
     if id_opt.is_some() || name_opt.is_some() {
         if let Some(profile) = results.into_iter().next() {
-            Ok(Json(serde_json::json!({
-                "id": profile.id,
-                "name": profile.name,
-                "tags": profile.tags,
-            })))
+            Ok(Json(serde_json::json!(profile)))
         } else {
             Err((
                 StatusCode::NOT_FOUND,
@@ -170,14 +150,13 @@ pub async fn lookup_public_profile(
             ))
         }
     } else {
-        let list: Vec<PublicProfileDto> = results;
-        Ok(Json(serde_json::json!(list)))
+        Ok(Json(serde_json::json!(results)))
     }
 }
 
-/// Endpoint público minimalista por ID na rota (GET /api/profiles/:id/public)
+/// Endpoint público higienizado por ID na rota (GET /api/profiles/:id/public)
 /// Exige token Bearer válido no header Authorization.
-/// Retorna estritamente `{ "id": "...", "name": "...", "tags": [...] }`.
+/// Retorna o perfil individual completo com todos os metadados higienizados.
 pub async fn get_public_profile_by_id(
     State(storage): State<Arc<ProfileStorage>>,
     Path(id): Path<String>,
@@ -187,11 +166,7 @@ pub async fn get_public_profile_by_id(
 
     let results = storage.get_public(Some(&id), None, None);
     if let Some(profile) = results.into_iter().next() {
-        Ok(Json(serde_json::json!({
-            "id": profile.id,
-            "name": profile.name,
-            "tags": profile.tags,
-        })))
+        Ok(Json(serde_json::json!(profile)))
     } else {
         Err((
             StatusCode::NOT_FOUND,

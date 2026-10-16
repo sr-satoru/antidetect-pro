@@ -242,22 +242,26 @@ async fn test_public_profile_api_strictly_id_and_name() {
         })
         .unwrap();
 
-    // 2. Busca todos: deve retornar somente ID, Nome e Tags de cada um
+    // 2. Busca todos: deve retornar somente campos higienizados (sem credenciais)
     let all_public = storage.get_public(None, None, None);
     assert_eq!(all_public.len(), 2);
     assert_eq!(all_public[0].id, p1.id);
     assert_eq!(all_public[0].name, "Perfil Publico 01");
-    assert_eq!(all_public[0].tags, vec!["shopee", "aquecimento"]);
+    assert_eq!(all_public[0].tags[0].name, "shopee");
+    assert_eq!(all_public[0].tags[1].name, "aquecimento");
+    assert_eq!(all_public[0].running, false);
     assert_eq!(all_public[1].id, p2.id);
     assert_eq!(all_public[1].name, "Perfil Publico 02");
-    assert_eq!(all_public[1].tags, vec!["ml", "vendedor"]);
+    assert_eq!(all_public[1].tags[0].name, "ml");
+    assert_eq!(all_public[1].tags[1].name, "vendedor");
 
     // 3. Busca por ID
     let by_id = storage.get_public(Some(&p1.id), None, None);
     assert_eq!(by_id.len(), 1);
     assert_eq!(by_id[0].id, p1.id);
     assert_eq!(by_id[0].name, "Perfil Publico 01");
-    assert_eq!(by_id[0].tags, vec!["shopee", "aquecimento"]);
+    assert_eq!(by_id[0].tags[0].name, "shopee");
+    assert_eq!(by_id[0].tags[1].name, "aquecimento");
 
     // 4. Busca por Nome (case-insensitive)
     let by_name = storage.get_public(None, Some("perfil publico 02"), None);
