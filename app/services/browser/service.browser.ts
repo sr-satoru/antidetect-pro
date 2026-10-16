@@ -1,4 +1,4 @@
-import { http } from '../http';
+import { http, getActionTicket } from '../http';
 
 export interface EngineHealthInstalled {
   status: 'installed';
@@ -92,11 +92,21 @@ export const browserService = {
   },
 
   /**
-   * Dispara o download e instalação do motor selecionado (clearcote ou camoufox)
+   * Dispara o download e instalação do motor selecionado (clearcote ou camoufox) com Action Ticket seguro
    */
   async triggerDownload(engine?: 'clearcote' | 'camoufox' | string): Promise<{ success: boolean; message: string }> {
     const query = engine ? `?engine=${engine}` : '';
-    return http.post<{ success: boolean; message: string }>(`/api/browser/download${query}`);
+    let actionTicket: string | undefined;
+    try {
+      actionTicket = await getActionTicket('browser_download');
+    } catch (err) {
+      console.warn('[Browser Service] Falha ao obter action ticket para browser_download:', err);
+    }
+    return http.post<{ success: boolean; message: string }>(
+      `/api/browser/download${query}`,
+      {},
+      actionTicket ? { headers: { 'X-Action-Ticket': actionTicket } } : undefined
+    );
   },
 
   /**

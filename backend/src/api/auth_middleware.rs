@@ -80,7 +80,7 @@ fn has_valid_action_ticket(headers: &HeaderMap, nm: &NonceManager, scope: &str) 
     headers
         .get("x-action-ticket")
         .and_then(|v| v.to_str().ok())
-        .map(|ticket| ticket.starts_with("ticket_") && (nm.consume_ticket(ticket, scope) || nm.consume_ticket(ticket, "action_apply_update")))
+        .map(|ticket| ticket.starts_with("ticket_") && nm.consume_ticket(ticket, scope))
         .unwrap_or(false)
 }
 
@@ -174,12 +174,14 @@ fn is_api_key_endpoint(path: &str, method: &str) -> bool {
     false
 }
 
-/// Identifica endpoints de alto risco de execução de código que exigem Action Ticket de uso único
+/// Identifica endpoints de alto impacto que exigem Action Ticket de uso único
 fn is_action_ticket_endpoint(path: &str, method: &str) -> Option<&'static str> {
     if method == "POST" && path == "/api/app/apply-update" {
         Some("action_apply_update")
     } else if method == "POST" && path == "/api/app/download" {
         Some("action_download")
+    } else if method == "POST" && path == "/api/browser/download" {
+        Some("action_browser_download")
     } else {
         None
     }

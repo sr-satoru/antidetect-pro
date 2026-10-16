@@ -13,15 +13,27 @@ pub fn extract_tar_xz(archive_path: &Path, dest_dir: &Path) -> Result<(), Astrob
             "📦 Descompactando .tar.xz do AstroBrowser via tar do sistema para: {:?}",
             dest_dir
         );
-        let output = std::process::Command::new("tar")
-            .args(["-xf"])
-            .arg(archive_path)
-            .args(["-C"])
-            .arg(dest_dir)
-            .output()
-            .map_err(|e| {
-                AstrobrowserError::ExtractionFailed(format!("Falha ao invocar tar do sistema: {e}"))
-            })?;
+        let output = {
+            let mt_res = std::process::Command::new("tar")
+                .args(["-I", "xz -T0", "-xf"])
+                .arg(archive_path)
+                .args(["-C"])
+                .arg(dest_dir)
+                .output();
+
+            match mt_res {
+                Ok(out) if out.status.success() => out,
+                _ => std::process::Command::new("tar")
+                    .args(["-xf"])
+                    .arg(archive_path)
+                    .args(["-C"])
+                    .arg(dest_dir)
+                    .output()
+                    .map_err(|e| {
+                        AstrobrowserError::ExtractionFailed(format!("Falha ao invocar tar do sistema: {e}"))
+                    })?,
+            }
+        };
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);

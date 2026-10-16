@@ -270,9 +270,10 @@ pub async fn download_astrobrowser(
     let mut downloaded_bytes: u64 = 0;
     let mut stream = response.bytes_stream();
 
-    let mut out_file = tokio::fs::File::create(&temp_archive).await.map_err(|e| {
+    let raw_file = tokio::fs::File::create(&temp_archive).await.map_err(|e| {
         AstrobrowserError::IoError(format!("Falha ao criar arquivo temporário: {e}"))
     })?;
+    let mut out_file = tokio::io::BufWriter::with_capacity(512 * 1024, raw_file);
 
     use futures_util::StreamExt;
     use tokio::io::AsyncWriteExt;

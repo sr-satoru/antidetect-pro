@@ -1,5 +1,5 @@
 import packageInfo from '../../package.json';
-import { http } from '../http';
+import { http, getActionTicket } from '../http';
 
 export const CURRENT_APP_VERSION: string = packageInfo.version || '0.1.24';
 
@@ -76,10 +76,21 @@ export const appUpdateService = {
     asset?: { url: string; name: string }
   ): Promise<{ success: boolean; message: string }> {
     try {
-      const res = await http.post<any>('/api/app/download', {
-        url: asset?.url,
-        name: asset?.name,
-      });
+      let actionTicket: string | undefined;
+      try {
+        actionTicket = await getActionTicket('download');
+      } catch (err) {
+        console.warn('[App Update] Falha ao obter action ticket para download:', err);
+      }
+
+      const res = await http.post<any>(
+        '/api/app/download',
+        {
+          url: asset?.url,
+          name: asset?.name,
+        },
+        actionTicket ? { headers: { 'X-Action-Ticket': actionTicket } } : undefined
+      );
 
       if (res && res.success) {
         if (onProgress) {
@@ -123,9 +134,20 @@ export const appUpdateService = {
    */
   async applyRestart(filePath?: string): Promise<{ success: boolean; message: string }> {
     try {
-      const res = await http.post<any>('/api/app/apply-update', {
-        file_path: filePath,
-      });
+      let actionTicket: string | undefined;
+      try {
+        actionTicket = await getActionTicket('apply_update');
+      } catch (err) {
+        console.warn('[App Update] Falha ao obter action ticket para apply-update:', err);
+      }
+
+      const res = await http.post<any>(
+        '/api/app/apply-update',
+        {
+          file_path: filePath,
+        },
+        actionTicket ? { headers: { 'X-Action-Ticket': actionTicket } } : undefined
+      );
       if (res && res.success) {
         return {
           success: true,
