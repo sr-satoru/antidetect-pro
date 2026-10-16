@@ -260,12 +260,12 @@ export const impressaoDigitalService = {
       tagIds = Array.from(new Set([...tagIds, ...formData.tagIds.map(Number).filter((n: number) => !isNaN(n))]));
     }
 
-    const profileId = (formData.id && String(formData.id).trim()) || crypto.randomUUID();
+    const profileId = formData.id && String(formData.id).trim() ? String(formData.id).trim() : undefined;
     const nowSecs = Math.floor(Date.now() / 1000);
     const proxyPort = formData.proxyPort ? Number(formData.proxyPort) : undefined;
 
     return {
-      // 1. Identificador Universal Único (UUID v4) e Marcadores Temporais (LWW)
+      // 1. Identificador Semântico (Base62 prf_) atribuído pelo backend e Marcadores Temporais (LWW)
       id: profileId,
       created_at: nowSecs,
       updated_at: nowSecs,

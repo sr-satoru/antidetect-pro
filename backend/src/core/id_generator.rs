@@ -57,8 +57,14 @@ pub fn generate_profile_id() -> String {
     generate_id("prf")
 }
 
+/// Atalho para gerar ID de proxy (ex: proxy_01Ab2K9)
+pub fn generate_proxy_id() -> String {
+    generate_id("proxy")
+}
+
 /// Atalho para gerar ID de usuário (ex: usr_01Ab2K9)
 pub fn generate_user_id() -> String {
     generate_id("usr")
 }
+
 

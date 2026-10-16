@@ -79,7 +79,7 @@ impl ProxyService {
     }
 
     pub fn create(&self, dto: CreateProxyDto) -> Result<ProxyItem, String> {
-        let id = uuid::Uuid::new_v4().to_string();
+        let id = crate::id_generator::generate_proxy_id();
         let port_str = if let Some(n) = dto.port.as_u64() {
             n.to_string()
         } else if let Some(s) = dto.port.as_str() {

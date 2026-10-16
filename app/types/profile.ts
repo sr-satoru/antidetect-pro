@@ -90,7 +90,7 @@ export interface ProxyTestResult {
 // ==========================================
 
 export interface Profile {
-  id: string; // UUID v4
+  id: string; // Base62 Prefixed ID atribuído pelo backend (ex: prf_01Ab2K9)
   name: string;
   group: string;
   tags: TagItem[];

@@ -1,5 +1,5 @@
 use star_multlogin_backend::id_generator::{
-    generate_base62_7, generate_profile_id, generate_user_id,
+    generate_base62_7, generate_profile_id, generate_proxy_id, generate_user_id,
 };
 use std::collections::HashSet;
 
@@ -38,6 +38,10 @@ fn test_prefixed_ids() {
     let prf_id = generate_profile_id();
     assert!(prf_id.starts_with("prf_"));
     assert_eq!(prf_id.len(), 11); // "prf_" (4) + 7 chars
+
+    let prx_id = generate_proxy_id();
+    assert!(prx_id.starts_with("proxy_"));
+    assert_eq!(prx_id.len(), 13); // "proxy_" (6) + 7 chars
 
     let usr_id = generate_user_id();
     assert!(usr_id.starts_with("usr_"));
