@@ -61,7 +61,7 @@ async function request<T>(
             errorMsg = text;
           }
         }
-      } catch {}
+      } catch { }
       throw new ApiError(res.status, errorMsg);
     }
 
