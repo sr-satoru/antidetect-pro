@@ -251,6 +251,15 @@ async fn test_http_api_flow_matches_app_frontend() {
     assert_eq!(status_json["health"]["status"], "installed");
     assert_eq!(status_json["available_version"], "v2.1.0");
 
+    // Handshake para simular frontend autenticado
+    let hs_res = client
+        .post(format!("{}/api/local-auth/dev-handshake", base_url))
+        .send()
+        .await
+        .unwrap();
+    let hs_json: serde_json::Value = hs_res.json().await.unwrap();
+    let session_token = hs_json["session_token"].as_str().unwrap();
+
     // 2. Frontend chama POST /api/profiles
     let create_body = serde_json::json!({
         "name": "Perfil E2E HTTP Test",
@@ -262,6 +271,7 @@ async fn test_http_api_flow_matches_app_frontend() {
     });
     let create_res = client
         .post(format!("{}/api/profiles", base_url))
+        .header("X-Session-Token", session_token)
         .json(&create_body)
         .send()
         .await
@@ -274,6 +284,7 @@ async fn test_http_api_flow_matches_app_frontend() {
     // 3. Frontend chama GET /api/profiles/{id}/playwright
     let pw_res = client
         .get(format!("{}/api/profiles/{}/playwright", base_url, profile_id))
+        .header("X-Session-Token", session_token)
         .send()
         .await
         .unwrap();
@@ -286,6 +297,7 @@ async fn test_http_api_flow_matches_app_frontend() {
     // 4. Frontend chama POST /api/profiles/{id}/launch
     let launch_res = client
         .post(format!("{}/api/profiles/{}/launch?url=about:blank", base_url, profile_id))
+        .header("X-Session-Token", session_token)
         .send()
         .await
         .unwrap();
@@ -302,6 +314,7 @@ async fn test_http_api_flow_matches_app_frontend() {
     // 5. Frontend chama POST /api/profiles/{id}/stop
     let stop_res = client
         .post(format!("{}/api/profiles/{}/stop", base_url, profile_id))
+        .header("X-Session-Token", session_token)
         .send()
         .await
         .unwrap();

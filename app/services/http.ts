@@ -1,6 +1,6 @@
 /**
  * Módulo HTTP base — todas as requisições do frontend passam por aqui.
- * Centraliza URL base, headers, tratamento de erro e token.
+ * Centraliza URL base, headers, tratamento de erro, handshake nativo e sessão local.
  */
 
 export const BACKEND_PORT = 12540;
@@ -8,10 +8,107 @@ export const API_BASE_URL = `http://127.0.0.1:${BACKEND_PORT}`;
 export const WS_BASE_URL = `ws://127.0.0.1:${BACKEND_PORT}/api/ws`;
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(public status: number, message: string, public code?: string) {
     super(message);
     this.name = 'ApiError';
   }
+}
+
+// ═══ Estado de Sessão Local mantido unicamente em Memória RAM ═══
+let sessionToken: string | null = null;
+let sessionExpiresAt: number = 0;
+let ongoingHandshake: Promise<string> | null = null;
+
+/**
+ * Tenta obter ticket de handshake pelo canal nativo IPC do Tauri
+ */
+async function getTicketFromTauriIPC(): Promise<string> {
+  const win = typeof window !== 'undefined' ? (window as any) : undefined;
+  if (win?.__TAURI_INTERNALS__?.invoke) {
+    return await win.__TAURI_INTERNALS__.invoke('get_handshake_ticket');
+  }
+  if (win?.__TAURI__?.core?.invoke) {
+    return await win.__TAURI__.core.invoke('get_handshake_ticket');
+  }
+  throw new Error('Tauri IPC não disponível neste ambiente.');
+}
+
+/**
+ * Realiza handshake seguro com o backend local
+ */
+async function performHandshake(): Promise<string> {
+  try {
+    // 1. Tenta canal nativo Tauri IPC
+    const ticket = await getTicketFromTauriIPC();
+    const res = await fetch(`${API_BASE_URL}/api/local-auth/handshake`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticket }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Handshake via ticket falhou com status ${res.status}`);
+    }
+
+    const data = await res.json();
+    sessionToken = data.session_token;
+    sessionExpiresAt = Date.now() + (data.expires_in * 1000);
+    return sessionToken!;
+  } catch {
+    // 2. Fallback para dev mode (apenas em desenvolvimento no navegador)
+    try {
+      const devRes = await fetch(`${API_BASE_URL}/api/local-auth/dev-handshake`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (devRes.ok) {
+        const data = await devRes.json();
+        sessionToken = data.session_token;
+        sessionExpiresAt = Date.now() + (data.expires_in * 1000);
+        return sessionToken!;
+      }
+    } catch { }
+
+    throw new ApiError(
+      0,
+      `Falha no handshake de segurança com o backend local (${API_BASE_URL}). Certifique-se de que o backend Rust está rodando.`
+    );
+  }
+}
+
+/**
+ * Garante que uma sessão desktop válida esteja disponível antes de disparar a requisição
+ */
+export async function ensureSession(): Promise<string> {
+  // Se ainda estiver válida com margem de 1 minuto, reutiliza
+  if (sessionToken && Date.now() < sessionExpiresAt - 60_000) {
+    return sessionToken;
+  }
+
+  // Previne múltiplas requisições simultâneas de realizarem múltiplos handshakes ao mesmo tempo
+  if (!ongoingHandshake) {
+    ongoingHandshake = performHandshake().finally(() => {
+      ongoingHandshake = null;
+    });
+  }
+
+  return await ongoingHandshake;
+}
+
+/**
+ * Solicita um Action Ticket de uso único para operações de alto privilégio (apply-update, download)
+ */
+export async function getActionTicket(action: string = 'apply_update'): Promise<string> {
+  const win = typeof window !== 'undefined' ? (window as any) : undefined;
+  if (win?.__TAURI_INTERNALS__?.invoke) {
+    try {
+      return await win.__TAURI_INTERNALS__.invoke('get_action_ticket', { action });
+    } catch { }
+  }
+
+  const res = await http.post<{ action_ticket: string }>('/api/local-auth/action-ticket', { action });
+  return res.action_ticket;
 }
 
 async function request<T>(
@@ -39,18 +136,43 @@ async function request<T>(
     ...(options.headers as Record<string, string>),
   };
 
+  // Se não for rota do handshake local, assegura sessão válida
+  const isHandshakeRoute = endpoint.startsWith('/api/local-auth/handshake') || endpoint.startsWith('/api/local-auth/dev-handshake');
+  if (!isHandshakeRoute) {
+    const token = await ensureSession();
+    if (token) {
+      headers['X-Session-Token'] = token;
+    }
+  }
+
   try {
-    const res = await fetch(url, {
+    let res = await fetch(url, {
       ...options,
       headers,
     });
 
+    // Se o backend indicar sessão expirada, refaz handshake uma vez e repete a chamada
+    if (res.status === 401 && !isHandshakeRoute) {
+      sessionToken = null;
+      sessionExpiresAt = 0;
+      const refreshedToken = await ensureSession();
+      if (refreshedToken) {
+        headers['X-Session-Token'] = refreshedToken;
+        res = await fetch(url, {
+          ...options,
+          headers,
+        });
+      }
+    }
+
     if (!res.ok) {
       let errorMsg = `Erro ${res.status}: ${res.statusText}`;
+      let errorCode: string | undefined;
       try {
         const text = await res.text();
         try {
           const errJson = JSON.parse(text);
+          errorCode = errJson.code;
           errorMsg =
             errJson.detail ||
             errJson.error ||
@@ -62,7 +184,7 @@ async function request<T>(
           }
         }
       } catch { }
-      throw new ApiError(res.status, errorMsg);
+      throw new ApiError(res.status, errorMsg, errorCode);
     }
 
     if (res.status === 204) {
@@ -80,25 +202,27 @@ async function request<T>(
 
 /** Atalhos tipados para os verbos HTTP */
 export const http = {
-  get: <T>(endpoint: string, config?: { params?: Record<string, any> }) =>
-    request<T>(endpoint, {}, config?.params),
+  get: <T>(endpoint: string, config?: { params?: Record<string, any>; headers?: Record<string, string> }) =>
+    request<T>(endpoint, { headers: config?.headers }, config?.params),
 
-  post: <T>(endpoint: string, body?: any) => {
+  post: <T>(endpoint: string, body?: any, config?: { headers?: Record<string, string> }) => {
     const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
     return request<T>(endpoint, {
       method: 'POST',
+      headers: config?.headers,
       body: isFormData ? body : body !== undefined ? JSON.stringify(body) : undefined,
     });
   },
 
-  put: <T>(endpoint: string, body?: any) =>
+  put: <T>(endpoint: string, body?: any, config?: { headers?: Record<string, string> }) =>
     request<T>(endpoint, {
       method: 'PUT',
+      headers: config?.headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
     }),
 
-  delete: <T>(endpoint: string) =>
-    request<T>(endpoint, { method: 'DELETE' }),
+  delete: <T>(endpoint: string, config?: { headers?: Record<string, string> }) =>
+    request<T>(endpoint, { method: 'DELETE', headers: config?.headers }),
 
   /** Chamada genérica para casos especiais */
   request,

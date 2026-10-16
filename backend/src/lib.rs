@@ -1,10 +1,11 @@
 use axum::{
+    http::{HeaderName, HeaderValue, Method},
     routing::{delete, get, post, put},
     Router,
 };
 use std::net::SocketAddr;
-use std::sync::Arc;
-use tower_http::cors::{Any, CorsLayer};
+use std::sync::{Arc, OnceLock};
+use tower_http::cors::CorsLayer;
 
 // 6 Domínios Principais do Monorepo
 pub mod api;
@@ -41,6 +42,7 @@ pub use api::ws;
 pub use core::id_generator;
 pub use core::models;
 pub use core::security;
+pub use core::security::NonceManager;
 
 pub use server_sync::{cloud_auth, cloud_sync};
 
@@ -89,7 +91,27 @@ fn resolve_data_dir(data_dir_override: Option<String>) -> String {
         .to_string()
 }
 
-/// Constrói o roteador Axum completo com todos os módulos, documentação Swagger e middlewares
+static GLOBAL_NONCE_MANAGER: OnceLock<Arc<NonceManager>> = OnceLock::new();
+
+/// Retorna a instância global de NonceManager (compartilhada entre Axum e Tauri)
+pub fn get_or_init_nonce_manager() -> Arc<NonceManager> {
+    GLOBAL_NONCE_MANAGER
+        .get_or_init(|| Arc::new(NonceManager::new()))
+        .clone()
+}
+
+/// Inicia a tarefa em segundo plano para limpeza de tickets e sessões expiradas a cada 5 minutos
+pub fn start_cleanup_task(nm: Arc<NonceManager>) {
+    tokio::spawn(async move {
+        let mut interval = tokio::time::interval(std::time::Duration::from_secs(300));
+        loop {
+            interval.tick().await;
+            nm.cleanup();
+        }
+    });
+}
+
+/// Constrói o roteador Axum completo com instância padrão compartilhada de NonceManager
 pub fn build_app_router(
     data_dir: &str,
     profile_storage: Arc<ProfileStorage>,
@@ -102,10 +124,58 @@ pub fn build_app_router(
     browser_state: routes::browser::BrowserRouteState,
     ws_state: ws::WsState,
 ) -> Router {
+    build_app_router_with_nonce_manager(
+        data_dir,
+        profile_storage,
+        proxy_storage,
+        tag_storage,
+        extension_storage,
+        extension_category_storage,
+        auth_service,
+        cloud_sync_service,
+        browser_state,
+        ws_state,
+        get_or_init_nonce_manager(),
+    )
+}
+
+/// Constrói o roteador Axum completo com todos os módulos, documentação Swagger,
+/// controle restritivo de CORS e middleware de segurança em camadas
+pub fn build_app_router_with_nonce_manager(
+    data_dir: &str,
+    profile_storage: Arc<ProfileStorage>,
+    proxy_storage: Arc<ProxyStorage>,
+    tag_storage: Arc<TagStorage>,
+    extension_storage: Arc<ExtensionStorage>,
+    extension_category_storage: Arc<ExtensionCategoryStorage>,
+    auth_service: Arc<cloud_auth::CloudAuthService>,
+    cloud_sync_service: Arc<cloud_sync::CloudSyncService>,
+    browser_state: routes::browser::BrowserRouteState,
+    ws_state: ws::WsState,
+    nonce_manager: Arc<NonceManager>,
+) -> Router {
+    // ═══ Módulo 6: CORS Restritivo ═══
+    let allowed_origins = [
+        "http://localhost:1254".parse::<HeaderValue>().unwrap(),
+        "http://127.0.0.1:1254".parse::<HeaderValue>().unwrap(),
+        "http://localhost:5173".parse::<HeaderValue>().unwrap(),
+        "http://127.0.0.1:5173".parse::<HeaderValue>().unwrap(),
+        "tauri://localhost".parse::<HeaderValue>().unwrap(),
+        "https://tauri.localhost".parse::<HeaderValue>().unwrap(),
+    ];
+
     let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methods(Any)
-        .allow_headers(Any);
+        .allow_origin(allowed_origins)
+        .allow_methods([
+            Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS,
+        ])
+        .allow_headers([
+            HeaderName::from_static("content-type"),
+            HeaderName::from_static("authorization"),
+            HeaderName::from_static("x-session-token"),
+            HeaderName::from_static("x-action-ticket"),
+            HeaderName::from_static("x-mcp-token"),
+        ]);
 
     let profile_routes = Router::new()
         .route("/", get(routes::profiles::list_profiles).post(routes::profiles::create_profile))
@@ -171,7 +241,8 @@ pub fn build_app_router(
         .route("/batch-delete", post(routes::tags::batch_delete_tags))
         .with_state(tag_storage);
 
-    let auth_routes = Router::new()
+    // ═══ 🅰 Auth Cloud (OAuth2 PKCE) — namespace separado ═══
+    let cloud_auth_routes = Router::new()
         .route("/start-login", post(routes::auth::start_login))
         .route("/start-register", post(routes::auth::start_register))
         .route("/callback", get(routes::auth::callback))
@@ -179,6 +250,19 @@ pub fn build_app_router(
         .route("/me", get(routes::auth::me))
         .route("/logout", post(routes::auth::logout))
         .with_state(auth_service);
+
+    // ═══ 🅲🅳 Auth Local (Handshake, Dev Handshake e Action Tickets) ═══
+    let mut local_auth_routes = Router::new()
+        .route("/handshake", post(routes::local_auth::handshake))
+        .route("/action-ticket", post(routes::local_auth::request_action_ticket));
+
+    #[cfg(debug_assertions)]
+    {
+        local_auth_routes = local_auth_routes
+            .route("/dev-handshake", post(routes::local_auth::dev_handshake));
+    }
+
+    let local_auth_routes = local_auth_routes.with_state(nonce_manager.clone());
 
     let cloud_sync_routes = Router::new()
         .route("/health", get(routes::cloud_sync::check_cloud_health))
@@ -221,22 +305,39 @@ pub fn build_app_router(
 
     let mcp_routes = mcp_public_api::router(profile_storage.clone());
 
+    let security_state = api::SecurityState {
+        nonce_manager: nonce_manager.clone(),
+        profile_storage: profile_storage.clone(),
+    };
+
     let app = Router::new()
+        // Auth local — Handshake e Tickets (não passa por auth prévia)
+        .nest("/api/local-auth", local_auth_routes)
+        // Perfis e MCP
         .nest("/api/profiles", profile_routes.clone())
         .nest("/api/v1/profiles", profile_routes)
         .route("/api/v1/status", get(mcp_public_api::get_mcp_status).with_state(profile_storage.clone()))
         .nest("/mcp", mcp_routes)
         .nest("/api/fingerprints", fingerprint_routes)
+        // Cloud Sync e Cloud Auth
         .nest("/api/cloud-sync", cloud_sync_routes)
+        .nest("/api/cloud-auth", cloud_auth_routes.clone())
+        .nest("/api/auth", cloud_auth_routes) // Alias de compatibilidade com chamadas legadas
+        // Recursos Desktop
         .nest("/api/proxies", proxy_routes)
         .nest("/api/extensions", extension_routes)
         .nest("/api/extension-categories", extension_category_routes)
         .nest("/api/tags", tag_routes)
-        .nest("/api/auth", auth_routes)
         .nest("/api/browser", browser_routes)
         .nest("/api/app", app_routes)
-        .nest("/api/ws", ws_routes);
+        .nest("/api/ws", ws_routes)
+        // ═══ Middleware de Autenticação em Camadas ═══
+        .layer(axum::middleware::from_fn_with_state(
+            security_state,
+            api::security_layer,
+        ));
 
+    // Monta Swagger UI com a camada de CORS mais externa
     swagger::mount_swagger_ui(app).layer(cors)
 }
 
@@ -244,6 +345,16 @@ pub fn build_app_router(
 pub async fn start_star_server(
     data_dir_override: Option<String>,
     port: u16,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let nonce_manager = get_or_init_nonce_manager();
+    start_star_server_with_nonce_manager(data_dir_override, port, nonce_manager).await
+}
+
+/// Inicia o servidor Axum permitindo injetar uma instância customizada de NonceManager
+pub async fn start_star_server_with_nonce_manager(
+    data_dir_override: Option<String>,
+    port: u16,
+    nonce_manager: Arc<NonceManager>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let data_dir = resolve_data_dir(data_dir_override);
     tracing::info!("📂 Diretório raiz de dados Star Multlogin: {}", data_dir);
@@ -273,7 +384,6 @@ pub async fn start_star_server(
     let cloud_sync_service = Arc::new(
         cloud_sync::CloudSyncService::new(vault.clone(), auth_service.clone())
             .with_ws(ws_state.clone()),
-
     );
     let pm = profile_storage.get_process_manager();
     cloud_sync_service.set_running_checker(Arc::new(move |pid: &str| pm.is_running(pid)));
@@ -285,6 +395,8 @@ pub async fn start_star_server(
     ));
     profile_storage.set_auto_sync(auto_sync_engine);
 
+    // 4. Inicia tarefa periódica de limpeza de tickets e sessões
+    start_cleanup_task(nonce_manager.clone());
 
     // 5. Download e monitoramento de engine do navegador
     let browser_download_service = Arc::new(browser_downloader::BrowserDownloadService::new(
@@ -296,8 +408,8 @@ pub async fn start_star_server(
         data_dir: std::path::PathBuf::from(&data_dir),
     };
 
-    // 6. Montagem do aplicativo Axum
-    let app = build_app_router(
+    // 6. Montagem do aplicativo Axum com segurança em camadas
+    let app = build_app_router_with_nonce_manager(
         &data_dir,
         profile_storage,
         proxy_storage,
@@ -308,6 +420,7 @@ pub async fn start_star_server(
         cloud_sync_service,
         browser_state,
         ws_state,
+        nonce_manager,
     );
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
@@ -317,7 +430,7 @@ pub async fn start_star_server(
         .await
         .map_err(|e| format!("Falha ao abrir porta {}: {}", port, e))?;
 
-    axum::serve(listener, app)
+    axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
         .await
         .map_err(|e| format!("Erro ao executar servidor Axum: {}", e))?;
 

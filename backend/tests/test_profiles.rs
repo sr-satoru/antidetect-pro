@@ -520,8 +520,9 @@ async fn test_public_profile_endpoint_authentication() {
         Query(PublicProfileQuery { id: None, name: None, tag: None }),
     ).await;
     assert!(res_no_auth.is_err());
-    let (status, _) = res_no_auth.unwrap_err();
-    assert_eq!(status, StatusCode::UNAUTHORIZED);
+    if let Err((status, _)) = res_no_auth {
+        assert_eq!(status, StatusCode::UNAUTHORIZED);
+    }
 
     // 2. Com token inválido (TOKEN_AQUI) -> DEVE retornar 401 Unauthorized
     let mut invalid_headers = HeaderMap::new();
@@ -532,8 +533,9 @@ async fn test_public_profile_endpoint_authentication() {
         Query(PublicProfileQuery { id: None, name: None, tag: None }),
     ).await;
     assert!(res_invalid.is_err());
-    let (status, _) = res_invalid.unwrap_err();
-    assert_eq!(status, StatusCode::UNAUTHORIZED);
+    if let Err((status, _)) = res_invalid {
+        assert_eq!(status, StatusCode::UNAUTHORIZED);
+    }
 
     // 3. Com token válido real do cofre -> DEVE retornar 200 OK
     let mut valid_headers = HeaderMap::new();

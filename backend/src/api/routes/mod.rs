@@ -1,4 +1,5 @@
 pub mod auth;
+pub mod local_auth;
 pub mod cookies;
 pub mod extensions;
 pub mod extension_categories;

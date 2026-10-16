@@ -1,5 +1,8 @@
 pub mod database;
 pub mod memory_guard;
+pub mod nonce_manager;
+
+pub use nonce_manager::NonceManager;
 
 // Módulos para retrocompatibilidade direta com referências legadas
 pub mod crypto {

@@ -34,7 +34,7 @@ export interface UserMeResponse {
 }
 
 /**
- * Service de Autenticação — Comunica diretamente com as rotas /api/auth do daemon Rust local.
+ * Service de Autenticação na Nuvem — Comunica diretamente com as rotas /api/cloud-auth do daemon Rust local.
  * Toda persistência de sessão e cofre de tokens é de responsabilidade do Rust (VaultSessionStorage).
  */
 export const serviceAuth = {
@@ -42,31 +42,31 @@ export const serviceAuth = {
    * Inicia o fluxo OAuth 2.0 PKCE para Login no navegador externo
    */
   startLogin: (): Promise<AuthStartResponse> =>
-    http.post<AuthStartResponse>('/api/auth/start-login'),
+    http.post<AuthStartResponse>('/api/cloud-auth/start-login'),
 
   /**
    * Inicia o fluxo OAuth 2.0 PKCE para Cadastro no navegador externo
    */
   startRegister: (): Promise<AuthStartResponse> =>
-    http.post<AuthStartResponse>('/api/auth/start-register'),
+    http.post<AuthStartResponse>('/api/cloud-auth/start-register'),
 
   /**
    * Consulta o status de uma sessão PKCE pendente
    */
   getSessionStatus: (sessionId: string): Promise<SessionStatusResponse> =>
-    http.get<SessionStatusResponse>(`/api/auth/session/${sessionId}`),
+    http.get<SessionStatusResponse>(`/api/cloud-auth/session/${sessionId}`),
 
   /**
    * Retorna os dados do usuário atualmente logado ou usuário offline
    */
   getMe: (): Promise<UserMeResponse> =>
-    http.get<UserMeResponse>('/api/auth/me'),
+    http.get<UserMeResponse>('/api/cloud-auth/me'),
 
   /**
    * Encerra a sessão no backend Rust e expurga o cofre
    */
   logout: (): Promise<{ success: boolean }> =>
-    http.post<{ success: boolean }>('/api/auth/logout'),
+    http.post<{ success: boolean }>('/api/cloud-auth/logout'),
 };
 
 export default serviceAuth;
