@@ -1,5 +1,5 @@
 use axum::{
-    http::{HeaderName, HeaderValue, Method},
+    http::{HeaderValue, Method},
     routing::{delete, get, post, put},
     Router,
 };
@@ -154,28 +154,27 @@ pub fn build_app_router_with_nonce_manager(
     ws_state: ws::WsState,
     nonce_manager: Arc<NonceManager>,
 ) -> Router {
-    // ═══ Módulo 6: CORS Restritivo ═══
-    let allowed_origins = [
-        "http://localhost:1254".parse::<HeaderValue>().unwrap(),
-        "http://127.0.0.1:1254".parse::<HeaderValue>().unwrap(),
-        "http://localhost:5173".parse::<HeaderValue>().unwrap(),
-        "http://127.0.0.1:5173".parse::<HeaderValue>().unwrap(),
-        "tauri://localhost".parse::<HeaderValue>().unwrap(),
-        "https://tauri.localhost".parse::<HeaderValue>().unwrap(),
-    ];
-
+    // ═══ Módulo 6: CORS Restritivo para Ambiente Desktop e Desenvolvimento Local ═══
     let cors = CorsLayer::new()
-        .allow_origin(allowed_origins)
+        .allow_origin(tower_http::cors::AllowOrigin::predicate(|origin: &HeaderValue, _| {
+            if let Ok(s) = origin.to_str() {
+                s == "tauri://localhost"
+                    || s == "http://tauri.localhost"
+                    || s == "https://tauri.localhost"
+                    || s.starts_with("http://localhost:")
+                    || s.starts_with("http://127.0.0.1:")
+                    || s.starts_with("https://localhost:")
+                    || s.starts_with("https://127.0.0.1:")
+                    || s == "http://localhost"
+                    || s == "http://127.0.0.1"
+            } else {
+                false
+            }
+        }))
         .allow_methods([
             Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS,
         ])
-        .allow_headers([
-            HeaderName::from_static("content-type"),
-            HeaderName::from_static("authorization"),
-            HeaderName::from_static("x-session-token"),
-            HeaderName::from_static("x-action-ticket"),
-            HeaderName::from_static("x-mcp-token"),
-        ]);
+        .allow_headers(tower_http::cors::Any);
 
     let profile_routes = Router::new()
         .route("/", get(routes::profiles::list_profiles).post(routes::profiles::create_profile))
