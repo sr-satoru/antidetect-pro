@@ -100,10 +100,10 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <button
             type="button"
             onClick={onStartSelected}
-            className="h-[36px] px-4 rounded-md bg-[#238636] hover:bg-[#2ea043] text-white text-[13.5px] font-bold flex items-center gap-2 transition-all cursor-pointer shadow-sm shadow-[#238636]/20 active:scale-[0.98]"
+            className="h-[38px] px-4.5 rounded-md bg-[#238636] hover:bg-[#2ea043] text-white text-[14px] font-bold flex items-center gap-2 transition-all cursor-pointer shadow-sm shadow-[#238636]/20 active:scale-[0.98]"
             title="Abrir"
           >
-            <Play size={13} fill="currentColor" />
+            <Play size={14} fill="currentColor" />
             <span>Abrir</span>
           </button>
 
