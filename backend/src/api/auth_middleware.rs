@@ -132,6 +132,11 @@ fn is_open_endpoint(path: &str, method: &str) -> bool {
         return true;
     }
 
+    // WebSocket em tempo real para o frontend local (status de perfis, sync e downloads)
+    if path == "/api/ws" || path.starts_with("/api/ws/") {
+        return true;
+    }
+
     // Perfis públicos sanitizados
     if is_public_profile_route(path) {
         return true;
