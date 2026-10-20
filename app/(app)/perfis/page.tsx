@@ -48,7 +48,7 @@ export const PerfisPage: React.FC = () => {
         setIsLoading(true);
       }
       setError(null);
-      serviceTags.list().catch(() => {});
+      serviceTags.list().catch(() => { });
       const data = await api.profiles.list(searchQuery, selectedGroup);
       const list = Array.isArray(data) ? data : [];
       setProfiles(list);
@@ -137,11 +137,11 @@ export const PerfisPage: React.FC = () => {
           prev.map((curr) =>
             String(curr.id) === String(profile_id)
               ? {
-                  ...curr,
-                  isSyncing: false,
-                  cloud_synced: true,
-                  cloudSizeKb: size_kb,
-                }
+                ...curr,
+                isSyncing: false,
+                cloud_synced: true,
+                cloudSizeKb: size_kb,
+              }
               : curr,
           ),
         );
