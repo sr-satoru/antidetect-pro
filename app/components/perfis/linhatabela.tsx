@@ -461,10 +461,10 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               isSyncing
                 ? 'cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500'
                 : isStarting
-                  ? 'cursor-wait bg-[#1877f2]/85 text-white animate-pulse shadow-xs'
+                  ? 'cursor-wait bg-emerald-600/80 text-white animate-pulse shadow-xs'
                   : isRunning
                     ? 'cursor-pointer bg-[#e11d48] hover:bg-[#be123c] text-white shadow-xs'
-                    : 'cursor-pointer bg-[#1877f2] hover:bg-[#1266dc] text-white shadow-xs hover:shadow-sm'
+                    : 'cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs hover:shadow-sm'
             }`}
           >
             {isSyncing ? (
