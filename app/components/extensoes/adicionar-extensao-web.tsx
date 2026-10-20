@@ -7,7 +7,7 @@ import {
   ExternalLink,
   Flame,
 } from 'lucide-react';
-import { FirefoxIcon } from '../ui/firefox-icon';
+import { AstroFoxIcon } from '../icons';
 
 export interface ExtensaoWebFormValues {
   url: string;
@@ -55,7 +55,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
             }`}
           >
             <div className="flex h-4 w-4 items-center justify-center shrink-0">
-              <FirefoxIcon size={16} />
+              <AstroFoxIcon size={16} />
             </div>
             <span>Firefox Add-ons (AMO)</span>
             <span className="rounded-sm bg-[#FF7139]/20 px-1.5 py-0.5 text-[10px] font-semibold text-[#FF7139]">

@@ -14,7 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { FirefoxIcon } from './firefox-icon';
+import { AstroFoxIcon } from '../icons';
 
 interface SidebarProps {
   onNewProfileClick?: () => void;
@@ -55,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
               className="flex items-center gap-2.5 overflow-hidden transition-all group min-w-0"
             >
               <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-inner">
-                <FirefoxIcon size={20} />
+                <AstroFoxIcon size={20} />
               </div>
               <div className="flex flex-col leading-tight min-w-0">
                 <span className="font-bold text-[14px] tracking-tight text-slate-900 dark:text-white truncate">

@@ -1,11 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MenuAcoesPerfil } from './menu-acoes-perfil';
 import { OsIcon } from '../ui/os-icon';
+import { AstroBrowserIcon, AstroFoxIcon } from '../icons';
 import { TagBadge } from '../tags/tag-badge';
 import { serviceTags } from '../../services/tags/service.tags';
 import { toast } from 'sonner';
 import { servicePerfis } from '../../services/perfis/service.perfis';
+import { isChromiumKernel } from '../../services/navegador-presets';
 import {
   ArrowLeftRight,
   Play,
@@ -156,6 +158,25 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   const isRunning = (profile.status === 'running' || profile.isRunning) && !isStarting;
   const isSyncing = Boolean(profile.isSyncing || isLocalSyncing);
   const isBusy = isSyncing || isStarting;
+
+  const isChromium = useMemo(() => {
+    if (profile.kernel) {
+      return isChromiumKernel(profile.kernel);
+    }
+    let fpKernel = '';
+    if (typeof profile.fingerprint_json === 'string') {
+      try {
+        const parsed = JSON.parse(profile.fingerprint_json);
+        fpKernel = parsed?.kernel || '';
+      } catch {}
+    } else if (typeof profile.fingerprint_json === 'object' && profile.fingerprint_json !== null) {
+      fpKernel = profile.fingerprint_json.kernel || '';
+    }
+    if (fpKernel) {
+      return isChromiumKernel(fpKernel);
+    }
+    return (profile.os || '').toLowerCase() === 'android';
+  }, [profile.kernel, profile.fingerprint_json, profile.os]);
 
   const handleRestoreCloud = async () => {
     try {
@@ -418,50 +439,64 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
         </div>
       </td>
 
-      {/* 11. Ação (Iniciar / Parar) - Sticky */}
+      {/* 11. Ação (Abrir / Parar) - Sticky */}
       <td
-        className={`sticky right-[48px] z-10 w-[124px] max-w-[124px] min-w-[124px] px-3 py-2.5 transition-colors ${stickyBg}`}
+        className={`sticky right-[48px] z-10 w-[124px] max-w-[124px] min-w-[124px] px-2.5 py-2 text-center transition-colors ${stickyBg}`}
       >
-        <button
-          type="button"
-          disabled={isBusy}
-          onClick={() => !isBusy && onToggleRunning(profile.id)}
-          title={
-            isSyncing
-              ? 'Sincronizando perfil com a nuvem...'
-              : isStarting
-                ? 'Iniciando navegador em segundo plano...'
-                : undefined
-          }
-          className={`inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-md px-3.5 text-xs font-bold transition-all active:scale-[0.98] ${
-            isSyncing
-              ? 'cursor-not-allowed opacity-60 border border-slate-300 bg-slate-200/50 text-slate-400 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-400'
-              : isStarting
-                ? 'cursor-wait border border-emerald-500/40 bg-emerald-50/70 text-emerald-600 dark:border-[#00FF66]/30 dark:bg-[#00FF66]/10 dark:text-[#00FF66] animate-pulse shadow-xs'
-                : isRunning
-                  ? 'cursor-pointer border border-[#ff334b]/35 bg-red-50 text-red-600 hover:bg-[#ff334b] hover:text-white dark:bg-[#ff334b]/12 dark:text-[#ff334b] dark:hover:text-black'
-                  : 'cursor-pointer border border-emerald-500/35 bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white dark:border-[#00FF66]/35 dark:bg-[#00FF66]/12 dark:text-[#00FF66] dark:hover:bg-[#00FF66] dark:hover:text-black shadow-xs'
-          }`}
-        >
-          {isSyncing ? (
-            <Loader2 size={11} className="animate-spin text-zinc-400" />
-          ) : isStarting ? (
-            <Loader2 size={11} className="animate-spin text-emerald-600 dark:text-[#00FF66]" />
-          ) : isRunning ? (
-            <Square size={11} fill="currentColor" />
-          ) : (
-            <Play size={11} fill="currentColor" />
-          )}
-          <span>
-            {isSyncing
-              ? 'Sincronizando'
-              : isStarting
-                ? 'Iniciando...'
-                : isRunning
-                  ? 'Parar'
-                  : 'Iniciar'}
-          </span>
-        </button>
+        <div className="flex items-center justify-center">
+          <button
+            type="button"
+            disabled={isBusy}
+            onClick={() => !isBusy && onToggleRunning(profile.id)}
+            title={
+              isSyncing
+                ? 'Sincronizando perfil com a nuvem...'
+                : isStarting
+                  ? 'Iniciando navegador em segundo plano...'
+                  : isRunning
+                    ? 'Parar navegador em execução'
+                    : `Abrir no ${isChromium ? 'AstroBrowser (Chrome)' : 'AstroFox (Firefox)'}`
+            }
+            className={`inline-flex h-[26px] w-auto items-center justify-center gap-1.5 rounded-[6px] px-2.5 text-[12px] font-semibold text-white transition-all active:scale-[0.97] ${
+              isSyncing
+                ? 'cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500'
+                : isStarting
+                  ? 'cursor-wait bg-[#1877f2]/85 text-white animate-pulse shadow-xs'
+                  : isRunning
+                    ? 'cursor-pointer bg-[#e11d48] hover:bg-[#be123c] text-white shadow-xs'
+                    : 'cursor-pointer bg-[#1877f2] hover:bg-[#1266dc] text-white shadow-xs hover:shadow-sm'
+            }`}
+          >
+            {isSyncing ? (
+              <Loader2 size={12} className="animate-spin text-zinc-400 shrink-0" />
+            ) : isStarting ? (
+              <Loader2 size={12} className="animate-spin text-white shrink-0" />
+            ) : isRunning ? (
+              <Square size={10} fill="currentColor" className="text-white shrink-0" />
+            ) : isChromium ? (
+              <AstroBrowserIcon
+                size={14}
+                className="shrink-0"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
+            ) : (
+              <AstroFoxIcon
+                size={14}
+                className="shrink-0"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
+            )}
+            <span className="leading-none">
+              {isSyncing
+                ? 'Sincronizando'
+                : isStarting
+                  ? 'Iniciando...'
+                  : isRunning
+                    ? 'Parar'
+                    : 'Abrir'}
+            </span>
+          </button>
+        </div>
       </td>
 
       {/* 12. Menu / Mais Opções - Sticky */}

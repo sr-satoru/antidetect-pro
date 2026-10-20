@@ -10,8 +10,7 @@ interface GeralTabProps {
 }
 
 import { OsIcon } from '../ui/os-icon';
-import { FirefoxIcon } from '../ui/firefox-icon';
-import { ChromeIcon } from '../ui/chrome-icon';
+import { AstroFoxIcon, AstroBrowserIcon } from '../icons';
 import { TagBadge } from '../tags/tag-badge';
 import { DropdownSeletorEtiquetas } from '../tags/dropdown-seletor-etiquetas';
 import { serviceTags } from '../../services/tags/service.tags';
@@ -202,7 +201,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                   }`}
                 >
                   <div className="flex h-5 w-5 items-center justify-center shrink-0">
-                    <FirefoxIcon size={20} />
+                    <AstroFoxIcon size={20} />
                   </div>
                   <span className="text-[13px] font-semibold text-slate-900 dark:text-white">AstroFox</span>
                   {isAndroid ? (
@@ -270,7 +269,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                   }`}
                 >
                   <div className="flex h-5 w-5 items-center justify-center shrink-0">
-                    <ChromeIcon size={20} />
+                    <AstroBrowserIcon size={20} />
                   </div>
                   <span className="text-[13px] font-semibold text-slate-900 dark:text-white">AstroBrowser</span>
                   <span
