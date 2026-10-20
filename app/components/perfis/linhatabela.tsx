@@ -168,7 +168,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       try {
         const parsed = JSON.parse(profile.fingerprint_json);
         fpKernel = parsed?.kernel || '';
-      } catch {}
+      } catch { }
     } else if (typeof profile.fingerprint_json === 'object' && profile.fingerprint_json !== null) {
       fpKernel = profile.fingerprint_json.kernel || '';
     }
@@ -250,19 +250,19 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   const tagsList: { id?: string | number; name: string; color?: string }[] = Array.isArray(profile.tags)
     ? (profile.tags as any[]).map((t: any) =>
-        typeof t === 'object' && t !== null && t.name
-          ? t
-          : { id: t, name: String(t), color: serviceTags.getColorByName(String(t)) }
-      )
+      typeof t === 'object' && t !== null && t.name
+        ? t
+        : { id: t, name: String(t), color: serviceTags.getColorByName(String(t)) }
+    )
     : typeof profile.tags === 'string' && profile.tags
       ? (profile.tags as string)
-          .split(',')
-          .map((t: string) => ({
-            id: t.trim(),
-            name: t.trim(),
-            color: serviceTags.getColorByName(t.trim()),
-          }))
-          .filter((t) => t.name)
+        .split(',')
+        .map((t: string) => ({
+          id: t.trim(),
+          name: t.trim(),
+          color: serviceTags.getColorByName(t.trim()),
+        }))
+        .filter((t) => t.name)
       : [];
 
   return (
@@ -328,9 +328,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
         <div className="flex items-center gap-2">
           <ArrowLeftRight size={12} className="shrink-0 text-slate-400 dark:text-[#9EA2AE]" />
           <span
-            className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-              isProxyConnected ? 'bg-emerald-500' : 'bg-slate-400 dark:bg-[#52525b]'
-            }`}
+            className={`h-1.5 w-1.5 shrink-0 rounded-full ${isProxyConnected ? 'bg-emerald-500' : 'bg-slate-400 dark:bg-[#52525b]'
+              }`}
           />
           <div className="flex flex-col leading-tight">
             <span className="font-mono text-[11px] font-semibold text-slate-900 dark:text-white">
@@ -457,15 +456,14 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
                     ? 'Parar navegador em execução'
                     : `Abrir no ${isChromium ? 'AstroBrowser (Chrome)' : 'AstroFox (Firefox)'}`
             }
-            className={`inline-flex h-[26px] w-auto items-center justify-center gap-1.5 rounded-[6px] px-2.5 text-[12px] font-semibold text-white transition-all active:scale-[0.97] ${
-              isSyncing
+            className={`inline-flex h-[26px] w-auto items-center justify-center gap-1.5 rounded-[6px] px-2.5 text-[12px] font-semibold text-white transition-all active:scale-[0.97] ${isSyncing
                 ? 'cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500'
                 : isStarting
                   ? 'cursor-wait bg-emerald-600/80 text-white animate-pulse shadow-xs'
                   : isRunning
                     ? 'cursor-pointer bg-[#e11d48] hover:bg-[#be123c] text-white shadow-xs'
                     : 'cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs hover:shadow-sm'
-            }`}
+              }`}
           >
             {isSyncing ? (
               <Loader2 size={12} className="animate-spin text-zinc-400 shrink-0" />
@@ -507,11 +505,10 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           ref={buttonRef}
           type="button"
           onClick={handleToggleMenu}
-          className={`mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-all ${
-            isMenuOpen
+          className={`mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-all ${isMenuOpen
               ? 'bg-slate-200 text-slate-900 dark:bg-[#383A44] dark:text-white shadow-xs'
               : 'text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#9EA2AE] dark:hover:bg-[#383A44] dark:hover:text-white'
-          }`}
+            }`}
           title="Opções do perfil"
         >
           <MoreVertical size={14} />
