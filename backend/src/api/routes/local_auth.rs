@@ -82,30 +82,39 @@ pub async fn request_action_ticket(
 }
 
 /// POST /api/local-auth/dev-handshake
-/// Ativo SOMENTE em builds de desenvolvimento (debug_assertions).
-/// Aceita conexões unicamente originadas de loopback (127.0.0.1 / ::1).
-#[cfg(debug_assertions)]
+/// Fallback seguro para o cliente desktop local.
+/// Aceita conexões unicamente originadas de loopback (127.0.0.1 / ::1) e valida Origin de sites externos.
 pub async fn dev_handshake(
     State(nm): State<Arc<NonceManager>>,
     ConnectInfo(addr): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
 ) -> Result<impl IntoResponse, StatusCode> {
     if !addr.ip().is_loopback() {
-        tracing::warn!("⛔ Dev handshake rejeitado de endereço não-loopback: {}", addr.ip());
+        tracing::warn!("⛔ Handshake local rejeitado de endereço não-loopback: {}", addr.ip());
         return Err(StatusCode::FORBIDDEN);
     }
 
+    // Se houver header Origin, valida se não pertence a website externo malicioso
+    if let Some(origin) = headers.get("origin").and_then(|v| v.to_str().ok()) {
+        let is_valid_desktop = origin == "tauri://localhost"
+            || origin == "http://tauri.localhost"
+            || origin == "https://tauri.localhost"
+            || origin.starts_with("http://localhost:")
+            || origin.starts_with("http://127.0.0.1:");
+
+        if !is_valid_desktop {
+            tracing::warn!("⛔ Handshake local rejeitado de Origin externo não autorizado: {}", origin);
+            return Err(StatusCode::FORBIDDEN);
+        }
+    }
+
     let session_token = nm.create_session(7200);
-    tracing::info!("🛠️ Dev handshake gerou sessão de desenvolvimento: {}", session_token);
+    tracing::info!("✅ Handshake desktop local estabelecido com sucesso: {}", session_token);
 
     Ok(Json(json!({
         "session_token": session_token,
         "expires_in": 7200,
-        "mode": "development",
+        "mode": "desktop_fallback",
         "token_type": "session"
     })))
-}
-
-#[cfg(not(debug_assertions))]
-pub async fn dev_handshake() -> StatusCode {
-    StatusCode::NOT_FOUND
 }

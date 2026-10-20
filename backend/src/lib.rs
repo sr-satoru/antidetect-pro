@@ -251,18 +251,12 @@ pub fn build_app_router_with_nonce_manager(
         .route("/logout", post(routes::auth::logout))
         .with_state(auth_service);
 
-    // ═══ 🅲🅳 Auth Local (Handshake, Dev Handshake e Action Tickets) ═══
-    let mut local_auth_routes = Router::new()
+    // ═══ 🅲🅳 Auth Local (Handshake, Fallback Loopback e Action Tickets) ═══
+    let local_auth_routes = Router::new()
         .route("/handshake", post(routes::local_auth::handshake))
-        .route("/action-ticket", post(routes::local_auth::request_action_ticket));
-
-    #[cfg(debug_assertions)]
-    {
-        local_auth_routes = local_auth_routes
-            .route("/dev-handshake", post(routes::local_auth::dev_handshake));
-    }
-
-    let local_auth_routes = local_auth_routes.with_state(nonce_manager.clone());
+        .route("/dev-handshake", post(routes::local_auth::dev_handshake))
+        .route("/action-ticket", post(routes::local_auth::request_action_ticket))
+        .with_state(nonce_manager.clone());
 
     let cloud_sync_routes = Router::new()
         .route("/health", get(routes::cloud_sync::check_cloud_health))
