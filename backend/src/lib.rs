@@ -424,11 +424,26 @@ pub async fn start_star_server_with_nonce_manager(
     );
 
     let addr = SocketAddr::from(([127, 0, 0, 1], port));
-    tracing::info!("🚀 Star Multlogin Backend Rust iniciado com sucesso em http://{}", addr);
+    tracing::info!("🚀 Inicializando Star Multlogin Backend Rust em http://{}", addr);
 
-    let listener = tokio::net::TcpListener::bind(addr)
-        .await
-        .map_err(|e| format!("Falha ao abrir porta {}: {}", port, e))?;
+    let mut listener_opt = None;
+    for attempt in 1..=5 {
+        match tokio::net::TcpListener::bind(addr).await {
+            Ok(l) => {
+                listener_opt = Some(l);
+                break;
+            }
+            Err(e) => {
+                if attempt == 5 {
+                    return Err(format!("Falha ao abrir porta {}: {}", port, e).into());
+                }
+                tracing::warn!("Porta {} temporariamente ocupada (tentativa {}/5): {}. Aguardando 400ms...", port, attempt, e);
+                tokio::time::sleep(tokio::time::Duration::from_millis(400)).await;
+            }
+        }
+    }
+    let listener = listener_opt.unwrap();
+    tracing::info!("🚀 Star Multlogin Backend Rust escutando com sucesso em http://{}", addr);
 
     axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
         .await

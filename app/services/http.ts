@@ -20,61 +20,76 @@ let sessionExpiresAt: number = 0;
 let ongoingHandshake: Promise<string> | null = null;
 
 /**
- * Tenta obter ticket de handshake pelo canal nativo IPC do Tauri
+ * Tenta obter ticket de handshake pelo canal nativo IPC do Tauri com tolerância a atraso de injeção
  */
 async function getTicketFromTauriIPC(): Promise<string> {
-  const win = typeof window !== 'undefined' ? (window as any) : undefined;
-  if (win?.__TAURI_INTERNALS__?.invoke) {
-    return await win.__TAURI_INTERNALS__.invoke('get_handshake_ticket');
-  }
-  if (win?.__TAURI__?.core?.invoke) {
-    return await win.__TAURI__.core.invoke('get_handshake_ticket');
+  for (let i = 0; i < 5; i++) {
+    const win = typeof window !== 'undefined' ? (window as any) : undefined;
+    if (win?.__TAURI_INTERNALS__?.invoke) {
+      return await win.__TAURI_INTERNALS__.invoke('get_handshake_ticket');
+    }
+    if (win?.__TAURI__?.core?.invoke) {
+      return await win.__TAURI__.core.invoke('get_handshake_ticket');
+    }
+    // Aguarda 100ms caso o script do Tauri ainda esteja sendo injetado pelo WebView2
+    await new Promise((r) => setTimeout(r, 100));
   }
   throw new Error('Tauri IPC não disponível neste ambiente.');
 }
 
 /**
- * Realiza handshake seguro com o backend local
+ * Realiza handshake seguro com o backend local com tentativas automáticas (tolerância à inicialização no Windows)
  */
-async function performHandshake(): Promise<string> {
-  try {
-    // 1. Tenta canal nativo Tauri IPC
-    const ticket = await getTicketFromTauriIPC();
-    const res = await fetch(`${API_BASE_URL}/api/local-auth/handshake`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ticket }),
-    });
+async function performHandshake(retries = 6, delayMs = 350): Promise<string> {
+  let lastError: any = null;
 
-    if (!res.ok) {
-      throw new Error(`Handshake via ticket falhou com status ${res.status}`);
-    }
-
-    const data = await res.json();
-    sessionToken = data.session_token;
-    sessionExpiresAt = Date.now() + (data.expires_in * 1000);
-    return sessionToken!;
-  } catch {
-    // 2. Fallback para dev mode (apenas em desenvolvimento no navegador)
+  for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const devRes = await fetch(`${API_BASE_URL}/api/local-auth/dev-handshake`, {
+      // 1. Tenta canal nativo Tauri IPC
+      const ticket = await getTicketFromTauriIPC();
+      const res = await fetch(`${API_BASE_URL}/api/local-auth/handshake`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticket }),
       });
 
-      if (devRes.ok) {
-        const data = await devRes.json();
+      if (res.ok) {
+        const data = await res.json();
         sessionToken = data.session_token;
         sessionExpiresAt = Date.now() + (data.expires_in * 1000);
         return sessionToken!;
       }
-    } catch { }
 
-    throw new ApiError(
-      0,
-      `Falha no handshake de segurança com o backend local (${API_BASE_URL}). Certifique-se de que o backend Rust está rodando.`
-    );
+      lastError = new Error(`Handshake via ticket retornou status ${res.status}`);
+    } catch (err: any) {
+      lastError = err;
+    }
+
+    // Se ainda houver tentativas, aguarda com backoff suave antes de tentar novamente
+    if (attempt < retries) {
+      await new Promise((r) => setTimeout(r, delayMs * Math.min(attempt, 3)));
+    }
   }
+
+  // 2. Fallback para dev mode (apenas em desenvolvimento no navegador)
+  try {
+    const devRes = await fetch(`${API_BASE_URL}/api/local-auth/dev-handshake`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (devRes.ok) {
+      const data = await devRes.json();
+      sessionToken = data.session_token;
+      sessionExpiresAt = Date.now() + (data.expires_in * 1000);
+      return sessionToken!;
+    }
+  } catch { }
+
+  throw new ApiError(
+    0,
+    `Falha no handshake de segurança com o backend local (${API_BASE_URL}). Certifique-se de que o backend Rust está rodando.`
+  );
 }
 
 /**
