@@ -459,10 +459,10 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
             className={`inline-flex h-[26px] w-auto items-center justify-center gap-1.5 rounded-[6px] px-2.5 text-[12px] font-semibold text-white transition-all active:scale-[0.97] ${isSyncing
                 ? 'cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500'
                 : isStarting
-                  ? 'cursor-wait bg-emerald-600/80 text-white animate-pulse shadow-xs'
+                  ? 'cursor-wait bg-[#238636]/85 text-white animate-pulse shadow-xs'
                   : isRunning
                     ? 'cursor-pointer bg-[#e11d48] hover:bg-[#be123c] text-white shadow-xs'
-                    : 'cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs hover:shadow-sm'
+                    : 'cursor-pointer bg-[#238636] hover:bg-[#2ea043] text-white shadow-xs hover:shadow-sm'
               }`}
           >
             {isSyncing ? (
