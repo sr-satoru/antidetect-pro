@@ -66,48 +66,6 @@ fn has_valid_session(headers: &HeaderMap, nm: &NonceManager) -> bool {
         .unwrap_or(false)
 }
 
-/// Verifica se o request provém comprovadamente do cliente Desktop local legítimo (Tauri ou loopback sem origin externo)
-fn is_legitimate_desktop_client(headers: &HeaderMap, request: &Request) -> bool {
-    // Se o socket remoto estiver disponível e não for loopback, rejeita
-    if let Some(connect_info) = request.extensions().get::<axum::extract::ConnectInfo<std::net::SocketAddr>>() {
-        if !connect_info.0.ip().is_loopback() {
-            return false;
-        }
-    }
-
-    // Se houver header Origin, valida contra origens desktop autorizadas
-    if let Some(origin) = headers.get("origin").and_then(|v| v.to_str().ok()) {
-        let is_valid = origin == "tauri://localhost"
-            || origin == "http://tauri.localhost"
-            || origin == "https://tauri.localhost"
-            || origin.starts_with("http://localhost:")
-            || origin.starts_with("http://127.0.0.1:")
-            || origin.starts_with("https://localhost:")
-            || origin.starts_with("https://127.0.0.1:")
-            || origin == "http://localhost"
-            || origin == "http://127.0.0.1";
-
-        if !is_valid {
-            return false;
-        }
-    }
-
-    // Se houver header Referer, também não pode ser de site externo malicioso
-    if let Some(referer) = headers.get("referer").and_then(|v| v.to_str().ok()) {
-        let is_valid = referer.starts_with("http://tauri.localhost")
-            || referer.starts_with("tauri://localhost")
-            || referer.starts_with("https://tauri.localhost")
-            || referer.starts_with("http://localhost:")
-            || referer.starts_with("http://127.0.0.1:");
-
-        if !is_valid {
-            return false;
-        }
-    }
-
-    true
-}
-
 /// Valida se o request possui uma MCP API Key válida cadastrada no Star Vault
 fn has_valid_mcp_api_key(headers: &HeaderMap, storage: &ProfileStorage) -> bool {
     if let Some(key) = extract_mcp_api_key(headers) {
@@ -290,7 +248,7 @@ pub async fn security_layer(
 
     // ═══ ALTO RISCO: Action Ticket Obrigatório (apply-update, download) ═══
     if let Some(scope) = is_action_ticket_endpoint(&path, &method) {
-        if !has_valid_session(&headers, &state.nonce_manager) && !is_legitimate_desktop_client(&headers, &request) {
+        if !has_valid_session(&headers, &state.nonce_manager) {
             return make_error_response(
                 StatusCode::UNAUTHORIZED,
                 "Operação de alto privilégio exige sessão desktop ativa (X-Session-Token).",
@@ -311,7 +269,7 @@ pub async fn security_layer(
     }
 
     // ═══ CAMADA 1: Sessão Desktop Exclusiva (CRUD de perfis, proxies, cookies, storage, etc.) ═══
-    if has_valid_session(&headers, &state.nonce_manager) || is_legitimate_desktop_client(&headers, &request) {
+    if has_valid_session(&headers, &state.nonce_manager) {
         return next.run(request).await;
     }
 

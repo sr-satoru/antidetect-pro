@@ -87,11 +87,9 @@ async function performHandshake(retries = 8, delayMs = 250): Promise<string> {
     }
   }
 
-  // Se o backend ainda estiver iniciando, usa token de loopback para permitir que o cliente desktop continue
-  console.warn('⚠️ Handshake pendente de resposta do backend local:', lastError);
-  sessionToken = 'ses_fallback_loopback';
-  sessionExpiresAt = Date.now() + 3600_000;
-  return sessionToken;
+  // Falha real — não injeta token falso, propaga o erro de conexão/autenticação
+  console.error('❌ Falha ao autenticar com o backend local:', lastError);
+  throw new Error(`Falha no handshake com o backend local: ${lastError?.message || 'Servidor indisponível'}`);
 }
 
 /**
@@ -156,13 +154,9 @@ async function request<T>(
   // Se não for rota do handshake local, assegura sessão válida
   const isHandshakeRoute = endpoint.startsWith('/api/local-auth/handshake') || endpoint.startsWith('/api/local-auth/dev-handshake');
   if (!isHandshakeRoute) {
-    try {
-      const token = await ensureSession();
-      if (token) {
-        headers['X-Session-Token'] = token;
-      }
-    } catch (e) {
-      console.warn('Falha transitória no handshake desktop:', e);
+    const token = await ensureSession();
+    if (token) {
+      headers['X-Session-Token'] = token;
     }
   }
 

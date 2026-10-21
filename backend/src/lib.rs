@@ -92,6 +92,29 @@ fn resolve_data_dir(data_dir_override: Option<String>) -> String {
 }
 
 static GLOBAL_NONCE_MANAGER: OnceLock<Arc<NonceManager>> = OnceLock::new();
+static SERVER_READY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Retorna true se o servidor Axum já realizou o bind da porta e está pronto para receber conexões
+pub fn is_server_ready() -> bool {
+    SERVER_READY.load(std::sync::atomic::Ordering::SeqCst)
+}
+
+/// Atualiza o status de prontidão do servidor
+pub fn set_server_ready(ready: bool) {
+    SERVER_READY.store(ready, std::sync::atomic::Ordering::SeqCst);
+}
+
+/// Aguarda de forma assíncrona até que o servidor Axum esteja pronto ou até expirar o timeout
+pub async fn wait_for_server_ready(timeout: std::time::Duration) -> bool {
+    let start = std::time::Instant::now();
+    while start.elapsed() < timeout {
+        if is_server_ready() {
+            return true;
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(25)).await;
+    }
+    false
+}
 
 /// Retorna a instância global de NonceManager (compartilhada entre Axum e Tauri)
 pub fn get_or_init_nonce_manager() -> Arc<NonceManager> {
@@ -155,26 +178,28 @@ pub fn build_app_router_with_nonce_manager(
     nonce_manager: Arc<NonceManager>,
 ) -> Router {
     // ═══ Módulo 6: CORS Restritivo para Ambiente Desktop e Desenvolvimento Local ═══
+    let allowed_origins = [
+        "http://localhost:1254".parse::<HeaderValue>().unwrap(),
+        "http://127.0.0.1:1254".parse::<HeaderValue>().unwrap(),
+        "http://localhost:5173".parse::<HeaderValue>().unwrap(),
+        "http://127.0.0.1:5173".parse::<HeaderValue>().unwrap(),
+        "http://tauri.localhost".parse::<HeaderValue>().unwrap(),
+        "https://tauri.localhost".parse::<HeaderValue>().unwrap(),
+        "tauri://localhost".parse::<HeaderValue>().unwrap(),
+    ];
+
     let cors = CorsLayer::new()
-        .allow_origin(tower_http::cors::AllowOrigin::predicate(|origin: &HeaderValue, _| {
-            if let Ok(s) = origin.to_str() {
-                s == "tauri://localhost"
-                    || s == "http://tauri.localhost"
-                    || s == "https://tauri.localhost"
-                    || s.starts_with("http://localhost:")
-                    || s.starts_with("http://127.0.0.1:")
-                    || s.starts_with("https://localhost:")
-                    || s.starts_with("https://127.0.0.1:")
-                    || s == "http://localhost"
-                    || s == "http://127.0.0.1"
-            } else {
-                false
-            }
-        }))
+        .allow_origin(allowed_origins)
         .allow_methods([
             Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::OPTIONS,
         ])
-        .allow_headers(tower_http::cors::Any);
+        .allow_headers([
+            axum::http::HeaderName::from_static("content-type"),
+            axum::http::HeaderName::from_static("authorization"),
+            axum::http::HeaderName::from_static("x-session-token"),
+            axum::http::HeaderName::from_static("x-action-ticket"),
+            axum::http::HeaderName::from_static("x-mcp-token"),
+        ]);
 
     let profile_routes = Router::new()
         .route("/", get(routes::profiles::list_profiles).post(routes::profiles::create_profile))
@@ -436,6 +461,7 @@ pub async fn start_star_server_with_nonce_manager(
         }
     }
     let listener = listener_opt.unwrap();
+    set_server_ready(true);
     tracing::info!("🚀 Star Multlogin Backend Rust escutando com sucesso em http://{}", addr);
 
     axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())

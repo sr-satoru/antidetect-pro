@@ -1,3 +1,5 @@
+use tauri::Manager;
+
 /// Comando Tauri: Gera ticket de uso único para handshake do desktop
 /// Este comando é restrito ao IPC interno do Tauri (inacessível por websites externos)
 #[tauri::command]
@@ -32,12 +34,26 @@ pub fn run() {
         )?;
       }
 
+      let app_handle = app.handle().clone();
+
       // Inicia o daemon local Star Multlogin (Axum na porta 12540) em segundo plano usando o diretório canônico padrão
       tauri::async_runtime::spawn(async move {
         let canonical_dir = star_multlogin_backend::browser_downloader::platform::get_canonical_app_dir();
         let data_dir_str = canonical_dir.to_string_lossy().to_string();
         if let Err(e) = star_multlogin_backend::start_star_server(Some(data_dir_str), 12540).await {
           eprintln!("Erro no servidor interno Star Multlogin: {}", e);
+        }
+      });
+
+      // Padrão Oficial Tauri: aguarda o backend Axum estar 100% pronto antes de exibir a janela principal
+      tauri::async_runtime::spawn(async move {
+        let ready = star_multlogin_backend::wait_for_server_ready(std::time::Duration::from_secs(15)).await;
+        if !ready {
+          eprintln!("⚠️ Timeout aguardando o servidor backend Star Multlogin. Exibindo janela.");
+        }
+        if let Some(win) = app_handle.get_webview_window("main") {
+          let _ = win.show();
+          let _ = win.set_focus();
         }
       });
 
