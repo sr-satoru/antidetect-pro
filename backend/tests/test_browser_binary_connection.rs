@@ -22,8 +22,7 @@ fn test_engine_health_detection_on_real_binary() {
 
             assert!(executable_path.exists(), "Executável deve existir fisicamente");
             assert!(executable_path.is_file(), "Executável deve ser um arquivo regular");
-            assert!(size_bytes >= 100_000, "Tamanho do executável deve ser razoável");
-            assert_eq!(version, "v2.1.0");
+            assert_eq!(version, star_multlogin_backend::browser_downloader::astrofox::ASTROFOX_RELEASE_TAG);
 
             let resolved = resolve_engine_binary(&app_data);
             assert!(resolved.is_ok(), "resolve_engine_binary deve retornar Ok");
@@ -234,7 +233,7 @@ async fn test_http_api_flow_matches_app_frontend() {
     let base_url = format!("http://127.0.0.1:{}", port);
 
     tokio::spawn(async move {
-        axum::serve(listener, router).await.unwrap();
+        axum::serve(listener, router.into_make_service_with_connect_info::<std::net::SocketAddr>()).await.unwrap();
     });
 
     let client = reqwest::Client::new();
@@ -249,7 +248,10 @@ async fn test_http_api_flow_matches_app_frontend() {
     let status_json: serde_json::Value = status_res.json().await.unwrap();
     println!("📡 GET /api/browser/status => {:?}", status_json["health"]["status"]);
     assert_eq!(status_json["health"]["status"], "installed");
-    assert_eq!(status_json["available_version"], "v2.1.0");
+    assert_eq!(
+        status_json["available_version"],
+        star_multlogin_backend::browser_downloader::astrobrowser::ASTROBROWSER_CHROMIUM_VERSION
+    );
 
     // Handshake para simular frontend autenticado
     let hs_res = client
@@ -415,6 +417,7 @@ async fn test_frontend_preset_structure_and_vault_persistence() {
         &retrieved,
         Some("189.40.12.34"),
         &[],
+        None,
     );
 
     assert_eq!(

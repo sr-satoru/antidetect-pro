@@ -13,6 +13,7 @@ pub fn build_camou_prefs(
     net_setup: &NetworkSetupResult,
 ) -> HashMap<String, Value> {
     let mut prefs = HashMap::new();
+    let fp_map = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
 
     // 1. Integridade e Silêncio do Navegador (Sem diálogos intrusivos)
     prefs.insert("browser.shell.checkDefaultBrowser".to_string(), Value::Bool(false));
@@ -20,17 +21,29 @@ pub fn build_camou_prefs(
     prefs.insert("browser.aboutwelcome.enabled".to_string(), Value::Bool(false));
     prefs.insert("browser.tabs.warnOnClose".to_string(), Value::Bool(false));
 
-    // 2. Localização e Idioma
-    let fp_map = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
-    let lang = fp_map
-        .get("custom_language")
-        .and_then(|v| v.as_str())
-        .unwrap_or("pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7");
-    
-    // O primeiro idioma da lista é o locale solicitado
-    let primary_locale = lang.split(',').next().unwrap_or("pt-BR").split(';').next().unwrap_or("pt-BR");
-    prefs.insert("intl.locale.requested".to_string(), Value::String(primary_locale.to_string()));
-    prefs.insert("intl.accept_languages".to_string(), Value::String(lang.to_string()));
+    // 2. Localização e Idioma Nativos (sem fallbacks prejudiciais)
+    let (primary_locale, lang) = if !net_setup.resolved_network.country_code.is_empty() {
+        (
+            net_setup.resolved_network.primary_language.clone(),
+            net_setup.resolved_network.accept_languages.clone(),
+        )
+    } else if let Some(custom_l) = fp_map.get("custom_language").and_then(|v| v.as_str()) {
+        let clean = custom_l.trim();
+        let primary = clean
+            .split(',')
+            .next()
+            .and_then(|s| s.split(';').next())
+            .unwrap_or("en-US")
+            .trim();
+        (primary.to_string(), clean.to_string())
+    } else {
+        (
+            net_setup.resolved_network.primary_language.clone(),
+            net_setup.resolved_network.accept_languages.clone(),
+        )
+    };
+    prefs.insert("intl.locale.requested".to_string(), Value::String(primary_locale));
+    prefs.insert("intl.accept_languages".to_string(), Value::String(lang));
 
     // 3. Ativação de Fontes Empacotadas e Coerência de Scrollbars
     prefs.insert("gfx.bundled-fonts.activate".to_string(), Value::Number(1.into()));

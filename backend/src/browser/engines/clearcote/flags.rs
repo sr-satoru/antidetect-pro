@@ -13,6 +13,7 @@ pub fn build_clearcote_flags(
     proxy_url: Option<&str>,
     addon_paths: &[String],
     initial_url: Option<&str>,
+    network: Option<&crate::network::ResolvedNetworkIdentity>,
 ) -> Vec<String> {
     let mut flags = Vec::new();
     let fp = extract_fingerprint_map(&profile.fingerprint_json);
@@ -26,6 +27,12 @@ pub fn build_clearcote_flags(
     flags.push("--portable-profile".to_string());
     flags.push("--allow-third-party-cookies".to_string());
     flags.push("--hide-crash-restore-bubble".to_string());
+    flags.push("--disable-blink-features=AutomationControlled".to_string());
+    flags.push("--disable-background-mode".to_string());
+    flags.push("--disable-renderer-backgrounding".to_string());
+    if os == "macos" {
+        flags.push("--use-mock-keychain".to_string());
+    }
 
     // 2. Desativação de Privacy Sandbox invasivo em runtime (Chromium Features)
     let privacy_sandbox_disabled = [
@@ -137,41 +144,90 @@ pub fn build_clearcote_flags(
     flags.push(format!("--fingerprint-gpu-vendor={}", webgl_vendor));
     flags.push(format!("--fingerprint-gpu-renderer={}", webgl_renderer));
 
-    // 8. Localização e Idioma
-    let locale_obj = fp.get("locale");
-    let primary_lang = locale_obj
-        .and_then(|l| l.get("primary_language"))
-        .and_then(|v| v.as_str())
-        .unwrap_or("pt-BR");
+    // 8. Localização e Idioma Nativos (sem fallbacks prejudiciais)
+    let (primary_lang, accept_languages, timezone, lat, lon) = if let Some(net) = network.filter(|n| !n.country_code.is_empty()) {
+        (
+            net.primary_language.clone(),
+            net.accept_languages.clone(),
+            net.timezone.clone(),
+            net.latitude,
+            net.longitude,
+        )
+    } else {
+        let (p_lang, acc) = if let Some(custom_l) = fp.get("custom_language").and_then(|v| v.as_str()) {
+            let clean = custom_l.trim();
+            let primary = clean.split(',').next().and_then(|s| s.split(';').next()).unwrap_or("en-US").trim();
+            (primary.to_string(), clean.to_string())
+        } else {
+            let locale_obj = fp.get("locale");
+            let p = locale_obj
+                .and_then(|l| l.get("primary_language"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("en-US")
+                .to_string();
+            let a = locale_obj
+                .and_then(|l| l.get("languages"))
+                .and_then(|v| v.as_array())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|x| x.as_str().map(|s| s.split(';').next().unwrap_or("").trim()))
+                        .filter(|s| !s.is_empty())
+                        .collect::<Vec<_>>()
+                        .join(",")
+                })
+                .unwrap_or_else(|| format!("{},en", p));
+            (p, a)
+        };
 
-    let accept_languages = locale_obj
-        .and_then(|l| l.get("languages"))
-        .and_then(|v| v.as_array())
-        .map(|arr| {
-            arr.iter()
-                .filter_map(|x| x.as_str().map(|s| s.split(';').next().unwrap_or("").trim()))
-                .filter(|s| !s.is_empty())
-                .collect::<Vec<_>>()
-                .join(",")
-        })
-        .unwrap_or_else(|| format!("{},en-US,en", primary_lang));
+        let tz = fp
+            .get("custom_timezone")
+            .and_then(|v| v.as_str())
+            .or_else(|| fp.get("timezone").and_then(|t| t.get("timezone_id")).and_then(|v| v.as_str()))
+            .unwrap_or("America/New_York")
+            .to_string();
+
+        let latitude = fp
+            .get("custom_latitude")
+            .and_then(|v| v.as_f64().or_else(|| v.as_str().and_then(|s| s.parse::<f64>().ok())))
+            .unwrap_or(40.7128);
+
+        let longitude = fp
+            .get("custom_longitude")
+            .and_then(|v| v.as_f64().or_else(|| v.as_str().and_then(|s| s.parse::<f64>().ok())))
+            .unwrap_or(-74.0060);
+
+        (p_lang, acc, tz, latitude, longitude)
+    };
 
     flags.push(format!("--accept-lang={}", accept_languages));
-
-    let ui_lang = primary_lang.split('-').next().unwrap_or("pt");
+    let ui_lang = primary_lang.split('-').next().unwrap_or("en");
     flags.push(format!("--lang={}", ui_lang));
 
-    let timezone = fp
-        .get("timezone")
-        .and_then(|t| t.get("timezone_id"))
-        .and_then(|v| v.as_str())
-        .unwrap_or("America/Sao_Paulo");
+    // Injeção C++ nativa no ICU/V8
     flags.push(format!("--timezone={}", timezone));
+
+    // Injeção C++ nativa no Mojo Geolocation
+    flags.push(format!("--fingerprint-location={:.6},{:.6}", lat, lon));
+
+    // Injeção C++ nativa no BoringSSL TLS JA3/JA4 persona
+    flags.push("--fingerprint-tls-profile=chrome-150".to_string());
 
     // 9. WebRTC e Rede
     if let Some(proxy) = proxy_url {
         flags.push(format!("--proxy-server={}", proxy));
         flags.push("--disable-quic".to_string());
+        // Força WebRTC a trafegar apenas por dentro da rota do proxy, bloqueando vazamento na placa de rede real
+        flags.push("--force-webrtc-ip-handling-policy=disable_non_proxied_udp".to_string());
+    }
+
+    // Injeção C++ nativa de STUN srflx do WebRTC (suprime candidatos locais e responde IP do proxy)
+    if let Some(net) = network {
+        if let Some(ref egress_ip) = net.egress_ip {
+            let clean = egress_ip.trim();
+            if !clean.is_empty() {
+                flags.push(format!("--webrtc-ip={}", clean));
+            }
+        }
     }
 
     // 10. Porta CDP

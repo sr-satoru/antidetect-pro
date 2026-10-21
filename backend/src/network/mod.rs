@@ -1,8 +1,10 @@
+pub mod context_resolver;
 pub mod prefs;
 pub mod relay;
 pub mod validator;
 
 pub use validator as proxy_validator;
+pub use context_resolver::{country_to_locale_and_languages, ResolvedNetworkIdentity};
 
 use crate::models::ProfileProxyConfig;
 use std::collections::HashMap;
@@ -16,6 +18,8 @@ pub struct NetworkSetupResult {
     pub relay: Option<relay::ProxyRelay>,
     /// Caminhos das extensões de rede injetadas
     pub addon_paths: Vec<String>,
+    /// Identidade de rede e GeoIP resolvidos de forma coerente com o proxy/ambiente
+    pub resolved_network: context_resolver::ResolvedNetworkIdentity,
 }
 
 impl NetworkSetupResult {
@@ -34,6 +38,7 @@ impl Default for NetworkSetupResult {
             env_vars: HashMap::new(),
             relay: None,
             addon_paths: Vec::new(),
+            resolved_network: context_resolver::ResolvedNetworkIdentity::default(),
         }
     }
 }
@@ -53,11 +58,13 @@ pub async fn prepare_network(
 
     // 1. Perfil sem proxy configurado
     if proxy.proxy_type == "none" || proxy.host.as_deref().unwrap_or("").trim().is_empty() {
+        let resolved_network = context_resolver::resolve_network_identity(proxy, &fp_map, None).await;
         return Ok(NetworkSetupResult {
             user_js_snippet: prefs::build_proxy_prefs(proxy, None, None, Some(webrtc_mode)),
             env_vars: HashMap::new(),
             relay: None,
             addon_paths: Vec::new(),
+            resolved_network,
         });
     }
 
@@ -119,10 +126,14 @@ pub async fn prepare_network(
         Some(webrtc_mode),
     );
 
+    // Resolve a identidade de rede real (IP de saída e GeoIP correspondente) através do relay
+    let resolved_network = context_resolver::resolve_network_identity(proxy, &fp_map, Some(relay_port)).await;
+
     Ok(NetworkSetupResult {
         user_js_snippet,
         env_vars: HashMap::new(),
         relay: Some(active_relay),
         addon_paths: Vec::new(),
+        resolved_network,
     })
 }

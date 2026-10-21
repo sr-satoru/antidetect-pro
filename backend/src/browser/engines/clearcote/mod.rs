@@ -66,15 +66,17 @@ impl BrowserEngine for ClearcoteEngine {
         all_addon_paths.extend(ext_paths);
 
         // 4. Injeta Preferences nativas do Chromium em Default/Preferences
-        preferences::setup_chromium_preferences(profile_dir, profile)?;
+        preferences::setup_chromium_preferences(profile_dir, profile, &net_setup.resolved_network)?;
 
         // 5. Salva metadados do perfil no disco
         metadata::ChromiumMetadataManager::save_profile_metadata(profile_dir, profile)?;
 
+        let proxy_ip = net_setup.resolved_network.egress_ip.clone();
+
         Ok(EnginePrepResult {
             net_setup,
             addon_paths: all_addon_paths,
-            proxy_ip: None,
+            proxy_ip,
         })
     }
 
@@ -100,6 +102,7 @@ impl BrowserEngine for ClearcoteEngine {
             proxy_url.as_deref(),
             &prep.addon_paths,
             initial_url,
+            Some(&prep.net_setup.resolved_network),
         )
     }
 

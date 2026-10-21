@@ -541,6 +541,7 @@ impl ProfileService {
                 proxy_url.as_deref(),
                 &[],
                 None,
+                None,
             );
 
             Ok(serde_json::json!({
@@ -561,7 +562,7 @@ impl ProfileService {
             }))
         } else {
             let net_setup = crate::network::NetworkSetupResult::default();
-            let mut config_map = crate::browser::engines::camoufox::common::build_camou_config_map(&profile, None, &[]);
+            let mut config_map = crate::browser::engines::camoufox::common::build_camou_config_map(&profile, None, &[], None);
             let prefs_map = crate::browser::engines::camoufox::common::build_camou_prefs(&profile, None, &net_setup);
 
             // 1. Sanitizar webGl:renderer para AstroFox/Camoufox no Linux

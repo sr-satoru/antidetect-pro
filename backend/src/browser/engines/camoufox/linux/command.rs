@@ -68,7 +68,7 @@ pub fn build_linux_command(
     }
 
     // 7. Injeção de CAMOU_CONFIG via C++ (MaskConfig.hpp) com particionamento
-    let camou_config_map = build_camou_config_map(profile, proxy_ip, addon_paths);
+    let camou_config_map = build_camou_config_map(profile, proxy_ip, addon_paths, Some(&net_setup.resolved_network));
     let camou_config_json = serde_json::to_string(&camou_config_map)
         .unwrap_or_else(|_| "{}".to_string());
 

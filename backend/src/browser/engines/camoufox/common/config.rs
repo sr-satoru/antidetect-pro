@@ -8,6 +8,7 @@ pub fn build_camou_config_map(
     profile: &Profile,
     proxy_ip: Option<&str>,
     addon_paths: &[String],
+    network: Option<&crate::network::ResolvedNetworkIdentity>,
 ) -> HashMap<String, Value> {
-    crate::fingerprint::translator::build_camou_config(profile, proxy_ip, addon_paths)
+    crate::fingerprint::translator::build_camou_config(profile, proxy_ip, addon_paths, network)
 }

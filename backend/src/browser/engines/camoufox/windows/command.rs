@@ -48,7 +48,7 @@ pub fn build_windows_command(
     }
 
     // 6. CAMOU_CONFIG com escape ASCII (\uXXXX) e fatias de até 2047 bytes
-    let camou_config_map = build_camou_config_map(profile, proxy_ip, addon_paths);
+    let camou_config_map = build_camou_config_map(profile, proxy_ip, addon_paths, Some(&net_setup.resolved_network));
     let config_val = serde_json::to_value(&camou_config_map).unwrap_or_default();
     let camou_config_ascii = to_ascii_escaped_json(&config_val);
 
