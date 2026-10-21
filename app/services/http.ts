@@ -40,7 +40,7 @@ async function getTicketFromTauriIPC(): Promise<string> {
 /**
  * Realiza handshake seguro com o backend local com tentativas automáticas e fallback resiliente
  */
-async function performHandshake(retries = 8, delayMs = 250): Promise<string> {
+async function performHandshake(retries = 20, delayMs = 250): Promise<string> {
   let lastError: any = null;
 
   for (let attempt = 1; attempt <= retries; attempt++) {
