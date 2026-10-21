@@ -292,25 +292,45 @@ pub fn build_camou_config(
         }
     }
 
-    // 7. Idioma e Localidade (Language & Locale coerentes)
-    let (custom_lang, primary_lang) = if let Some(net) = network.filter(|n| !n.country_code.is_empty()) {
-        (net.accept_languages.as_str(), net.primary_language.as_str())
+    // 7. Idioma e Localidade (Language & Locale coerentes - sem fallbacks arbitrários)
+    let resolved_lang = if let Some(net) = network.filter(|n| !n.country_code.is_empty() && !n.primary_language.trim().is_empty()) {
+        Some((net.accept_languages.clone(), net.primary_language.clone()))
+    } else if let Some(custom_l) = fp.get("custom_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
+        let primary = custom_l.split(',').next().and_then(|s| s.split(';').next()).map(|s| s.trim()).filter(|s| !s.is_empty()).unwrap_or(custom_l);
+        Some((custom_l.to_string(), primary.to_string()))
+    } else if let Some(locale_obj) = fp.get("locale") {
+        if let Some(p) = locale_obj.get("primary_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
+            let a = locale_obj
+                .get("languages")
+                .and_then(|v| v.as_array())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|x| x.as_str().map(|s| s.split(';').next().unwrap_or("").trim()))
+                        .filter(|s| !s.is_empty())
+                        .collect::<Vec<_>>()
+                        .join(",")
+                })
+                .unwrap_or_else(|| p.to_string());
+            Some((a, p.to_string()))
+        } else {
+            None
+        }
     } else {
-        let l = fp.get("custom_language").and_then(|v| v.as_str()).unwrap_or("en-US,en;q=0.9");
-        let p = l.split(',').next().map(|s| s.split(';').next().unwrap_or("en-US").trim()).unwrap_or("en-US");
-        (l, p)
+        None
     };
 
-    config.insert("headers.Accept-Language".to_string(), Value::String(custom_lang.to_string()));
-    config.insert("navigator.language".to_string(), Value::String(primary_lang.to_string()));
+    if let Some((custom_lang, primary_lang)) = resolved_lang {
+        config.insert("headers.Accept-Language".to_string(), Value::String(custom_lang));
+        config.insert("navigator.language".to_string(), Value::String(primary_lang.clone()));
 
-    if let Some(dash) = primary_lang.find('-') {
-        let lang = &primary_lang[..dash];
-        let reg = &primary_lang[dash + 1..];
-        config.insert("locale:language".to_string(), Value::String(lang.to_string()));
-        config.insert("locale:region".to_string(), Value::String(reg.to_string()));
-    } else {
-        config.insert("locale:language".to_string(), Value::String(primary_lang.to_string()));
+        if let Some(dash) = primary_lang.find('-') {
+            let lang = &primary_lang[..dash];
+            let reg = &primary_lang[dash + 1..];
+            config.insert("locale:language".to_string(), Value::String(lang.to_string()));
+            config.insert("locale:region".to_string(), Value::String(reg.to_string()));
+        } else {
+            config.insert("locale:language".to_string(), Value::String(primary_lang));
+        }
     }
 
     // 8. Dispositivos de Mídia Realistas (Media Devices com Rótulos e GroupIds)

@@ -15,6 +15,7 @@ pub mod network;
 pub mod storage;
 pub mod sync;
 pub mod swagger;
+pub mod api_terceiros;
 
 #[path = "mcp__publicApi/mod.rs"]
 pub mod mcp_public_api;
@@ -349,6 +350,8 @@ pub fn build_app_router_with_nonce_manager(
         .nest("/api/browser", browser_routes)
         .nest("/api/app", app_routes)
         .nest("/api/ws", ws_routes)
+        // API Desacoplada de Terceiros (AdsPower Compatibility com proteção Loopback e Anti-CSRF)
+        .merge(api_terceiros::api_terceiros_routes(profile_storage.clone()))
         // ═══ Middleware de Autenticação em Camadas ═══
         .layer(axum::middleware::from_fn_with_state(
             security_state,

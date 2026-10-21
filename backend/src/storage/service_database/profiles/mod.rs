@@ -515,15 +515,20 @@ impl ProfileService {
         };
 
         let fp = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
-        let custom_lang = fp
+        let primary_lang = fp
             .get("custom_language")
             .and_then(|v| v.as_str())
-            .unwrap_or("pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7");
-        let primary_lang = custom_lang
-            .split(',')
-            .next()
-            .map(|s| s.split(';').next().unwrap_or("pt-BR").trim())
-            .unwrap_or("pt-BR");
+            .and_then(|s| s.split(',').next())
+            .and_then(|s| s.split(';').next())
+            .map(|s| s.trim().to_string())
+            .or_else(|| {
+                fp.get("locale")
+                    .and_then(|l| l.get("primary_language"))
+                    .and_then(|v| v.as_str())
+                    .map(|s| s.trim().to_string())
+            })
+            .filter(|s| !s.is_empty())
+            .unwrap_or_default();
 
         if is_chromium {
             let proxy_url = if profile.proxy.proxy_type != "none" {

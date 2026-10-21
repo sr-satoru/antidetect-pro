@@ -117,8 +117,8 @@ fn test_context_resolver_default_identity() {
     let default_id = ResolvedNetworkIdentity::default();
     assert_eq!(default_id.egress_ip, None);
     assert!(default_id.country_code.is_empty());
-    assert_eq!(default_id.primary_language, "en-US");
-    assert_eq!(default_id.accept_languages, "en-US,en;q=0.9");
+    assert!(default_id.primary_language.is_empty());
+    assert!(default_id.accept_languages.is_empty());
 }
 
 // 9. Parsing simulated ip-api.com response
@@ -153,14 +153,14 @@ fn test_context_resolver_mock_probe_ipsb_format() {
     assert_eq!(parsed["country_code"], "DE");
 }
 
-// 11. Context resolver direct connection without proxy
+// 11. Context resolver direct connection without proxy (sem fallbacks arbitrários)
 #[tokio::test]
 async fn test_context_resolver_direct_connection() {
     let proxy = ProfileProxyConfig::default();
     let fp = serde_json::Map::new();
     let identity = resolve_network_identity(&proxy, &fp, None).await;
     assert_eq!(identity.egress_ip, None);
-    assert_eq!(identity.primary_language, "en-US");
+    assert!(identity.primary_language.is_empty());
 }
 
 // 12. Context resolver with manual custom timezone
@@ -340,23 +340,23 @@ async fn test_concurrent_relay_instances() {
     assert_eq!(ports.len(), initial_len, "Portas de relay não devem colidir!");
 }
 
-// 24. Context resolver with invalid custom timezone falls back gracefully
+// 24. Context resolver with invalid custom timezone: zero fallbacks arbitrários (não força America/New_York)
 #[tokio::test]
 async fn test_context_resolver_empty_custom_timezone_fallback() {
     let proxy = ProfileProxyConfig::default();
     let mut fp = serde_json::Map::new();
     fp.insert("custom_timezone".to_string(), json!("   "));
     let identity = resolve_network_identity(&proxy, &fp, None).await;
-    assert_eq!(identity.timezone, "America/New_York");
+    assert!(identity.timezone.is_empty());
 }
 
-// 25. Context resolver with empty custom language falls back gracefully
+// 25. Context resolver with empty custom language: zero fallbacks arbitrários (não força en-US)
 #[tokio::test]
 async fn test_context_resolver_empty_custom_language_fallback() {
     let proxy = ProfileProxyConfig::default();
     let mut fp = serde_json::Map::new();
     fp.insert("custom_language".to_string(), json!("   "));
     let identity = resolve_network_identity(&proxy, &fp, None).await;
-    assert_eq!(identity.primary_language, "en-US");
-    assert_eq!(identity.accept_languages, "en-US,en;q=0.9");
+    assert!(identity.primary_language.is_empty());
+    assert!(identity.accept_languages.is_empty());
 }

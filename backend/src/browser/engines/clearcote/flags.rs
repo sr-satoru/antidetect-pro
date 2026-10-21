@@ -144,29 +144,16 @@ pub fn build_clearcote_flags(
     flags.push(format!("--fingerprint-gpu-vendor={}", webgl_vendor));
     flags.push(format!("--fingerprint-gpu-renderer={}", webgl_renderer));
 
-    // 8. Localização e Idioma Nativos (sem fallbacks prejudiciais)
-    let (primary_lang, accept_languages, timezone, lat, lon) = if let Some(net) = network.filter(|n| !n.country_code.is_empty()) {
-        (
-            net.primary_language.clone(),
-            net.accept_languages.clone(),
-            net.timezone.clone(),
-            net.latitude,
-            net.longitude,
-        )
-    } else {
-        let (p_lang, acc) = if let Some(custom_l) = fp.get("custom_language").and_then(|v| v.as_str()) {
-            let clean = custom_l.trim();
-            let primary = clean.split(',').next().and_then(|s| s.split(';').next()).unwrap_or("en-US").trim();
-            (primary.to_string(), clean.to_string())
-        } else {
-            let locale_obj = fp.get("locale");
-            let p = locale_obj
-                .and_then(|l| l.get("primary_language"))
-                .and_then(|v| v.as_str())
-                .unwrap_or("en-US")
-                .to_string();
+    // 8. Localização e Idioma Nativos (sem fallbacks arbitrários prejudiciais)
+    let resolved_lang = if let Some(net) = network.filter(|n| !n.country_code.is_empty() && !n.primary_language.trim().is_empty()) {
+        Some((net.primary_language.clone(), net.accept_languages.clone()))
+    } else if let Some(custom_l) = fp.get("custom_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
+        let primary = custom_l.split(',').next().and_then(|s| s.split(';').next()).map(|s| s.trim()).filter(|s| !s.is_empty()).unwrap_or(custom_l);
+        Some((primary.to_string(), custom_l.to_string()))
+    } else if let Some(locale_obj) = fp.get("locale") {
+        if let Some(p) = locale_obj.get("primary_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
             let a = locale_obj
-                .and_then(|l| l.get("languages"))
+                .get("languages")
                 .and_then(|v| v.as_array())
                 .map(|arr| {
                     arr.iter()
@@ -175,39 +162,57 @@ pub fn build_clearcote_flags(
                         .collect::<Vec<_>>()
                         .join(",")
                 })
-                .unwrap_or_else(|| format!("{},en", p));
-            (p, a)
-        };
-
-        let tz = fp
-            .get("custom_timezone")
-            .and_then(|v| v.as_str())
-            .or_else(|| fp.get("timezone").and_then(|t| t.get("timezone_id")).and_then(|v| v.as_str()))
-            .unwrap_or("America/New_York")
-            .to_string();
-
-        let latitude = fp
-            .get("custom_latitude")
-            .and_then(|v| v.as_f64().or_else(|| v.as_str().and_then(|s| s.parse::<f64>().ok())))
-            .unwrap_or(40.7128);
-
-        let longitude = fp
-            .get("custom_longitude")
-            .and_then(|v| v.as_f64().or_else(|| v.as_str().and_then(|s| s.parse::<f64>().ok())))
-            .unwrap_or(-74.0060);
-
-        (p_lang, acc, tz, latitude, longitude)
+                .unwrap_or_else(|| p.to_string());
+            Some((p.to_string(), a))
+        } else {
+            None
+        }
+    } else {
+        None
     };
 
-    flags.push(format!("--accept-lang={}", accept_languages));
-    let ui_lang = primary_lang.split('-').next().unwrap_or("en");
-    flags.push(format!("--lang={}", ui_lang));
+    if let Some((primary_lang, accept_languages)) = resolved_lang {
+        if !accept_languages.is_empty() {
+            flags.push(format!("--accept-lang={}", accept_languages));
+        }
+        let ui_lang = primary_lang.split('-').next().unwrap_or(&primary_lang);
+        if !ui_lang.is_empty() {
+            flags.push(format!("--lang={}", ui_lang));
+        }
+    }
 
-    // Injeção C++ nativa no ICU/V8
-    flags.push(format!("--timezone={}", timezone));
+    // Injeção C++ nativa no ICU/V8: NUNCA usar fallback fake para New York
+    let resolved_tz = if let Some(net) = network.filter(|n| !n.country_code.is_empty() && !n.timezone.trim().is_empty()) {
+        Some(net.timezone.trim().to_string())
+    } else {
+        fp.get("custom_timezone")
+            .and_then(|v| v.as_str())
+            .or_else(|| fp.get("timezone").and_then(|t| t.get("timezone_id")).and_then(|v| v.as_str()))
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty() && s != "auto" && s != "Automatic")
+    };
 
-    // Injeção C++ nativa no Mojo Geolocation
-    flags.push(format!("--fingerprint-location={:.6},{:.6}", lat, lon));
+    if let Some(tz) = resolved_tz {
+        flags.push(format!("--timezone={}", tz));
+    }
+
+    // Injeção C++ nativa no Mojo Geolocation: NUNCA usar fallback fake para coordenadas de Manhattan
+    let resolved_loc = if let Some(net) = network.filter(|n| !n.country_code.is_empty() && (n.latitude != 0.0 || n.longitude != 0.0)) {
+        Some((net.latitude, net.longitude))
+    } else {
+        let lat = fp.get("custom_latitude")
+            .and_then(|v| v.as_f64().or_else(|| v.as_str().and_then(|s| s.parse::<f64>().ok())));
+        let lon = fp.get("custom_longitude")
+            .and_then(|v| v.as_f64().or_else(|| v.as_str().and_then(|s| s.parse::<f64>().ok())));
+        match (lat, lon) {
+            (Some(la), Some(lo)) if la != 0.0 || lo != 0.0 => Some((la, lo)),
+            _ => None,
+        }
+    };
+
+    if let Some((lat, lon)) = resolved_loc {
+        flags.push(format!("--fingerprint-location={:.6},{:.6}", lat, lon));
+    }
 
     // Injeção C++ nativa no BoringSSL TLS JA3/JA4 persona
     flags.push("--fingerprint-tls-profile=chrome-150".to_string());

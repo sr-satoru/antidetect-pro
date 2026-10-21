@@ -142,6 +142,14 @@ fn is_open_endpoint(path: &str, method: &str) -> bool {
         return true;
     }
 
+    // AdsPower Local API (protegida exclusivamente por loopback admission e anti-CSRF no módulo api_terceiros)
+    if path.starts_with("/api/v1/browser/")
+        || path.starts_with("/api/v1/user/")
+        || path.starts_with("/api/v1/group/")
+    {
+        return true;
+    }
+
     false
 }
 

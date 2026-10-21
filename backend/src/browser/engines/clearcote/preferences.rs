@@ -34,28 +34,32 @@ pub fn setup_chromium_preferences(
 
     let fp_map = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
     let (primary_lang, accept_languages) = if !network.country_code.is_empty() {
-        (network.primary_language.clone(), network.accept_languages.clone())
-    } else if let Some(custom_l) = fp_map.get("custom_language").and_then(|v| v.as_str()) {
-        let clean = custom_l.trim();
-        let primary = clean
+        (Some(network.primary_language.clone()), Some(network.accept_languages.clone()))
+    } else if let Some(custom_l) = fp_map.get("custom_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
+        let primary = custom_l
             .split(',')
             .next()
             .and_then(|s| s.split(';').next())
-            .unwrap_or("en-US")
-            .trim();
-        (primary.to_string(), clean.to_string())
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .unwrap_or(custom_l);
+        (Some(primary.to_string()), Some(custom_l.to_string()))
     } else {
-        (network.primary_language.clone(), network.accept_languages.clone())
+        (None, None)
     };
 
     // Garante as seções fundamentais
     let root_obj = root.as_object_mut().unwrap();
 
-    // 1. intl
-    let intl = root_obj.entry("intl").or_insert_with(|| json!({}));
-    if let Some(intl_obj) = intl.as_object_mut() {
-        intl_obj.insert("accept_languages".to_string(), Value::String(accept_languages));
-        intl_obj.insert("selected_languages".to_string(), Value::String(primary_lang));
+    // 1. intl (apenas injeta se resolvido pela rede ou customizado; sem fallbacks arbitrários)
+    if let (Some(primary), Some(accept)) = (primary_lang, accept_languages) {
+        if !primary.is_empty() && !accept.is_empty() {
+            let intl = root_obj.entry("intl").or_insert_with(|| json!({}));
+            if let Some(intl_obj) = intl.as_object_mut() {
+                intl_obj.insert("accept_languages".to_string(), Value::String(accept));
+                intl_obj.insert("selected_languages".to_string(), Value::String(primary));
+            }
+        }
     }
 
     // 2. translate

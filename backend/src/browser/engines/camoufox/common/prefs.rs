@@ -21,29 +21,34 @@ pub fn build_camou_prefs(
     prefs.insert("browser.aboutwelcome.enabled".to_string(), Value::Bool(false));
     prefs.insert("browser.tabs.warnOnClose".to_string(), Value::Bool(false));
 
-    // 2. Localização e Idioma Nativos (sem fallbacks prejudiciais)
+    // 2. Localização e Idioma Nativos (sem fallbacks arbitrários prejudiciais)
     let (primary_locale, lang) = if !net_setup.resolved_network.country_code.is_empty() {
         (
-            net_setup.resolved_network.primary_language.clone(),
-            net_setup.resolved_network.accept_languages.clone(),
+            Some(net_setup.resolved_network.primary_language.clone()),
+            Some(net_setup.resolved_network.accept_languages.clone()),
         )
-    } else if let Some(custom_l) = fp_map.get("custom_language").and_then(|v| v.as_str()) {
-        let clean = custom_l.trim();
-        let primary = clean
+    } else if let Some(custom_l) = fp_map.get("custom_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
+        let primary = custom_l
             .split(',')
             .next()
             .and_then(|s| s.split(';').next())
-            .unwrap_or("en-US")
-            .trim();
-        (primary.to_string(), clean.to_string())
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .unwrap_or(custom_l);
+        (Some(primary.to_string()), Some(custom_l.to_string()))
     } else {
-        (
-            net_setup.resolved_network.primary_language.clone(),
-            net_setup.resolved_network.accept_languages.clone(),
-        )
+        (None, None)
     };
-    prefs.insert("intl.locale.requested".to_string(), Value::String(primary_locale));
-    prefs.insert("intl.accept_languages".to_string(), Value::String(lang));
+    if let Some(p) = primary_locale {
+        if !p.is_empty() {
+            prefs.insert("intl.locale.requested".to_string(), Value::String(p));
+        }
+    }
+    if let Some(l) = lang {
+        if !l.is_empty() {
+            prefs.insert("intl.accept_languages".to_string(), Value::String(l));
+        }
+    }
 
     // 3. Ativação de Fontes Empacotadas e Coerência de Scrollbars
     prefs.insert("gfx.bundled-fonts.activate".to_string(), Value::Number(1.into()));

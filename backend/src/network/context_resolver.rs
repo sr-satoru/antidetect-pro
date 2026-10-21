@@ -27,12 +27,12 @@ impl Default for ResolvedNetworkIdentity {
     fn default() -> Self {
         Self {
             egress_ip: None,
-            timezone: "America/New_York".to_string(),
-            latitude: 40.7128,
-            longitude: -74.0060,
+            timezone: String::new(),
+            latitude: 0.0,
+            longitude: 0.0,
             country_code: String::new(),
-            primary_language: "en-US".to_string(),
-            accept_languages: "en-US,en;q=0.9".to_string(),
+            primary_language: String::new(),
+            accept_languages: String::new(),
         }
     }
 }
@@ -104,13 +104,17 @@ async fn probe_geoip_via_client(client: &reqwest::Client) -> Option<ResolvedNetw
         if resp.status().is_success() {
             if let Ok(data) = resp.json::<IpApiGeoResponse>().await {
                 if let Some(ip) = data.query.filter(|s| !s.trim().is_empty()) {
-                    let country = data.country_code.unwrap_or_else(|| "US".to_string());
-                    let (primary, accept) = country_to_locale_and_languages(&country);
+                    let country = data.country_code.unwrap_or_default();
+                    let (primary, accept) = if !country.is_empty() {
+                        country_to_locale_and_languages(&country)
+                    } else {
+                        (String::new(), String::new())
+                    };
                     return Some(ResolvedNetworkIdentity {
                         egress_ip: Some(ip),
-                        timezone: data.timezone.unwrap_or_else(|| "America/New_York".to_string()),
-                        latitude: data.lat.unwrap_or(40.7128),
-                        longitude: data.lon.unwrap_or(-74.0060),
+                        timezone: data.timezone.unwrap_or_default(),
+                        latitude: data.lat.unwrap_or(0.0),
+                        longitude: data.lon.unwrap_or(0.0),
                         country_code: country,
                         primary_language: primary,
                         accept_languages: accept,
@@ -130,13 +134,17 @@ async fn probe_geoip_via_client(client: &reqwest::Client) -> Option<ResolvedNetw
         if resp.status().is_success() {
             if let Ok(data) = resp.json::<IpSbGeoResponse>().await {
                 if let Some(ip) = data.ip.filter(|s| !s.trim().is_empty()) {
-                    let country = data.country_code.unwrap_or_else(|| "US".to_string());
-                    let (primary, accept) = country_to_locale_and_languages(&country);
+                    let country = data.country_code.unwrap_or_default();
+                    let (primary, accept) = if !country.is_empty() {
+                        country_to_locale_and_languages(&country)
+                    } else {
+                        (String::new(), String::new())
+                    };
                     return Some(ResolvedNetworkIdentity {
                         egress_ip: Some(ip),
-                        timezone: data.timezone.unwrap_or_else(|| "America/New_York".to_string()),
-                        latitude: data.latitude.unwrap_or(40.7128),
-                        longitude: data.longitude.unwrap_or(-74.0060),
+                        timezone: data.timezone.unwrap_or_default(),
+                        latitude: data.latitude.unwrap_or(0.0),
+                        longitude: data.longitude.unwrap_or(0.0),
                         country_code: country,
                         primary_language: primary,
                         accept_languages: accept,
