@@ -42,7 +42,7 @@
       "desc": "iOS Mobile: Em breve. Suporte a identidade móvel em desenvolvimento."
     }
   ],
-  "userAgentCategories": ["Todo", "Firefox"],
+  "userAgentCategories": ["Todo", "Chrome", "Firefox"],
   "proxyModes": [
     {
       "id": "custom",

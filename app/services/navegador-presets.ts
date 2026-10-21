@@ -209,7 +209,7 @@ export function getGpuOptions(os?: string, kernel?: string): GpuOption[] {
  * Retorna todos os User-Agents reais diretamente dos presets oficiais de cada motor
  * complementados pelas 2-3 versões estáveis recentes para manter alta variedade e coerência.
  */
-export function getUserAgents(os?: string, kernel?: string): string[] {
+export function getUserAgents(os?: string, kernel?: string, category?: string): string[] {
   const key = normalizeOsKey(os);
   const uas = new Set<string>();
 
@@ -220,19 +220,48 @@ export function getUserAgents(os?: string, kernel?: string): string[] {
     return Array.from(uas);
   }
 
-  if (isChromiumKernel(kernel)) {
+  const cat = category?.toLowerCase();
+  const isChromeCategory = cat === 'chrome' || cat === 'chromium';
+  const isFirefoxCategory = cat === 'firefox';
+
+  if (isChromeCategory) {
     const list = (userAgentsData as any).chromium?.[key] || [];
     for (const u of list) uas.add(u);
-  } else {
+    const presets = getPresetsByOs(os, 'AstroBrowser');
+    for (const p of presets) {
+      if (p.navigator?.userAgent) {
+        uas.add(p.navigator.userAgent);
+      }
+    }
+  } else if (isFirefoxCategory) {
     const list = (userAgentsData as any).firefox?.[key] || [];
     for (const u of list) uas.add(u);
-  }
-
-  // 2. Garante inclusão de qualquer User-Agent presente nas máquinas oficiais
-  const presets = getPresetsByOs(os, kernel);
-  for (const p of presets) {
-    if (p.navigator?.userAgent) {
-      uas.add(p.navigator.userAgent);
+    const presets = getPresetsByOs(os, 'AstroFox');
+    for (const p of presets) {
+      if (p.navigator?.userAgent) {
+        uas.add(p.navigator.userAgent);
+      }
+    }
+  } else {
+    // "Todo" ou padrão: respeita o motor (AstroBrowser vs AstroFox)
+    if (isChromiumKernel(kernel)) {
+      const list = (userAgentsData as any).chromium?.[key] || [];
+      for (const u of list) uas.add(u);
+      const presets = getPresetsByOs(os, 'AstroBrowser');
+      for (const p of presets) {
+        if (p.navigator?.userAgent) {
+          uas.add(p.navigator.userAgent);
+        }
+      }
+    } else {
+      const list = (userAgentsData as any).firefox?.[key] || [];
+      for (const u of list) uas.add(u);
+      const presets = getPresetsByOs(os, 'AstroFox');
+      for (const p of presets) {
+        if (p.navigator?.userAgent) {
+          uas.add(p.navigator.userAgent);
+        }
+      }
     }
   }
 

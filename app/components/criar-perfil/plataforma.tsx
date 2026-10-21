@@ -344,13 +344,13 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                     </span>
                     <div className="max-w-md flex-1">
                       <input
-                        type="password"
+                        type="text"
                         value={acc.password || ''}
                         onChange={(e) =>
                           handleUpdateAccount(idx, { password: e.target.value })
                         }
                         placeholder="Digite a senha"
-                        className="w-full rounded-md border border-slate-300 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-2 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5C6070] focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-none shadow-xs"
+                        className="w-full rounded-md border border-slate-300 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-2 font-mono text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5C6070] focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-none shadow-xs"
                       />
                     </div>
                   </div>

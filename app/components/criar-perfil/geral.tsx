@@ -29,8 +29,8 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
   const [showTagInput, setShowTagInput] = useState(false);
 
   const isAndroid = formData.os === 'android';
-  const isChromium = formData.kernel === 'AstroBrowser';
-  const isFirefox = !isAndroid && (!formData.kernel || formData.kernel === 'AstroFox');
+  const isChromium = !formData.kernel || formData.kernel === 'AstroBrowser';
+  const isFirefox = !isAndroid && formData.kernel === 'AstroFox';
 
   const currentTags: string[] = Array.isArray(formData.tags)
     ? formData.tags.map((t: any) => (typeof t === 'string' ? t : t?.name || '')).filter(Boolean)
@@ -76,7 +76,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
   const handleSelectOS = (selectedOS: string, selectedKernel?: string) => {
     if (selectedOS === 'ios') return;
     const isTargetAndroid = selectedOS === 'android';
-    const effectiveKernel = isTargetAndroid ? 'AstroBrowser' : (selectedKernel || formData.kernel || 'AstroFox');
+    const effectiveKernel = isTargetAndroid ? 'AstroBrowser' : (selectedKernel || formData.kernel || 'AstroBrowser');
     onChange('os', selectedOS);
     if (isTargetAndroid) {
       onChange('kernel', 'AstroBrowser');
@@ -115,22 +115,23 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
     onChange('mediaDevicesDetails', preset.media);
   };
 
-  const handleSelectCategory = (_cat: string) => {
+  const handleSelectCategory = (cat: string) => {
     setShowUaDropdown(false);
-    const uas = getUserAgents(formData.os, formData.kernel);
+    onChange('userAgentCategory', cat);
+    const uas = getUserAgents(formData.os, formData.kernel, cat);
     if (uas.length > 0) {
       onChange('userAgent', uas[0]);
     }
   };
 
   const handleShuffleUserAgent = () => {
-    const uas = getUserAgents(formData.os, formData.kernel);
+    const uas = getUserAgents(formData.os, formData.kernel, formData.userAgentCategory);
     const currentIdx = uas.indexOf(formData.userAgent);
     const nextIdx = (currentIdx + 1) % uas.length;
     onChange('userAgent', uas[nextIdx]);
   };
 
-  const activeCategoryUas = getUserAgents(formData.os, formData.kernel);
+  const activeCategoryUas = getUserAgents(formData.os, formData.kernel, formData.userAgentCategory);
 
   return (
     <div className="flex-1 space-y-4 pr-1 text-slate-800 dark:text-[#D2D5DF]">
@@ -172,6 +173,66 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
         </div>
         <div className="flex flex-col gap-1.5">
           <div className="flex flex-wrap items-center gap-3">
+            {/* AstroBrowser Chromium */}
+            <Tooltip
+              content={
+                isEditing
+                  ? (isChromium
+                      ? 'Motor AstroBrowser configurado para este perfil. Imutável na edição para preservar a sessão e identidade digital.'
+                      : 'Não é possível alterar o motor após a criação do perfil.')
+                  : 'Motor AstroBrowser (base Blink / Chromium 150): Client Hints nativos, ANGLE GPUs, spoofing de sementes Farble e isolamento de processos.'
+              }
+              position="top"
+            >
+              <div className="flex flex-col">
+                <div
+                  onClick={() => !isEditing && handleSelectKernel('AstroBrowser')}
+                  className={`flex items-center gap-2.5 rounded-md border px-4 py-2.5 shadow-xs transition-all select-none ${
+                    isEditing
+                      ? isChromium
+                        ? 'cursor-default border-emerald-500/50 dark:border-white/30 bg-emerald-50/50 dark:bg-[#262835] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
+                        : 'cursor-not-allowed opacity-35 border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] text-slate-400 dark:text-slate-500 pointer-events-none'
+                      : isChromium
+                        ? 'cursor-pointer border-emerald-500/50 dark:border-white/30 bg-emerald-50/50 dark:bg-[#262835] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
+                        : 'cursor-pointer border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] text-slate-600 dark:text-[#8E93A5] hover:border-slate-300 dark:hover:border-[#474A5B] hover:text-slate-900 dark:hover:text-[#C5C9D7]'
+                  }`}
+                >
+                  <div className="flex h-5 w-5 items-center justify-center shrink-0">
+                    <AstroBrowserIcon size={20} />
+                  </div>
+                  <span className="text-[13px] font-semibold text-slate-900 dark:text-white">AstroBrowser</span>
+                  <span
+                    className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${
+                      isChromium
+                        ? 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-white/10 dark:text-white/90 dark:border-white/15'
+                        : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-white/5 dark:text-slate-400 dark:border-white/10'
+                    }`}
+                  >
+                    Chromium 150
+                  </span>
+                  {isEditing && isChromium ? (
+                    <span className="ml-1 inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+                      <Lock size={11} />
+                      Ativo
+                    </span>
+                  ) : isChromium ? (
+                    <svg
+                      className="ml-1 h-3.5 w-3.5 text-emerald-600 dark:text-white"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : null}
+                </div>
+                <span className="pt-1.5 pl-1 text-[11px] text-slate-500 dark:text-[#787D90]">
+                  Base Blink / Chrome 150 · AstroBrowser engine
+                </span>
+              </div>
+            </Tooltip>
+
             {/* AstroFox Nativo */}
             <Tooltip
               content={
@@ -240,66 +301,6 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                   {isAndroid
                     ? 'Indisponível em perfil mobile (use AstroBrowser)'
                     : 'Base Gecko / Firefox 150 · AstroFox engine'}
-                </span>
-              </div>
-            </Tooltip>
-
-            {/* AstroBrowser Chromium */}
-            <Tooltip
-              content={
-                isEditing
-                  ? (isChromium
-                      ? 'Motor AstroBrowser configurado para este perfil. Imutável na edição para preservar a sessão e identidade digital.'
-                      : 'Não é possível alterar o motor após a criação do perfil.')
-                  : 'Motor AstroBrowser (base Blink / Chromium 150): Client Hints nativos, ANGLE GPUs, spoofing de sementes Farble e isolamento de processos.'
-              }
-              position="top"
-            >
-              <div className="flex flex-col">
-                <div
-                  onClick={() => !isEditing && handleSelectKernel('AstroBrowser')}
-                  className={`flex items-center gap-2.5 rounded-md border px-4 py-2.5 shadow-xs transition-all select-none ${
-                    isEditing
-                      ? isChromium
-                        ? 'cursor-default border-emerald-500/50 dark:border-white/30 bg-emerald-50/50 dark:bg-[#262835] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
-                        : 'cursor-not-allowed opacity-35 border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] text-slate-400 dark:text-slate-500 pointer-events-none'
-                      : isChromium
-                        ? 'cursor-pointer border-emerald-500/50 dark:border-white/30 bg-emerald-50/50 dark:bg-[#262835] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
-                        : 'cursor-pointer border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] text-slate-600 dark:text-[#8E93A5] hover:border-slate-300 dark:hover:border-[#474A5B] hover:text-slate-900 dark:hover:text-[#C5C9D7]'
-                  }`}
-                >
-                  <div className="flex h-5 w-5 items-center justify-center shrink-0">
-                    <AstroBrowserIcon size={20} />
-                  </div>
-                  <span className="text-[13px] font-semibold text-slate-900 dark:text-white">AstroBrowser</span>
-                  <span
-                    className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${
-                      isChromium
-                        ? 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-white/10 dark:text-white/90 dark:border-white/15'
-                        : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-white/5 dark:text-slate-400 dark:border-white/10'
-                    }`}
-                  >
-                    Chromium 150
-                  </span>
-                  {isEditing && isChromium ? (
-                    <span className="ml-1 inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
-                      <Lock size={11} />
-                      Ativo
-                    </span>
-                  ) : isChromium ? (
-                    <svg
-                      className="ml-1 h-3.5 w-3.5 text-emerald-600 dark:text-white"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  ) : null}
-                </div>
-                <span className="pt-1.5 pl-1 text-[11px] text-slate-500 dark:text-[#787D90]">
-                  Base Blink / Chrome 150 · AstroBrowser engine
                 </span>
               </div>
             </Tooltip>
@@ -385,7 +386,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
               onClick={() => setShowUaDropdown(!showUaDropdown)}
               className="flex min-w-[88px] cursor-pointer items-center justify-between gap-2 rounded-md border border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-2 text-[12.5px] text-slate-700 dark:text-[#C4C7D5] hover:border-slate-300 dark:hover:border-[#444756] shadow-xs"
             >
-              <span>{formData.userAgentCategory || 'Todo'}</span>
+              <span>{(formData.userAgentCategory === 'Todo' || !formData.userAgentCategory) ? 'Todos' : formData.userAgentCategory}</span>
               <svg
                 className="h-3.5 w-3.5 opacity-60 text-slate-500 dark:text-inherit"
                 viewBox="0 0 24 24"

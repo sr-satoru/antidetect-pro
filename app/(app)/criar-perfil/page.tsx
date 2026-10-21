@@ -13,9 +13,9 @@ import { toast } from '@/components/ui/notification';
 
 import { getRandomPreset } from '@/services/navegador-presets';
 
-const getInitialProfileFormData = (suggestedOS: string = 'linux') => {
+const getInitialProfileFormData = (suggestedOS: string = 'windows') => {
   const isAndroid = suggestedOS === 'android';
-  const initialKernel = isAndroid ? 'AstroBrowser' : 'AstroFox';
+  const initialKernel = 'AstroBrowser';
   const preset = getRandomPreset(suggestedOS, initialKernel);
 
   return {
@@ -128,7 +128,7 @@ export const CriarPerfilPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('geral');
   const [formData, setFormData] = useState<any>(() =>
-    getInitialProfileFormData('linux'),
+    getInitialProfileFormData('windows'),
   );
 
   const [isSaving, setIsSaving] = useState(false);
