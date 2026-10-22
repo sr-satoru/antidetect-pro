@@ -1,6 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Search, Trash2, Tag as TagIcon, Pencil, Check } from 'lucide-react';
+import {
+  X,
+  Search,
+  Trash2,
+  Tag as TagIcon,
+  Pencil,
+  Check,
+  MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import { TagItem, serviceTags } from '../../services/tags/service.tags';
 import { ModalNovaEtiqueta } from './modal-nova-etiqueta';
@@ -15,6 +25,8 @@ interface ModalEtiquetasProps {
   onTagsUpdated?: () => void;
 }
 
+const PAGE_SIZE = 10;
+
 export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
   isOpen,
   onClose,
@@ -26,6 +38,8 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [menuOpenId, setMenuOpenId] = useState<string | number | null>(null);
 
   // Submodal para criar/editar
   const [isSubmodalOpen, setIsSubmodalOpen] = useState(false);
@@ -48,8 +62,34 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
       fetchTags();
       setSelectedIds([]);
       setSearchQuery('');
+      setCurrentPage(1);
+      setMenuOpenId(null);
     }
   }, [isOpen]);
+
+  // Fechar dropdown de menu ao clicar fora
+  useEffect(() => {
+    if (!menuOpenId) return;
+    const handleGlobalClick = () => setMenuOpenId(null);
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, [menuOpenId]);
+
+  // Tecla Escape para fechar
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (menuOpenId) {
+          setMenuOpenId(null);
+        } else if (!isSubmodalOpen) {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, menuOpenId, isSubmodalOpen, onClose]);
 
   // Filtragem da lista pela busca
   const filteredTags = useMemo(() => {
@@ -58,20 +98,36 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
     return tags.filter((t) => t.name.toLowerCase().includes(q));
   }, [tags, searchQuery]);
 
-  // Selecionar todos
+  // Paginação
+  const totalPages = Math.max(1, Math.ceil(filteredTags.length / PAGE_SIZE));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
+  const paginatedTags = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredTags.slice(start, start + PAGE_SIZE);
+  }, [filteredTags, currentPage]);
+
+  // Selecionar todos da página atual
   const isAllSelected =
-    filteredTags.length > 0 &&
-    filteredTags.every((t) => selectedIds.includes(t.id));
+    paginatedTags.length > 0 &&
+    paginatedTags.every((t) => selectedIds.includes(t.id));
   const isSomeSelected =
-    filteredTags.length > 0 &&
+    paginatedTags.length > 0 &&
     !isAllSelected &&
-    filteredTags.some((t) => selectedIds.includes(t.id));
+    paginatedTags.some((t) => selectedIds.includes(t.id));
 
   const handleToggleSelectAll = () => {
     if (isAllSelected) {
-      setSelectedIds([]);
+      const pageIds = paginatedTags.map((t) => t.id);
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
     } else {
-      setSelectedIds(filteredTags.map((t) => t.id));
+      const pageIds = paginatedTags.map((t) => t.id);
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...pageIds])));
     }
   };
 
@@ -137,28 +193,32 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
   if (!isOpen) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[9vh] sm:pt-[11vh] bg-slate-900/40 dark:bg-black/70 p-4 overflow-y-auto animate-in fade-in duration-200">
-      <div className="w-full max-w-[760px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/90 overflow-hidden flex flex-col max-h-[82vh] mb-12">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E3B]/80 px-7 py-4.5 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 dark:bg-[#00FF66]/15 text-emerald-600 dark:text-[#00FF66]">
-              <TagIcon size={15} />
-            </div>
-            <h2 className="text-[16px] font-semibold text-slate-900 dark:text-[#E1E4EE] tracking-tight">Gerenciar Etiquetas</h2>
-          </div>
+    <div
+      className="fixed inset-0 z-[9999] flex items-start justify-center pt-[7vh] sm:pt-[9vh] bg-black/60 dark:bg-black/80 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[820px] h-[640px] max-h-[85vh] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1E1F24] shadow-2xl dark:shadow-black/95 overflow-hidden flex flex-col mb-12 animate-in zoom-in-95 duration-150 select-none text-left"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header Clean estilo AdsPower */}
+        <div className="flex items-center justify-between px-7 pt-6 pb-4 shrink-0">
+          <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white tracking-tight">
+            Etiqueta
+          </h2>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:bg-[#2A2C38] dark:hover:text-white transition-colors"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#8E92A2] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+            title="Fechar (Esc)"
           >
-            <X size={16} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Toolbar de Ações */}
-        <div className="flex items-center justify-between gap-3 px-7 py-4 border-b border-slate-200 dark:border-[#2C2E3B]/70 bg-slate-50/70 dark:bg-[#16171E]/60 shrink-0">
-          <div className="flex items-center gap-3 w-full">
+        <div className="flex items-center justify-between gap-3 px-7 py-2.5 shrink-0">
+          <div className="flex items-center gap-3">
             {/* Botão Nova Etiqueta */}
             <button
               type="button"
@@ -166,14 +226,14 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                 setTagEmEdicao(null);
                 setIsSubmodalOpen(true);
               }}
-              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white dark:bg-[#1C1D24] dark:border dark:border-white/30 dark:hover:border-white dark:text-white px-4 text-xs font-medium shadow-xs dark:shadow-md transition-all dark:hover:bg-[#252834] active:scale-[0.98] shrink-0"
+              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-[#1677FF] hover:bg-[#1677FF]/90 text-white px-4 text-xs font-semibold shadow-xs transition-all active:scale-[0.98]"
             >
-              <TagIcon size={13} className="text-white/90" />
+              <TagIcon size={14} className="stroke-[2.5]" />
               <span>Nova Etiqueta</span>
             </button>
 
             {/* Input de Busca */}
-            <div className="relative flex-1 max-w-sm">
+            <div className="relative w-64">
               <Search
                 size={14}
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6C7082] pointer-events-none"
@@ -181,68 +241,82 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar etiqueta..."
-                className="h-9 w-full rounded-lg border border-slate-200 dark:border-[#303241]/80 bg-white dark:bg-[#14151C] pl-9 pr-3 text-xs text-slate-900 dark:text-[#E1E4EE] placeholder-slate-400 dark:placeholder-[#585B6A] focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/15 dark:focus:ring-white/15 focus:outline-hidden transition-all shadow-2xs"
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Search"
+                className="h-9 w-full rounded-lg border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#15161C] pl-9 pr-3 text-xs text-slate-900 dark:text-[#E1E4EE] placeholder-slate-400 dark:placeholder-[#585B6A] focus:border-blue-500 dark:focus:border-[#1677FF] focus:ring-1 focus:ring-blue-500/20 focus:outline-hidden transition-all shadow-2xs"
               />
             </div>
+          </div>
 
-            {selectedIds.length > 0 && (
-              <button
-                type="button"
-                onClick={handleDeleteSelected}
-                className="flex h-9 items-center gap-1.5 px-3 rounded-lg border border-red-500/30 bg-red-500/10 text-xs font-medium text-red-600 dark:text-[#FF4D4F] hover:bg-red-500/20 transition-all cursor-pointer ml-auto"
-              >
-                <Trash2 size={13} />
-                <span>Excluir ({selectedIds.length})</span>
-              </button>
-            )}
+          {/* Botão de Excluir à direita estilo AdsPower */}
+          <button
+            type="button"
+            onClick={handleDeleteSelected}
+            disabled={selectedIds.length === 0 || isLoading}
+            className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-all ${
+              selectedIds.length > 0
+                ? 'border-red-500/40 bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:border-red-500 cursor-pointer shadow-xs'
+                : 'border-slate-200 dark:border-[#303241] text-slate-400 dark:text-[#585B6A] cursor-not-allowed opacity-50'
+            }`}
+            title={
+              selectedIds.length > 0
+                ? `Excluir ${selectedIds.length} etiqueta(s)`
+                : 'Selecione etiquetas para excluir'
+            }
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
+
+        {/* Cabeçalho da Tabela */}
+        <div className="flex items-center px-4 py-2.5 mx-7 mt-2 mb-1 rounded-lg bg-slate-100/80 dark:bg-[#15161C] text-xs font-medium text-slate-600 dark:text-[#8E92A2] select-none shrink-0">
+          <div className="w-8 flex items-center">
+            <Checkbox
+              checked={isAllSelected}
+              indeterminate={isSomeSelected}
+              onChange={handleToggleSelectAll}
+              aria-label="Selecionar todas as etiquetas"
+            />
+          </div>
+          <div className="flex-1 text-xs font-normal text-slate-600 dark:text-[#A6ABB9]">
+            Etiqueta
           </div>
         </div>
 
         {/* Tabela de Etiquetas */}
-        <div className="flex-1 overflow-y-auto">
-          {/* Cabeçalho da Tabela */}
-          <div className="flex items-center border-b border-slate-200 dark:border-[#2C2E3B] bg-slate-100 dark:bg-[#171821] px-6 py-2.5 text-xs font-semibold text-slate-600 dark:text-[#8E92A2] select-none sticky top-0 z-10">
-            <div className="w-9 flex items-center justify-center">
-              <Checkbox
-                checked={isAllSelected}
-                indeterminate={isSomeSelected}
-                onChange={handleToggleSelectAll}
-                aria-label="Selecionar todas as etiquetas"
-              />
-            </div>
-            <div className="flex-1 tracking-wider uppercase text-[11px] text-slate-500 dark:text-[#717585]">Etiqueta</div>
-            <div className="w-24 text-right pr-2 tracking-wider uppercase text-[11px] text-slate-500 dark:text-[#717585]">Ações</div>
-          </div>
-
-          {/* Linhas ou Estado Vazio */}
+        <div className="flex-1 overflow-y-auto px-7 py-1">
           {filteredTags.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-400 dark:text-[#6C7082] select-none">
-              <TagIcon size={28} className="text-slate-300 dark:text-[#363847] mb-2" />
+            <div className="flex flex-col items-center justify-center py-28 text-slate-400 dark:text-[#6C7082] select-none">
+              <TagIcon size={30} className="text-slate-300 dark:text-[#363847] mb-2" />
               <p className="text-xs">
                 {isLoading ? 'Carregando etiquetas...' : 'Nenhuma etiqueta encontrada'}
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100 dark:divide-[#2C2E3B]/40">
-              {filteredTags.map((tag) => {
+            <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+              {paginatedTags.map((tag) => {
                 const isSelected = selectedIds.includes(tag.id);
                 const isFilteringThis = selectedTagFilter === tag.name;
 
                 return (
                   <div
                     key={tag.id}
-                    className={`flex items-center px-6 py-3 text-xs transition-colors group ${
+                    className={`flex items-center px-4 py-3 text-xs rounded-lg transition-colors group relative ${
                       isSelected
-                        ? 'bg-emerald-500/10 dark:bg-emerald-500/15'
+                        ? 'bg-blue-500/5 dark:bg-[#1677FF]/8'
                         : isFilteringThis
-                        ? 'bg-slate-100 dark:bg-[#1D2436]'
-                        : 'hover:bg-slate-50 dark:hover:bg-[#232532]/70'
+                        ? 'bg-slate-100/70 dark:bg-[#1D2436]'
+                        : 'hover:bg-slate-50 dark:hover:bg-white/[0.03]'
                     }`}
                   >
                     {/* Checkbox */}
-                    <div className="w-9 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                    <div
+                      className="w-8 flex items-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <Checkbox
                         checked={isSelected}
                         onChange={() => handleToggleSelectOne(tag.id)}
@@ -250,51 +324,109 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                       />
                     </div>
 
-                    {/* Badge / Nome */}
-                    <div
-                      className="flex-1 flex items-center gap-2.5 cursor-pointer"
-                      onClick={() => {
-                        if (onSelectTagFilter) {
-                          onSelectTagFilter(isFilteringThis ? null : tag.name);
-                        }
-                      }}
-                      title="Clique para filtrar a tabela por esta etiqueta"
-                    >
-                      <TagBadge name={tag.name} color={tag.color} />
+                    {/* Tag Badge + Botão `···` */}
+                    <div className="flex-1 flex items-center gap-2 relative">
+                      <div
+                        onClick={() => {
+                          if (onSelectTagFilter) {
+                            onSelectTagFilter(isFilteringThis ? null : tag.name);
+                          }
+                        }}
+                        className="cursor-pointer"
+                        title="Clique para filtrar a lista por esta etiqueta"
+                      >
+                        <TagBadge name={tag.name} color={tag.color} />
+                      </div>
+
+                      {/* Botão `···` e Menu de Ações */}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setMenuOpenId(menuOpenId === tag.id ? null : tag.id);
+                          }}
+                          className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 dark:text-[#8E92A2] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+                          title="Mais opções"
+                        >
+                          <MoreHorizontal size={14} />
+                        </button>
+
+                        {menuOpenId === tag.id && (
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            className="animate-in fade-in zoom-in-95 absolute left-full top-0 ml-1 z-30 w-28 rounded-lg border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#1A1C24] p-1 shadow-xl text-xs select-none"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setMenuOpenId(null);
+                                setTagEmEdicao(tag);
+                                setIsSubmodalOpen(true);
+                              }}
+                              className="flex w-full cursor-pointer items-center gap-2 rounded px-2.5 py-1.5 text-slate-700 hover:bg-slate-100 dark:text-[#D1D5DB] dark:hover:bg-white/5 transition-colors"
+                            >
+                              <Pencil size={12} />
+                              <span>Editar</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setMenuOpenId(null);
+                                handleDeleteSingle(tag);
+                              }}
+                              className="flex w-full cursor-pointer items-center gap-2 rounded px-2.5 py-1.5 text-red-500 hover:bg-red-50 dark:text-[#FF4D4F] dark:hover:bg-[#FF4D4F]/10 transition-colors"
+                            >
+                              <Trash2 size={12} />
+                              <span>Excluir</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Badge de filtro ativo se aplicável */}
                       {isFilteringThis && (
-                        <span className="flex items-center gap-1 rounded-md bg-emerald-500/15 dark:bg-emerald-500/20 px-2 py-0.5 text-[10px] text-[#238636] dark:text-[#2ea043] font-medium border border-emerald-500/25 dark:border-emerald-500/30">
+                        <span className="flex items-center gap-1 rounded-md bg-emerald-500/15 dark:bg-emerald-500/20 px-2 py-0.5 text-[10px] text-[#238636] dark:text-[#2ea043] font-medium border border-emerald-500/25 dark:border-emerald-500/30 ml-2">
                           <Check size={10} /> Filtro Ativo
                         </span>
                       )}
-                    </div>
-
-                    {/* Ações */}
-                    <div className="w-24 flex items-center justify-end gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setTagEmEdicao(tag);
-                          setIsSubmodalOpen(true);
-                        }}
-                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-[#238636] dark:text-[#8E92A2] dark:hover:bg-[#2C2E3B] dark:hover:text-[#2ea043] transition-colors"
-                        title="Editar"
-                      >
-                        <Pencil size={13} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteSingle(tag)}
-                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-red-50 hover:text-red-500 dark:text-[#8E92A2] dark:hover:bg-[#FF4D4F]/15 dark:hover:text-[#FF4D4F] transition-colors"
-                        title="Excluir"
-                      >
-                        <Trash2 size={13} />
-                      </button>
                     </div>
                   </div>
                 );
               })}
             </div>
           )}
+        </div>
+
+        {/* Rodapé com Paginação estilo AdsPower (Total: X  < [1] / Y >) */}
+        <div className="flex items-center justify-end gap-3 px-7 py-3.5 border-t border-slate-100 dark:border-[#282A35] text-xs text-slate-500 dark:text-[#8E92A2] select-none shrink-0 bg-white dark:bg-[#1E1F24]">
+          <span>Total: {filteredTags.length}</span>
+
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage <= 1}
+            className="flex h-7 w-7 items-center justify-center rounded border border-transparent hover:border-slate-200 dark:hover:border-[#303241] hover:bg-slate-100 dark:hover:bg-[#252834] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer text-slate-500 dark:text-[#A6ABB9]"
+            title="Página anterior"
+          >
+            <ChevronLeft size={14} />
+          </button>
+
+          <div className="flex h-7 min-w-[32px] px-2 items-center justify-center rounded border border-slate-200 dark:border-[#303241] bg-slate-50 dark:bg-[#15161C] text-xs font-mono font-medium text-slate-900 dark:text-white shadow-2xs">
+            {currentPage}
+          </div>
+
+          <span>/ {totalPages}</span>
+
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage >= totalPages}
+            className="flex h-7 w-7 items-center justify-center rounded border border-transparent hover:border-slate-200 dark:hover:border-[#303241] hover:bg-slate-100 dark:hover:bg-[#252834] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer text-slate-500 dark:text-[#A6ABB9]"
+            title="Próxima página"
+          >
+            <ChevronRight size={14} />
+          </button>
         </div>
       </div>
 

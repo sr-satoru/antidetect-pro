@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, ChevronDown, ChevronUp, CornerDownLeft, Check } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
-import { TAG_COLORS, DEFAULT_TAG_COLOR, getTagColorStyle } from './tag-palette';
+import { TAG_COLORS, DEFAULT_TAG_COLOR } from './tag-palette';
+import { TagBadge } from './tag-badge';
 import { serviceTags, TagItem } from '../../services/tags/service.tags';
 
 interface DropdownSeletorEtiquetasProps {
@@ -158,8 +159,6 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
 
   if (!isOpen) return null;
 
-  const currentBadgeStyle = getTagColorStyle(newTagColor);
-
   return (
     <div
       ref={containerRef}
@@ -236,22 +235,19 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
                   e.stopPropagation();
                   if (!exactMatch) setShowColorPicker(!showColorPicker);
                 }}
-                style={{
-                  backgroundColor: exactMatch ? getTagColorStyle(exactMatch.color).backgroundColor : currentBadgeStyle.backgroundColor,
-                  borderColor: exactMatch ? getTagColorStyle(exactMatch.color).borderColor : currentBadgeStyle.borderColor,
-                  color: exactMatch ? getTagColorStyle(exactMatch.color).color : currentBadgeStyle.color,
-                }}
-                className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium transition-all ${
-                  exactMatch ? 'cursor-default' : 'cursor-pointer hover:brightness-110 active:scale-98'
-                }`}
+                className="inline-flex items-center gap-1.5 cursor-pointer select-none"
                 title={exactMatch ? 'Etiqueta já existente' : 'Clique para escolher a cor da etiqueta'}
               >
-                <span className="truncate max-w-[150px]">{searchTerm.trim()}</span>
+                <TagBadge
+                  name={searchTerm.trim()}
+                  color={exactMatch ? exactMatch.color : newTagColor}
+                  className="max-w-[150px]"
+                />
                 {!exactMatch && (
                   showColorPicker ? (
-                    <ChevronUp size={12} className="opacity-70" />
+                    <ChevronUp size={12} className="opacity-70 text-slate-400" />
                   ) : (
-                    <ChevronDown size={12} className="opacity-70" />
+                    <ChevronDown size={12} className="opacity-70 text-slate-400" />
                   )
                 )}
               </button>
@@ -282,7 +278,6 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
         ) : (
           filteredTags.map((tag) => {
             const isSelected = selectedTags.includes(tag.name);
-            const style = getTagColorStyle(tag.color);
 
             return (
               <div
@@ -292,21 +287,8 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
                   isSelected ? 'bg-emerald-500/10 dark:bg-emerald-500/15' : ''
                 }`}
               >
-                {/* Badge da Etiqueta com sua cor */}
-                <span
-                  style={{
-                    backgroundColor: style.backgroundColor,
-                    borderColor: style.borderColor,
-                    color: style.color,
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium"
-                >
-                  <span
-                    className="h-1.5 w-1.5 rounded-full shrink-0"
-                    style={{ backgroundColor: style.color }}
-                  />
-                  <span className="truncate max-w-[260px] sm:max-w-md">{tag.name}</span>
-                </span>
+                {/* Badge da Etiqueta padronizado */}
+                <TagBadge name={tag.name} color={tag.color} className="max-w-[260px] sm:max-w-md" />
 
                 {/* Checkmark no lado direito se selecionado */}
                 {isSelected && (

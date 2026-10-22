@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom';
 import { X, ChevronDown, ChevronUp, Check, CornerDownLeft, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import { TagItem, serviceTags } from '../../services/tags/service.tags';
-import { TAG_COLORS, DEFAULT_TAG_COLOR, getTagColorStyle, getPastelTagStyle } from './tag-palette';
+import { TAG_COLORS, DEFAULT_TAG_COLOR } from './tag-palette';
+import { TagBadge } from './tag-badge';
 import { api } from '@/services/index.api';
 
 interface ModalEditarTagsPerfilProps {
@@ -204,8 +205,6 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
     profile.profile_number ||
     (profile.id !== undefined ? String(profile.id) : '-');
 
-  const currentBadgeStyle = getTagColorStyle(newTagColor);
-
   const modalContent = (
     <div
       className="fixed inset-0 z-[9999] flex items-start justify-center pt-[12vh] sm:pt-[14vh] bg-black/60 dark:bg-black/75 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in duration-150"
@@ -266,30 +265,14 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                 {/* Tags selecionadas como chips com botão "✕" */}
                 {profileTags.map((tagName) => {
                   const tagObj = tags.find((t) => t.name.toLowerCase() === tagName.toLowerCase());
-                  const pastelStyle = getPastelTagStyle(tagObj?.color, tagName);
-
                   return (
-                    <span
+                    <TagBadge
                       key={tagName}
-                      style={{
-                        backgroundColor: pastelStyle.backgroundColor,
-                        borderColor: pastelStyle.borderColor,
-                        color: pastelStyle.color,
-                      }}
-                      className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium leading-none select-none transition-all shadow-2xs"
-                    >
-                      <span className="truncate max-w-[180px]">{tagName}</span>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRemoveTag(tagName);
-                        }}
-                        className="ml-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/15 transition-colors cursor-pointer"
-                      >
-                        <X size={10} className="stroke-[2.5]" />
-                      </button>
-                    </span>
+                      name={tagName}
+                      color={tagObj?.color}
+                      onRemove={() => handleRemoveTag(tagName)}
+                      className="max-w-[200px]"
+                    />
                   );
                 })}
 
@@ -310,11 +293,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                       handleCreateOrSelectTag();
                     }
                   }}
-                  placeholder={
-                    profileTags.length === 0
-                      ? 'Encontrar uma etiqueta / Criar uma etiqueta'
-                      : ''
-                  }
+                  placeholder="Encontre tags ou criar"
                   className="flex-1 min-w-[140px] bg-transparent text-xs text-slate-900 dark:text-[#E1E4EE] placeholder-slate-400 dark:placeholder-[#6C7082] focus:outline-hidden"
                 />
 
@@ -401,34 +380,23 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                               e.stopPropagation();
                               if (!exactMatch) setShowColorPicker(!showColorPicker);
                             }}
-                            style={{
-                              backgroundColor: exactMatch
-                                ? getTagColorStyle(exactMatch.color).backgroundColor
-                                : currentBadgeStyle.backgroundColor,
-                              borderColor: exactMatch
-                                ? getTagColorStyle(exactMatch.color).borderColor
-                                : currentBadgeStyle.borderColor,
-                              color: exactMatch
-                                ? getTagColorStyle(exactMatch.color).color
-                                : currentBadgeStyle.color,
-                            }}
-                            className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-[11px] font-medium transition-all ${
-                              exactMatch
-                                ? 'cursor-default'
-                                : 'cursor-pointer hover:brightness-110 active:scale-98'
-                            }`}
+                            className="inline-flex items-center gap-1.5 cursor-pointer select-none"
                             title={
                               exactMatch
                                 ? 'Etiqueta já existente'
                                 : 'Clique para escolher a cor da etiqueta'
                             }
                           >
-                            <span className="truncate max-w-[170px]">{searchTerm.trim()}</span>
+                            <TagBadge
+                              name={searchTerm.trim()}
+                              color={exactMatch ? exactMatch.color : newTagColor}
+                              className="max-w-[170px]"
+                            />
                             {!exactMatch &&
                               (showColorPicker ? (
-                                <ChevronUp size={12} className="opacity-70" />
+                                <ChevronUp size={12} className="opacity-70 text-slate-400" />
                               ) : (
-                                <ChevronDown size={12} className="opacity-70" />
+                                <ChevronDown size={12} className="opacity-70 text-slate-400" />
                               ))}
                           </button>
                         </div>
@@ -462,31 +430,15 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                     ) : (
                       filteredTags.map((tag) => {
                         const isSelected = profileTags.includes(tag.name);
-                        const style = getTagColorStyle(tag.color);
 
                         return (
                           <div
                             key={tag.id}
                             onClick={() => handleToggleTag(tag.name)}
-                            className={`flex cursor-pointer items-center justify-between px-3.5 py-2.5 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#252733] ${
-                              isSelected ? 'bg-emerald-500/10 dark:bg-emerald-500/15' : ''
-                            }`}
+                            className="flex cursor-pointer items-center justify-between px-3.5 py-2.5 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#252733]"
                           >
-                            {/* Badge da Etiqueta */}
-                            <span
-                              style={{
-                                backgroundColor: style.backgroundColor,
-                                borderColor: style.borderColor,
-                                color: style.color,
-                              }}
-                              className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-[11px] font-medium"
-                            >
-                              <span
-                                className="h-1.5 w-1.5 rounded-full shrink-0"
-                                style={{ backgroundColor: style.color }}
-                              />
-                              <span className="truncate max-w-[280px]">{tag.name}</span>
-                            </span>
+                            {/* Badge da Etiqueta padronizado */}
+                            <TagBadge name={tag.name} color={tag.color} className="max-w-[280px]" />
 
                             {/* Checkmark no lado direito se selecionado */}
                             {isSelected && (

@@ -1,34 +1,43 @@
 import React from 'react';
 import { getTagColorStyle, getPastelTagStyle, getVividTagStyle } from './tag-palette';
+import { serviceTags } from '../../services/tags/service.tags';
 import { X } from 'lucide-react';
 
 export interface TagBadgeProps {
   name: string;
   color?: string;
   className?: string;
-  variant?: 'default' | 'solid-pastel' | 'vivid';
+  variant?: 'vivid' | 'solid-pastel' | 'default';
   showDot?: boolean;
   onRemove?: () => void;
   onClick?: () => void;
+  maxWidth?: string;
 }
 
 export const TagBadge: React.FC<TagBadgeProps> = ({
   name,
   color,
   className = '',
-  variant = 'default',
+  variant = 'vivid',
   showDot,
   onRemove,
   onClick,
+  maxWidth,
 }) => {
-  const isVivid = variant === 'vivid';
+  // Prioridade de cor: se não foi fornecida cor diretamente, resolve no catálogo do serviceTags
+  const resolvedColor = color || (name ? serviceTags.getColorByName(name) : undefined);
+
   const isPastel = variant === 'solid-pastel';
-  const styles = isVivid
-    ? getVividTagStyle(color, name)
-    : isPastel
-    ? getPastelTagStyle(color, name)
-    : getTagColorStyle(color);
-  const shouldShowDot = showDot !== undefined ? showDot : !(isVivid || isPastel);
+  const isDefault = variant === 'default';
+  const isVivid = !isPastel && !isDefault;
+
+  const styles = isPastel
+    ? getPastelTagStyle(resolvedColor, name)
+    : isDefault
+    ? getTagColorStyle(resolvedColor)
+    : getVividTagStyle(resolvedColor, name);
+
+  const shouldShowDot = showDot !== undefined ? showDot : isDefault;
 
   return (
     <span
@@ -47,6 +56,7 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
       } transition-all select-none ${
         onClick ? 'cursor-pointer hover:brightness-110 active:scale-95' : ''
       } ${className}`}
+      title={name}
     >
       {shouldShowDot && (
         <span
@@ -54,7 +64,7 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
           style={{ backgroundColor: styles.color }}
         />
       )}
-      <span className="truncate max-w-[220px]">{name}</span>
+      <span className={`truncate ${maxWidth || 'max-w-[220px]'}`}>{name}</span>
       {onRemove && (
         <button
           type="button"
@@ -62,9 +72,10 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
             e.stopPropagation();
             onRemove();
           }}
-          className="ml-0.5 -mr-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/30 transition-colors"
+          className="ml-0.5 -mr-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-black/25 active:bg-black/40 transition-colors cursor-pointer"
+          title={`Remover etiqueta ${name}`}
         >
-          <X size={10} />
+          <X size={10} strokeWidth={2.5} />
         </button>
       )}
     </span>
