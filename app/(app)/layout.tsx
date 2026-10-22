@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/ui/sidebar';
 import { Header } from '@/components/ui/header';
 import { AlertCircle, RotateCcw, Home } from 'lucide-react';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -79,29 +80,31 @@ export const AppLayout: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#ECEBE7] dark:bg-[#0A0A0E] text-[#1B1A18] dark:text-[#F1F1F4] transition-colors duration-150 select-none">
-      {/* Sidebar global */}
-      <Sidebar />
+    <TooltipProvider delay={150}>
+      <div className="flex h-screen w-screen overflow-hidden bg-[#ECEBE7] dark:bg-[#0A0A0E] text-[#1B1A18] dark:text-[#F1F1F4] transition-colors duration-150 select-none">
+        {/* Sidebar global */}
+        <Sidebar />
 
-      {/* Main viewport */}
-      <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
-        {/* Header superior */}
-        <Header />
+        {/* Main viewport */}
+        <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
+          {/* Header superior */}
+          <Header />
 
-        {/* Content area otimizada para usabilidade, dimensões flexíveis e contenção de scroll */}
-        <main
-          id="main-content"
-          role="main"
-          tabIndex={-1}
-          aria-label="Conteúdo Principal"
-          className="relative flex flex-col flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-4.5 bg-transparent focus:outline-none [scrollbar-width:thin] select-text"
-        >
-          <ContentErrorBoundary fallbackKey={location.pathname}>
-            <Outlet />
-          </ContentErrorBoundary>
-        </main>
+          {/* Content area otimizada para usabilidade, dimensões flexíveis e contenção de scroll */}
+          <main
+            id="main-content"
+            role="main"
+            tabIndex={-1}
+            aria-label="Conteúdo Principal"
+            className="relative flex flex-col flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-4.5 bg-transparent focus:outline-none [scrollbar-width:thin] select-text"
+          >
+            <ContentErrorBoundary fallbackKey={location.pathname}>
+              <Outlet />
+            </ContentErrorBoundary>
+          </main>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };
 
