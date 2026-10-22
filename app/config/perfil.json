@@ -6,15 +6,6 @@
     { "id": "impressao", "label": "Impressão Digital" },
     { "id": "avancado", "label": "Avançado" }
   ],
-  "groups": [
-    { "id": "grp-1", "name": "Desagrupado" },
-    { "id": "grp-2", "name": "Contas Matriz" },
-    { "id": "grp-3", "name": "Twitter Farm" },
-    { "id": "grp-4", "name": "Gmail Auto" },
-    { "id": "grp-5", "name": "E-commerce & Dropshipping" },
-    { "id": "grp-6", "name": "Facebook Ads" },
-    { "id": "grp-7", "name": "Discord Bots" }
-  ],
   "osOptions": [
     {
       "id": "windows",

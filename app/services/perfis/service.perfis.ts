@@ -19,6 +19,9 @@ export const servicePerfis = {
       },
     }),
 
+  // Listagem dinâmica de grupos distintos
+  listGroups: () => http.get<string[]>('/api/profiles/groups'),
+
   // Obter perfil completo por ID
   get: (id: string | number) => http.get<Profile>(`/api/profiles/${id}`),
 

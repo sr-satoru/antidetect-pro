@@ -376,3 +376,25 @@ pub fn get_public(
 
     list
 }
+
+/// Retorna a lista de grupos distintos ativos a partir dos perfis cadastrados no Star Vault.
+pub fn list_groups(vault: &Arc<Vault>) -> Vec<String> {
+    let conn = vault.conn();
+    let conn_guard = match conn.lock() {
+        Ok(g) => g,
+        Err(_) => return Vec::new(),
+    };
+
+    let mut stmt = match conn_guard.prepare(
+        "SELECT DISTINCT group_name FROM profiles WHERE is_deleted = 0 AND group_name IS NOT NULL AND TRIM(group_name) != '' ORDER BY group_name ASC"
+    ) {
+        Ok(s) => s,
+        Err(_) => return Vec::new(),
+    };
+
+    let rows = stmt.query_map([], |row| row.get::<_, String>(0));
+    match rows {
+        Ok(mapped) => mapped.filter_map(Result::ok).collect(),
+        Err(_) => Vec::new(),
+    }
+}

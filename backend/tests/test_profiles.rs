@@ -555,3 +555,46 @@ async fn test_public_profile_endpoint_authentication() {
 
     let _ = std::fs::remove_dir_all(temp_dir);
 }
+
+#[tokio::test]
+async fn test_list_groups_dynamic_and_safe() {
+    let temp_dir = std::env::temp_dir().join(format!(
+        "star_groups_test_{}",
+        std::time::SystemTime::now().elapsed().unwrap().as_nanos()
+    ));
+    let _ = std::fs::create_dir_all(&temp_dir);
+    let vault = Arc::new(Vault::new(&temp_dir).unwrap());
+    let ws = WsState::new();
+    let storage = star_multlogin_backend::service_database::profiles::ProfileService::new(
+        &temp_dir,
+        ws,
+        vault.clone(),
+    );
+
+    // Banco inicialmente sem perfis
+    let initial_groups = storage.list_groups();
+    assert!(initial_groups.is_empty());
+
+    // Cria perfis com diferentes grupos
+    let p1: CreateProfileDto = serde_json::from_value(serde_json::json!({
+        "name": "Perfil 1",
+        "group": "Marketing"
+    })).unwrap();
+    let p2: CreateProfileDto = serde_json::from_value(serde_json::json!({
+        "name": "Perfil 2",
+        "group": "Contas Matriz"
+    })).unwrap();
+    let p3: CreateProfileDto = serde_json::from_value(serde_json::json!({
+        "name": "Perfil 3",
+        "group": "Marketing"
+    })).unwrap();
+    storage.create(p1).unwrap();
+    storage.create(p2).unwrap();
+    storage.create(p3).unwrap();
+
+    // Deve listar grupos distintos ordenados
+    let groups = storage.list_groups();
+    assert_eq!(groups, vec!["Contas Matriz", "Marketing"]);
+
+    let _ = std::fs::remove_dir_all(temp_dir);
+}

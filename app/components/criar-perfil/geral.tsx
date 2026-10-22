@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
 import config from '@/config/perfil.json';
-import { Lock } from 'lucide-react';
+import { Lock, Folder } from 'lucide-react';
+import { DropdownSeletorGrupos } from '../grupos/dropdown-seletor-grupos';
 
 interface GeralTabProps {
   formData: any;
@@ -28,18 +29,6 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
   const [showUaDropdown, setShowUaDropdown] = useState(false);
   const [showUaListModal, setShowUaListModal] = useState(false);
   const [showTagInput, setShowTagInput] = useState(false);
-  const groupDropdownRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (!showGroupDropdown) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (groupDropdownRef.current && !groupDropdownRef.current.contains(e.target as Node)) {
-        setShowGroupDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showGroupDropdown]);
 
   const isAndroid = formData.os === 'android';
   const isChromium = !formData.kernel || formData.kernel === 'AstroBrowser';
@@ -510,13 +499,21 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
         </label>
         <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
           {/* Campo de Grupo */}
-          <div ref={groupDropdownRef} className="relative">
+          <div className="relative">
             <button
               type="button"
+              data-group-trigger="true"
               onClick={() => setShowGroupDropdown(!showGroupDropdown)}
-              className="flex w-full h-9 cursor-pointer items-center justify-between rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs text-slate-700 dark:text-[#9DA2B4] hover:border-slate-300 dark:hover:border-[#4B5063] shadow-xs"
+              className={`flex w-full h-9 cursor-pointer items-center justify-between rounded-lg border px-3.5 text-xs transition-colors select-none shadow-xs ${
+                showGroupDropdown || (formData.group && formData.group !== 'Desagrupado')
+                  ? 'border-[#7C3AED] bg-[#7C3AED]/10 text-[#7C3AED] dark:border-[#A78BFA] dark:bg-[#282A33] dark:text-white'
+                  : 'border-slate-200/80 bg-white text-slate-700 hover:border-slate-300 dark:border-[#2D3039] dark:bg-[#1F2026] dark:text-[#9DA2B4] dark:hover:border-white/20'
+              }`}
             >
-              <span className="truncate">{formData.group || 'Desagrupado'}</span>
+              <div className="flex items-center gap-2 truncate">
+                <Folder className="h-3.5 w-3.5 shrink-0 opacity-70" />
+                <span className="truncate">{formData.group || 'Desagrupado'}</span>
+              </div>
               <svg
                 className="h-3.5 w-3.5 shrink-0 opacity-60 text-slate-500 dark:text-inherit"
                 viewBox="0 0 24 24"
@@ -527,25 +524,14 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </button>
-            {showGroupDropdown && (
-              <div className="absolute top-full right-0 left-0 z-20 mt-1 max-h-48 overflow-y-auto rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] py-1 shadow-xl">
-                {config.groups.map((grp) => (
-                  <div
-                    key={grp.id}
-                    onClick={() => {
-                      onChange('group', grp.name);
-                      setShowGroupDropdown(false);
-                    }}
-                    className={`cursor-pointer px-3.5 py-2 text-xs ${formData.group === grp.name
-                        ? 'bg-[#7C3AED]/10 font-medium text-[#7C3AED] dark:bg-[#282A33] dark:text-white'
-                        : 'text-slate-700 dark:text-[#9DA2B4] hover:bg-slate-100 dark:hover:bg-[#282A33]/50 hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                  >
-                    {grp.name}
-                  </div>
-                ))}
-              </div>
-            )}
+
+            <DropdownSeletorGrupos
+              isOpen={showGroupDropdown}
+              onClose={() => setShowGroupDropdown(false)}
+              selectedGroup={formData.group || 'Desagrupado'}
+              onSelectGroup={(grp) => onChange('group', grp)}
+              fullWidth
+            />
           </div>
 
           {/* Campo de Tags */}

@@ -76,6 +76,10 @@ impl ProfileService {
         repository::list(&self.vault, &self.process_manager, &self.data_dir, search, group)
     }
 
+    pub fn list_groups(&self) -> Vec<String> {
+        repository::list_groups(&self.vault)
+    }
+
     pub fn list_trash(&self) -> Vec<Profile> {
         repository::list_trash(&self.vault, &self.process_manager, &self.data_dir)
     }

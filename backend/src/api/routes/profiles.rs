@@ -65,6 +65,13 @@ pub async fn list_profiles(
     Json(list)
 }
 
+pub async fn list_groups(
+    State(storage): State<Arc<ProfileStorage>>,
+) -> impl IntoResponse {
+    let groups = storage.list_groups();
+    Json(groups)
+}
+
 pub async fn create_profile(
     State(storage): State<Arc<ProfileStorage>>,
     Json(payload): Json<CreateProfileDto>,

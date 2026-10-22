@@ -17,6 +17,7 @@ import { serviceAuth } from './auth/service.auth';
 import { serviceMcp } from './mcp/service.mcp';
 import { serviceSync } from './sync/service.sync';
 import { wsService } from './ws/service.ws';
+import { serviceGrupos } from './grupos/service.grupos';
 
 // Re-exporta serviços ativos
 export { serviceGeral } from './criar-perfil/service.geral';
@@ -26,6 +27,7 @@ export { servicePerfis } from './perfis/service.perfis';
 export { serviceTabs } from './perfis/service.tabs';
 export { serviceCookies } from './perfis/service.cookies';
 export { serviceTags } from './tags/service.tags';
+export { serviceGrupos } from './grupos/service.grupos';
 export { serviceExtensoes } from './extensoes/service.extensoes';
 export { serviceCategorias } from './extensoes/service.categorias';
 export { serviceAuth } from './auth/service.auth';
@@ -39,6 +41,7 @@ export { http, ApiError } from './http';
  */
 export const api = {
   profiles: servicePerfis,
+  groups: serviceGrupos,
   tags: serviceTags,
   proxies: serviceProxies,
   extensions: serviceExtensoes,

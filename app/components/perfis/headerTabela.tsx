@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Search,
   ChevronDown,
@@ -13,6 +13,7 @@ import {
   Tag,
   RotateCw,
 } from 'lucide-react';
+import { serviceGrupos } from '@/services/grupos/service.grupos';
 
 interface HeaderTabelaProps {
   searchQuery?: string;
@@ -20,6 +21,7 @@ interface HeaderTabelaProps {
   selectedGroup?: string;
   onGroupChange?: (g: string) => void;
   selectedIds?: (string | number)[];
+  profiles?: any[];
   onStartSelected?: () => void;
   onStopSelected?: () => void;
   onDeleteSelected?: () => void;
@@ -36,6 +38,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
   selectedGroup = 'Todos os grupos',
   onGroupChange,
   selectedIds = [],
+  profiles = [],
   onStartSelected,
   onStopSelected,
   onDeleteSelected,
@@ -45,6 +48,32 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
   isSyncing = false,
 }) => {
   const hasSelected = selectedIds.length > 0;
+
+  const [availableGroups, setAvailableGroups] = useState<string[]>(() =>
+    serviceGrupos.getCached()
+  );
+
+  useEffect(() => {
+    serviceGrupos.list().then(setAvailableGroups).catch(() => {});
+    const unsubscribe = serviceGrupos.subscribe(() => {
+      setAvailableGroups(serviceGrupos.getCached());
+    });
+    return unsubscribe;
+  }, []);
+
+  const allGroups = useMemo(() => {
+    const fromProfiles = Array.isArray(profiles)
+      ? profiles.map((p) => p.group).filter(Boolean)
+      : [];
+    const combined = Array.from(
+      new Set(['Desagrupado', ...availableGroups, ...fromProfiles])
+    );
+    return combined.sort((a, b) => {
+      if (a === 'Desagrupado') return -1;
+      if (b === 'Desagrupado') return 1;
+      return a.localeCompare(b);
+    });
+  }, [availableGroups, profiles]);
 
   return (
     <div className="flex flex-col gap-2.5 shrink-0 select-none pb-1">
@@ -60,8 +89,11 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
             className="h-9 pl-3.5 pr-8 rounded-lg bg-white dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] hover:border-slate-300 dark:hover:border-[#4B5063] text-xs text-slate-700 dark:text-[#E2E4EC] appearance-none cursor-pointer focus:outline-hidden transition-colors shadow-2xs"
           >
             <option value="Todos os grupos">Todos os grupos</option>
-            <option value="Desagrupado">Desagrupado</option>
-            <option value="Tráfego Pago">Tráfego Pago</option>
+            {allGroups.map((grp) => (
+              <option key={grp} value={grp}>
+                {grp}
+              </option>
+            ))}
           </select>
           <ChevronDown
             size={14}

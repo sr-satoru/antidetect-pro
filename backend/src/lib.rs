@@ -204,6 +204,7 @@ pub fn build_app_router_with_nonce_manager(
 
     let profile_routes = Router::new()
         .route("/", get(routes::profiles::list_profiles).post(routes::profiles::create_profile))
+        .route("/groups", get(routes::profiles::list_groups))
         .route("/public", get(routes::profiles::get_public_profiles).post(routes::profiles::lookup_public_profile))
         .route("/trash", get(routes::profiles::list_trash))
         .route("/trash/empty", delete(routes::profiles::empty_trash))
