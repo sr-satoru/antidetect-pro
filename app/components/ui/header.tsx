@@ -67,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   };
 
   return (
-    <header className="relative h-[60px] bg-white dark:bg-[#18191E] border-b border-slate-200 dark:border-[#2D3039] px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 transition-colors shadow-2xs">
+    <header className="relative h-[60px] bg-white dark:bg-[#18191E] border-b border-slate-200 dark:border-[#2D3039] px-4 sm:px-6 flex items-center justify-between shrink-0 z-40 transition-colors shadow-2xs">
       {/* Title e indicador de contexto */}
       <div className="flex items-center gap-3">
         <h1 className="text-base sm:text-[17px] font-bold text-slate-900 dark:text-white tracking-tight">

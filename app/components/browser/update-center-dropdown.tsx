@@ -1,7 +1,14 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+// Central de Atualizações - Ultra-Minimalista
+
 import React, { useState, useEffect, useRef } from 'react';
-import { Download, RefreshCw, CheckCircle2, AlertTriangle, WifiOff } from 'lucide-react';
+import { Download, RefreshCw, Check, WifiOff, X } from 'lucide-react';
 import { useBrowser } from '../../contexts/browser-context';
-import { appUpdateService, AppReleaseInfo, CURRENT_APP_VERSION } from '../../services/app-update/service.update';
+import {
+  appUpdateService,
+  AppReleaseInfo,
+  CURRENT_APP_VERSION,
+} from '../../services/app-update/service.update';
 import { toast } from '../ui/notification';
 
 export const UpdateCenterDropdown: React.FC = () => {
@@ -34,18 +41,33 @@ export const UpdateCenterDropdown: React.FC = () => {
   const hasAnyUpdate = hasPendingEngines || hasAppUpdate;
 
   const isUpdating = isEngineDownloading || isAppDownloading;
-
   const currentProgress = isAppDownloading ? appProgress : download.progress;
+  const currentSpeed = isAppDownloading ? appSpeed : download.speedMbS;
 
-  // Fecha ao clicar fora
+  // Fechar ao clicar fora
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
-    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  // Fechar no ESC
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
   const handleCheckAll = async () => {
@@ -67,16 +89,13 @@ export const UpdateCenterDropdown: React.FC = () => {
     }
   }, [isOpen]);
 
-  // Função central: 1 CLIQUE e o sistema faz todo o resto
   const handleUpdateAll = async () => {
     if (isUpdating) return;
 
-    // 1. Se houver motores pendentes, o backend baixa e configura tudo sozinho
     if (hasPendingEngines) {
       await startUpdate();
     }
 
-    // 2. Se houver atualização do aplicativo desktop
     if (hasAppUpdate && appRelease?.downloadUrl && appRelease?.assetName) {
       setIsAppDownloading(true);
       setAppProgress(0);
@@ -87,10 +106,10 @@ export const UpdateCenterDropdown: React.FC = () => {
           if (st.stage === 'ready' || st.progress >= 100) {
             setIsAppDownloading(false);
             setIsAppReady(true);
-            toast.success('Atualização do aplicativo baixada!');
+            toast.success('Atualização do aplicativo baixada com sucesso!');
           } else if (st.stage === 'error') {
             setIsAppDownloading(false);
-            toast.error(st.error || 'Erro no download do app.');
+            toast.error(st.error || 'Erro no download da atualização do app.');
           }
         },
         { url: appRelease.downloadUrl, name: appRelease.assetName }
@@ -104,7 +123,7 @@ export const UpdateCenterDropdown: React.FC = () => {
 
   const handleApplyRestart = async () => {
     setIsRestarting(true);
-    toast.info('Aplicando atualização e reiniciando...');
+    toast.info('Aplicando atualização e reiniciando o Star Multilogin...');
     const res = await appUpdateService.applyRestart();
     if (res.success) {
       toast.success(res.message);
@@ -116,147 +135,171 @@ export const UpdateCenterDropdown: React.FC = () => {
 
   return (
     <div className={`relative inline-block text-left ${isOpen ? 'z-50' : ''}`} ref={dropdownRef}>
-      {/* Botão no Header com progresso embutido */}
+      {/* Botão no Header (Clean, compacto e alinhado) */}
       <button
         type="button"
-        onClick={() => {
-          // Se houver update pendente e não estiver aberto, abre para visualização ou o usuário atualiza direto
-          setIsOpen(!isOpen);
-        }}
-        className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer shadow-xs select-none ${
+        onClick={() => setIsOpen(!isOpen)}
+        className={`relative flex items-center gap-1.5 h-8.5 px-3 rounded-lg border text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98] shadow-2xs ${
           isUpdating
-            ? 'bg-emerald-50 text-emerald-700 border-emerald-500/50 dark:bg-[#141519] dark:text-[#00FF66] dark:border-[#00FF66]/50'
+            ? 'bg-[#7C3AED]/10 text-[#7C3AED] dark:text-[#A78BFA] border-[#7C3AED]/30 dark:border-[#7C3AED]/40'
             : isAppReady
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-500 dark:bg-[#141519] dark:text-[#00FF66] dark:border-[#00FF66]/70'
-              : hasAnyUpdate
-                ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 dark:text-amber-300 dark:border-amber-500/40'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 dark:bg-[#141519] dark:hover:bg-[#181920] dark:text-[#E5E7EB] dark:border-[#22242F]'
+              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 dark:border-emerald-500/40'
+              : isOffline
+                ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30 dark:border-rose-500/40'
+                : hasAnyUpdate
+                  ? 'bg-amber-500/10 hover:bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30 dark:border-amber-500/40'
+                  : 'bg-slate-50 hover:bg-slate-100 dark:bg-[#1F2026] dark:hover:bg-[#282A33] text-slate-600 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white border-slate-200 dark:border-[#2D3039]'
         }`}
+        title="Central de Atualizações"
       >
         {isUpdating ? (
           <>
-            <RefreshCw size={13} className="text-emerald-600 dark:text-[#00FF66] animate-spin shrink-0" />
-            <span>Atualizando ({Math.round(currentProgress)}%)</span>
+            <RefreshCw size={12} className="text-[#7C3AED] dark:text-[#A78BFA] animate-spin shrink-0" />
+            <span className="font-medium tabular-nums">
+              Atualizando {Math.round(currentProgress)}%
+            </span>
           </>
         ) : isAppReady ? (
           <>
-            <CheckCircle2 size={13} className="text-emerald-600 dark:text-[#00FF66] shrink-0" />
-            <span>Reiniciar App</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="font-medium">Reiniciar App</span>
           </>
         ) : isOffline ? (
           <>
-            <WifiOff size={13} className="text-rose-500 shrink-0" />
+            <WifiOff size={12} className="text-rose-500 shrink-0" />
             <span>Offline</span>
           </>
         ) : hasAnyUpdate ? (
           <>
-            <Download size={13} strokeWidth={2.5} className="shrink-0 animate-bounce" />
-            <span>Atualizar</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-amber-400 animate-pulse ml-0.5" />
+            <Download size={12} className="text-amber-600 dark:text-amber-400 shrink-0" />
+            <span className="font-medium">Atualização</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
           </>
         ) : (
           <>
-            <CheckCircle2 size={13} className="text-emerald-500 dark:text-[#00FF66] shrink-0" />
-            <span className="text-slate-600 dark:text-[#A0A4B4]">Atualizado</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="text-slate-600 dark:text-[#9DA2B4]">Atualizado</span>
           </>
         )}
       </button>
 
-      {/* Popover Compacto sem Popups Invasivos */}
+      {/* Popover Ultra-Minimalista */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-[340px] rounded-2xl bg-white dark:bg-[#141519] border border-slate-200 dark:border-[#22242F] shadow-xl shadow-black/20 z-50 overflow-hidden animate-in fade-in duration-150">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-[#22242F] bg-slate-50/70 dark:bg-[#15161D]">
-            <span className="text-xs font-bold text-slate-900 dark:text-white">Central de Atualizações</span>
-            <button
-              type="button"
-              disabled={isChecking || isUpdating}
-              onClick={handleCheckAll}
-              className="text-[11px] text-emerald-600 dark:text-[#00FF66] font-semibold hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
-            >
-              <RefreshCw size={10} className={isChecking ? 'animate-spin' : ''} />
-              <span>{isChecking ? 'Checando...' : 'Verificar'}</span>
-            </button>
+        <div
+          role="dialog"
+          aria-label="Central de Atualizações"
+          className="absolute right-0 top-full mt-2 w-[310px] sm:w-[330px] rounded-2xl bg-white dark:bg-[#18191E] border border-slate-200 dark:border-[#2D3039] shadow-dropdown shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 select-none text-left p-4 space-y-3.5"
+        >
+          {/* Header simples */}
+          <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-[#252733]">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-[#717684]">
+              Atualizações
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                disabled={isChecking || isUpdating}
+                onClick={handleCheckAll}
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] text-slate-400 hover:text-slate-700 dark:text-[#82889A] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#252733] transition-colors cursor-pointer disabled:opacity-50"
+                title="Checar novamente"
+              >
+                <RefreshCw size={11} className={isChecking ? 'animate-spin' : ''} />
+                <span>{isChecking ? 'Checando...' : 'Verificar'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:text-[#82889A] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#252733] transition-colors cursor-pointer"
+                title="Fechar"
+              >
+                <X size={14} />
+              </button>
+            </div>
           </div>
 
-          <div className="p-4 space-y-3.5">
-            {/* Lista Rápida do Status */}
-            <div className="space-y-1.5 text-xs">
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-[#0F1015] border border-slate-200/60 dark:border-[#1E202B]">
-                <span className="text-slate-600 dark:text-[#A0A4B4]">App Desktop (v{CURRENT_APP_VERSION})</span>
-                {hasAppUpdate ? (
-                  <span className="text-amber-500 font-semibold text-[11px]">Nova versão {appRelease?.tagName}</span>
-                ) : (
-                  <span className="text-emerald-500 font-semibold text-[11px]">Atualizado</span>
-                )}
-              </div>
-
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-[#0F1015] border border-slate-200/60 dark:border-[#1E202B]">
-                <span className="text-slate-600 dark:text-[#A0A4B4]">AstroBrowser (Chromium)</span>
-                {isClearcoteInstalled ? (
-                  <span className="text-emerald-500 font-semibold text-[11px]">Operacional</span>
-                ) : (
-                  <span className="text-amber-500 font-semibold text-[11px]">Download Pendente</span>
-                )}
-              </div>
-
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-[#0F1015] border border-slate-200/60 dark:border-[#1E202B]">
-                <span className="text-slate-600 dark:text-[#A0A4B4]">AstroFox (Firefox)</span>
-                {isCamoufoxInstalled ? (
-                  <span className="text-emerald-500 font-semibold text-[11px]">Operacional</span>
-                ) : (
-                  <span className="text-amber-500 font-semibold text-[11px]">Download Pendente</span>
-                )}
-              </div>
-            </div>
-
-            {/* Barra de Progresso quando está atualizando */}
-            {isUpdating ? (
-              <div className="space-y-2 p-3 rounded-xl bg-emerald-50/50 dark:bg-[#12141D] border border-emerald-500/30 dark:border-[#00FF66]/20">
-                <div className="flex justify-between text-xs text-slate-700 dark:text-slate-300">
-                  <span className="font-medium">
-                    {isAppDownloading ? 'Baixando App...' : 'Configurando Motores...'}
-                  </span>
-                  <span className="font-mono font-bold text-emerald-600 dark:text-[#00FF66]">
-                    {Math.round(currentProgress)}%
-                  </span>
-                </div>
-                <div className="w-full bg-slate-200 dark:bg-[#1A1C25] h-2 rounded-full overflow-hidden">
-                  <div
-                    className="bg-emerald-500 dark:bg-[#00FF66] h-full transition-all duration-200"
-                    style={{ width: `${Math.max(5, currentProgress)}%` }}
-                  />
-                </div>
-                <span className="text-[10.5px] text-slate-500 dark:text-[#9DA2B4] block text-center">
-                  O download continua em segundo plano. Você pode continuar usando o app.
+          {/* Conteúdo Dinâmico Baseado no Estado */}
+          {isUpdating ? (
+            /* Estado 1: Em download / atualizando */
+            <div className="py-1 space-y-2.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-slate-800 dark:text-[#E2E4EC] flex items-center gap-1.5">
+                  <RefreshCw size={12} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
+                  {isAppDownloading ? 'Baixando aplicativo...' : 'Baixando motores...'}
+                </span>
+                <span className="font-mono font-semibold text-[#7C3AED] dark:text-[#A78BFA]">
+                  {Math.round(currentProgress)}%
                 </span>
               </div>
-            ) : isAppReady ? (
+
+              <div className="w-full bg-slate-200 dark:bg-[#252733] h-1.5 rounded-full overflow-hidden">
+                <div
+                  className="bg-[#7C3AED] h-full transition-all duration-150 rounded-full"
+                  style={{ width: `${Math.max(4, Math.min(100, currentProgress))}%` }}
+                />
+              </div>
+
+              {currentSpeed > 0 && (
+                <span className="block text-right font-mono text-[10px] text-slate-400 dark:text-[#82889A]">
+                  {currentSpeed.toFixed(1)} MB/s
+                </span>
+              )}
+            </div>
+          ) : isAppReady ? (
+            /* Estado 2: Download concluído, pronto para reiniciar */
+            <div className="space-y-3 py-1">
+              <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span>Atualização pronta para instalação</span>
+              </div>
+
               <button
                 type="button"
                 onClick={handleApplyRestart}
                 disabled={isRestarting}
-                className="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 dark:bg-[#00FF66] dark:hover:bg-[#00D655] text-white dark:text-black font-bold text-xs transition-all shadow-md cursor-pointer active:scale-98 disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 h-9 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 shadow-xs"
               >
-                {isRestarting ? 'Reiniciando...' : 'Reiniciar e Aplicar Atualização'}
+                <RefreshCw size={13} className={isRestarting ? 'animate-spin' : ''} />
+                <span>{isRestarting ? 'Reiniciando...' : 'Reiniciar e Aplicar'}</span>
               </button>
-            ) : hasAnyUpdate ? (
-              /* O BOTÃO QUE O USUÁRIO QUER: 1 CLIQUE E FAZ O RESTO */
+            </div>
+          ) : hasAnyUpdate ? (
+            /* Estado 3: Há atualização disponível */
+            <div className="space-y-3 py-1">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-white">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span>Atualização disponível</span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-[#8A8F9F] pl-4">
+                  {hasAppUpdate && appRelease?.tagName
+                    ? `Nova versão ${appRelease.tagName} disponível para instalação.`
+                    : 'Novos motores de navegação prontos para baixar.'}
+                </p>
+              </div>
+
               <button
                 type="button"
                 onClick={handleUpdateAll}
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 dark:bg-[#00FF66] dark:hover:bg-[#00D655] text-white dark:text-black font-bold text-xs transition-all shadow-md cursor-pointer active:scale-98"
+                className="w-full flex items-center justify-center gap-2 h-9 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-medium text-xs transition-all active:scale-[0.98] cursor-pointer shadow-xs shadow-[#7C3AED]/20"
               >
-                <Download size={14} strokeWidth={2.5} />
-                <span>Atualizar Agora</span>
+                <Download size={13} />
+                <span>Clique para atualizar</span>
               </button>
-            ) : (
-              <div className="text-center py-2 text-xs text-slate-500 dark:text-[#9DA2B4]">
-                <CheckCircle2 size={18} className="text-emerald-500 mx-auto mb-1" />
-                <span>Tudo em dia! Nenhum download necessário.</span>
+            </div>
+          ) : (
+            /* Estado 4: Tudo atualizado */
+            <div className="py-3 text-center space-y-1.5">
+              <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mb-0.5">
+                <Check size={16} />
               </div>
-            )}
-          </div>
+              <p className="text-xs font-semibold text-slate-900 dark:text-white">
+                Nenhuma atualização disponível
+              </p>
+              <p className="text-[11px] text-slate-500 dark:text-[#8A8F9F]">
+                O Star Multilogin está em dia (v{CURRENT_APP_VERSION})
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
