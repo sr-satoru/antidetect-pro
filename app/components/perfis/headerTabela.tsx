@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   ChevronDown,
@@ -6,6 +7,7 @@ import {
   Play,
   CircleX,
   Upload,
+  Download,
   FolderInput,
   ExternalLink,
   Trash2,
@@ -28,6 +30,7 @@ interface HeaderTabelaProps {
   onRefresh?: () => void;
   onOpenTagFilter?: () => void;
   onOpenMoreOptions?: () => void;
+  onImport?: () => void;
   isSyncing?: boolean;
   [key: string]: any;
 }
@@ -45,8 +48,10 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
   onRefresh,
   onOpenTagFilter,
   onOpenMoreOptions,
+  onImport,
   isSyncing = false,
 }) => {
+  const navigate = useNavigate();
   const hasSelected = selectedIds.length > 0;
 
   const [availableGroups, setAvailableGroups] = useState<string[]>(() =>
@@ -151,6 +156,17 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           >
             <CircleX size={14} />
             <span>Fechar</span>
+          </button>
+
+          {/* 3. Importar */}
+          <button
+            type="button"
+            onClick={() => (onImport ? onImport() : navigate('/importar-perfil'))}
+            className="h-9 px-3.5 rounded-lg bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] border border-slate-200/80 dark:border-[#2D3039] text-slate-700 dark:text-[#E2E4EC] hover:text-slate-900 dark:hover:text-white text-xs font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-2xs"
+            title="Importar perfis (AdsPower, TXT, CSV, JSON)"
+          >
+            <Download size={14} />
+            <span>Importar</span>
           </button>
 
           {/* 4. Exportar */}

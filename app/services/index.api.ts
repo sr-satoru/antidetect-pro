@@ -18,6 +18,7 @@ import { serviceMcp } from './mcp/service.mcp';
 import { serviceSync } from './sync/service.sync';
 import { wsService } from './ws/service.ws';
 import { serviceGrupos } from './grupos/service.grupos';
+import { serviceImportarPerfil } from './importar-perfil/service.importar-perfil';
 
 // Re-exporta serviços ativos
 export { serviceGeral } from './criar-perfil/service.geral';
@@ -28,6 +29,7 @@ export { serviceTabs } from './perfis/service.tabs';
 export { serviceCookies } from './perfis/service.cookies';
 export { serviceTags } from './tags/service.tags';
 export { serviceGrupos } from './grupos/service.grupos';
+export { serviceImportarPerfil } from './importar-perfil/service.importar-perfil';
 export { serviceExtensoes } from './extensoes/service.extensoes';
 export { serviceCategorias } from './extensoes/service.categorias';
 export { serviceAuth } from './auth/service.auth';
@@ -51,6 +53,7 @@ export const api = {
   sync: serviceSync,
   ws: wsService,
   impressoes: impressaoDigitalService,
+  importarPerfil: serviceImportarPerfil,
 };
 
 export default api;

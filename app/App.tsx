@@ -15,6 +15,7 @@ import { ExtensoesPage } from './(app)/extensoes/page';
 import { LixeiraPage } from './(app)/lixeira/page';
 import { McpApiPage } from './(app)/mcp-api/page';
 import { ConfigurationPage } from './(app)/configuration/page';
+import { ImportarPerfilPage } from './(app)/importar-perfil/page';
 
 import { Toaster } from './components/ui/notification';
 import { ConfirmProvider } from './components/ui/confirm-modal';
@@ -39,6 +40,7 @@ export const App: React.FC = () => {
               <Route path="/perfis" element={<PerfisPage />} />
               <Route path="/perfis/editar/:id" element={<EditarPerfilPage />} />
               <Route path="/criar-perfil" element={<CriarPerfilPage />} />
+              <Route path="/importar-perfil" element={<ImportarPerfilPage />} />
               <Route path="/proxy" element={<ProxyPage />} />
               <Route path="/extensoes" element={<ExtensoesPage />} />
               <Route path="/lixeira" element={<LixeiraPage />} />

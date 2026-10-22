@@ -18,6 +18,7 @@ pub mod storage;
 pub mod sync;
 pub mod swagger;
 pub mod api_terceiros;
+pub mod import_export;
 
 #[path = "mcp__publicApi/mod.rs"]
 pub mod mcp_public_api;
@@ -206,6 +207,7 @@ pub fn build_app_router_with_nonce_manager(
     let profile_routes = Router::new()
         .route("/", get(routes::profiles::list_profiles).post(routes::profiles::create_profile))
         .route("/groups", get(routes::profiles::list_groups))
+        .route("/import", post(import_export::routes::import_profiles_handler))
         .route("/public", get(routes::profiles::get_public_profiles).post(routes::profiles::lookup_public_profile))
         .route("/trash", get(routes::profiles::list_trash))
         .route("/trash/empty", delete(routes::profiles::empty_trash))
