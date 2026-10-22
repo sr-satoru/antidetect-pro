@@ -38,10 +38,10 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
   }, [values.url]);
 
   return (
-    <div className="space-y-5 text-[13px] text-slate-700 dark:text-[#C8CBD4]">
+    <div className="space-y-5 text-[13px] text-slate-700 dark:text-[#C9C9D2]">
       {/* 1. Seleção da Loja Online */}
       <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-12">
-        <label className="text-right text-[12.5px] font-medium text-slate-600 dark:text-[#C8CBD4] select-none sm:col-span-3">
+        <label className="text-right text-[12.5px] font-medium text-slate-600 dark:text-[#C9C9D2] select-none sm:col-span-3">
           Loja de origem
         </label>
         <div className="flex flex-wrap items-center gap-2 sm:col-span-9">
@@ -51,7 +51,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
             className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
               storeType === 'firefox'
                 ? 'border-[#FF7139] bg-[#FF7139]/15 text-[#FF7139] dark:text-[#FFA07A] shadow-xs'
-                : 'border-slate-300 dark:border-[#333543] bg-white dark:bg-[#161720] text-slate-700 dark:text-[#8E92A2] hover:border-slate-400 dark:hover:border-[#444758] hover:text-slate-900 dark:hover:text-white shadow-xs'
+                : 'border-slate-300 dark:border-[#2E2E38] bg-white dark:bg-[#15151A] text-slate-700 dark:text-[#90909D] hover:border-slate-400 dark:hover:border-[#41414E] hover:text-slate-900 dark:hover:text-[#F1F1F4] shadow-xs'
             }`}
           >
             <div className="flex h-4 w-4 items-center justify-center shrink-0">
@@ -68,15 +68,15 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
             onClick={() => setStoreType('chrome')}
             className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all ${
               storeType === 'chrome'
-                ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:border-white/30 dark:bg-white/10 dark:text-white shadow-xs'
-                : 'border-slate-300 dark:border-white/10 bg-white dark:bg-[#14151B] text-slate-700 dark:text-[#8E92A2] hover:border-slate-400 dark:hover:border-white/20 hover:text-slate-900 dark:hover:text-white shadow-xs'
+                ? 'border-blue-500/50 bg-blue-50/80 dark:bg-blue-500/10 text-slate-900 dark:text-[#F1F1F4] shadow-xs'
+                : 'border-slate-300 dark:border-[#2E2E38] bg-white dark:bg-[#15151A] text-slate-700 dark:text-[#90909D] hover:border-slate-400 dark:hover:border-[#41414E] hover:text-slate-900 dark:hover:text-[#F1F1F4] shadow-xs'
             }`}
           >
             <div className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-tr from-[#EA4335] via-[#FBBC05] to-[#34A853] p-0.5">
-              <div className="h-full w-full rounded-full bg-white dark:bg-[#161720]" />
+              <div className="h-full w-full rounded-full bg-white dark:bg-[#15151A]" />
             </div>
             <span>Chrome Web Store</span>
-            <span className="rounded-sm bg-slate-100 dark:bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-slate-700 dark:text-white/80">
+            <span className="rounded-sm bg-slate-100 dark:bg-[#252530] px-1.5 py-0.5 text-[10px] font-medium text-slate-700 dark:text-[#F1F1F4]">
               Chromium
             </span>
           </button>
@@ -85,7 +85,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
 
       {/* 2. URL da extensão */}
       <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-12">
-        <label className="text-right text-[12.5px] font-medium text-slate-600 dark:text-[#C8CBD4] select-none sm:col-span-3">
+        <label className="text-right text-[12.5px] font-medium text-slate-600 dark:text-[#C9C9D2] select-none sm:col-span-3">
           <span className="mr-1 text-red-500">*</span> URL da extensão
         </label>
         <div className="sm:col-span-9">
@@ -99,7 +99,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
             }
             value={values.url}
             onChange={(e) => onChange('url', e.target.value)}
-            className="w-full rounded-lg border border-slate-300 dark:border-white/10 bg-white dark:bg-[#14151B] px-3.5 py-2.5 font-mono text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5C6070] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-hidden shadow-xs"
+            className="w-full rounded-md border border-slate-300 dark:border-[#2E2E38] bg-white dark:bg-[#15151A] px-3.5 py-2 font-mono text-[12.5px] text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#66666F] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden shadow-2xs"
           />
         </div>
       </div>
@@ -107,7 +107,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
       {/* 3. Box de Notas e Instruções Contextuais */}
       <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-12">
         <div className="hidden sm:col-span-3 sm:block" />
-        <div className="space-y-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] p-4 text-xs leading-relaxed text-slate-600 dark:text-[#989BAA] shadow-xs sm:col-span-9">
+        <div className="space-y-4 rounded-xl border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] p-4 text-xs leading-relaxed text-slate-600 dark:text-[#90909D] shadow-2xs sm:col-span-9">
           {storeType === 'firefox' ? (
             <div className="space-y-2">
               <span className="block font-semibold text-slate-900 dark:text-white">

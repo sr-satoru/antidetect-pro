@@ -188,11 +188,10 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
           <div
             onClick={() => setTagDropdownOpen((prev) => !prev)}
             onMouseDown={(e) => e.stopPropagation()}
-            className={`flex min-h-[38px] flex-1 cursor-pointer flex-wrap items-center justify-between gap-1.5 rounded-lg border px-3.5 py-1.5 text-[12.5px] text-slate-900 dark:text-white transition-all shadow-xs ${
-              tagDropdownOpen
+            className={`flex min-h-[38px] flex-1 cursor-pointer flex-wrap items-center justify-between gap-1.5 rounded-lg border px-3.5 py-1.5 text-[12.5px] text-slate-900 dark:text-white transition-all shadow-xs ${tagDropdownOpen
                 ? 'border-emerald-500 ring-1 ring-emerald-500/20 dark:border-white/40 dark:ring-white/10 bg-white dark:bg-[#16171D]'
                 : 'border-slate-300 dark:border-white/10 bg-white dark:bg-[#16171D] hover:border-slate-400 dark:hover:border-white/20'
-            }`}
+              }`}
           >
             <div className="flex flex-wrap items-center gap-1.5">
               {selectedTags.length > 0 ? (
@@ -212,9 +211,8 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
             </div>
             <ChevronDown
               size={14}
-              className={`text-slate-400 dark:text-[#7E8294] transition-transform duration-200 ${
-                tagDropdownOpen ? 'rotate-180 text-emerald-500 dark:text-white' : ''
-              }`}
+              className={`text-slate-400 dark:text-[#7E8294] transition-transform duration-200 ${tagDropdownOpen ? 'rotate-180 text-emerald-500 dark:text-white' : ''
+                }`}
             />
           </div>
 

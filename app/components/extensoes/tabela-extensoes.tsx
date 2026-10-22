@@ -1,30 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
   Search,
-  ArrowUpCircle,
   LayoutGrid,
   MoreHorizontal,
   ExternalLink,
   Trash2,
   Puzzle,
-  Flame,
-  Fingerprint,
-  Key,
-  QrCode,
-  Bot,
-  Ban,
-  Cookie,
-  Languages,
-  Lock,
-  ShoppingBag,
-  Volume2,
-  Wallet,
   Loader2,
   Sparkles,
+  Plus,
+  Shield,
+  Check,
 } from 'lucide-react';
 import { api } from '@/services/index.api';
 import { ModalGerenciarCategorias } from '@/components/ui/modal-gerenciar-categorias';
-
 
 const LoadingSpinner: React.FC<{ message?: string; subMessage?: string }> = ({
   message = 'Carregando extensões...',
@@ -32,24 +21,26 @@ const LoadingSpinner: React.FC<{ message?: string; subMessage?: string }> = ({
 }) => (
   <div className="flex h-72 flex-col items-center justify-center gap-3.5 text-center select-none animate-in fade-in duration-200">
     <div className="relative flex items-center justify-center">
-      <Loader2 size={32} className="animate-spin text-[#00FF66]" />
+      <Loader2 size={30} className="animate-spin text-[#388BFD]" />
     </div>
     <div className="flex flex-col items-center gap-1">
-      <p className="text-sm font-medium text-slate-900 dark:text-white">{message}</p>
-      {subMessage && <p className="text-xs text-slate-500 dark:text-[#717586]">{subMessage}</p>}
+      <p className="text-sm font-medium text-slate-900 dark:text-[#F1F1F4]">{message}</p>
+      {subMessage && <p className="text-xs text-slate-500 dark:text-[#90909D]">{subMessage}</p>}
     </div>
   </div>
 );
 
-const CATALOG_CATEGORIES = [
+export const CATALOG_CATEGORIES = [
   'All',
   'Workflow and planning',
-  'Shopping',
   'Tools',
-  'Developer tools',
   'Privacy and security',
+  'Developer tools',
+  'Shopping',
   'Education',
+  'Social Networking',
   'Accessibility',
+  'Just for Fun',
 ] as const;
 
 export type CatalogCategory = (typeof CATALOG_CATEGORIES)[number];
@@ -91,42 +82,430 @@ interface TabelaExtensoesProps {
   onAddRecommended?: (ext: RecommendedExtension) => void;
 }
 
-const renderExtensionIcon = (ext: ExtensionItem) => {
-  if (ext.iconUrl) {
+/**
+ * Catálogo com as extensões da referência oficial da imagem enviada pelo usuário
+ */
+export const CURATED_RECOMMENDED_EXTENSIONS: RecommendedExtension[] = [
+  {
+    id: 'bitwarden',
+    name: 'Bitwarden Password Manager',
+    category: 'Privacy and security',
+    description: 'At home, at work, or on the go, Bitwarden easily secures all your passwords, passkeys, and sensitive information',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com/detail/bitwarden-free-password-m/nngceckbapebfimnlniiiahkandclblb',
+    iconType: 'bitwarden',
+    iconBg: '#175DDC',
+    featured: true,
+  },
+  {
+    id: 'share-a-cart',
+    name: 'Share-A-Cart — Easily Share Shopping Carts',
+    category: 'Shopping',
+    description: 'Share-A-Cart allows you to share the contents of your cart with anyone else.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com/detail/share-a-cart/gighmmpiobklfepjocnamgkkbiglidom',
+    iconType: 'sharea-cart',
+    iconBg: '#FFFFFF',
+    featured: true,
+  },
+  {
+    id: 'vidiq',
+    name: 'vidIQ Vision for YouTube',
+    category: 'Workflow and planning',
+    description: 'Uncover the secrets to success behind your favorite YouTube videos.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com/detail/vidiq-vision-for-youtube/pbehaadkifggfoaohenembapocdfnjik',
+    iconType: 'vidiq',
+    iconBg: '#FFFFFF',
+    featured: true,
+  },
+  {
+    id: 'deepl',
+    name: 'DeepL: translate and write with AI',
+    category: 'Education',
+    description: "Translate while you read and write with DeepL Translate, the world's most accurate translator.",
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com/detail/deepl-translate-and-write/cofdbpoegempjloogbagkncekinflcnj',
+    iconType: 'deepl',
+    iconBg: '#0F2B46',
+    featured: true,
+  },
+  {
+    id: 'ad-library-cloud',
+    name: 'Ad Library Cloud',
+    category: 'Workflow and planning',
+    description: 'Save ads from Facebook Ad Library in one click, download ads from the Ad Library in HD quality.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com',
+    iconType: 'adlibrary',
+    iconBg: '#1877F2',
+    featured: true,
+  },
+  {
+    id: 'cookie-editor',
+    name: 'Cookie Editor',
+    category: 'Developer tools',
+    description: 'A powerful and easy-to-use Cookie Editor.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm',
+    iconType: 'cookie',
+    iconBg: '#FFFBEB',
+    featured: true,
+  },
+  {
+    id: 'random-user-agent',
+    name: 'Random User-Agent (Switcher)',
+    category: 'Tools',
+    description: 'Automatically change the user agent after specified period of time to a randomly selected one',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com/detail/random-user-agent-switche/einpaelgookohagofgnnkcfjbkkgepnp',
+    iconType: 'useragent',
+    iconBg: '#DC2626',
+    featured: true,
+  },
+  {
+    id: 'webrtc-leak-shield',
+    name: 'WebRTC Leak Shield',
+    category: 'Privacy and security',
+    description: 'Disable WebRTC and prevent IP leak.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com',
+    iconType: 'webrtc-shield',
+    iconBg: '#FFFFFF',
+    featured: true,
+  },
+  {
+    id: 'webrtc-control',
+    name: 'WebRTC Control',
+    category: 'Privacy and security',
+    description: 'Have control over WebRTC (disable | enable) and protect your IP address.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com',
+    iconType: 'webrtc-control',
+    iconBg: '#FFFFFF',
+    featured: true,
+  },
+  {
+    id: 'j2team-cookies',
+    name: 'J2TEAM Cookies',
+    category: 'Developer tools',
+    description: 'Simple tool to export/import cookies. Share online accounts without revealing your password.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com',
+    iconType: 'j2team',
+    iconBg: '#78350F',
+    featured: true,
+  },
+  {
+    id: 'portal-dex',
+    name: 'Portal DEX',
+    category: 'Tools',
+    description: 'Portal DEX that facilitates custody-less cross-chain swaps',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com',
+    iconType: 'portal-dex',
+    iconBg: '#121216',
+    featured: true,
+  },
+  {
+    id: 'ads-check-by-smit',
+    name: 'Ads Check by SMIT',
+    category: 'Workflow and planning',
+    description: 'Sản phẩm của SMIT dành cho các nhà quảng cáo trên Facebook.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com',
+    iconType: 'ads-check',
+    iconBg: '#059669',
+    featured: true,
+  },
+  {
+    id: 'adblock-best-ad-blocker',
+    name: 'AdBlock — best ad blocker',
+    category: 'Privacy and security',
+    description: 'Block ads and pop-ups on YouTube, Facebook, Twitch, and your favorite websites.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com/detail/adblock-%E2%80%94-best-ad-block/gighmmpiobklfepjocnamgkkbiglidom',
+    iconType: 'adblock',
+    iconBg: '#DC2626',
+  },
+  {
+    id: 'ads-trust',
+    name: 'Ads Trust',
+    category: 'Workflow and planning',
+    description: 'Get to know the trust level of your Facebook Ads account.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com',
+    iconType: 'adstrust',
+    iconBg: '#0284C7',
+  },
+  {
+    id: 'primus',
+    name: 'Primus',
+    category: 'Workflow and planning',
+    description: 'A zkTLS-powered tool for verifying website data and actions with privacy.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com',
+    iconType: 'primus',
+    iconBg: '#EA580C',
+  },
+  {
+    id: 'steam-inventory-helper',
+    name: 'Steam Inventory Helper',
+    category: 'Tools',
+    description: 'Adds Steam inventory prices, item details, and trade status directly on Steam and Steam-market pages.',
+    provider: 'Chrome Web Store',
+    providerUrl: 'https://chromewebstore.google.com/detail/steam-inventory-helper/cmeakgjggjdlcpncigglobpjbkabhmjl',
+    iconType: 'sih',
+    iconBg: '#0F172A',
+  },
+];
+
+/**
+ * Renderizador de Ícones Vetoriais das Extensões Idênticos à Imagem de Referência
+ */
+const renderExtensionBadge = (
+  iconType?: string,
+  iconUrl?: string,
+  name?: string,
+  sizeClass = 'h-10 w-10',
+) => {
+  if (iconUrl) {
     return (
       <img
-        src={ext.iconUrl}
-        alt={ext.name}
-        className="h-11 w-11 shrink-0 rounded-xl object-contain bg-slate-100 dark:bg-[#181920] p-1.5 border border-slate-200 dark:border-white/10 shadow-xs"
+        src={iconUrl}
+        alt={name || 'Extensão'}
+        className={`${sizeClass} shrink-0 rounded-lg object-contain bg-slate-100 dark:bg-[#15151A] p-1 border border-slate-200 dark:border-[#2E2E38]`}
       />
     );
   }
 
-  const initial = ext.name ? ext.name.trim().charAt(0).toUpperCase() : '';
+  const normalized = (iconType || name || '').toLowerCase();
 
-  return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#181920] text-base font-bold text-emerald-600 dark:text-[#00FF66] shadow-xs">
-      {initial || <Puzzle size={22} className="text-emerald-600 dark:text-[#00FF66]" />}
-    </div>
-  );
-};
-
-const renderRecommendedIcon = (ext: RecommendedExtension) => {
-  if (ext.iconUrl) {
+  // 1. Bitwarden Password Manager
+  if (normalized.includes('bitwarden')) {
     return (
-      <img
-        src={ext.iconUrl}
-        alt={ext.name}
-        className="h-10 w-10 shrink-0 rounded-xl object-contain bg-slate-100 dark:bg-[#181920] p-1 border border-slate-200 dark:border-white/10 shadow-xs"
-      />
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#175DDC] select-none`}
+        title="Bitwarden"
+      >
+        <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm0 2.18l6 2.25v4.66c0 4.1-2.67 7.92-6 8.89-3.33-.97-6-4.79-6-8.89V6.43l6-2.25z" />
+          <path d="M11 9h2v6h-2z" fill="white" />
+        </svg>
+      </div>
     );
   }
 
-  const initial = ext.name ? ext.name.trim().charAt(0).toUpperCase() : '';
+  // 2. Share-A-Cart
+  if (normalized.includes('share-a-cart') || normalized.includes('sharea-cart')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#202028] border border-slate-200 dark:border-[#2E2E38] select-none`}
+        title="Share-A-Cart"
+      >
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="9" cy="20" r="1.5" fill="#F59E0B" />
+          <circle cx="18" cy="20" r="1.5" fill="#EF4444" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="#2563EB" />
+        </svg>
+      </div>
+    );
+  }
 
+  // 3. vidIQ
+  if (normalized.includes('vidiq')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex flex-col items-center justify-center bg-slate-100 dark:bg-[#202028] border border-slate-200 dark:border-[#2E2E38] select-none p-1`}
+        title="vidIQ"
+      >
+        <span className="text-[#0D1B2A] dark:text-[#F1F1F4] font-black text-[10px] tracking-tight leading-none">vidIQ</span>
+        <div className="h-1 w-2.5 bg-[#FF0000] rounded-xs mt-0.5" />
+      </div>
+    );
+  }
+
+  // 4. DeepL
+  if (normalized.includes('deepl')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#0F2B46] select-none`}
+        title="DeepL"
+      >
+        <svg viewBox="0 0 24 24" className="h-5 w-5 stroke-white stroke-2 fill-none stroke-linecap-round stroke-linejoin-round">
+          <circle cx="7" cy="7" r="2" fill="white" />
+          <circle cx="17" cy="12" r="2" fill="white" />
+          <circle cx="7" cy="17" r="2" fill="white" />
+          <path d="M7 9v6l10-3z" stroke="white" strokeWidth="2" />
+        </svg>
+      </div>
+    );
+  }
+
+  // 5. Ad Library Cloud
+  if (normalized.includes('ad library') || normalized === 'adlibrary') {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#1877F2] select-none`}
+        title="Ad Library Cloud"
+      >
+        <span className="text-white font-extrabold text-[15px] tracking-tight">Ad</span>
+      </div>
+    );
+  }
+
+  // 6. Cookie Editor
+  if (normalized.includes('cookie')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-amber-50 dark:bg-[#25201A] border border-amber-200/60 dark:border-amber-900/30 select-none text-xl`}
+        title="Cookie Editor"
+      >
+        🍪
+      </div>
+    );
+  }
+
+  // 7. Random User-Agent
+  if (normalized.includes('user-agent') || normalized.includes('useragent')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#DC2626] select-none`}
+        title="Random User-Agent"
+      >
+        <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+        </svg>
+      </div>
+    );
+  }
+
+  // 8. WebRTC Leak Shield
+  if (normalized.includes('webrtc leak') || normalized === 'webrtc-shield') {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#202028] border border-slate-200 dark:border-[#2E2E38] select-none`}
+        title="WebRTC Leak Shield"
+      >
+        <Shield className="h-5 w-5 text-[#0284C7] fill-[#0284C7]/20" />
+      </div>
+    );
+  }
+
+  // 9. WebRTC Control
+  if (normalized.includes('webrtc control')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#202028] border border-slate-200 dark:border-[#2E2E38] select-none`}
+        title="WebRTC Control"
+      >
+        <svg viewBox="0 0 24 24" className="h-5 w-5 stroke-[#059669] stroke-2 fill-none">
+          <circle cx="12" cy="12" r="9" stroke="#E11D48" />
+          <path d="M12 7v10M7 12h10" stroke="#059669" />
+        </svg>
+      </div>
+    );
+  }
+
+  // 10. J2TEAM Cookies
+  if (normalized.includes('j2team')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#D97706] select-none text-white font-bold text-base`}
+        title="J2TEAM Cookies"
+      >
+        🍪
+      </div>
+    );
+  }
+
+  // 11. Portal DEX
+  if (normalized.includes('portal dex') || normalized.includes('portal-dex')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#14141A] border border-slate-200 dark:border-[#2E2E38] select-none`}
+        title="Portal DEX"
+      >
+        <span className="text-[#A855F7] font-black text-xs">P</span>
+      </div>
+    );
+  }
+
+  // 12. Ads Check by SMIT
+  if (normalized.includes('ads check') || normalized.includes('smit')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#059669] select-none text-white font-bold text-[9px]`}
+        title="Ads Check by SMIT"
+      >
+        <div className="flex flex-col items-center leading-none">
+          <span>ADS</span>
+          <span className="text-[7.5px] opacity-80 mt-0.5">SMIT</span>
+        </div>
+      </div>
+    );
+  }
+
+  // 13. AdBlock
+  if (normalized.includes('adblock')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#DC2626] select-none`}
+        title="AdBlock"
+      >
+        <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white">
+          <path d="M12 2a1 1 0 0 1 .707.293l4 4A1 1 0 0 1 17 7v4a1 1 0 0 1-.293.707l-4 4A1 1 0 0 1 12 16h-4a1 1 0 0 1-.707-.293l-4-4A1 1 0 0 1 3 11V7a1 1 0 0 1 .293-.707l4-4A1 1 0 0 1 8 2h4z" />
+          <path d="M10 5.5a.75.75 0 0 1 .75.75v3.25h1V6.25a.75.75 0 0 1 1.5 0v3.25h.5V7a.75.75 0 0 1 1.5 0v4.2a3.5 3.5 0 0 1-1.025 2.475L12.5 15.4a2.5 2.5 0 0 1-3.536 0L7.24 13.68A2.5 2.5 0 0 1 6.5 11.91V9a.75.75 0 0 1 1.5 0v1.5h1V6.25A.75.75 0 0 1 10 5.5z" />
+        </svg>
+      </div>
+    );
+  }
+
+  // 14. Ads Trust
+  if (normalized.includes('ads trust') || normalized === 'adstrust') {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#0284C7] select-none`}
+        title="Ads Trust"
+      >
+        <span className="text-white font-extrabold text-[17px] leading-none">t?</span>
+      </div>
+    );
+  }
+
+  // 15. Primus
+  if (normalized.includes('primus')) {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#FF5500] select-none`}
+        title="Primus"
+      >
+        <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 fill-none stroke-white stroke-[2.75] stroke-linecap-round stroke-linejoin-round">
+          <path d="M4 6h16v12H7V9h10v6h-7" />
+        </svg>
+      </div>
+    );
+  }
+
+  // 16. Steam Inventory Helper
+  if (normalized.includes('steam') || normalized === 'sih') {
+    return (
+      <div
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#14141A] select-none border border-slate-200 dark:border-[#2E2E38]`}
+        title="Steam Inventory Helper"
+      >
+        <span className="text-[#00E5FF] font-black text-[10px] tracking-tight">[SIH]</span>
+      </div>
+    );
+  }
+
+  // Fallback padrão limpo
+  const initial = name ? name.trim().charAt(0).toUpperCase() : '';
   return (
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#181920] text-sm font-bold text-emerald-600 dark:text-[#00FF66] shadow-xs">
-      {initial || <Puzzle size={19} className="text-emerald-600 dark:text-[#00FF66]" />}
+    <div
+      className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#15151A] border border-slate-200 dark:border-[#2E2E38] text-slate-800 dark:text-[#F1F1F4] font-bold text-sm select-none`}
+    >
+      {initial || <Puzzle size={18} className="text-slate-400 dark:text-[#90909D]" />}
     </div>
   );
 };
@@ -147,11 +526,12 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
 
   // Estados específicos para a aba "Recomendado para você"
   const [selectedCategory, setSelectedCategory] = useState<CatalogCategory>('All');
-  const [storeFilter, setStoreFilter] = useState<'all' | 'firefox' | 'chrome'>('all');
-  const [recommendedList, setRecommendedList] = useState<RecommendedExtension[]>([]);
+  const [recommendedList, setRecommendedList] = useState<RecommendedExtension[]>(
+    CURATED_RECOMMENDED_EXTENSIONS,
+  );
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
-  // Efeito de busca do catálogo chamando o backend (cache desacoplado no backend)
+  // Efeito de busca com catálogo curado e fallback confiável
   useEffect(() => {
     if (activeTab !== 'recommended') return;
 
@@ -162,68 +542,114 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
       try {
         const results = await api.extensions.getCatalog({
           q: searchQuery,
-          category: selectedCategory,
-          store: storeFilter,
+          category: selectedCategory === 'All' ? undefined : selectedCategory,
         });
-        if (isMounted) {
-          setRecommendedList((results as RecommendedExtension[]) || []);
+
+        if (isMounted && Array.isArray(results) && results.length > 0) {
+          const backendList: RecommendedExtension[] = results.map((item: any) => ({
+            id: String(item.id || item.slug || item.name),
+            name: item.name,
+            category: item.category || 'Tools',
+            description: item.description || 'Extensão compatível com a plataforma.',
+            provider: item.provider || 'Chrome Web Store',
+            providerUrl: item.provider_url || item.providerUrl || 'https://chromewebstore.google.com',
+            iconType: item.icon_type || item.iconType || 'custom',
+            iconBg: item.icon_bg || item.iconBg || '#181920',
+            iconUrl: item.icon_url || item.iconUrl,
+          }));
+
+          const merged: RecommendedExtension[] = [...backendList];
+          for (const cur of CURATED_RECOMMENDED_EXTENSIONS) {
+            if (!merged.some((m) => m.name.toLowerCase() === cur.name.toLowerCase())) {
+              merged.push(cur);
+            }
+          }
+          setRecommendedList(merged);
+        } else if (isMounted) {
+          const q = searchQuery.toLowerCase().trim();
+          const filtered = CURATED_RECOMMENDED_EXTENSIONS.filter((ext) => {
+            const matchesQuery =
+              !q ||
+              ext.name.toLowerCase().includes(q) ||
+              ext.description.toLowerCase().includes(q);
+            const matchesCat =
+              selectedCategory === 'All' ||
+              ext.category.toLowerCase() === selectedCategory.toLowerCase();
+            return matchesQuery && matchesCat;
+          });
+          setRecommendedList(filtered);
         }
       } catch (err) {
-        console.error('Erro ao buscar catálogo de extensões:', err);
+        if (isMounted) {
+          const q = searchQuery.toLowerCase().trim();
+          const filtered = CURATED_RECOMMENDED_EXTENSIONS.filter((ext) => {
+            const matchesQuery =
+              !q ||
+              ext.name.toLowerCase().includes(q) ||
+              ext.description.toLowerCase().includes(q);
+            const matchesCat =
+              selectedCategory === 'All' ||
+              ext.category.toLowerCase() === selectedCategory.toLowerCase();
+            return matchesQuery && matchesCat;
+          });
+          setRecommendedList(filtered);
+        }
       } finally {
         if (isMounted) {
           setIsLoadingSearch(false);
         }
       }
-    }, 150);
+    }, 120);
 
     return () => {
       isMounted = false;
       clearTimeout(timer);
     };
-  }, [searchQuery, selectedCategory, storeFilter, activeTab]);
+  }, [searchQuery, selectedCategory, activeTab]);
 
-  // Filtro para extensões da equipe instaladas
+  // Filtro para extensões da equipe
   const teamExtensions = extensions.filter((ext) => {
-    const q = searchQuery.toLowerCase();
+    const q = searchQuery.toLowerCase().trim();
     return (
       ext.tab === 'team' &&
       (!q ||
         ext.name.toLowerCase().includes(q) ||
-        ext.description.toLowerCase().includes(q))
+        ext.description?.toLowerCase().includes(q))
     );
   });
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-slate-50 dark:bg-[#14151B] text-slate-800 dark:text-[#D2D5DF]">
-      {/* 1. Abas Superiores */}
-      <div className="flex h-12 shrink-0 items-center border-b border-slate-200 dark:border-white/10 px-6 select-none bg-white dark:bg-transparent">
-        <div className="flex items-center gap-8">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-white dark:bg-[#1A1A21] text-slate-800 dark:text-[#C9C9D2]">
+      {/* 1. Abas Superiores Idênticas à Imagem de Referência */}
+      <div className="flex h-12 shrink-0 items-center border-b border-slate-200 dark:border-[#2E2E38] px-6 select-none bg-white dark:bg-[#1A1A21]">
+        <div className="flex items-center gap-7">
           <button
             type="button"
             onClick={() => setActiveTab('team')}
-            className={`relative cursor-pointer pb-3 text-sm font-semibold transition-colors ${activeTab === 'team'
-              ? 'text-slate-900 dark:text-white'
-              : 'text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-white'
-              }`}
+            className={`relative cursor-pointer pb-3 text-sm transition-colors ${
+              activeTab === 'team'
+                ? 'font-medium text-slate-900 dark:text-[#F1F1F4]'
+                : 'text-slate-500 hover:text-slate-900 dark:text-[#90909D] dark:hover:text-[#F1F1F4]'
+            }`}
           >
             <span>Extensões da equipe</span>
             {activeTab === 'team' && (
-              <span className="absolute bottom-0 left-0 h-[2.5px] w-full rounded-full bg-emerald-500 dark:bg-[#00FF66]" />
+              <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-slate-900 dark:bg-[#F1F1F4]" />
             )}
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('recommended')}
-            className={`relative cursor-pointer pb-3 text-sm font-semibold transition-colors ${activeTab === 'recommended'
-              ? 'text-slate-900 dark:text-white'
-              : 'text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-white'
-              }`}
+            className={`relative cursor-pointer pb-3 text-sm transition-colors ${
+              activeTab === 'recommended'
+                ? 'font-medium text-slate-900 dark:text-[#F1F1F4]'
+                : 'text-slate-500 hover:text-slate-900 dark:text-[#90909D] dark:hover:text-[#F1F1F4]'
+            }`}
           >
             <span>Recomendado para você</span>
             {activeTab === 'recommended' && (
-              <span className="absolute bottom-0 left-0 h-[2.5px] w-full rounded-full bg-emerald-500 dark:bg-[#00FF66]" />
+              <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-slate-900 dark:bg-[#F1F1F4]" />
             )}
           </button>
         </div>
@@ -234,28 +660,28 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
         /* ================= ABA EXTENSÕES DA EQUIPE ================= */
         <>
           {/* Barra de Ações da Equipe */}
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 px-6 py-4 select-none">
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-4 px-6 pt-5 pb-3 select-none">
+            <div className="flex flex-wrap items-center gap-2.5">
               <button
                 type="button"
                 onClick={onAddClick}
-                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-4 py-2 text-xs font-semibold shadow-xs transition-all active:scale-[0.98]"
+                className="h-[34px] px-3.5 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white text-[13px] font-medium flex items-center gap-2 transition-all cursor-pointer active:scale-[0.98]"
               >
-                <ArrowUpCircle size={16} />
+                <Plus size={15} />
                 <span>Adicionar extensão</span>
               </button>
 
-              <div className="relative w-64 sm:w-80">
+              <div className="relative w-72 sm:w-80">
                 <Search
                   size={14}
-                  className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400 dark:text-[#686C7E]"
+                  className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400 dark:text-[#90909D]"
                 />
                 <input
                   type="text"
-                  placeholder="Procurar..."
+                  placeholder="Procurar"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181920] pr-3 pl-9 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#686C7E] transition-colors focus:border-emerald-500 dark:focus:border-white/50 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-hidden shadow-2xs"
+                  className="h-9 w-full rounded-lg border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] pr-3 pl-9 text-xs text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#90909D] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden"
                 />
               </div>
             </div>
@@ -263,29 +689,35 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
             <button
               type="button"
               onClick={() => setIsCategoryModalOpen(true)}
-              className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#181920] px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-[#C8CBD4] transition-colors hover:bg-slate-100 dark:hover:border-white/20 dark:hover:text-white shadow-2xs"
+              className="h-[34px] px-3 rounded-lg border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] text-slate-700 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-100 dark:hover:bg-[#24242C] text-xs font-normal flex items-center gap-2 transition-colors cursor-pointer"
             >
-              <LayoutGrid size={15} />
+              <LayoutGrid size={14} />
               <span>Categoria</span>
             </button>
           </div>
 
-          {/* Grid de Cards da Equipe */}
-          <div className="flex-1 overflow-y-auto px-6 pb-6">
+          {/* Grid de Cards da Equipe: 3 ou 4 itens por linha */}
+          <div className="flex-1 overflow-y-auto px-6 pt-2 pb-6">
             {teamExtensions.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {teamExtensions.map((ext) => (
                   <div
                     key={ext.id}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] p-5 shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-none hover:border-slate-300 dark:hover:border-white/20 dark:hover:bg-[#1E2028] transition-all"
+                    className="group relative flex flex-col justify-between rounded-xl border border-slate-200 dark:border-[#2E2E38] bg-slate-50/50 dark:bg-[#15151A]/60 p-4 hover:border-slate-300 dark:hover:border-[#41414E] dark:hover:bg-[#1A1A22] transition-colors duration-150"
                   >
                     <div>
+                      {/* Topo: Ícone, Título e Switch de Ativação */}
                       <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3">
-                          {renderExtensionIcon(ext)}
-                          <div className="min-w-0">
+                        <div className="flex items-start gap-3 min-w-0">
+                          {renderExtensionBadge(
+                            ext.iconType,
+                            ext.iconUrl,
+                            ext.name,
+                            'h-10 w-10',
+                          )}
+                          <div className="min-w-0 pt-0.5">
                             <h3
-                              className="line-clamp-2 text-[13.5px] font-bold text-slate-900 dark:text-white"
+                              className="line-clamp-2 text-[13.5px] font-medium text-slate-900 dark:text-[#F1F1F4] leading-snug"
                               title={ext.name}
                             >
                               {ext.name}
@@ -293,50 +725,55 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           </div>
                         </div>
 
-                        {/* Switch & Status */}
-                        <div className="flex shrink-0 flex-col items-end gap-1">
+                        {/* Switch Ativar/Desativar */}
+                        <div className="flex shrink-0 flex-col items-end gap-1.5 pt-0.5">
                           <button
                             type="button"
                             onClick={() => onToggleEnabled(ext.id)}
-                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled ? 'bg-[#238636]' : 'bg-slate-300 dark:bg-[#3A3D4D]'
-                              }`}
+                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${
+                              ext.enabled
+                                ? 'bg-[#238636]'
+                                : 'bg-slate-300 dark:bg-[#2E2E38]'
+                            }`}
                           >
                             <span
-                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition duration-200 ${ext.enabled
-                                ? 'translate-x-4.5'
-                                : 'translate-x-1'
-                                }`}
+                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition duration-200 shadow-xs ${
+                                ext.enabled ? 'translate-x-4.5' : 'translate-x-1'
+                              }`}
                             />
                           </button>
-                          <span className="flex items-center gap-1 text-[11px] font-medium text-[#238636] dark:text-[#2ea043]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#238636] dark:bg-[#2ea043]" />
-                            <span>Ativo</span>
+                          <span className="flex items-center gap-1.5 text-[11px] font-normal text-slate-500 dark:text-[#90909D]">
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                ext.enabled ? 'bg-[#238636]' : 'bg-slate-400 dark:bg-[#90909D]'
+                              }`}
+                            />
+                            <span>{ext.enabled ? 'Ativo' : 'Pausado'}</span>
                           </span>
                         </div>
                       </div>
 
-                      <p className="mt-3.5 mb-4 line-clamp-3 text-xs leading-relaxed text-slate-600 dark:text-[#8E92A2]">
-                        {ext.description}
+                      {/* Descrição limpa */}
+                      <p className="mt-2 mb-3.5 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-[#90909D] min-h-[34px]">
+                        {ext.description || 'Extensão instalada e pronta para uso no perfil.'}
                       </p>
                     </div>
 
-                    {/* Provedor e Opções */}
-                    <div className="flex items-center justify-between border-t border-slate-100 dark:border-white/10 pt-3 text-xs">
-                      <div className="flex items-center gap-1.5 text-[11.5px] text-slate-500 dark:text-[#7C8092]">
-                        <span>Provedor:</span>
+                    {/* Rodapé: Provedor e Opções sem divisória pesada */}
+                    <div className="flex items-center justify-between text-xs pt-1">
+                      <div className="flex items-center gap-1.5 text-[11.5px] text-slate-400 dark:text-[#90909D]">
+                        <span>Provedor :</span>
                         <a
                           href={
                             ext.providerUrl && ext.providerUrl !== '#'
                               ? ext.providerUrl
-                              : ext.provider?.includes('Firefox')
-                                ? 'https://addons.mozilla.org/pt-BR/firefox/'
-                                : 'https://chromewebstore.google.com'
+                              : 'https://chromewebstore.google.com'
                           }
                           target="_blank"
                           rel="noreferrer"
-                          className="font-medium text-emerald-600 dark:text-emerald-400/80 hover:underline dark:hover:text-emerald-300"
+                          className="text-[#388BFD] hover:underline font-normal"
                         >
-                          {ext.provider}
+                          {ext.provider || 'Chrome Web Store'}
                         </a>
                       </div>
 
@@ -346,33 +783,27 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           onClick={() =>
                             setOpenMenuId(openMenuId === ext.id ? null : ext.id)
                           }
-                          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#7C8092] transition-colors dark:hover:bg-white/10 dark:hover:text-white"
+                          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#90909D] transition-colors dark:hover:bg-[#24242C] dark:hover:text-[#F1F1F4]"
                           title="Mais opções"
                         >
                           <MoreHorizontal size={15} />
                         </button>
 
                         {openMenuId === ext.id && (
-                          <div className="absolute right-0 bottom-8 z-20 w-44 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] p-1 shadow-xl shadow-slate-900/10 dark:shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                          <div className="absolute right-0 bottom-8 z-20 w-44 rounded-xl border border-slate-200 dark:border-[#2E2E38] bg-white dark:bg-[#1A1A21] p-1 shadow-xl animate-in fade-in zoom-in-95 duration-150">
                             <a
                               href={
                                 ext.providerUrl && ext.providerUrl !== '#'
-                              ? ext.providerUrl
-                              : ext.provider?.includes('Firefox')
-                                ? 'https://addons.mozilla.org/pt-BR/firefox/'
-                                : 'https://chromewebstore.google.com'
+                                    ? ext.providerUrl
+                                  : 'https://chromewebstore.google.com'
                               }
                               target="_blank"
                               rel="noreferrer"
-                              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-[#C8CBD4] transition-colors hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white"
+                              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-[#C9C9D2] transition-colors hover:bg-slate-100 dark:hover:bg-[#24242C] hover:text-slate-900 dark:hover:text-[#F1F1F4]"
                               onClick={() => setOpenMenuId(null)}
                             >
                               <ExternalLink size={13} />
-                              <span>
-                                {ext.provider?.includes('Firefox')
-                                  ? 'Ver no Firefox AMO'
-                                  : 'Ver na Web Store'}
-                              </span>
+                              <span>Ver na Web Store</span>
                             </a>
                             <button
                               type="button"
@@ -398,15 +829,15 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 subMessage="Sincronizando com o banco local"
               />
             ) : (
-              <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-slate-500 dark:text-[#8E92A2]">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#181920] text-slate-400 dark:text-[#717586]">
+              <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-slate-500 dark:text-[#90909D]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 dark:border-[#2E2E38] bg-slate-100 dark:bg-[#15151A] text-slate-400 dark:text-[#90909D]">
                   <Puzzle size={22} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">
+                  <p className="text-sm font-medium text-slate-900 dark:text-[#F1F1F4]">
                     Nenhuma extensão instalada na equipe
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-[#6C7082]">
+                  <p className="text-xs text-slate-500 dark:text-[#90909D] mt-1">
                     Explore a aba &ldquo;Recomendado para você&rdquo; ou clique em
                     &ldquo;Adicionar extensão&rdquo;.
                   </p>
@@ -416,132 +847,94 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           </div>
         </>
       ) : (
-        /* ================= ABA RECOMENDADO PARA VOCÊ ================= */
+        /* ================= ABA RECOMENDADO PARA VOCÊ (DESIGN FIEL À IMAGEM) ================= */
         <div className="flex flex-1 flex-col overflow-hidden">
-          {/* Topo: Busca e Links Externos das Lojas */}
+          {/* Topo: Campo de Pesquisa à Esquerda e Link da Chrome Web Store à Direita */}
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-4 px-6 pt-5 pb-3">
-            <div className="relative w-64 sm:w-80">
+            <div className="relative w-72 sm:w-80">
               <Search
                 size={14}
-                className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400 dark:text-[#686C7E]"
+                className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400 dark:text-[#90909D]"
               />
               <input
                 type="text"
                 placeholder="Procurar"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] pr-3 pl-9 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#686C7E] transition-colors focus:border-emerald-500 dark:focus:border-white/50 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-hidden shadow-2xs"
+                className="h-9 w-full rounded-lg border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] pr-8 pl-9 text-xs text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#90909D] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden"
               />
               {isLoadingSearch && (
                 <Loader2
                   size={13}
-                  className="absolute top-1/2 right-3 -translate-y-1/2 animate-spin text-emerald-600 dark:text-[#00FF66]"
+                  className="absolute top-1/2 right-3 -translate-y-1/2 animate-spin text-[#388BFD]"
                 />
               )}
             </div>
 
-            <div className="text-[12px] text-slate-500 dark:text-[#8E92A2]">
+            <div className="text-[12.5px] text-slate-500 dark:text-[#90909D]">
               Não encontrou as extensões que deseja?{' '}
-              <a
-                href="https://addons.mozilla.org/pt-BR/firefox/"
-                target="_blank"
-                rel="noreferrer"
-                className="font-medium text-emerald-400/80 underline underline-offset-2 hover:text-emerald-300"
-              >
-                Procure no Firefox AMO
-              </a>{' '}
-              ou{' '}
               <a
                 href="https://chromewebstore.google.com"
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium text-emerald-400/80 underline underline-offset-2 hover:text-emerald-300"
+                className="text-[#388BFD] hover:underline font-normal"
               >
-                Chrome Web Store
+                Procure na Chrome Web Store.
               </a>
-              .
             </div>
           </div>
 
-          {/* Filtros de Categorias (Pills estilo AdsPower) */}
-          <div className="flex shrink-0 items-center justify-between gap-3 overflow-x-auto px-6 py-2 no-scrollbar select-none">
-            <div className="flex items-center gap-1.5">
-              {CATALOG_CATEGORIES.map((cat) => (
+          {/* Filtros de Categorias (Pills com destaque sutil estilo da imagem) */}
+          <div className="flex shrink-0 items-center gap-2 overflow-x-auto px-6 py-2 no-scrollbar select-none">
+            {CATALOG_CATEGORIES.map((cat) => {
+              const isSelected = selectedCategory === cat;
+              return (
                 <button
                   key={cat}
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${selectedCategory === cat
-                    ? 'bg-emerald-50 text-[#1b6528] border border-emerald-500/30 dark:bg-[#1A1A21] dark:border-[#2E2E38] dark:text-[#2ea043] font-bold shadow-xs'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:bg-white/[0.04] dark:hover:text-white'
-                    }`}
+                  className={`rounded-md px-2.5 py-1 text-xs font-normal whitespace-nowrap transition-colors cursor-pointer ${
+                    isSelected
+                      ? 'border border-slate-300 dark:border-[#41414E] bg-slate-200/70 dark:bg-[#24242C] text-slate-900 dark:text-[#F1F1F4]'
+                      : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] border border-transparent'
+                  }`}
                 >
                   {cat}
                 </button>
-              ))}
-            </div>
-
-            {/* Filtro rápido por loja */}
-            <div className="hidden shrink-0 items-center gap-1 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] p-0.5 sm:flex">
-              <button
-                type="button"
-                onClick={() => setStoreFilter('all')}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'all'
-                  ? 'bg-white text-[#238636] shadow-2xs dark:bg-[#1A1A21] dark:text-[#2ea043] border border-slate-200 dark:border-[#2E2E38]'
-                  : 'text-slate-500 hover:text-slate-900 dark:text-[#7C8092] dark:hover:text-white'
-                  }`}
-              >
-                Todas
-              </button>
-              <button
-                type="button"
-                onClick={() => setStoreFilter('firefox')}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'firefox'
-                  ? 'bg-white text-[#238636] shadow-2xs dark:bg-[#1A1A21] dark:text-[#2ea043] border border-slate-200 dark:border-[#2E2E38]'
-                  : 'text-slate-500 hover:text-slate-900 dark:text-[#7C8092] dark:hover:text-white'
-                  }`}
-              >
-                Firefox AMO
-              </button>
-              <button
-                type="button"
-                onClick={() => setStoreFilter('chrome')}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'chrome'
-                  ? 'bg-white text-[#238636] shadow-2xs dark:bg-[#1A1A21] dark:text-[#2ea043] border border-slate-200 dark:border-[#2E2E38]'
-                  : 'text-slate-500 hover:text-slate-900 dark:text-[#7C8092] dark:hover:text-white'
-                  }`}
-              >
-                Chrome Store
-              </button>
-            </div>
+              );
+            })}
           </div>
 
-          {/* Grid de Cards Recomendados */}
+          {/* Grid de Cards Recomendados: 4 itens por linha, leves, arejados e sem peso visual */}
           <div className="flex-1 overflow-y-auto px-6 pt-3 pb-6">
             {recommendedList.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {recommendedList.map((recExt) => {
-                  // Card de Extensão
                   const isAlreadyAdded = extensions.some(
                     (item) =>
                       item.tab === 'team' &&
                       item.name.toLowerCase().trim() ===
-                      recExt.name.toLowerCase().trim(),
+                        recExt.name.toLowerCase().trim(),
                   );
 
                   return (
                     <div
                       key={recExt.id}
-                      className="group relative flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] p-5 shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-none hover:border-slate-300 dark:hover:border-white/20 dark:hover:bg-[#1E2028] transition-all"
+                      className="group relative flex flex-col justify-between rounded-xl border border-slate-200 dark:border-[#2E2E38] bg-slate-50/50 dark:bg-[#15151A]/60 p-4 hover:border-slate-300 dark:hover:border-[#41414E] dark:hover:bg-[#1A1A22] transition-colors duration-150"
                     >
                       <div>
-                        {/* Linha Superior: Ícone, Título e Botão Adicionar/Adicionado */}
+                        {/* Linha Superior: Ícone, Título e Botão Adicionar sutil */}
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3 min-w-0">
-                            {renderRecommendedIcon(recExt)}
-                            <div className="min-w-0">
+                            {renderExtensionBadge(
+                              recExt.iconType,
+                              recExt.iconUrl,
+                              recExt.name,
+                              'h-10 w-10',
+                            )}
+                            <div className="min-w-0 pt-0.5">
                               <h3
-                                className="line-clamp-2 text-[13.5px] font-bold text-slate-900 dark:text-white"
+                                className="line-clamp-2 text-[13.5px] font-medium text-slate-900 dark:text-[#F1F1F4] leading-snug"
                                 title={recExt.name}
                               >
                                 {recExt.name}
@@ -549,11 +942,11 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                             </div>
                           </div>
 
-                          {/* Botão de Ação */}
-                          <div className="shrink-0">
+                          {/* Botão de Ação: Estilo sutil com borda fina idêntico à imagem */}
+                          <div className="shrink-0 pt-0.5">
                             {isAlreadyAdded ? (
-                              <span className="inline-flex select-none items-center rounded-md border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] px-3 py-1.5 text-[11px] font-medium text-slate-500 dark:text-[#7E8294]">
-                                Adicionado
+                              <span className="inline-flex select-none items-center rounded-md border border-slate-200 dark:border-[#2E2E38] bg-slate-100 dark:bg-[#15151A] px-2.5 py-1 text-xs font-normal text-slate-400 dark:text-[#90909D]">
+                                <span>Adicionado</span>
                               </span>
                             ) : (
                               <button
@@ -561,7 +954,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                                 onClick={() =>
                                   onAddRecommended && onAddRecommended(recExt)
                                 }
-                                className="cursor-pointer rounded-md border border-slate-200 dark:border-white/20 bg-slate-100 dark:bg-white/10 px-3.5 py-1.5 text-[11.5px] font-semibold text-slate-800 dark:text-white transition-all hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-black active:scale-95 shadow-2xs"
+                                className="cursor-pointer rounded-md border border-slate-300 dark:border-[#2E2E38] bg-transparent hover:bg-slate-100 dark:hover:bg-[#24242C] hover:border-slate-400 dark:hover:border-[#41414E] px-2.5 py-1 text-xs font-normal text-slate-700 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] transition-colors"
                               >
                                 Adicionar
                               </button>
@@ -569,21 +962,21 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           </div>
                         </div>
 
-                        {/* Descrição */}
-                        <p className="mt-3.5 mb-4 line-clamp-3 text-xs leading-relaxed text-slate-600 dark:text-[#8E92A2]">
+                        {/* Descrição em cinza suave e confortável de ler */}
+                        <p className="mt-2 mb-3.5 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-[#90909D] min-h-[34px]">
                           {recExt.description}
                         </p>
                       </div>
 
-                      {/* Rodapé: Provedor */}
-                      <div className="flex items-center justify-between border-t border-slate-100 dark:border-white/10 pt-3 text-xs">
-                        <div className="flex items-center gap-1.5 text-[11.5px] text-slate-500 dark:text-[#7C8092]">
+                      {/* Rodapé: Provedor com link azul sem divisória pesada */}
+                      <div className="flex items-center text-xs pt-1">
+                        <div className="flex items-center gap-1.5 text-[11.5px] text-slate-400 dark:text-[#90909D]">
                           <span>Provedor :</span>
                           <a
-                            href={recExt.providerUrl}
+                            href={recExt.providerUrl || 'https://chromewebstore.google.com'}
                             target="_blank"
                             rel="noreferrer"
-                            className="font-medium text-emerald-400/80 hover:underline hover:text-emerald-300"
+                            className="text-[#388BFD] hover:underline font-normal"
                           >
                             {recExt.provider}
                           </a>
@@ -599,15 +992,15 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 subMessage="Buscando catálogo recomendado"
               />
             ) : (
-              <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-slate-500 dark:text-[#8E92A2]">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#181920] text-slate-400 dark:text-[#717586]">
+              <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-slate-500 dark:text-[#90909D]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 dark:border-[#2E2E38] bg-slate-100 dark:bg-[#15151A] text-slate-400 dark:text-[#90909D]">
                   <Sparkles size={22} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">
+                  <p className="text-sm font-medium text-slate-900 dark:text-[#F1F1F4]">
                     Nenhuma extensão encontrada
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-[#6C7082]">
+                  <p className="text-xs text-slate-500 dark:text-[#90909D] mt-1">
                     Tente buscar por outro termo ou selecione a categoria
                     &ldquo;All&rdquo;.
                   </p>
@@ -627,3 +1020,5 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
 };
 
 export default TabelaExtensoes;
+
+

@@ -1,6 +1,9 @@
 import React from 'react';
 import { Search, Loader2, Trash2, Globe, ShieldCheck } from 'lucide-react';
 import { Checkbox } from '../../ui/checkbox';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
+import { Tooltip } from '../../ui/tooltip';
 import { ParsedProxyItem } from '@/services/proxies/service.proxies';
 
 export interface TabelaPreviaProxiesProps {
@@ -27,24 +30,21 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
       {/* Barra de Ações: Verificar proxy, Verificar duplicatas, Badge de contagem */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 dark:border-white/5 pt-3 select-none">
         <div className="flex items-center gap-3">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={onTestAll}
             disabled={!hasValidProxies || isChecking}
-            className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 dark:border-white/15 bg-white dark:bg-[#20222C] px-3.5 py-1.5 text-xs font-semibold text-slate-800 dark:text-white shadow-xs transition-all hover:border-emerald-500 hover:text-emerald-600 dark:hover:border-[#00FF66]/50 dark:hover:bg-[#272935] dark:hover:text-[#00FF66] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-300 disabled:hover:bg-white disabled:hover:text-slate-800 dark:disabled:hover:border-white/15 dark:disabled:hover:bg-[#20222C] dark:disabled:hover:text-white"
-            title={
-              hasValidProxies
-                ? 'Testar conexões com os proxies informados'
-                : 'Insira ao menos um formato de proxy válido para verificar'
-            }
+            className="gap-2 border-slate-300 dark:border-white/15"
           >
             {isChecking ? (
-              <Loader2 size={13} className="animate-spin text-emerald-600 dark:text-[#00FF66]" />
+              <Loader2 size={13} className="animate-spin text-[#238636] dark:text-[#2ea043]" />
             ) : (
               <Search size={13} />
             )}
-            <span>Verificar Conexão</span>
-          </button>
+            <span>Verificar Conexões</span>
+          </Button>
 
           <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-[#A6ABB9] dark:hover:text-white transition-colors select-none">
             <Checkbox
@@ -52,30 +52,30 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
               checked={checkDuplicates}
               onChange={(e) => setCheckDuplicates(e.target.checked)}
             />
-            <span className="flex items-center gap-1">
-              <ShieldCheck size={13} className="text-emerald-600 dark:text-[#00FF66]/80" />
-              <span>Verificar duplicatas</span>
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck size={13} className="text-[#238636] dark:text-[#2ea043]" />
+              <span>Ignorar duplicatas</span>
             </span>
           </label>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-3 py-1 text-[11.5px] font-medium text-slate-700 dark:text-[#C8CBD4]">
+          <Badge variant={items.length > 0 ? 'success' : 'secondary'} className="px-2.5 py-1 text-xs gap-1.5">
             <span
               className={`h-1.5 w-1.5 rounded-full ${
-                items.length > 0 ? 'bg-emerald-500 dark:bg-[#00FF66]' : 'bg-slate-400 dark:bg-[#6C7082]'
+                items.length > 0 ? 'bg-[#238636] dark:bg-[#2ea043]' : 'bg-slate-400 dark:bg-[#6C7082]'
               }`}
             />
             <span>
               {items.length}{' '}
               {items.length === 1 ? 'proxy detectado' : 'proxies detectados'}
             </span>
-          </div>
+          </Badge>
         </div>
       </div>
 
       {/* Tabela de Visualização dos Proxies Analisados */}
-      <div className="max-h-[280px] min-h-[190px] overflow-x-auto overflow-y-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#16171D] shadow-xs dark:shadow-inner [scrollbar-width:thin]">
+      <div className="max-h-[260px] min-h-[170px] overflow-x-auto overflow-y-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#16171D] shadow-2xs [scrollbar-width:thin]">
         <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
           <thead className="sticky top-0 z-10 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1B1C23] text-[11px] font-semibold tracking-wider text-slate-600 dark:text-[#A6ABB9] uppercase select-none">
             <tr className="h-9">
@@ -98,11 +98,11 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
                   className="group transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.03]"
                 >
                   <td className="px-3.5 py-2.5">
-                    <span className="rounded bg-slate-100 dark:bg-white/5 px-2 py-0.5 text-[11px] font-semibold text-slate-800 dark:text-white uppercase">
+                    <Badge variant="secondary" className="font-mono text-[10px] uppercase font-bold">
                       {item.type}
-                    </span>
+                    </Badge>
                   </td>
-                  <td className="px-3.5 py-2.5 font-mono text-[12px] text-slate-900 dark:text-white">
+                  <td className="px-3.5 py-2.5 font-mono text-[12px] text-slate-900 dark:text-white font-medium">
                     {item.host}
                   </td>
                   <td className="px-3.5 py-2.5 font-mono text-[12px] text-slate-700 dark:text-[#C4C7D5]">
@@ -114,7 +114,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
                   <td className="px-3.5 py-2.5 font-mono text-slate-500 dark:text-[#9CA3AF]">
                     {item.pass ? '••••••' : '-'}
                   </td>
-                  <td className="max-w-[160px] truncate px-3.5 py-2.5 font-mono text-[11.5px] text-emerald-600 dark:text-[#00FF66]/80 font-medium">
+                  <td className="max-w-[160px] truncate px-3.5 py-2.5 font-mono text-[11px] text-emerald-600 dark:text-[#00FF66] font-medium">
                     {item.rotationLink || '-'}
                   </td>
                   <td className="max-w-[130px] truncate px-3.5 py-2.5 text-slate-500 dark:text-[#9CA3AF]">
@@ -122,14 +122,14 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
                   </td>
                   <td className="px-3.5 py-2.5">
                     {!item.isValid ? (
-                      <span className="rounded bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                      <Badge variant="warning" className="text-[10px]">
                         Formato inválido
-                      </span>
+                      </Badge>
                     ) : item.status === 'checking' ? (
                       <span className="flex items-center gap-1.5 font-mono text-[11.5px] text-slate-600 dark:text-[#A6ABB9]">
                         <Loader2
                           size={12}
-                          className="animate-spin text-emerald-600 dark:text-emerald-400"
+                          className="animate-spin text-[#238636] dark:text-[#2ea043]"
                         />
                         <span>Testando...</span>
                       </span>
@@ -139,47 +139,35 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
                         <span>{item.outboundIp}</span>
                       </span>
                     ) : item.status === 'auth_error' ? (
-                      <span
-                        className="flex items-center gap-1.5 font-mono text-[11.5px] text-amber-600 dark:text-amber-400"
-                        title="Erro de autenticação: usuário ou senha incorretos"
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500 dark:bg-amber-400" />
-                        <span>Erro autenticação</span>
-                      </span>
+                      <Badge variant="destructive" className="text-[10px]">
+                        Erro autenticação
+                      </Badge>
                     ) : item.status === 'timeout' ? (
-                      <span
-                        className="flex items-center gap-1.5 font-mono text-[11.5px] text-orange-600 dark:text-orange-400"
-                        title="Tempo limite esgotado"
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-orange-500 dark:bg-orange-400" />
-                        <span>Tempo esgotado</span>
-                      </span>
+                      <Badge variant="warning" className="text-[10px]">
+                        Tempo esgotado
+                      </Badge>
                     ) : item.status === 'connection_error' ? (
-                      <span
-                        className="flex items-center gap-1.5 font-mono text-[11.5px] text-red-600 dark:text-red-400"
-                        title="Falha de conexão: host inacessível ou porta fechada"
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-red-500 dark:bg-red-400" />
-                        <span>Falha de conexão</span>
-                      </span>
+                      <Badge variant="destructive" className="text-[10px]">
+                        Falha de conexão
+                      </Badge>
                     ) : item.status === 'error' ? (
-                      <span className="flex items-center gap-1.5 font-mono text-[11.5px] text-red-600 dark:text-red-400">
-                        <span className="h-1.5 w-1.5 rounded-full bg-red-500 dark:bg-red-400" />
-                        <span>{item.outboundIp}</span>
-                      </span>
+                      <Badge variant="destructive" className="text-[10px]">
+                        {item.outboundIp || 'Erro'}
+                      </Badge>
                     ) : (
                       <span className="text-slate-400 dark:text-[#6C6F7E]">-</span>
                     )}
                   </td>
                   <td className="px-2 py-2.5 text-center">
-                    <button
-                      type="button"
-                      onClick={() => onRemoveItem(idx)}
-                      className="cursor-pointer text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:text-red-500 dark:text-[#6C6F7E] dark:hover:text-red-400"
-                      title="Remover linha"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    <Tooltip content="Remover linha">
+                      <button
+                        type="button"
+                        onClick={() => onRemoveItem(idx)}
+                        className="cursor-pointer text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:text-red-500 dark:text-[#6C6F7E] dark:hover:text-red-400 p-1 rounded"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </Tooltip>
                   </td>
                 </tr>
               ))
@@ -187,7 +175,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
               <tr>
                 <td colSpan={9} className="py-12 text-center select-none">
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-[#8E92A2]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-[#8E92A2]">
                       <Globe size={18} />
                     </div>
                     <p className="text-[12.5px] font-medium text-slate-800 dark:text-[#D1D5DF]">

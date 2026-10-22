@@ -1,33 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { ChevronDown, Info, RotateCw, Loader2 } from 'lucide-react';
+import {
+  RotateCw,
+  Loader2,
+  CheckCircle2,
+  XCircle,
+  Shield,
+  X,
+} from 'lucide-react';
 import { api } from '@/services/index.api';
 import { formatProxyTestResult, FormattedTestResult } from '@/services/proxies/service.proxies';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { createPortal } from 'react-dom';
 
 interface EditarProxiesProps {
   proxy: any;
   onClose: () => void;
   onSave: (data: any) => void;
 }
-
-const baseInputCls =
-  'h-10 rounded-xl border border-slate-300 dark:border-[#363948] bg-white dark:bg-[#14151C] px-4 text-sm text-slate-900 dark:text-[#F0F2F8] placeholder-slate-400 dark:placeholder-[#5E6274] transition-all hover:border-slate-400 dark:hover:border-[#4B5065] focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-hidden shadow-xs';
-
-const inputCls = `w-full ${baseInputCls}`;
-
-const FieldRow: React.FC<{
-  label: React.ReactNode;
-  required?: boolean;
-  children: React.ReactNode;
-}> = ({ label, required, children }) => (
-  <div className="flex items-center gap-4">
-    <label className="w-44 shrink-0 text-right text-sm font-medium text-slate-600 dark:text-[#A6ABB8] select-none leading-normal">
-      {required && <span className="mr-1 text-[#FF4D4F] font-bold">*</span>}
-      {label}
-    </label>
-    <div className="flex-1 min-w-0">{children}</div>
-  </div>
-);
 
 export const EditarProxies: React.FC<EditarProxiesProps> = ({
   proxy,
@@ -54,7 +53,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
   useEffect(() => {
     if (proxy) {
       setForm({
-        type: proxy.type || 'socks5',
+        type: proxy.type || proxy.proxy_type || 'socks5',
         ipChecker: 'IP2Location',
         host: proxy.host || '',
         port: proxy.port ? String(proxy.port) : '',
@@ -67,6 +66,17 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
     }
   }, [proxy]);
 
+  // Suporte a tecla Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isTesting) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isTesting, onClose]);
+
   const updateField = (field: string, val: string) => {
     setForm((prev) => ({ ...prev, [field]: val }));
   };
@@ -75,7 +85,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
     if (!form.host.trim() || !form.port.trim() || isTesting) return;
 
     setIsTesting(true);
-    setTestResult({ status: 'idle', text: 'Testando...' });
+    setTestResult({ status: 'idle', text: 'Testando conexão...' });
 
     try {
       const res = await api.proxies.test({
@@ -90,7 +100,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
     } catch {
       setTestResult({
         status: 'error',
-        text: '🔴 Erro ao testar conexão do proxy',
+        text: 'Erro ao testar conexão com o proxy',
       });
     } finally {
       setIsTesting(false);
@@ -109,7 +119,8 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
       user: form.user.trim(),
       pass: form.pass.trim(),
       rotationLink: form.rotationLink.trim(),
-      ip: form.host.trim().replace(/^\[|\]$/g, ''),
+      ip: testResult.exitIp || form.host.trim().replace(/^\[|\]$/g, ''),
+      ping: testResult.latencyMs ?? proxy.ping,
       lastChecked: new Date().toISOString().substring(5, 19).replace('T', ' '),
     };
 
@@ -118,173 +129,230 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[7vh] sm:pt-[9vh] p-6 select-none overflow-y-auto">
-      {/* Backdrop */}
+    <div
+      className="fixed inset-0 z-[9999] flex items-start justify-center pt-[8vh] sm:pt-[10vh] p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-150"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !isTesting) {
+          onClose();
+        }
+      }}
+    >
       <div
-        className="fixed inset-0 bg-black/60 dark:bg-black/85 transition-opacity"
-        onClick={onClose}
-      />
-
-      {/* Modal Popup Box - Sem cabeçalho e sem botão X (fechamento via Cancelar) */}
-      <div className="relative z-10 w-full max-w-[840px] overflow-hidden rounded-2xl border border-slate-200 dark:border-[#343644] bg-white dark:bg-[#1C1E26] text-slate-800 dark:text-[#E0E2EC] shadow-2xl shadow-slate-900/10 dark:shadow-black/95 animate-in fade-in zoom-in-95 duration-150 mb-12">
-        {/* Form Body - Letras aumentadas, campos mais altos e confortáveis */}
-        <div className="space-y-5 p-8">
-          {/* Row 1: ID do agente */}
-          <FieldRow label="ID do Agente">
-            <span className="inline-flex items-center rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 px-3 py-1.5 text-xs font-mono font-semibold text-[#1b6528] dark:text-[#7ee787]">
-              {proxy?.id ?? 2}
-            </span>
-          </FieldRow>
-
-          {/* Row 2: Tipo de Proxy */}
-          <FieldRow label="Tipo de Proxy" required>
-            <div className="relative">
-              <select
-                value={form.type}
-                onChange={(e) => updateField('type', e.target.value)}
-                className={`${inputCls} cursor-pointer appearance-none pr-10 text-sm font-medium`}
-              >
-                <option value="socks5">Socks5</option>
-                <option value="http">HTTP</option>
-                <option value="https">HTTPS</option>
-                <option value="ssh">SSH</option>
-              </select>
-              <ChevronDown
-                size={16}
-                className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-slate-400 dark:text-[#7C8092]"
-              />
+        className="w-full max-w-[620px] rounded-2xl border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#1A1C24] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150 mb-12 select-none"
+        role="dialog"
+        aria-modal="true"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E38] px-6 py-4 bg-slate-50 dark:bg-[#14151B]">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-[#238636] dark:text-[#2ea043] border border-emerald-500/20">
+              <Shield size={18} />
             </div>
-          </FieldRow>
-
-          {/* Row 3: Verificador de IP */}
-          <FieldRow label="Verificador de IP">
-            <div className="relative">
-              <select
-                value={form.ipChecker}
-                onChange={(e) => updateField('ipChecker', e.target.value)}
-                className={`${inputCls} cursor-pointer appearance-none pr-12 text-sm font-medium`}
-              >
-                <option value="IP2Location">IP2Location</option>
-                <option value="ip-api.com">ip-api.com</option>
-                <option value="ipinfo.io">ipinfo.io</option>
-              </select>
-              <div className="pointer-events-none absolute top-1/2 right-3.5 flex -translate-y-1/2 items-center gap-1.5 text-slate-400 dark:text-[#7C8092]">
-                <Info size={15} />
-                <ChevronDown size={16} />
-              </div>
+            <div>
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
+                Editar Configurações de Proxy
+              </h2>
+              <p className="text-[11px] text-slate-500 dark:text-[#8E92A2]">
+                Atualize o protocolo, host, porta e credenciais de acesso
+              </p>
             </div>
-          </FieldRow>
-
-          {/* Row 4: Host : Porta */}
-          <FieldRow label="Host : Porta" required>
-            <div className="flex items-center gap-2.5">
-              <input
-                type="text"
-                value={form.host}
-                onChange={(e) => updateField('host', e.target.value)}
-                placeholder="Ex: 192.168.1.1 ou proxy.exemplo.com"
-                className={`flex-1 min-w-[220px] font-mono text-sm ${baseInputCls}`}
-              />
-              <span className="font-bold text-slate-400 dark:text-[#8E92A2] select-none text-base">:</span>
-              <input
-                type="text"
-                value={form.port}
-                onChange={(e) => updateField('port', e.target.value)}
-                placeholder="Porta"
-                className={`w-32 shrink-0 font-mono text-center text-sm ${baseInputCls}`}
-              />
-              <button
-                type="button"
-                onClick={handleTest}
-                disabled={isTesting || !form.host.trim() || !form.port.trim()}
-                className="h-10 flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-slate-300 dark:border-[#3C3F4F] bg-slate-50 dark:bg-[#161720] px-4 text-xs font-semibold text-emerald-600 dark:text-[#00FF66] transition-all hover:border-emerald-500 hover:bg-emerald-50 dark:hover:border-[#00FF66]/50 dark:hover:bg-[#00FF66]/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-slate-50 dark:disabled:hover:bg-[#161720] disabled:text-slate-400 dark:disabled:text-[#7C8092] active:scale-[0.98] shadow-xs"
-              >
-                {isTesting ? (
-                  <Loader2 size={14} className="animate-spin text-emerald-600 dark:text-[#00FF66]" />
-                ) : (
-                  <RotateCw size={14} />
-                )}
-                <span>Verificar proxy</span>
-              </button>
-            </div>
-            {testResult.text && (
-              <div className="mt-2 font-mono text-xs px-1">{testResult.text}</div>
-            )}
-          </FieldRow>
-
-          {/* Row 5: Usuário do Proxy */}
-          <FieldRow label="Usuário do Proxy">
-            <input
-              type="text"
-              value={form.user}
-              onChange={(e) => updateField('user', e.target.value)}
-              placeholder="Nome de usuário (opcional)"
-              className={inputCls}
-            />
-          </FieldRow>
-
-          {/* Row 6: Senha do Proxy */}
-          <FieldRow label="Senha do Proxy">
-            <input
-              type="text"
-              value={form.pass}
-              onChange={(e) => updateField('pass', e.target.value)}
-              placeholder="Senha de autenticação (opcional)"
-              className={inputCls}
-            />
-          </FieldRow>
-
-          {/* Row 7: URL de Rotação (IP) */}
-          <FieldRow label="URL de Rotação (IP)">
-            <div className="relative flex items-center">
-              <input
-                type="text"
-                value={form.rotationLink}
-                onChange={(e) => updateField('rotationLink', e.target.value)}
-                placeholder="Link para forçar troca de IP (opcional)"
-                className={`${inputCls} pr-14`}
-              />
-              <div className="absolute right-3.5 flex items-center gap-2 text-slate-400 dark:text-[#7C8092]">
-                <button
-                  type="button"
-                  title="Recarregar"
-                  className="cursor-pointer text-[#238636] hover:text-[#2ea043] transition-transform hover:rotate-180"
-                >
-                  <RotateCw size={15} />
-                </button>
-                <Info size={15} />
-              </div>
-            </div>
-          </FieldRow>
-
-          {/* Row 8: Observação / Nota */}
-          <FieldRow label="Observação / Nota">
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => updateField('name', e.target.value)}
-              placeholder="Identificação ou observação para este proxy"
-              className={inputCls}
-            />
-          </FieldRow>
-        </div>
-
-        {/* Footer com botões maiores e confortáveis */}
-        <div className="flex h-16 shrink-0 items-center justify-end gap-3.5 border-t border-slate-200 dark:border-[#292B37] bg-slate-50 dark:bg-[#16171E] px-8">
+          </div>
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-xl px-5 py-2.5 text-sm font-medium text-slate-600 dark:text-[#9EA2AE] transition-colors hover:bg-slate-200/60 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white"
+            className="cursor-pointer rounded-lg p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 dark:text-[#8E92A2] dark:hover:bg-white/5 dark:hover:text-white transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="space-y-4 p-6 select-text">
+          {/* Linha 1: ID e Tipo */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <Label className="mb-1.5 block">Identificador ID</Label>
+              <div className="flex h-9 items-center">
+                <Badge variant="secondary" className="font-mono text-xs px-2.5 py-1">
+                  #{proxy?.id ?? '01'}
+                </Badge>
+              </div>
+            </div>
+
+            <div>
+              <Label className="mb-1.5 block">Tipo de Protocolo *</Label>
+              <Select
+                value={form.type}
+                onValueChange={(val) => updateField('type', val)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o protocolo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="socks5">SOCKS5</SelectItem>
+                  <SelectItem value="http">HTTP</SelectItem>
+                  <SelectItem value="https">HTTPS</SelectItem>
+                  <SelectItem value="mobile">Móvel 4G/5G</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Linha 2: Nome / Rótulo */}
+          <div>
+            <Label htmlFor="edit-proxy-name" className="mb-1.5 block">
+              Nome do Proxy
+            </Label>
+            <Input
+              id="edit-proxy-name"
+              type="text"
+              value={form.name}
+              onChange={(e) => updateField('name', e.target.value)}
+              placeholder="Ex: Residencial SP 01"
+            />
+          </div>
+
+          {/* Linha 3: Host e Porta */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
+            <div className="sm:col-span-3">
+              <Label htmlFor="edit-proxy-host" className="mb-1.5 block">
+                Host / IP *
+              </Label>
+              <Input
+                id="edit-proxy-host"
+                type="text"
+                required
+                value={form.host}
+                onChange={(e) => updateField('host', e.target.value)}
+                placeholder="192.168.1.1 ou proxy.exemplo.com"
+                className="font-mono"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-proxy-port" className="mb-1.5 block">
+                Porta *
+              </Label>
+              <Input
+                id="edit-proxy-port"
+                type="text"
+                required
+                value={form.port}
+                onChange={(e) =>
+                  updateField('port', e.target.value.replace(/\D/g, ''))
+                }
+                placeholder="1080"
+                className="font-mono text-center"
+              />
+            </div>
+          </div>
+
+          {/* Linha 4: Usuário e Senha */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <Label htmlFor="edit-proxy-user" className="mb-1.5 block">
+                Usuário (Opcional)
+              </Label>
+              <Input
+                id="edit-proxy-user"
+                type="text"
+                value={form.user}
+                onChange={(e) => updateField('user', e.target.value)}
+                placeholder="usuario"
+                className="font-mono"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-proxy-pass" className="mb-1.5 block">
+                Senha (Opcional)
+              </Label>
+              <Input
+                id="edit-proxy-pass"
+                type="text"
+                value={form.pass}
+                onChange={(e) => updateField('pass', e.target.value)}
+                placeholder="senha"
+                className="font-mono"
+              />
+            </div>
+          </div>
+
+          {/* Linha 5: Link de Rotação (para móvel ou opcional) */}
+          <div>
+            <Label htmlFor="edit-rotation" className="mb-1.5 block">
+              URL de Troca de IP / Rotação{' '}
+              <span className="text-[11px] font-normal text-slate-400 dark:text-[#787D90]">
+                (Opcional)
+              </span>
+            </Label>
+            <Input
+              id="edit-rotation"
+              type="url"
+              value={form.rotationLink}
+              onChange={(e) => updateField('rotationLink', e.target.value)}
+              placeholder="https://api.proxymobile.net/change-ip?token=..."
+              className="font-mono text-emerald-600 dark:text-[#00FF66]"
+            />
+          </div>
+
+          {/* Test connection row */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] p-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleTest}
+              disabled={isTesting || !form.host.trim() || !form.port.trim()}
+              className="gap-1.5 border-slate-300 dark:border-[#3C3F4F]"
+            >
+              {isTesting ? (
+                <Loader2 size={13} className="animate-spin text-[#238636] dark:text-[#2ea043]" />
+              ) : (
+                <RotateCw size={13} />
+              )}
+              <span>Verificar Conexão</span>
+            </Button>
+
+            {testResult.text && (
+              <div className="flex items-center gap-1.5 font-mono text-xs">
+                {testResult.status === 'active' ? (
+                  <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
+                    <CheckCircle2 size={14} />
+                    <span>{testResult.text}</span>
+                  </span>
+                ) : testResult.status === 'error' ? (
+                  <span className="flex items-center gap-1.5 text-red-600 dark:text-red-400 font-medium">
+                    <XCircle size={14} />
+                    <span>{testResult.text}</span>
+                  </span>
+                ) : (
+                  <span className="text-slate-500 dark:text-[#8E92A2]">
+                    {testResult.text}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex h-14 shrink-0 items-center justify-end gap-2.5 border-t border-slate-200 dark:border-[#2C2E38] bg-slate-50 dark:bg-[#14151B] px-6 select-none">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onClose}
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="default"
+            size="sm"
             onClick={handleSave}
-            className="flex cursor-pointer items-center justify-center rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white dark:bg-[#00FF66] dark:text-black dark:hover:bg-[#00D655] px-7 py-2.5 text-sm font-bold transition-all active:scale-[0.98] shadow-md shadow-emerald-600/20 dark:shadow-[#00FF66]/15"
+            disabled={!form.host.trim() || !form.port.trim()}
           >
             Salvar Alterações
-          </button>
+          </Button>
         </div>
       </div>
     </div>,

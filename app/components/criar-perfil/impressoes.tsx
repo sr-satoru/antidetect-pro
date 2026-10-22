@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
-import { Select } from '@/components/ui/select';
+import { NativeSelect as Select } from '@/components/ui/select';
 import config from '@/config/perfil.json';
 import { Shuffle, Search, ChevronDown, Check } from 'lucide-react';
 

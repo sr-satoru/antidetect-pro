@@ -28,6 +28,18 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
   const [showUaDropdown, setShowUaDropdown] = useState(false);
   const [showUaListModal, setShowUaListModal] = useState(false);
   const [showTagInput, setShowTagInput] = useState(false);
+  const groupDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!showGroupDropdown) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (groupDropdownRef.current && !groupDropdownRef.current.contains(e.target as Node)) {
+        setShowGroupDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showGroupDropdown]);
 
   const isAndroid = formData.os === 'android';
   const isChromium = !formData.kernel || formData.kernel === 'AstroBrowser';
@@ -496,16 +508,17 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
         <label className="shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[130px] sm:text-right">
           <span className="mr-1 font-semibold text-red-500">*</span>Grupo
         </label>
-        <div className="flex flex-1 items-center gap-3">
-          <div className="relative flex-1">
+        <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
+          {/* Campo de Grupo */}
+          <div ref={groupDropdownRef} className="relative">
             <button
               type="button"
               onClick={() => setShowGroupDropdown(!showGroupDropdown)}
               className="flex w-full cursor-pointer items-center justify-between rounded-md border border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-2 text-[13px] text-slate-700 dark:text-[#C4C7D5] hover:border-slate-300 dark:hover:border-[#444756] shadow-xs"
             >
-              <span>{formData.group || 'Desagrupado'}</span>
+              <span className="truncate">{formData.group || 'Desagrupado'}</span>
               <svg
-                className="h-3.5 w-3.5 opacity-60 text-slate-500 dark:text-inherit"
+                className="h-3.5 w-3.5 shrink-0 opacity-60 text-slate-500 dark:text-inherit"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -535,28 +548,33 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
             )}
           </div>
 
+          {/* Campo de Tags */}
           <div className="relative">
             <button
               type="button"
               onClick={() => setShowTagInput(!showTagInput)}
-              className={`flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-2 text-[12.5px] transition-colors select-none shadow-xs ${showTagInput || currentTags.length > 0
+              className={`flex w-full cursor-pointer items-center justify-between rounded-md border px-3 py-2 text-[13px] transition-colors select-none shadow-xs ${showTagInput || currentTags.length > 0
                   ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:border-white/30 dark:bg-[#282935] dark:text-white'
                   : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 dark:border-[#333541] dark:bg-[#1C1D24] dark:text-[#C4C7D5] dark:hover:border-white/20'
                 }`}
             >
+              <div className="flex items-center gap-2 truncate">
+                <svg
+                  className="h-3.5 w-3.5 shrink-0 opacity-70"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                  <line x1="7" y1="7" x2="7.01" y2="7" />
+                </svg>
+                <span className="truncate">
+                  {currentTags.length > 0 ? `Tags (${currentTags.length})` : 'Tags'}
+                </span>
+              </div>
               <svg
-                className="h-3.5 w-3.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
-                <line x1="7" y1="7" x2="7.01" y2="7" />
-              </svg>
-              <span>Tags {currentTags.length > 0 && `(${currentTags.length})`}</span>
-              <svg
-                className="h-3 w-3 opacity-60 text-slate-500 dark:text-inherit"
+                className="h-3.5 w-3.5 shrink-0 opacity-60 text-slate-500 dark:text-inherit"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

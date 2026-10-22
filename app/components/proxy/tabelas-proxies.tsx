@@ -3,12 +3,11 @@ import { LinhaTabelaProxies } from './linha-tabela-proxies';
 import { CadastroProxies } from './criar';
 import { EditarProxies } from './editar';
 import {
-  SlidersHorizontal,
   Globe,
-  ShieldAlert,
-  CheckCircle2,
+  Plus,
 } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
+import { Button } from '../ui/button';
 
 interface TabelasProxiesProps {
   proxies: any[];
@@ -22,6 +21,9 @@ interface TabelasProxiesProps {
   editingProxy?: any | null;
   onCloseCadastro?: () => void;
   onSaveCadastro?: (data: any | any[]) => void;
+  onOpenCadastro?: () => void;
+  hasFiltersApplied?: boolean;
+  onClearFilters?: () => void;
 }
 
 export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
@@ -36,6 +38,9 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
   editingProxy = null,
   onCloseCadastro = () => {},
   onSaveCadastro = () => {},
+  onOpenCadastro = () => {},
+  hasFiltersApplied = false,
+  onClearFilters = () => {},
 }) => {
   const isAllSelected =
     proxies.length > 0 && selectedIds.length === proxies.length;
@@ -45,17 +50,17 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
   const errorCount = proxies.filter((p) => p.status === 'error').length;
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] shadow-sm shadow-slate-200/50 dark:shadow-none">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] shadow-sm">
       {isAddingOrEditing ? (
         <CadastroProxies onClose={onCloseCadastro} onSave={onSaveCadastro} />
       ) : (
         <>
-          <div className="flex-1 custom-scrollbar overflow-x-auto overflow-y-visible">
+          <div className="flex-1 overflow-x-auto overflow-y-auto [scrollbar-width:thin]">
             <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
               {/* Header */}
-              <thead className="sticky top-0 z-20 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] text-[11px] font-semibold tracking-wider text-slate-500 dark:text-[#A6ABB9] uppercase select-none">
-                <tr className="h-11">
-                  <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center">
+              <thead className="sticky top-0 z-20 border-b border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-[#14151B]/95 backdrop-blur-xs text-[11px] font-semibold tracking-wider text-slate-500 dark:text-[#A6ABB9] uppercase select-none">
+                <tr className="h-10">
+                  <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2 text-center">
                     <div className="flex items-center justify-center">
                       <Checkbox
                         checked={isAllSelected}
@@ -65,32 +70,32 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
                       />
                     </div>
                   </th>
-                  <th className="w-[70px] min-w-[70px] px-3.5 py-2.5">ID</th>
-                  <th className="w-[200px] min-w-[200px] px-3.5 py-2.5">
+                  <th className="w-[70px] min-w-[70px] px-3.5 py-2">ID</th>
+                  <th className="w-[210px] min-w-[210px] px-3.5 py-2">
                     Nome do Proxy
                   </th>
-                  <th className="w-[100px] min-w-[100px] px-3.5 py-2.5">
+                  <th className="w-[110px] min-w-[110px] px-3.5 py-2">
                     Tipo
                   </th>
-                  <th className="w-[210px] min-w-[210px] px-3.5 py-2.5">
+                  <th className="w-[210px] min-w-[210px] px-3.5 py-2">
                     Host & Porta
                   </th>
-                  <th className="w-[180px] min-w-[180px] px-3.5 py-2.5">
+                  <th className="w-[180px] min-w-[180px] px-3.5 py-2">
                     Credenciais
                   </th>
-                  <th className="w-[180px] min-w-[180px] px-3.5 py-2.5">
+                  <th className="w-[180px] min-w-[180px] px-3.5 py-2">
                     Localização / IP
                   </th>
-                  <th className="w-[130px] min-w-[130px] px-3.5 py-2.5">
+                  <th className="w-[130px] min-w-[130px] px-3.5 py-2">
                     Status & Latência
                   </th>
-                  <th className="w-[120px] min-w-[120px] px-3.5 py-2.5">
+                  <th className="w-[120px] min-w-[120px] px-3.5 py-2">
                     Perfis Vinculados
                   </th>
-                  <th className="w-[130px] min-w-[130px] px-3.5 py-2.5">
+                  <th className="w-[130px] min-w-[130px] px-3.5 py-2">
                     Última Checagem
                   </th>
-                  <th className="sticky right-0 z-20 w-[120px] max-w-[120px] min-w-[120px] bg-slate-50 dark:bg-[#14151B] px-3 py-2.5 text-center">
+                  <th className="sticky right-0 z-20 w-[120px] max-w-[120px] min-w-[120px] bg-slate-50/95 dark:bg-[#14151B]/95 backdrop-blur-xs px-3 py-2 text-center">
                     Ações
                   </th>
                 </tr>
@@ -115,21 +120,51 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
                   <tr>
                     <td
                       colSpan={11}
-                      className="py-16 text-center text-slate-500 dark:text-[#8E92A2]"
+                      className="py-20 text-center text-slate-500 dark:text-[#8E92A2]"
                     >
                       <div className="flex flex-col items-center justify-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#181920] text-slate-400 dark:text-[#7E8294]">
-                          <Globe size={22} />
+                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1A1C24] text-slate-400 dark:text-[#7E8294] shadow-xs">
+                          <Globe size={26} />
                         </div>
-                        <div>
-                          <span className="mb-0.5 block text-sm font-medium text-slate-900 dark:text-white">
-                            Nenhum proxy cadastrado ou encontrado
-                          </span>
-                          <p className="text-xs text-slate-500 dark:text-[#6C6F7E]">
-                            Adicione um novo proxy individual ou importe em lote
-                            pelo botão acima.
-                          </p>
-                        </div>
+                        {hasFiltersApplied ? (
+                          <div className="space-y-1.5 max-w-sm">
+                            <span className="block text-sm font-semibold text-slate-900 dark:text-white">
+                              Nenhum proxy encontrado com estes filtros
+                            </span>
+                            <p className="text-xs text-slate-500 dark:text-[#7E8294]">
+                              Tente mudar os termos de busca ou remover os filtros aplicados.
+                            </p>
+                            <div className="pt-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={onClearFilters}
+                              >
+                                Limpar Filtros
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-1.5 max-w-sm">
+                            <span className="block text-sm font-semibold text-slate-900 dark:text-white">
+                              Nenhum proxy cadastrado ainda
+                            </span>
+                            <p className="text-xs text-slate-500 dark:text-[#7E8294]">
+                              Adicione um proxy individualmente ou importe em lote para começar a utilizá-los nos seus perfis.
+                            </p>
+                            <div className="pt-2">
+                              <Button
+                                variant="default"
+                                size="sm"
+                                onClick={onOpenCadastro}
+                                className="gap-1.5"
+                              >
+                                <Plus size={14} />
+                                <span>Cadastrar Primeiro Proxy</span>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -138,12 +173,12 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
             </table>
           </div>
 
-          {/* Footer com Estatísticas Rápidas */}
+          {/* Footer com Estatísticas e Seleção */}
           <div className="flex h-10 shrink-0 items-center justify-between border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] px-4 text-xs text-slate-600 dark:text-[#9EA2AE] select-none">
             <div className="flex items-center gap-4">
               <span>
                 Total: <strong className="text-slate-900 dark:text-white">{proxies.length}</strong>{' '}
-                proxies
+                {proxies.length === 1 ? 'proxy' : 'proxies'}
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-[#10b981]" />
@@ -158,7 +193,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
             </div>
 
             {selectedIds.length > 0 && (
-              <div className="font-semibold text-emerald-600 dark:text-[#00FF66]">
+              <div className="font-semibold text-emerald-600 dark:text-[#00FF66] text-xs">
                 {selectedIds.length} proxy{selectedIds.length > 1 ? 's' : ''}{' '}
                 selecionado{selectedIds.length > 1 ? 's' : ''}
               </div>
@@ -167,7 +202,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
         </>
       )}
 
-      {/* Modal Popup Simples de Edição de Proxy */}
+      {/* Modal de Edição de Proxy */}
       {editingProxy && (
         <EditarProxies
           proxy={editingProxy}

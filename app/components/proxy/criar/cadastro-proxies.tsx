@@ -92,11 +92,11 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
             prev.map((item, idx) =>
               idx === i
                 ? {
-                    ...item,
-                    status: formatted.status,
-                    outboundIp: formatted.text,
-                    ping: formatted.latencyMs ?? item.ping,
-                  }
+                  ...item,
+                  status: formatted.status,
+                  outboundIp: formatted.text,
+                  ping: formatted.latencyMs ?? item.ping,
+                }
                 : item,
             ),
           );
@@ -133,10 +133,10 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
       rotationLink: item.rotationLink,
       ip:
         item.outboundIp &&
-        item.outboundIp !== '-' &&
-        !item.outboundIp.includes('Erro') &&
-        !item.outboundIp.includes('Falha') &&
-        !item.outboundIp.includes('Tempo')
+          item.outboundIp !== '-' &&
+          !item.outboundIp.includes('Erro') &&
+          !item.outboundIp.includes('Falha') &&
+          !item.outboundIp.includes('Tempo')
           ? item.outboundIp.split(' ')[0]
           : item.host.replace(/[\[\]]/g, ''),
       country: 'BR - Brasil',

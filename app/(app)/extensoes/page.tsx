@@ -136,7 +136,7 @@ export const ExtensoesPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] shadow-sm shadow-slate-200/50 dark:shadow-none">
+    <div className="flex h-full w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-[#2E2E38] bg-white dark:bg-[#1A1A21]">
       <TabelaExtensoes
         extensions={extensions}
         isLoadingTeam={isLoadingTeam}

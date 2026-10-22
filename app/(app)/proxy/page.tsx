@@ -104,11 +104,11 @@ export const ProxyPage: React.FC = () => {
         prev.map((p) =>
           p.id === id
             ? {
-                ...p,
-                status: res.status,
-                ping: res.latency_ms ?? p.ping,
-                ip: res.exit_ip ?? p.ip,
-              }
+              ...p,
+              status: res.status,
+              ping: res.latency_ms ?? p.ping,
+              ip: res.exit_ip ?? p.ip,
+            }
             : p,
         ),
       );
