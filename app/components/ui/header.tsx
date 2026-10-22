@@ -3,13 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth-context';
 import { useTheme } from '@/contexts/theme-context';
 import {
-  Download,
-  Wifi,
   Cloud,
-  CloudOff,
-  Bell,
   LogOut,
-  ShieldCheck,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -59,102 +54,95 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     if (path.startsWith('/criar-perfil')) return 'Criar Novo Perfil';
     if (path.startsWith('/proxy')) return 'Gerenciador de Proxies';
     if (path.startsWith('/grupos')) return 'Grupos de Perfis';
+    if (path.startsWith('/extensoes')) return 'Extensões do Navegador';
+    if (path.startsWith('/lixeira')) return 'Lixeira de Perfis';
+    if (path.startsWith('/sincronizador')) return 'Sincronizador Multilogin';
+    if (path.startsWith('/api-mcp')) return 'API & Protocolo MCP';
+    if (path.startsWith('/membros')) return 'Gerenciamento de Equipe';
+    if (path.startsWith('/logs')) return 'Auditoria & Logs';
     if (path.startsWith('/configuration')) return 'Configurações Globais';
     return 'Painel de Controle';
   };
 
   return (
-    <header className="relative h-14 bg-transparent px-4 sm:px-6 flex items-center justify-between shrink-0 z-40 transition-colors">
-      {/* Title desenhado diretamente na página */}
+    <header className="relative h-[60px] bg-white dark:bg-[#1A1A21] border-b border-slate-200 dark:border-[#2E2E38] px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 transition-colors shadow-2xs">
+      {/* Title e indicador de contexto */}
       <div className="flex items-center gap-3">
-        <h1 className="text-base font-semibold text-slate-900 dark:text-[#F4F4F6] tracking-tight">
+        <h1 className="text-base sm:text-[17px] font-bold text-slate-900 dark:text-[#F1F1F4] tracking-tight">
           {title || getAutoTitle()}
         </h1>
+        {location.pathname.startsWith('/perfis') && (
+          <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#15151A] text-slate-500 dark:text-[#90909D] border border-slate-200 dark:border-[#2E2E38]/80 tabular-nums">
+            Painel Principal
+          </span>
+        )}
       </div>
 
       {/* Right Controls */}
       <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* Central de Atualizações / Gerenciador de Download do Motor Star Multlogin */}
+        {/* Central de Atualizações / Gerenciador de Download do Motor Star Multilogin */}
         <UpdateCenterDropdown />
 
         {/* Alternador de Tema: Day Mode ☀️ / Dark Mode 🌙 */}
         <button
           type="button"
           onClick={toggleTheme}
-          className="flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#15161D] dark:hover:bg-[#1E2028] text-amber-500 dark:text-amber-300 border border-slate-200 dark:border-[#2B2D38] transition-all cursor-pointer shadow-xs"
+          className="flex items-center justify-center h-8.5 w-8.5 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-[#15151A] dark:hover:bg-[#24242C] text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#2E2E38] transition-all cursor-pointer shadow-2xs"
           title={theme === 'dark' ? 'Mudar para Modo Claro (Day Mode)' : 'Mudar para Modo Escuro (Dark Mode)'}
         >
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
         </button>
 
-        {/* Status de Rede & Nuvem */}
-        <div className="flex items-center gap-1.5">
-          {cloudOnline === true ? (
-            <div
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-medium select-none shadow-2xs"
-              title="Servidor de Nuvem Conectado e Operacional"
-            >
-              <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
-              <Cloud size={13} />
-              <span className="hidden sm:inline text-[11px] font-mono">Nuvem Online</span>
+        {/* Status de Rede & Nuvem se estiver conectada */}
+        {cloudOnline === true && (
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-medium select-none shadow-2xs"
+            title="Servidor de Nuvem Conectado e Operacional"
+          >
+            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+            <Cloud size={13} />
+            <span className="hidden sm:inline text-[11px] font-mono">Nuvem Online</span>
+          </div>
+        )}
+
+        {/* Notificações */}
+        <NotificationsDropdown />
+
+        {/* Separador sutil */}
+        <div className="w-px h-5 bg-slate-200 dark:bg-[#2E2E38] mx-1" />
+
+        {/* Account Button Estilo AliasMode (.account-button) */}
+        {!user?.is_offline && user?.email ? (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5 rounded-full border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] hover:bg-slate-100/80 dark:hover:bg-[#24242C] pl-1 pr-3 py-1 select-none shadow-2xs transition-all">
+              <div className="w-6.5 h-6.5 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-xs font-bold text-white shadow-xs">
+                {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="text-[12px] font-semibold text-slate-900 dark:text-[#F1F1F4] leading-tight truncate max-w-[130px]">
+                  {user?.email || `@${user?.username}`}
+                </span>
+                <span className="text-[9.5px] text-emerald-600 dark:text-[#52C41A] leading-tight font-medium">
+                  {cloudOnline ? '☁️ Sincronizado' : '⚡ Conectado'}
+                </span>
+              </div>
             </div>
-          ) : (
-            <div
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-medium select-none shadow-2xs"
-              title="Nuvem offline ou inacessível no momento. Perfis operando normalmente em modo local seguro."
-            >
-              <span className="flex h-1.5 w-1.5 rounded-full bg-amber-500 dark:bg-amber-400" />
-              <CloudOff size={13} />
-              <span className="hidden sm:inline text-[11px] font-mono">Nuvem Offline</span>
-            </div>
-          )}
 
-          <NotificationsDropdown />
-        </div>
-
-        {/* Separador fino */}
-        <div className="w-px h-4 bg-slate-200 dark:bg-[#2B2D38] mx-1" />
-
-        {/* User Profile Badge & Nuvem Controls */}
-        <div className="flex items-center gap-2">
-          {user?.is_offline ? (
             <button
               type="button"
-              onClick={() => navigate('/auth/login')}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1C1D24] hover:bg-slate-100 dark:hover:bg-[#252834] text-slate-800 dark:text-white text-xs font-medium border border-slate-200 dark:border-white/20 transition-all cursor-pointer shadow-xs"
-              title="Clique para sincronizar ou conectar à sua conta na Nuvem"
+              onClick={logout}
+              title="Desconectar da Nuvem"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-400 dark:text-[#787C8A] transition-colors hover:bg-red-50 dark:hover:bg-[#2B1B20] hover:text-red-500 dark:hover:text-[#FF6B6B] border border-transparent hover:border-red-200 dark:hover:border-red-900/30"
             >
-              <span className="flex h-2 w-2 rounded-full bg-amber-400" />
-              <span className="font-medium">⚡ Modo Offline</span>
-              <span className="text-[10px] text-slate-500 dark:text-[#A5A8B6] ml-0.5">· Conectar Nuvem</span>
+              <LogOut size={14} />
             </button>
-          ) : (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-white/20 bg-white dark:bg-[#15161D] px-2.5 py-1 select-none shadow-xs">
-                <div className="w-6 h-6 rounded-full bg-[#FF334B]/15 border border-[#FF334B]/30 flex items-center justify-center text-xs font-bold text-[#FF334B]">
-                  {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-[12px] font-semibold text-slate-900 dark:text-white leading-tight">
-                    {user?.email || `@${user?.username}`}
-                  </span>
-                  <span className="text-[9.5px] text-emerald-600 dark:text-[#52C41A] leading-tight font-medium">
-                    {cloudOnline ? '☁️ Sincronizado' : '⚡ Local (Conectado)'}
-                  </span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={logout}
-                title="Desconectar da Nuvem"
-                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 dark:text-[#787C8A] transition-colors hover:bg-red-50 dark:hover:bg-[#2B1B20] hover:text-red-500 dark:hover:text-[#FF6B6B]"
-              >
-                <LogOut size={14} />
-              </button>
-            </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] select-none shadow-2xs text-xs">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 shadow-xs" />
+            <span className="font-medium text-[11.5px] text-slate-700 dark:text-[#C9C9D2]">Modo Local Seguro</span>
+          </div>
+        )}
       </div>
     </header>
   );

@@ -22,7 +22,23 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
   const navigate = useNavigate();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('star_sidebar_collapsed') === '1';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebar = () => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('star_sidebar_collapsed', next ? '1' : '0');
+      } catch {}
+      return next;
+    });
+  };
 
   const handleNewProfile = () => {
     if (onNewProfileClick) {
@@ -33,58 +49,60 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
   };
 
   const navItemClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group relative select-none ${isActive
-      ? 'bg-slate-100 text-slate-900 dark:bg-white/[0.08] dark:text-white font-semibold shadow-xs'
+    `flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 group relative select-none ${isActive
+      ? 'bg-slate-100 text-slate-900 dark:bg-white/[0.08] dark:text-white font-semibold shadow-2xs'
       : 'text-slate-500 hover:bg-slate-100/70 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:bg-white/[0.04] dark:hover:text-white'
     } ${isCollapsed ? 'justify-center px-2' : ''}`;
 
   return (
     <aside
-      className={`h-screen bg-white dark:bg-[#0E0F14] border-r border-slate-200 dark:border-white/10 flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[68px]' : 'w-[230px]'
+      className={`relative h-screen bg-white dark:bg-[#1A1A21] border-r border-slate-200 dark:border-[#2E2E38] flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[64px]' : 'w-[230px]'
         }`}
     >
+      {/* Botão Flutuante de Recolher/Expandir estilo AliasMode (rail-toggle na borda) */}
+      <button
+        type="button"
+        onClick={toggleSidebar}
+        className="absolute top-[19px] -right-[11px] z-50 flex h-[22px] w-[22px] items-center justify-center rounded-full border border-[#E6E3DD] dark:border-[#2E2E38] bg-white dark:bg-[#1A1A21] text-[#76736D] dark:text-[#90909D] hover:text-[#3366E6] dark:hover:text-[#5E88F0] hover:border-[#C5D6FB] dark:hover:border-[#2B3F6E] hover:bg-[#EEF3FF] dark:hover:bg-[#151F38] shadow-[0_1px_2px_rgba(0,0,0,0.06)] transition-all cursor-pointer hover:scale-110 active:scale-95"
+        title={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
+        aria-label={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
+      >
+        {isCollapsed ? (
+          <ChevronRight size={12} strokeWidth={2.5} />
+        ) : (
+          <ChevronLeft size={12} strokeWidth={2.5} />
+        )}
+      </button>
+
       {/* Header / Brand */}
       <div
-        className={`h-14 flex items-center border-b border-slate-200 dark:border-white/10 shrink-0 transition-all ${isCollapsed ? 'justify-center px-2' : 'justify-between px-3.5'
+        className={`h-[60px] flex items-center border-b border-slate-200 dark:border-[#2E2E38] shrink-0 transition-all ${isCollapsed ? 'justify-center px-2' : 'px-4'
           }`}
       >
         {!isCollapsed ? (
-          <>
-            <NavLink
-              to="/perfis"
-              className="flex items-center gap-2.5 overflow-hidden transition-all group min-w-0"
-            >
-              <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-inner">
-                <AstroFoxIcon size={20} />
-              </div>
-              <div className="flex flex-col leading-tight min-w-0">
-                <span className="font-bold text-[14px] tracking-tight text-slate-900 dark:text-white truncate">
-                  Super Star
-                </span>
-                <span className="text-[9.5px] uppercase tracking-wider font-semibold text-slate-400 dark:text-[#7C8092] truncate">
-                  Multilogin
-                </span>
-              </div>
-            </NavLink>
-
-            <button
-              type="button"
-              onClick={() => setIsCollapsed(true)}
-              className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-white/90 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/15 hover:border-slate-300 dark:hover:border-white/25 transition-all shadow-2xs"
-              title="Recolher menu"
-            >
-              <ChevronLeft size={16} strokeWidth={2} />
-            </button>
-          </>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setIsCollapsed(false)}
-            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-slate-200 dark:border-white/15 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-white/20 transition-all shadow-xs"
-            title="Expandir menu"
+          <NavLink
+            to="/perfis"
+            className="flex items-center gap-2.5 overflow-hidden transition-all group min-w-0 w-full"
           >
-            <ChevronRight size={17} strokeWidth={2.5} />
-          </button>
+            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-inner">
+              <AstroFoxIcon size={20} />
+            </div>
+            <div className="flex flex-col leading-tight min-w-0">
+              <span className="font-bold text-[14px] tracking-tight text-slate-900 dark:text-[#F1F1F4] truncate">
+                Super Star
+              </span>
+              <span className="text-[9.5px] uppercase tracking-wider font-semibold text-slate-400 dark:text-[#7C8092] truncate">
+                Multilogin
+              </span>
+            </div>
+            <span className="ml-auto text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-[#15151A] text-slate-400 dark:text-[#7C8092] border border-slate-200/60 dark:border-[#2E2E38]">
+              v2.0
+            </span>
+          </NavLink>
+        ) : (
+          <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white flex items-center justify-center shrink-0 shadow-inner">
+            <AstroFoxIcon size={20} />
+          </div>
         )}
       </div>
 
