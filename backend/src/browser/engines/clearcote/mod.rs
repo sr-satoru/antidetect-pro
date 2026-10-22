@@ -71,10 +71,50 @@ impl BrowserEngine for ClearcoteEngine {
         // 5. Salva metadados do perfil no disco
         metadata::ChromiumMetadataManager::save_profile_metadata(profile_dir, profile)?;
 
+        // 6. Descobre o IP público de saída do Proxy via Relay loopback (sem vazar DNS local)
+        let proxy_ip: Option<String> = if let Some(ref relay) = net_setup.relay {
+            let proxy_scheme = format!("http://127.0.0.1:{}", relay.port);
+            if let Ok(proxy_client) = reqwest::Client::builder()
+                .proxy(reqwest::Proxy::all(&proxy_scheme).map_err(|e| e.to_string())?)
+                .timeout(std::time::Duration::from_millis(2500))
+                .build()
+            {
+                match proxy_client.get("https://api.ipify.org").send().await {
+                    Ok(resp) => resp.text().await.ok().and_then(|t| {
+                        let trimmed = t.trim().to_string();
+                        if trimmed.parse::<std::net::IpAddr>().is_ok() {
+                            Some(trimmed)
+                        } else {
+                            None
+                        }
+                    }),
+                    Err(_) => profile.proxy.host.as_deref().and_then(|h| {
+                        let clean = h.trim();
+                        if clean.parse::<std::net::IpAddr>().is_ok() {
+                            Some(clean.to_string())
+                        } else {
+                            None
+                        }
+                    }),
+                }
+            } else {
+                profile.proxy.host.as_deref().and_then(|h| {
+                    let clean = h.trim();
+                    if clean.parse::<std::net::IpAddr>().is_ok() {
+                        Some(clean.to_string())
+                    } else {
+                        None
+                    }
+                })
+            }
+        } else {
+            None
+        };
+
         Ok(EnginePrepResult {
             net_setup,
             addon_paths: all_addon_paths,
-            proxy_ip: None,
+            proxy_ip,
         })
     }
 
@@ -98,6 +138,7 @@ impl BrowserEngine for ClearcoteEngine {
             profile,
             debug_port,
             proxy_url.as_deref(),
+            prep.proxy_ip.as_deref(),
             &prep.addon_paths,
             initial_url,
         )

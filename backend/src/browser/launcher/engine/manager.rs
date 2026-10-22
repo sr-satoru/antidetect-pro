@@ -117,9 +117,10 @@ impl ProcessManager {
         // Prepara configurações e extensões via engine desacoplada
         let prep = engine.prepare_profile_dir(&profile_dir, profile, data_dir, &self.client, cdp).await?;
 
-        // Seleciona porta CDP apenas se solicitado explicitamente (cdp: true) para evitar modo depuração de bot
+        // Para AstroBrowser (Chromium), o CDP em loopback é essencial para contornar a criptografia DPAPI
+        // de cookies do Chromium e sincronizar sessões em tempo real com o Star Vault (o patch 110-runtime-enable do Clearcote oculta o CDP de páginas).
         let is_chromium = engine.kernel_name() == "AstroBrowser";
-        let debug_port = if cdp {
+        let debug_port = if cdp || is_chromium {
             let port = cdp::pick_available_port();
             let _ = std::fs::remove_file(profile_dir.join("DevToolsActivePort"));
             Some(port)

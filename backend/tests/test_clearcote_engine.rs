@@ -89,6 +89,7 @@ fn test_clearcote_flags_generation() {
         &profile,
         Some(9222),
         Some("http://127.0.0.1:8080"),
+        Some("198.51.100.1"),
         &["/path/to/ext1".to_string()],
         Some("https://example.com"),
     );
@@ -100,6 +101,10 @@ fn test_clearcote_flags_generation() {
     assert!(flags.iter().any(|f| f == "--fingerprint-platform=windows"));
     assert!(flags.iter().any(|f| f == "--fingerprint-brand=chrome"));
     assert!(flags.iter().any(|f| f == "--fingerprint-brand-version=150"));
+    assert!(flags.iter().any(|f| f == "--fingerprint-tls-profile=chrome-150"));
+    assert!(flags.iter().any(|f| f.starts_with("--fingerprint-storage-quota=")));
+    assert!(flags.iter().any(|f| f == "--webrtc-ip=198.51.100.1"));
+    assert!(flags.iter().any(|f| f == "--force-webrtc-ip-handling-policy=disable_non_proxied_udp"));
     assert!(flags.iter().any(|f| f == "--fingerprint-hardware-concurrency=8"));
     assert!(flags.iter().any(|f| f == "--fingerprint-device-memory=16"));
     assert!(flags.iter().any(|f| f == "--fingerprint-screen-width=1920"));
@@ -197,4 +202,79 @@ fn test_clearcote_binary_resolution() {
     let path = resolved.unwrap();
     assert!(path.exists(), "Executável deve existir fisicamente");
     assert!(path.to_string_lossy().contains("chrome"));
+}
+
+#[test]
+fn test_clearcote_antidetect_stealth_matrix() {
+    let temp_dir = get_temp_test_dir("stealth_matrix");
+    let profile = create_mock_profile("stealth-01", "AstroBrowser", "windows");
+
+    let flags = build_clearcote_flags(
+        &temp_dir,
+        &profile,
+        None,
+        None,
+        None,
+        &[],
+        None,
+    );
+
+    // 1. Ausência de switches inexistentes ou indicadores de automação
+    assert!(!flags.iter().any(|f| f == "--portable-profile"), "Switch inexistente --portable-profile deve ser removido");
+    assert!(!flags.iter().any(|f| f.starts_with("--webrtc-ip=")), "Sem proxy não deve fabricar webrtc-ip");
+
+    // 2. Coerência de TLS do Chrome 150 (patch 210)
+    assert!(flags.iter().any(|f| f == "--fingerprint-tls-profile=chrome-150"));
+
+    // 3. Cota de armazenamento determinística e realista (patch 145)
+    let quota_flag = flags.iter().find(|f| f.starts_with("--fingerprint-storage-quota="));
+    assert!(quota_flag.is_some(), "Deve conter flag de storage quota");
+    let quota_val: u64 = quota_flag.unwrap().split('=').nth(1).unwrap().parse().unwrap();
+    assert!(quota_val >= 100_000 && quota_val <= 500_000, "Cota deve simular disco real entre 100GB e 500GB");
+
+    // 4. Limitação estrita de cache de disco e GPU
+    assert!(flags.iter().any(|f| f == "--disk-cache-size=20971520"));
+    assert!(flags.iter().any(|f| f == "--ignore-gpu-blocklist"));
+    assert!(flags.iter().any(|f| f == "--disable-background-mode"));
+
+    // 5. Política padrão de WebRTC quando sem proxy
+    assert!(flags.iter().any(|f| f == "--force-webrtc-ip-handling-policy=default_public_interface_only"));
+
+    let _ = std::fs::remove_dir_all(temp_dir);
+}
+
+#[test]
+fn test_clearcote_webrtc_leak_hardening() {
+    let temp_dir = get_temp_test_dir("webrtc_leak");
+    let profile = create_mock_profile("leak-01", "AstroBrowser", "windows");
+
+    // Caso A: Proxy com IP público válido de saída
+    let flags_with_proxy = build_clearcote_flags(
+        &temp_dir,
+        &profile,
+        Some(9333),
+        Some("http://127.0.0.1:8080"),
+        Some("198.51.100.99"),
+        &[],
+        None,
+    );
+    assert!(flags_with_proxy.iter().any(|f| f == "--webrtc-ip=198.51.100.99"));
+    assert!(flags_with_proxy.iter().any(|f| f == "--force-webrtc-ip-handling-policy=disable_non_proxied_udp"));
+    assert!(flags_with_proxy.iter().any(|f| f == "--remote-debugging-port=9333"));
+    assert!(flags_with_proxy.iter().any(|f| f == "--remote-debugging-address=127.0.0.1"));
+
+    // Caso B: Proxy sem IP numérico direto (ex: string malformatada ou vazia)
+    let flags_bad_ip = build_clearcote_flags(
+        &temp_dir,
+        &profile,
+        None,
+        Some("http://127.0.0.1:8080"),
+        Some("invalid-ip-string"),
+        &[],
+        None,
+    );
+    assert!(!flags_bad_ip.iter().any(|f| f.starts_with("--webrtc-ip=")), "IP inválido não deve gerar switch");
+    assert!(flags_bad_ip.iter().any(|f| f == "--force-webrtc-ip-handling-policy=disable_non_proxied_udp"));
+
+    let _ = std::fs::remove_dir_all(temp_dir);
 }

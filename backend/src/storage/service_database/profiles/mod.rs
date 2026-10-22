@@ -543,11 +543,20 @@ impl ProfileService {
             } else {
                 None
             };
+            let proxy_ip = profile.proxy.host.as_deref().and_then(|h| {
+                let clean = h.trim();
+                if clean.parse::<std::net::IpAddr>().is_ok() {
+                    Some(clean)
+                } else {
+                    None
+                }
+            });
             let clearcote_flags = crate::browser::engines::clearcote::flags::build_clearcote_flags(
                 &profile_dir,
                 &profile,
                 None,
                 proxy_url.as_deref(),
+                proxy_ip,
                 &[],
                 None,
             );

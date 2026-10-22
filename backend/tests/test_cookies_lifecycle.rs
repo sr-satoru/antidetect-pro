@@ -138,10 +138,10 @@ fn test_clearcote_flags_contain_portable_and_third_party() {
         extensions: None,
     };
 
-    let flags = build_clearcote_flags(&temp_dir, &profile, None, None, &[], None);
+    let flags = build_clearcote_flags(&temp_dir, &profile, None, None, None, &[], None);
     assert!(
-        flags.iter().any(|f| f == "--portable-profile"),
-        "Flags do Clearcote devem conter --portable-profile"
+        flags.iter().any(|f| f == "--fingerprint-tls-profile=chrome-150"),
+        "Flags do Clearcote devem conter --fingerprint-tls-profile=chrome-150"
     );
     assert!(
         flags.iter().any(|f| f == "--allow-third-party-cookies"),

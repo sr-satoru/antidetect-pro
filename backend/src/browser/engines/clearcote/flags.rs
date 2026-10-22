@@ -11,6 +11,7 @@ pub fn build_clearcote_flags(
     profile: &Profile,
     debug_port: Option<u16>,
     proxy_url: Option<&str>,
+    proxy_ip: Option<&str>,
     addon_paths: &[String],
     initial_url: Option<&str>,
 ) -> Vec<String> {
@@ -23,9 +24,12 @@ pub fn build_clearcote_flags(
     flags.push("--no-first-run".to_string());
     flags.push("--no-default-browser-check".to_string());
     flags.push("--password-store=basic".to_string());
-    flags.push("--portable-profile".to_string());
     flags.push("--allow-third-party-cookies".to_string());
     flags.push("--hide-crash-restore-bubble".to_string());
+    flags.push("--disable-background-mode".to_string());
+    flags.push("--disable-renderer-backgrounding".to_string());
+    flags.push("--disk-cache-size=20971520".to_string());
+    flags.push("--ignore-gpu-blocklist".to_string());
 
     // 2. Desativação de Privacy Sandbox invasivo em runtime (Chromium Features)
     let privacy_sandbox_disabled = [
@@ -70,6 +74,11 @@ pub fn build_clearcote_flags(
     let seed = parse_seed_with_fallback(fp.get("canvas_seed").or_else(|| fp.get("fingerprint_seed")), ((base_seed ^ 0xCA11BA5) & 0xFFFFFFFF) as u32);
     flags.push(format!("--fingerprint={}", seed));
 
+    // Cota de Armazenamento Coerente (patch 145-storage-quota.patch)
+    // Impede o tell de incognito (~500MB) reportando tamanho de disco real
+    let quota_mb = 100_000 + (seed as u64 % 400_000);
+    flags.push(format!("--fingerprint-storage-quota={}", quota_mb));
+
     // 4. Plataforma e Marca (Chrome coerente)
     let platform = match os.as_str() {
         "windows" => "windows",
@@ -79,6 +88,9 @@ pub fn build_clearcote_flags(
     flags.push(format!("--fingerprint-platform={}", platform));
     flags.push("--fingerprint-brand=chrome".to_string());
     flags.push("--fingerprint-brand-version=150".to_string());
+    // TLS Network Persona (patch 210-tls-network-persona.patch)
+    // Alinha key shares pós-quânticos (ML-KEM/Kyber) e ALPS do ClientHello ao Chrome 150
+    flags.push("--fingerprint-tls-profile=chrome-150".to_string());
 
     // 5. Hardware e Concorrência
     let cpu_cores = parse_opt_u32(fp.get("cpu_cores")).unwrap_or(8);
@@ -172,6 +184,21 @@ pub fn build_clearcote_flags(
     if let Some(proxy) = proxy_url {
         flags.push(format!("--proxy-server={}", proxy));
         flags.push("--disable-quic".to_string());
+        // Força pacotes UDP do WebRTC a trafegarem pelo proxy, impedindo vazamento de IP real
+        flags.push("--force-webrtc-ip-handling-policy=disable_non_proxied_udp".to_string());
+    } else {
+        flags.push("--force-webrtc-ip-handling-policy=default_public_interface_only".to_string());
+    }
+
+    // WebRTC IP Mock nativo do Clearcote (patch 100-webrtc-leak.patch)
+    // Se ativado, fabrica o candidato srflx com o egress IP e suprime qualquer candidato local kHost
+    if webrtc_mode != "off" && webrtc_mode != "disabled" {
+        if let Some(ip) = proxy_ip {
+            let clean = ip.trim();
+            if clean.parse::<std::net::IpAddr>().is_ok() {
+                flags.push(format!("--webrtc-ip={}", clean));
+            }
+        }
     }
 
     // 10. Porta CDP

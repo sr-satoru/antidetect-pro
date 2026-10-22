@@ -10,6 +10,7 @@ pub fn build_clearcote_command(
     profile: &Profile,
     debug_port: Option<u16>,
     proxy_url: Option<&str>,
+    proxy_ip: Option<&str>,
     addon_paths: &[String],
     initial_url: Option<&str>,
 ) -> Result<tokio::process::Command, String> {
@@ -73,6 +74,7 @@ pub fn build_clearcote_command(
         profile,
         debug_port,
         proxy_url,
+        proxy_ip,
         addon_paths,
         initial_url,
     );
