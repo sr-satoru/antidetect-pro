@@ -16,6 +16,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
+import { PlatformCell } from '../ui/platform-cell';
 export interface LinhaTabelaProps {
   profile: any;
   isSelected: boolean;
@@ -28,68 +29,6 @@ export interface LinhaTabelaProps {
   onDelete: (id: any) => void;
   onDuplicate?: (profile: any) => void;
 }
-
-const renderPlatformBadge = (platformName: string): React.ReactNode => {
-  const norm = (platformName || '').toLowerCase();
-  switch (norm) {
-    case 'google':
-      return (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#EA4335] text-[9px] font-bold text-white shadow-xs">
-          G
-        </span>
-      );
-    case 'twitter':
-    case 'x':
-      return (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[#444] bg-black text-[9px] font-bold text-white shadow-xs">
-          𝕏
-        </span>
-      );
-    case 'facebook':
-    case 'meta':
-      return (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0081FB] text-[10px] font-bold text-white shadow-xs">
-          f
-        </span>
-      );
-    case 'discord':
-      return (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#5865F2] text-[9px] font-bold text-white shadow-xs">
-          D
-        </span>
-      );
-    case 'amazon':
-      return (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#232F3E] text-[10px] font-bold text-white shadow-xs">
-          a
-        </span>
-      );
-    case 'instagram':
-      return (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-[9px] font-bold text-white shadow-xs">
-          ig
-        </span>
-      );
-    case 'tiktok':
-      return (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-black text-[9px] font-bold text-white shadow-xs">
-          ♪
-        </span>
-      );
-    case 'linkedin':
-      return (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#0A66C2] text-[9px] font-bold text-white shadow-xs">
-          in
-        </span>
-      );
-    default:
-      return (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#383A44] text-[9px] font-bold text-[#D2D5DF]">
-          {norm ? norm.charAt(0).toUpperCase() : '•'}
-        </span>
-      );
-  }
-};
 
 const formatDateDisplay = (
   val?: number | string | null,
@@ -356,23 +295,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
       {/* 7. Plataforma */}
       <td className="w-[210px] min-w-[210px] px-3.5 py-2.5 whitespace-nowrap">
-        {profile.platform && typeof profile.platform === 'object' && profile.platform.handle ? (
-          <div className="flex items-center gap-2">
-            {renderPlatformBadge(profile.platform.name || '')}
-            <div className="flex flex-col leading-tight">
-              <span className="text-[11px] font-medium text-slate-900 dark:text-white uppercase">
-                {String(profile.platform.handle).toUpperCase()}
-              </span>
-              <span className="text-[10px] text-slate-400 dark:text-[#9EA2AE]">
-                @{profile.platform.handle}
-              </span>
-            </div>
-          </div>
-        ) : typeof profile.platform === 'string' && profile.platform ? (
-          <span className="text-[11px] text-slate-900 dark:text-white uppercase">{profile.platform}</span>
-        ) : (
-          <span className="text-slate-400 dark:text-[#9EA2AE]">-</span>
-        )}
+        <PlatformCell profile={profile} />
       </td>
 
       {/* 8. Tags */}
