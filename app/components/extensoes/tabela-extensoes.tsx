@@ -270,12 +270,12 @@ const renderExtensionBadge = (
   iconType?: string,
   iconUrl?: string,
   name?: string,
-  sizeClass = 'h-16 w-16',
+  sizeClass = 'h-11 w-11',
 ) => {
   if (iconUrl) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 shadow-xs`}
       >
         <img
           src={iconUrl}
@@ -292,10 +292,10 @@ const renderExtensionBadge = (
   if (normalized.includes('ublock')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="uBlock Origin"
       >
-        <div className="w-full h-full rounded-xl bg-[#800000] flex items-center justify-center text-white font-black text-xs tracking-tighter shadow-2xs">
+        <div className="w-full h-full rounded-lg bg-[#800000] flex items-center justify-center text-white font-black text-[11px] tracking-tighter shadow-2xs">
           uBO
         </div>
       </div>
@@ -306,11 +306,11 @@ const renderExtensionBadge = (
   if (normalized.includes('bitwarden')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Bitwarden"
       >
-        <div className="w-full h-full rounded-xl bg-[#175DDC] flex items-center justify-center shadow-2xs">
-          <svg viewBox="0 0 24 24" className="h-6 w-6 fill-white" xmlns="http://www.w3.org/2000/svg">
+        <div className="w-full h-full rounded-lg bg-[#175DDC] flex items-center justify-center shadow-2xs">
+          <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm0 2.18l6 2.25v4.66c0 4.1-2.67 7.92-6 8.89-3.33-.97-6-4.79-6-8.89V6.43l6-2.25z" />
             <path d="M11 9h2v6h-2z" fill="white" />
           </svg>
@@ -323,10 +323,10 @@ const renderExtensionBadge = (
   if (normalized.includes('share-a-cart') || normalized.includes('sharea-cart')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Share-A-Cart"
       >
-        <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg viewBox="0 0 24 24" className="h-5.5 w-5.5" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="9" cy="20" r="1.5" fill="#F59E0B" />
           <circle cx="18" cy="20" r="1.5" fill="#EF4444" />
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" stroke="#2563EB" />
@@ -339,11 +339,11 @@ const renderExtensionBadge = (
   if (normalized.includes('vidiq')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex flex-col items-center justify-center bg-white dark:bg-white p-2 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex flex-col items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="vidIQ"
       >
-        <span className="text-[#0D1B2A] font-black text-sm tracking-tight leading-none">vidIQ</span>
-        <div className="h-1.5 w-4 bg-[#FF0000] rounded-xs mt-1.5" />
+        <span className="text-[#0D1B2A] font-black text-xs tracking-tight leading-none">vidIQ</span>
+        <div className="h-1 w-3.5 bg-[#FF0000] rounded-xs mt-1" />
       </div>
     );
   }
@@ -352,11 +352,11 @@ const renderExtensionBadge = (
   if (normalized.includes('deepl')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="DeepL"
       >
-        <div className="w-full h-full rounded-xl bg-[#0F2B46] flex items-center justify-center shadow-2xs">
-          <svg viewBox="0 0 24 24" className="h-6 w-6 stroke-white stroke-2 fill-none stroke-linecap-round stroke-linejoin-round">
+        <div className="w-full h-full rounded-lg bg-[#0F2B46] flex items-center justify-center shadow-2xs">
+          <svg viewBox="0 0 24 24" className="h-5 w-5 stroke-white stroke-2 fill-none stroke-linecap-round stroke-linejoin-round">
             <circle cx="7" cy="7" r="2" fill="white" />
             <circle cx="17" cy="12" r="2" fill="white" />
             <circle cx="7" cy="17" r="2" fill="white" />
@@ -371,11 +371,11 @@ const renderExtensionBadge = (
   if (normalized.includes('ad library') || normalized === 'adlibrary') {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Ad Library Cloud"
       >
-        <div className="w-full h-full rounded-xl bg-[#1877F2] flex items-center justify-center shadow-2xs">
-          <span className="text-white font-extrabold text-base tracking-tight">Ad</span>
+        <div className="w-full h-full rounded-lg bg-[#1877F2] flex items-center justify-center shadow-2xs">
+          <span className="text-white font-extrabold text-xs tracking-tight">Ad</span>
         </div>
       </div>
     );
@@ -385,7 +385,7 @@ const renderExtensionBadge = (
   if (normalized.includes('cookie')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none text-3xl shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none text-2xl shadow-xs`}
         title="Cookie Editor"
       >
         🍪
@@ -397,11 +397,11 @@ const renderExtensionBadge = (
   if (normalized.includes('user-agent') || normalized.includes('useragent')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Random User-Agent"
       >
-        <div className="w-full h-full rounded-xl bg-[#DC2626] flex items-center justify-center shadow-2xs">
-          <svg viewBox="0 0 24 24" className="h-6 w-6 fill-white">
+        <div className="w-full h-full rounded-lg bg-[#DC2626] flex items-center justify-center shadow-2xs">
+          <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
           </svg>
         </div>
@@ -413,10 +413,10 @@ const renderExtensionBadge = (
   if (normalized.includes('webrtc leak') || normalized === 'webrtc-shield') {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="WebRTC Leak Shield"
       >
-        <Shield className="h-8 w-8 text-[#0284C7] fill-[#0284C7]/20" />
+        <Shield className="h-5.5 w-5.5 text-[#0284C7] fill-[#0284C7]/20" />
       </div>
     );
   }
@@ -425,10 +425,10 @@ const renderExtensionBadge = (
   if (normalized.includes('webrtc control')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="WebRTC Control"
       >
-        <svg viewBox="0 0 24 24" className="h-8 w-8 stroke-[#059669] stroke-2 fill-none">
+        <svg viewBox="0 0 24 24" className="h-5.5 w-5.5 stroke-[#059669] stroke-2 fill-none">
           <circle cx="12" cy="12" r="9" stroke="#E11D48" />
           <path d="M12 7v10M7 12h10" stroke="#059669" />
         </svg>
@@ -440,7 +440,7 @@ const renderExtensionBadge = (
   if (normalized.includes('j2team')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none text-3xl shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none text-2xl shadow-xs`}
         title="J2TEAM Cookies"
       >
         🍪
@@ -452,10 +452,10 @@ const renderExtensionBadge = (
   if (normalized.includes('portal dex') || normalized.includes('portal-dex')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Portal DEX"
       >
-        <span className="text-[#A855F7] font-black text-base">P</span>
+        <span className="text-[#A855F7] font-black text-sm">P</span>
       </div>
     );
   }
@@ -464,13 +464,13 @@ const renderExtensionBadge = (
   if (normalized.includes('ads check') || normalized.includes('smit')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Ads Check by SMIT"
       >
-        <div className="w-full h-full rounded-xl bg-[#059669] flex items-center justify-center text-white font-bold text-[11px] shadow-2xs">
+        <div className="w-full h-full rounded-lg bg-[#059669] flex items-center justify-center text-white font-bold text-[10px] shadow-2xs">
           <div className="flex flex-col items-center leading-none">
             <span>ADS</span>
-            <span className="text-[8px] opacity-80 mt-0.5">SMIT</span>
+            <span className="text-[7px] opacity-80 mt-0.5">SMIT</span>
           </div>
         </div>
       </div>
@@ -481,11 +481,11 @@ const renderExtensionBadge = (
   if (normalized.includes('adblock')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="AdBlock"
       >
-        <div className="w-full h-full rounded-xl bg-[#DC2626] flex items-center justify-center shadow-2xs">
-          <svg viewBox="0 0 24 24" className="h-6 w-6 fill-white">
+        <div className="w-full h-full rounded-lg bg-[#DC2626] flex items-center justify-center shadow-2xs">
+          <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white">
             <path d="M12 2a1 1 0 0 1 .707.293l4 4A1 1 0 0 1 17 7v4a1 1 0 0 1-.293.707l-4 4A1 1 0 0 1 12 16h-4a1 1 0 0 1-.707-.293l-4-4A1 1 0 0 1 3 11V7a1 1 0 0 1 .293-.707l4-4A1 1 0 0 1 8 2h4z" />
             <path d="M10 5.5a.75.75 0 0 1 .75.75v3.25h1V6.25a.75.75 0 0 1 1.5 0v3.25h.5V7a.75.75 0 0 1 1.5 0v4.2a3.5 3.5 0 0 1-1.025 2.475L12.5 15.4a2.5 2.5 0 0 1-3.536 0L7.24 13.68A2.5 2.5 0 0 1 6.5 11.91V9a.75.75 0 0 1 1.5 0v1.5h1V6.25A.75.75 0 0 1 10 5.5z" />
           </svg>
@@ -498,11 +498,11 @@ const renderExtensionBadge = (
   if (normalized.includes('ads trust') || normalized === 'adstrust') {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Ads Trust"
       >
-        <div className="w-full h-full rounded-xl bg-[#0284C7] flex items-center justify-center shadow-2xs">
-          <span className="text-white font-extrabold text-xl leading-none">t?</span>
+        <div className="w-full h-full rounded-lg bg-[#0284C7] flex items-center justify-center shadow-2xs">
+          <span className="text-white font-extrabold text-base leading-none">t?</span>
         </div>
       </div>
     );
@@ -512,11 +512,11 @@ const renderExtensionBadge = (
   if (normalized.includes('primus')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Primus"
       >
-        <div className="w-full h-full rounded-xl bg-[#FF5500] flex items-center justify-center shadow-2xs">
-          <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-white stroke-[2.75] stroke-linecap-round stroke-linejoin-round">
+        <div className="w-full h-full rounded-lg bg-[#FF5500] flex items-center justify-center shadow-2xs">
+          <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-white stroke-[2.75] stroke-linecap-round stroke-linejoin-round">
             <path d="M4 6h16v12H7V9h10v6h-7" />
           </svg>
         </div>
@@ -528,11 +528,11 @@ const renderExtensionBadge = (
   if (normalized.includes('steam') || normalized === 'sih') {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Steam Inventory Helper"
       >
-        <div className="w-full h-full rounded-xl bg-[#21262D] flex items-center justify-center shadow-2xs">
-          <span className="text-[#00E5FF] font-black text-xs tracking-tight">[SIH]</span>
+        <div className="w-full h-full rounded-lg bg-[#21262D] flex items-center justify-center shadow-2xs">
+          <span className="text-[#00E5FF] font-black text-[11px] tracking-tight">[SIH]</span>
         </div>
       </div>
     );
@@ -542,11 +542,11 @@ const renderExtensionBadge = (
   if (normalized.includes('firefox')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Firefox Add-on"
       >
-        <div className="w-full h-full rounded-xl bg-gradient-to-br from-[#FF7139] to-[#FF2A54] flex items-center justify-center shadow-2xs">
-          <Flame className="h-7 w-7 text-white fill-white/30" />
+        <div className="w-full h-full rounded-lg bg-gradient-to-br from-[#FF7139] to-[#FF2A54] flex items-center justify-center shadow-2xs">
+          <Flame className="h-5.5 w-5.5 text-white fill-white/30" />
         </div>
       </div>
     );
@@ -556,11 +556,11 @@ const renderExtensionBadge = (
   if (normalized.includes('chrome')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white p-2.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
+        className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white p-1.5 border border-slate-200/90 dark:border-white/20 select-none shadow-xs`}
         title="Chrome Extension"
       >
-        <div className="w-full h-full rounded-xl bg-[#1A73E8] flex items-center justify-center shadow-2xs">
-          <Globe className="h-7 w-7 text-white" />
+        <div className="w-full h-full rounded-lg bg-[#1A73E8] flex items-center justify-center shadow-2xs">
+          <Globe className="h-5.5 w-5.5 text-white" />
         </div>
       </div>
     );
@@ -570,9 +570,9 @@ const renderExtensionBadge = (
   const initial = name ? name.trim().charAt(0).toUpperCase() : '';
   return (
     <div
-      className={`${sizeClass} shrink-0 rounded-2xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 text-slate-800 dark:text-slate-900 font-bold text-lg select-none shadow-xs`}
+      className={`${sizeClass} shrink-0 rounded-xl flex items-center justify-center bg-white dark:bg-white border border-slate-200/90 dark:border-white/20 text-slate-800 dark:text-slate-900 font-bold text-base select-none shadow-xs`}
     >
-      {initial || <Puzzle size={24} className="text-slate-400" />}
+      {initial || <Puzzle size={20} className="text-slate-400" />}
     </div>
   );
 };
@@ -768,21 +768,21 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 {teamExtensions.map((ext) => (
                   <div
                     key={ext.id}
-                    className="group relative flex min-h-[220px] flex-col justify-between rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white/80 dark:bg-[#1F2026] p-6 hover:border-slate-300 dark:hover:border-[#4B5063] dark:hover:bg-[#282A33] transition-all duration-150 backdrop-blur-xs shadow-xs"
+                    className="group relative flex min-h-[160px] flex-col justify-between rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white/80 dark:bg-[#1F2026] p-4 hover:border-slate-300 dark:hover:border-[#4B5063] dark:hover:bg-[#282A33] transition-all duration-150 backdrop-blur-xs shadow-xs"
                   >
                     <div>
                       {/* Topo: Ícone, Título e Switch de Ativação alinhados com proporção do card */}
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                           {renderExtensionBadge(
                             ext.iconType,
                             ext.iconUrl,
                             ext.name,
-                            'h-16 w-16',
+                            'h-11 w-11',
                           )}
                           <div className="min-w-0 flex-1 flex flex-col justify-center">
                             <h3
-                              className="line-clamp-2 text-base font-semibold text-slate-900 dark:text-white leading-snug"
+                              className="line-clamp-2 text-sm font-semibold text-slate-900 dark:text-white leading-snug"
                               title={ext.name}
                             >
                               {ext.name}
@@ -791,23 +791,23 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                         </div>
 
                         {/* Switch Ativar/Desativar Proporcional e Alinhado */}
-                        <div className="flex shrink-0 flex-col items-end justify-center gap-1.5">
+                        <div className="flex shrink-0 flex-col items-end justify-center gap-1">
                           <button
                             type="button"
                             onClick={() => onToggleEnabled(ext.id)}
-                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled
+                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled
                                 ? 'bg-[#7C3AED]'
                                 : 'bg-slate-300 dark:bg-[#2D3039]'
                               }`}
                           >
                             <span
-                              className={`inline-block h-4.5 w-4.5 transform rounded-full bg-white transition duration-200 shadow-xs ${ext.enabled ? 'translate-x-5.5' : 'translate-x-1'
+                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition duration-200 shadow-xs ${ext.enabled ? 'translate-x-4.5' : 'translate-x-1'
                                 }`}
                             />
                           </button>
-                          <span className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-[#9DA2B4]">
+                          <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-[#9DA2B4]">
                             <span
-                              className={`h-2 w-2 rounded-full ${ext.enabled ? 'bg-[#7C3AED]' : 'bg-slate-400 dark:bg-[#B0B3C2]'
+                              className={`h-1.5 w-1.5 rounded-full ${ext.enabled ? 'bg-[#7C3AED]' : 'bg-slate-400 dark:bg-[#B0B3C2]'
                                 }`}
                             />
                             <span>{ext.enabled ? 'Ativo' : 'Pausado'}</span>
@@ -816,14 +816,14 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                       </div>
 
                       {/* Descrição em escala proporcional */}
-                      <p className="mt-4 mb-4 line-clamp-3 text-xs leading-relaxed text-slate-500 dark:text-[#C5C8D4] min-h-[48px]">
+                      <p className="mt-2.5 mb-2.5 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-[#C5C8D4] min-h-[34px]">
                         {ext.description || 'Extensão instalada e pronta para uso no perfil.'}
                       </p>
                     </div>
 
                     {/* Rodapé: Provedor e Opções */}
-                    <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100 dark:border-white/5">
-                      <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-[#A4A7B6]">
+                    <div className="flex items-center justify-between text-xs pt-2.5 border-t border-slate-100 dark:border-white/5">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-[#A4A7B6]">
                         <span>Provedor:</span>
                         <a
                           href={
@@ -833,7 +833,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           }
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[#7C3AED] dark:text-[#A78BFA] hover:underline font-medium"
+                          className="text-[#7C3AED] dark:text-[#A78BFA] hover:underline font-medium text-xs"
                         >
                           {ext.provider || 'Chrome Web Store'}
                         </a>
@@ -845,10 +845,10 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           onClick={() =>
                             setOpenMenuId(openMenuId === ext.id ? null : ext.id)
                           }
-                          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#B0B3C2] transition-colors dark:hover:bg-[#40424B] dark:hover:text-white"
+                          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#B0B3C2] transition-colors dark:hover:bg-[#40424B] dark:hover:text-white"
                           title="Mais opções"
                         >
-                          <MoreHorizontal size={16} />
+                          <MoreHorizontal size={15} />
                         </button>
 
                         {openMenuId === ext.id && (
@@ -981,21 +981,21 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   return (
                     <div
                       key={recExt.id}
-                      className="group relative flex min-h-[220px] flex-col justify-between rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white/80 dark:bg-[#1F2026] p-6 hover:border-slate-300 dark:hover:border-[#4B5063] dark:hover:bg-[#282A33] transition-all duration-150 backdrop-blur-xs shadow-xs"
+                      className="group relative flex min-h-[160px] flex-col justify-between rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white/80 dark:bg-[#1F2026] p-4 hover:border-slate-300 dark:hover:border-[#4B5063] dark:hover:bg-[#282A33] transition-all duration-150 backdrop-blur-xs shadow-xs"
                     >
                       <div>
                         {/* Linha Superior: Ícone, Título e Botão Adicionar alinhados */}
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
                             {renderExtensionBadge(
                               recExt.iconType,
                               recExt.iconUrl,
                               recExt.name,
-                              'h-16 w-16',
+                              'h-11 w-11',
                             )}
                             <div className="min-w-0 flex-1 flex flex-col justify-center">
                               <h3
-                                className="line-clamp-2 text-base font-semibold text-slate-900 dark:text-white leading-snug"
+                                className="line-clamp-2 text-sm font-semibold text-slate-900 dark:text-white leading-snug"
                                 title={recExt.name}
                               >
                                 {recExt.name}
@@ -1006,7 +1006,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           {/* Botão de Ação: Estilo sutil com borda fina */}
                           <div className="shrink-0">
                             {isAlreadyAdded ? (
-                              <span className="inline-flex select-none items-center rounded-lg border border-slate-200 dark:border-[#2D3039] bg-slate-100 dark:bg-[#25262B] px-3.5 py-1.5 text-xs font-medium text-slate-400 dark:text-[#9DA2B4]">
+                              <span className="inline-flex select-none items-center rounded-lg border border-slate-200 dark:border-[#2D3039] bg-slate-100 dark:bg-[#25262B] px-2.5 py-1 text-xs font-medium text-slate-400 dark:text-[#9DA2B4]">
                                 <span>Adicionado</span>
                               </span>
                             ) : (
@@ -1015,7 +1015,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                                 onClick={() =>
                                   onAddRecommended && onAddRecommended(recExt)
                                 }
-                                className="cursor-pointer rounded-lg border border-slate-300 dark:border-[#4B5063] bg-transparent hover:bg-slate-100 dark:hover:bg-[#282A33] hover:border-slate-400 dark:hover:border-[#6C7284] px-4 py-1.5 text-xs font-semibold text-slate-700 dark:text-[#E2E4EC] hover:text-slate-900 dark:hover:text-white transition-colors shadow-2xs"
+                                className="cursor-pointer rounded-lg border border-slate-300 dark:border-[#4B5063] bg-transparent hover:bg-slate-100 dark:hover:bg-[#282A33] hover:border-slate-400 dark:hover:border-[#6C7284] px-3 py-1 text-xs font-semibold text-slate-700 dark:text-[#E2E4EC] hover:text-slate-900 dark:hover:text-white transition-colors shadow-2xs"
                               >
                                 Adicionar
                               </button>
@@ -1024,20 +1024,20 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                         </div>
 
                         {/* Descrição em escala proporcional */}
-                        <p className="mt-4 mb-4 line-clamp-3 text-xs leading-relaxed text-slate-500 dark:text-[#9DA2B4] min-h-[48px]">
+                        <p className="mt-2.5 mb-2.5 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-[#9DA2B4] min-h-[34px]">
                           {recExt.description}
                         </p>
                       </div>
 
                       {/* Rodapé: Provedor com link */}
-                      <div className="flex items-center text-xs pt-3 border-t border-slate-100 dark:border-white/5">
-                        <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-[#9DA2B4]">
+                      <div className="flex items-center text-xs pt-2.5 border-t border-slate-100 dark:border-white/5">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-[#9DA2B4]">
                           <span>Provedor:</span>
                           <a
                             href={recExt.providerUrl || 'https://chromewebstore.google.com'}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-[#7C3AED] dark:text-[#A78BFA] hover:underline font-medium"
+                            className="text-[#7C3AED] dark:text-[#A78BFA] hover:underline font-medium text-xs"
                           >
                             {recExt.provider}
                           </a>

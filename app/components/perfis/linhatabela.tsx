@@ -2,14 +2,13 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MenuAcoesPerfil } from './menu-acoes-perfil';
 import { OsIcon } from '../ui/os-icon';
-import { AstroBrowserIcon, AstroFoxIcon } from '../icons';
+import { AstroBrowserIcon, AstroFoxIcon, IpSuccessIcon, IpFailIcon } from '../icons';
 import { TagBadge } from '../tags/tag-badge';
 import { serviceTags } from '../../services/tags/service.tags';
 import { toast } from 'sonner';
 import { servicePerfis } from '../../services/perfis/service.perfis';
 import { isChromiumKernel } from '../../services/navegador-presets';
 import {
-  ArrowLeftRight,
   Play,
   Square,
   MoreVertical,
@@ -162,25 +161,33 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   const idStr = String(profile.id || '');
   const idDisplay = idStr.length > 8 ? `${idStr.substring(0, 8)}...` : idStr;
 
-  const proxyHost =
-    profile.ip ||
-    profile.proxy?.host ||
-    (profile.proxy?.type && profile.proxy.type !== 'none'
-      ? `${(profile.proxy.proxy_type || profile.proxy.type).toUpperCase()} Proxy`
-      : 'DIRECT');
+  const rawProxyType = (profile.proxy?.proxy_type || profile.proxy?.type || '').toLowerCase().trim();
+  const hasProxyType = Boolean(rawProxyType && rawProxyType !== 'none' && rawProxyType !== 'direct');
 
-  const proxyTypeDesc =
-    profile.proxy?.type && profile.proxy.type !== 'none'
-      ? profile.proxy.host
-        ? `${profile.proxy.type.toUpperCase()}:${profile.proxy.port || ''}`
-        : profile.proxy.type.toUpperCase()
-      : profile.country
-        ? profile.country.toUpperCase()
-        : 'NO PROXY';
+  const sanitizeIpOrHost = (val?: string | null) => {
+    if (!val || typeof val !== 'string') return '';
+    const trimmed = val.trim();
+    if (/^(direct|no\s*proxy|none)$/i.test(trimmed)) return '';
+    return trimmed;
+  };
 
-  const isProxyConnected =
+  const cleanHost = sanitizeIpOrHost(profile.proxy?.host);
+  const cleanIp = sanitizeIpOrHost(profile.ip);
+
+  const isProxyConnected = Boolean(
     profile.proxyConnected ||
-    (profile.proxy?.type && profile.proxy.type !== 'none');
+    (hasProxyType && (cleanHost || cleanIp))
+  );
+
+  const proxyHost =
+    cleanHost ||
+    cleanIp ||
+    (hasProxyType ? `${rawProxyType.toUpperCase()} Proxy` : '');
+
+  const proxyPort = profile.proxy?.port ? `:${profile.proxy.port}` : '';
+  const proxyTypeDesc = hasProxyType
+    ? `${rawProxyType.toUpperCase()}${cleanHost ? proxyPort : ''}`
+    : '';
 
   const lastOpened = formatDateDisplay(
     profile.last_launch || profile.lastOpened,
@@ -249,21 +256,26 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
       {/* 5. Proxy / IP */}
       <td className="w-[220px] min-w-[220px] px-3.5 py-2.5 whitespace-nowrap">
-        <div className="flex items-center gap-2">
-          <ArrowLeftRight size={12} className="shrink-0 text-slate-400 dark:text-[#9DA2B4]" />
-          <span
-            className={`h-1.5 w-1.5 shrink-0 rounded-full ${isProxyConnected ? 'bg-emerald-500' : 'bg-slate-400 dark:bg-[#52525b]'
-              }`}
-          />
-          <div className="flex flex-col leading-tight">
-            <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white">
-              {proxyHost}
-            </span>
-            <span className="font-mono text-[11px] text-slate-400 dark:text-[#9DA2B4] uppercase">
-              {proxyTypeDesc}
-            </span>
+        {isProxyConnected ? (
+          <div className="flex items-center gap-2">
+            <IpSuccessIcon size={16} />
+            <div className="flex flex-col leading-tight">
+              <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                {proxyHost}
+              </span>
+              {proxyTypeDesc && (
+                <span className="font-mono text-[11px] text-slate-400 dark:text-[#9DA2B4] uppercase">
+                  {proxyTypeDesc}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <IpFailIcon size={16} />
+            <span className="font-mono text-xs text-slate-400 dark:text-[#9DA2B4] select-none">-</span>
+          </div>
+        )}
       </td>
 
       {/* 6. Última Sessão */}

@@ -187,6 +187,26 @@ export function resolvePlatformKey(raw?: string): string {
   return clean;
 }
 
+export const PLATFORM_COLOR_PALETTE = [
+  'bg-violet-600 text-white',
+  'bg-indigo-600 text-white',
+  'bg-blue-600 text-white',
+  'bg-emerald-600 text-white',
+  'bg-cyan-600 text-white',
+  'bg-amber-600 text-white',
+  'bg-rose-600 text-white',
+  'bg-purple-600 text-white',
+];
+
+export function getPlatformColorClass(key?: string): string {
+  if (!key || key === 'other') return 'bg-[#7C3AED] text-white';
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash = key.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return PLATFORM_COLOR_PALETTE[Math.abs(hash) % PLATFORM_COLOR_PALETTE.length];
+}
+
 /**
  * Renderiza o ícone de marca redondo (16x16, 18x18 ou 22x22)
  */
@@ -237,12 +257,13 @@ export const PlatformBrandIcon: React.FC<{
     );
   }
 
-  // Fallback genérico para domínios customizados
+  // Fallback genérico para domínios customizados / outras plataformas
   const initial = (platform || '?').charAt(0).toUpperCase();
+  const colorClass = getPlatformColorClass(platform);
   return (
     <span
       title={platform || 'Plataforma'}
-      className={`shrink-0 inline-flex items-center justify-center rounded-full bg-slate-400 text-white font-bold select-none shadow-xs ${sizeClasses} ${className}`}
+      className={`shrink-0 inline-flex items-center justify-center rounded-full font-bold select-none shadow-xs ${sizeClasses} ${colorClass} ${className}`}
     >
       {initial}
     </span>
@@ -562,7 +583,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                           onClick={(e) =>
                             handleCopy(username || acc.platform, e, `user-${acc.id || idx}`)
                           }
-                          className="text-xs font-semibold text-slate-900 dark:text-white tracking-tight truncate cursor-pointer hover:opacity-75 transition-opacity"
+                          className="text-xs font-semibold text-white dark:text-slate-900 tracking-tight truncate cursor-pointer hover:opacity-80 transition-opacity"
                           title={
                             username
                               ? `Usuário: ${username} (clique para copiar apenas o usuário)`
@@ -579,7 +600,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                         onClick={(e) =>
                           handleCopy(combinedCredentials, e, accountCopyId)
                         }
-                        className="shrink-0 p-1 rounded text-slate-400 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                        className="shrink-0 p-1 rounded text-slate-400 hover:text-white dark:text-slate-500 dark:hover:text-slate-900 hover:bg-white/10 dark:hover:bg-black/10 transition-colors cursor-pointer"
                         title={
                           username && password
                             ? `Copiar usuário e senha (${combinedCredentials})`
@@ -590,7 +611,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                         {copiedId === accountCopyId ? (
                           <Check
                             size={12}
-                            className="text-emerald-600 dark:text-emerald-400 stroke-[2.5]"
+                            className="text-emerald-400 dark:text-emerald-600 stroke-[2.5]"
                           />
                         ) : (
                           <Copy size={12} className="stroke-[1.8]" />
@@ -610,9 +631,9 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                             (password || acc.twoFactorKey) &&
                             handleCopy(subtext, e, `sub-${acc.id || idx}`)
                           }
-                          className={`text-[11px] font-mono text-slate-500 dark:text-[#9DA2B4] truncate block ${
+                          className={`text-[11px] font-mono text-slate-300 dark:text-slate-600 truncate block ${
                             password || acc.twoFactorKey
-                              ? 'cursor-pointer hover:opacity-75 transition-opacity'
+                              ? 'cursor-pointer hover:opacity-80 transition-opacity'
                               : ''
                           }`}
                           title={

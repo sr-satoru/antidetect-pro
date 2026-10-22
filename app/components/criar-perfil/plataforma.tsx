@@ -1,92 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Tooltip, InfoBalloon } from '@/components/ui/tooltip';
 import config from '@/config/perfil.json';
+import { PlatformBrandIcon } from '@/components/ui/platform-cell';
 
 interface PlataformaTabProps {
   formData: any;
   onChange: (key: string, value: any) => void;
 }
 
-const renderPlatformIcon = (iconType: string): React.ReactNode => {
-  switch (iconType) {
-    case 'facebook':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#1877F2] text-[10px] font-bold text-white">
-          f
-        </span>
-      );
-    case 'amazon':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#232F3E] text-[10px] font-bold text-white">
-          a
-        </span>
-      );
-    case 'linkedin':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#0A66C2] text-[9px] font-bold text-white">
-          in
-        </span>
-      );
-    case 'x':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#444] bg-black text-[9px] font-bold text-white">
-          𝕏
-        </span>
-      );
-    case 'paypal':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#00457C] text-[9px] font-bold text-white italic">
-          P
-        </span>
-      );
-    case 'google':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#EA4335] text-[9px] font-bold text-white">
-          M
-        </span>
-      );
-    case 'outlook':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#0078D4] text-[9px] font-bold text-white">
-          O
-        </span>
-      );
-    case 'vinted':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#09B1BA] text-[9px] font-bold text-white">
-          V
-        </span>
-      );
-    case 'instagram':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-[9px] font-bold text-white">
-          ig
-        </span>
-      );
-    case 'tiktok':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-black text-[9px] font-bold text-white">
-          ♪
-        </span>
-      );
-    case 'ebay':
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#E53238] text-[9px] font-bold text-white">
-          e
-        </span>
-      );
-    default:
-      return (
-        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#6875F5] text-[10px] font-bold text-white">
-          •••
-        </span>
-      );
-  }
-};
-
 export const PLATFORM_PRESETS = config.platforms.map((p) => ({
   ...p,
-  icon: renderPlatformIcon(p.iconType),
+  icon: <PlatformBrandIcon platform={p.id} size="xs" />,
 }));
 
 export const PlataformaTab: React.FC<PlataformaTabProps> = ({
