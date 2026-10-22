@@ -13,7 +13,6 @@ pub fn build_camou_prefs(
     net_setup: &NetworkSetupResult,
 ) -> HashMap<String, Value> {
     let mut prefs = HashMap::new();
-    let fp_map = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
 
     // 1. Integridade e Silêncio do Navegador (Sem diálogos intrusivos)
     prefs.insert("browser.shell.checkDefaultBrowser".to_string(), Value::Bool(false));
@@ -21,34 +20,17 @@ pub fn build_camou_prefs(
     prefs.insert("browser.aboutwelcome.enabled".to_string(), Value::Bool(false));
     prefs.insert("browser.tabs.warnOnClose".to_string(), Value::Bool(false));
 
-    // 2. Localização e Idioma Nativos (sem fallbacks arbitrários prejudiciais)
-    let (primary_locale, lang) = if !net_setup.resolved_network.country_code.is_empty() {
-        (
-            Some(net_setup.resolved_network.primary_language.clone()),
-            Some(net_setup.resolved_network.accept_languages.clone()),
-        )
-    } else if let Some(custom_l) = fp_map.get("custom_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
-        let primary = custom_l
-            .split(',')
-            .next()
-            .and_then(|s| s.split(';').next())
-            .map(|s| s.trim())
-            .filter(|s| !s.is_empty())
-            .unwrap_or(custom_l);
-        (Some(primary.to_string()), Some(custom_l.to_string()))
-    } else {
-        (None, None)
-    };
-    if let Some(p) = primary_locale {
-        if !p.is_empty() {
-            prefs.insert("intl.locale.requested".to_string(), Value::String(p));
-        }
-    }
-    if let Some(l) = lang {
-        if !l.is_empty() {
-            prefs.insert("intl.accept_languages".to_string(), Value::String(l));
-        }
-    }
+    // 2. Localização e Idioma
+    let fp_map = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
+    let lang = fp_map
+        .get("custom_language")
+        .and_then(|v| v.as_str())
+        .unwrap_or("pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7");
+    
+    // O primeiro idioma da lista é o locale solicitado
+    let primary_locale = lang.split(',').next().unwrap_or("pt-BR").split(';').next().unwrap_or("pt-BR");
+    prefs.insert("intl.locale.requested".to_string(), Value::String(primary_locale.to_string()));
+    prefs.insert("intl.accept_languages".to_string(), Value::String(lang.to_string()));
 
     // 3. Ativação de Fontes Empacotadas e Coerência de Scrollbars
     prefs.insert("gfx.bundled-fonts.activate".to_string(), Value::Number(1.into()));

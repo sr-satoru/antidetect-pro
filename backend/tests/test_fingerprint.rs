@@ -37,7 +37,7 @@ fn test_windows_fingerprint_translation() {
         extensions: None,
     };
 
-    let cfg = build_camou_config_map(&profile, Some("192.168.1.50"), &[], None);
+    let cfg = build_camou_config_map(&profile, Some("192.168.1.50"), &[]);
     let net_setup = NetworkSetupResult::default();
     let prefs = build_camou_prefs(&profile, None, &net_setup);
 
@@ -90,7 +90,7 @@ fn test_macos_fingerprint_translation() {
         extensions: None,
     };
 
-    let cfg = build_camou_config_map(&profile, None, &[], None);
+    let cfg = build_camou_config_map(&profile, None, &[]);
     let net_setup = NetworkSetupResult::default();
     let prefs = build_camou_prefs(&profile, None, &net_setup);
 
@@ -130,7 +130,7 @@ fn test_android_fingerprint_translation() {
         extensions: None,
     };
 
-    let cfg = build_camou_config_map(&profile, None, &[], None);
+    let cfg = build_camou_config_map(&profile, None, &[]);
 
     assert_eq!(cfg.get("navigator.platform").unwrap(), "Linux armv8l");
     assert_eq!(cfg.get("navigator.oscpu").unwrap(), "Linux armv8l");
@@ -166,7 +166,7 @@ fn test_ios_fingerprint_translation() {
         extensions: None,
     };
 
-    let cfg = build_camou_config_map(&profile, None, &[], None);
+    let cfg = build_camou_config_map(&profile, None, &[]);
 
     assert_eq!(cfg.get("navigator.platform").unwrap(), "iPhone");
     assert_eq!(cfg.get("navigator.oscpu").unwrap(), "");
@@ -201,17 +201,17 @@ fn test_webrtc_mode_and_ipv4_validation() {
     };
 
     // 1. IP válido (IPv4) com substitute: deve injetar no webrtc:ipv4
-    let cfg_valid = build_camou_config_map(&base_profile, Some("185.220.101.5"), &[], None);
+    let cfg_valid = build_camou_config_map(&base_profile, Some("185.220.101.5"), &[]);
     assert_eq!(cfg_valid.get("webrtc:ipv4").unwrap(), "185.220.101.5");
 
     // 2. Hostname/domínio (não é IPv4): NUNCA deve injetar string inválida que quebra o C++ inet_pton
-    let cfg_domain = build_camou_config_map(&base_profile, Some("proxy.provider.com"), &[], None);
+    let cfg_domain = build_camou_config_map(&base_profile, Some("proxy.provider.com"), &[]);
     assert!(cfg_domain.get("webrtc:ipv4").is_none());
 
     // 3. webrtc_mode == disabled: não deve injetar no CAMOU_CONFIG
     let mut disabled_profile = base_profile.clone();
     disabled_profile.fingerprint_json = serde_json::json!({ "webrtc_mode": "disabled" });
-    let cfg_disabled = build_camou_config_map(&disabled_profile, Some("185.220.101.5"), &[], None);
+    let cfg_disabled = build_camou_config_map(&disabled_profile, Some("185.220.101.5"), &[]);
     assert!(cfg_disabled.get("webrtc:ipv4").is_none());
 }
 
@@ -246,7 +246,7 @@ fn test_hardware_noise_gating() {
         extensions: None,
     };
 
-    let cfg = build_camou_config_map(&profile, None, &[], None);
+    let cfg = build_camou_config_map(&profile, None, &[]);
 
     // Com noise desativado, seeds não devem ser injetadas
     assert!(cfg.get("canvas:seed").is_none());
@@ -263,7 +263,7 @@ fn test_hardware_noise_gating() {
             "media_devices": true
         }
     });
-    let cfg_enabled = build_camou_config_map(&profile, None, &[], None);
+    let cfg_enabled = build_camou_config_map(&profile, None, &[]);
     assert!(cfg_enabled.get("canvas:seed").is_some());
     assert!(cfg_enabled.get("audio:seed").is_some());
     assert!(cfg_enabled.get("fonts:spacing_seed").is_some());
@@ -303,7 +303,7 @@ fn test_advanced_segmentations() {
         extensions: None,
     };
 
-    let cfg = build_camou_config_map(&profile, None, &[], None);
+    let cfg = build_camou_config_map(&profile, None, &[]);
     let net_setup = NetworkSetupResult::default();
     let prefs = build_camou_prefs(&profile, None, &net_setup);
 
@@ -352,7 +352,7 @@ fn test_media_devices_and_labels() {
         extensions: None,
     };
 
-    let cfg = build_camou_config_map(&profile, None, &[], None);
+    let cfg = build_camou_config_map(&profile, None, &[]);
 
     assert_eq!(cfg.get("mediaDevices:enabled").unwrap(), true);
     assert_eq!(cfg.get("mediaDevices:micros").unwrap().as_u64().unwrap(), 2);
@@ -403,8 +403,8 @@ fn test_font_subset_determinism() {
         extensions: None,
     };
 
-    let cfg_a1 = build_camou_config_map(&profile_a, None, &[], None);
-    let cfg_a2 = build_camou_config_map(&profile_a, None, &[], None);
+    let cfg_a1 = build_camou_config_map(&profile_a, None, &[]);
+    let cfg_a2 = build_camou_config_map(&profile_a, None, &[]);
 
     let fonts_a1 = cfg_a1.get("fonts").unwrap().as_array().unwrap();
     let fonts_a2 = cfg_a2.get("fonts").unwrap().as_array().unwrap();
@@ -415,7 +415,7 @@ fn test_font_subset_determinism() {
     // 2. Perfis diferentes geram listas diferentes de fontes
     let mut profile_b = profile_a.clone();
     profile_b.id = "profile-beta-999".to_string();
-    let cfg_b = build_camou_config_map(&profile_b, None, &[], None);
+    let cfg_b = build_camou_config_map(&profile_b, None, &[]);
     let fonts_b = cfg_b.get("fonts").unwrap().as_array().unwrap();
 
     assert_ne!(fonts_a1, fonts_b);

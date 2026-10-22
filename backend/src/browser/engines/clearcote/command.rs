@@ -12,7 +12,6 @@ pub fn build_clearcote_command(
     proxy_url: Option<&str>,
     addon_paths: &[String],
     initial_url: Option<&str>,
-    network: Option<&crate::network::ResolvedNetworkIdentity>,
 ) -> Result<tokio::process::Command, String> {
     let mut cmd = tokio::process::Command::new(binary_path);
 
@@ -48,16 +47,12 @@ pub fn build_clearcote_command(
             }
 
             // Define LANGUAGE para GLib/Chromium coincidir com a UI do perfil
-            let lang = if let Some(net) = network {
-                net.primary_language.replace("-", "_")
-            } else {
-                let fp_map = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
-                fp_map.get("locale")
-                    .and_then(|l| l.get("primary_language"))
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("en_US")
-                    .replace("-", "_")
-            };
+            let fp_map = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
+            let lang = fp_map.get("locale")
+                .and_then(|l| l.get("primary_language"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("pt_BR")
+                .replace("-", "_");
             cmd.env("LANGUAGE", lang);
         }
 
@@ -80,7 +75,6 @@ pub fn build_clearcote_command(
         proxy_url,
         addon_paths,
         initial_url,
-        network,
     );
 
     info!(

@@ -123,7 +123,6 @@ pub fn build_camou_config(
     profile: &Profile,
     proxy_ip: Option<&str>,
     addon_paths: &[String],
-    network: Option<&crate::network::ResolvedNetworkIdentity>,
 ) -> HashMap<String, Value> {
     let fp = extract_fingerprint_map(&profile.fingerprint_json);
     let os = resolve_os(profile, &fp);
@@ -279,58 +278,39 @@ pub fn build_camou_config(
         config.insert("fonts:spacing_seed".to_string(), Value::Number(client_rects_seed.into()));
     }
 
-    // 6. Fuso Horário (Timezone nativo do Camoufox)
-    let timezone = if let Some(net) = network.filter(|n| !n.country_code.is_empty()) {
-        Some(net.timezone.as_str())
-    } else {
-        fp.get("custom_timezone").and_then(|v| v.as_str())
-    };
-    if let Some(tz) = timezone {
+    // 6. Fuso Horário (Timezone)
+    if let Some(tz) = fp.get("custom_timezone").and_then(|v| v.as_str()) {
         let clean = tz.trim();
         if !clean.is_empty() {
             config.insert("timezone".to_string(), Value::String(clean.to_string()));
         }
     }
 
-    // 7. Idioma e Localidade (Language & Locale coerentes - sem fallbacks arbitrários)
-    let resolved_lang = if let Some(net) = network.filter(|n| !n.country_code.is_empty() && !n.primary_language.trim().is_empty()) {
-        Some((net.accept_languages.clone(), net.primary_language.clone()))
-    } else if let Some(custom_l) = fp.get("custom_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
-        let primary = custom_l.split(',').next().and_then(|s| s.split(';').next()).map(|s| s.trim()).filter(|s| !s.is_empty()).unwrap_or(custom_l);
-        Some((custom_l.to_string(), primary.to_string()))
-    } else if let Some(locale_obj) = fp.get("locale") {
-        if let Some(p) = locale_obj.get("primary_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
-            let a = locale_obj
-                .get("languages")
-                .and_then(|v| v.as_array())
-                .map(|arr| {
-                    arr.iter()
-                        .filter_map(|x| x.as_str().map(|s| s.split(';').next().unwrap_or("").trim()))
-                        .filter(|s| !s.is_empty())
-                        .collect::<Vec<_>>()
-                        .join(",")
-                })
-                .unwrap_or_else(|| p.to_string());
-            Some((a, p.to_string()))
-        } else {
-            None
-        }
+    // 7. Idioma e Localidade (Language & Locale)
+    let custom_lang = fp
+        .get("custom_language")
+        .and_then(|v| v.as_str())
+        .unwrap_or("pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7");
+
+    config.insert("headers.Accept-Language".to_string(), Value::String(custom_lang.to_string()));
+
+    let primary_lang = custom_lang
+        .split(',')
+        .next()
+        .map(|s| s.split(';').next().unwrap_or("pt-BR").trim())
+        .unwrap_or("pt-BR");
+
+    config.insert("navigator.language".to_string(), Value::String(primary_lang.to_string()));
+
+    // navigator.language e locale são as propriedades oficiais reconhecidas por MaskConfig (properties.json)
+
+    if let Some(dash) = primary_lang.find('-') {
+        let lang = &primary_lang[..dash];
+        let reg = &primary_lang[dash + 1..];
+        config.insert("locale:language".to_string(), Value::String(lang.to_string()));
+        config.insert("locale:region".to_string(), Value::String(reg.to_string()));
     } else {
-        None
-    };
-
-    if let Some((custom_lang, primary_lang)) = resolved_lang {
-        config.insert("headers.Accept-Language".to_string(), Value::String(custom_lang));
-        config.insert("navigator.language".to_string(), Value::String(primary_lang.clone()));
-
-        if let Some(dash) = primary_lang.find('-') {
-            let lang = &primary_lang[..dash];
-            let reg = &primary_lang[dash + 1..];
-            config.insert("locale:language".to_string(), Value::String(lang.to_string()));
-            config.insert("locale:region".to_string(), Value::String(reg.to_string()));
-        } else {
-            config.insert("locale:language".to_string(), Value::String(primary_lang));
-        }
+        config.insert("locale:language".to_string(), Value::String(primary_lang.to_string()));
     }
 
     // 8. Dispositivos de Mídia Realistas (Media Devices com Rótulos e GroupIds)
@@ -380,21 +360,13 @@ pub fn build_camou_config(
         config.insert("mediaDevices:enabled".to_string(), Value::Bool(false));
     }
 
-    // 9. Geolocalização (formato exato do C++ MaskConfig: geolocation:latitude/longitude/accuracy)
+    // 9. Geolocalização Customizada Plana (formato exato do C++ MaskConfig: geolocation:latitude/longitude/accuracy)
     let location_mode = fp.get("location_mode").and_then(|v| v.as_str()).unwrap_or("ip");
-    let (lat, lng, acc) = if location_mode == "custom" {
-        (
-            parse_opt_f64(fp.get("custom_latitude")).unwrap_or(0.0),
-            parse_opt_f64(fp.get("custom_longitude")).unwrap_or(0.0),
-            parse_opt_f64(fp.get("custom_accuracy")).unwrap_or(50.0),
-        )
-    } else if let Some(net) = network {
-        (net.latitude, net.longitude, 50.0)
-    } else {
-        (0.0, 0.0, 50.0)
-    };
+    if location_mode == "custom" {
+        let lat = parse_opt_f64(fp.get("custom_latitude")).unwrap_or(0.0);
+        let lng = parse_opt_f64(fp.get("custom_longitude")).unwrap_or(0.0);
+        let acc = parse_opt_f64(fp.get("custom_accuracy")).unwrap_or(50.0);
 
-    if lat != 0.0 || lng != 0.0 {
         if let Some(n) = serde_json::Number::from_f64(lat) {
             config.insert("geolocation:latitude".to_string(), Value::Number(n));
         }
@@ -420,8 +392,7 @@ pub fn build_camou_config(
     // 12. Spoofing de IPv4 no WebRTC (apenas se webrtc_mode for "substitute" e o IP for um IPv4 estrito)
     let webrtc_mode = fp.get("webrtc_mode").and_then(|v| v.as_str()).unwrap_or("substitute");
     if webrtc_mode == "substitute" {
-        let candidate_ip = proxy_ip.or_else(|| network.and_then(|n| n.egress_ip.as_deref()));
-        if let Some(ip) = candidate_ip {
+        if let Some(ip) = proxy_ip {
             let clean = ip.trim();
             // Camoufox C++ inet_pton exige estritamente formato IPv4
             if clean.parse::<std::net::Ipv4Addr>().is_ok() {

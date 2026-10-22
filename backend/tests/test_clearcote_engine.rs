@@ -84,16 +84,6 @@ fn test_clearcote_flags_generation() {
     let temp_dir = get_temp_test_dir("flags");
     let profile = create_mock_profile("test-01", "AstroBrowser", "windows");
 
-    let network = star_multlogin_backend::network::ResolvedNetworkIdentity {
-        egress_ip: Some("198.51.100.25".to_string()),
-        timezone: "America/New_York".to_string(),
-        latitude: 40.7128,
-        longitude: -74.0060,
-        country_code: "US".to_string(),
-        primary_language: "en-US".to_string(),
-        accept_languages: "en-US,en;q=0.9".to_string(),
-    };
-
     let flags = build_clearcote_flags(
         &temp_dir,
         &profile,
@@ -101,7 +91,6 @@ fn test_clearcote_flags_generation() {
         Some("http://127.0.0.1:8080"),
         &["/path/to/ext1".to_string()],
         Some("https://example.com"),
-        Some(&network),
     );
 
     assert!(flags.iter().any(|f| f.starts_with("--user-data-dir=")));
@@ -117,11 +106,6 @@ fn test_clearcote_flags_generation() {
     assert!(flags.iter().any(|f| f == "--fingerprint-screen-height=1080"));
     assert!(flags.iter().any(|f| f == "--proxy-server=http://127.0.0.1:8080"));
     assert!(flags.iter().any(|f| f == "--disable-quic"));
-    assert!(flags.iter().any(|f| f == "--force-webrtc-ip-handling-policy=disable_non_proxied_udp"));
-    assert!(flags.iter().any(|f| f == "--webrtc-ip=198.51.100.25"));
-    assert!(flags.iter().any(|f| f == "--timezone=America/New_York"));
-    assert!(flags.iter().any(|f| f == "--fingerprint-tls-profile=chrome-150"));
-    assert!(flags.iter().any(|f| f.starts_with("--fingerprint-location=")));
     assert!(flags.iter().any(|f| f == "--remote-debugging-port=9222"));
     assert!(flags.iter().any(|f| f == "--load-extension=/path/to/ext1"));
     assert!(flags.iter().any(|f| f == "https://example.com"));
@@ -134,17 +118,7 @@ fn test_clearcote_preferences_injection() {
     let temp_dir = get_temp_test_dir("prefs");
     let profile = create_mock_profile("test-02", "AstroBrowser", "windows");
 
-    let network = star_multlogin_backend::network::ResolvedNetworkIdentity {
-        egress_ip: Some("198.51.100.25".to_string()),
-        timezone: "America/New_York".to_string(),
-        latitude: 40.7128,
-        longitude: -74.0060,
-        country_code: "US".to_string(),
-        primary_language: "en-US".to_string(),
-        accept_languages: "en-US,en;q=0.9".to_string(),
-    };
-
-    let res = setup_chromium_preferences(&temp_dir, &profile, &network);
+    let res = setup_chromium_preferences(&temp_dir, &profile);
     assert!(res.is_ok());
 
     let prefs_file = temp_dir.join("Default").join("Preferences");
@@ -156,8 +130,7 @@ fn test_clearcote_preferences_injection() {
     assert_eq!(json["translate"]["enabled"], false);
     assert_eq!(json["credentials_enable_service"], false);
     assert_eq!(json["profile"]["password_manager_enabled"], false);
-    assert_eq!(json["webrtc"]["ip_handling_policy"], "disable_non_proxied_udp");
-    assert!(json["intl"]["accept_languages"].as_str().unwrap().contains("en-US"));
+    assert!(json["intl"]["accept_languages"].as_str().unwrap().contains("pt-BR"));
 
     let _ = std::fs::remove_dir_all(temp_dir);
 }

@@ -58,7 +58,7 @@ pub fn build_macos_command(
     }
 
     // 6. CAMOU_CONFIG com suporte a macOS (recursos em Contents/Resources)
-    let camou_config_map = build_camou_config_map(profile, proxy_ip, addon_paths, Some(&net_setup.resolved_network));
+    let camou_config_map = build_camou_config_map(profile, proxy_ip, addon_paths);
     let camou_config_json = serde_json::to_string(&camou_config_map)
         .unwrap_or_else(|_| "{}".to_string());
 

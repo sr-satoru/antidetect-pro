@@ -81,8 +81,32 @@ impl BrowserEngine for CamoufoxEngine {
         let mut all_addon_paths = net_setup.addon_paths.clone();
         all_addon_paths.extend(ext_paths);
 
-        // 6. Egress IP resolvido de forma real para spoofing de WebRTC
-        let proxy_ip = net_setup.resolved_network.egress_ip.clone();
+        // 6. Resolução de IPv4 para WebRTC
+        let proxy_ip: Option<String> = if profile.proxy.proxy_type != "none" {
+            if let Some(host) = profile.proxy.host.as_deref().filter(|h| !h.trim().is_empty()) {
+                if host.parse::<std::net::Ipv4Addr>().is_ok() {
+                    Some(host.to_string())
+                } else {
+                    let port = profile.proxy.port.unwrap_or(8080);
+                    tokio::net::lookup_host(format!("{}:{}", host, port))
+                        .await
+                        .ok()
+                        .and_then(|mut iter| {
+                            iter.find_map(|addr| {
+                                if let std::net::SocketAddr::V4(v4) = addr {
+                                    Some(v4.ip().to_string())
+                                } else {
+                                    None
+                                }
+                            })
+                        })
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        };
 
         Ok(EnginePrepResult {
             net_setup,

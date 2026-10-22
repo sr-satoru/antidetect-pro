@@ -51,7 +51,6 @@ pub fn build_proxy_prefs(
     // Desativa prefetching de DNS e páginas para evitar vazamentos de DNS antes do clique do usuário
     prefs.push_str("user_pref(\"network.dns.disablePrefetch\", true);\n");
     prefs.push_str("user_pref(\"network.dns.disablePrefetchFromHTTPS\", true);\n");
-    prefs.push_str("user_pref(\"network.dns.disableIPv6\", true);\n");
     prefs.push_str("user_pref(\"network.prefetch-next\", false);\n");
     prefs.push_str("user_pref(\"network.proxy.socks_remote_dns\", true);\n");
 

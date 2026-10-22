@@ -3,6 +3,7 @@ use std::path::Path;
 use serde_json::{json, Value};
 use tracing::info;
 use crate::models::Profile;
+use crate::fingerprint::translator::extract_fingerprint_map;
 
 /// Injeta e gerencia as preferências nativas do Chromium em <profile_dir>/Default/Preferences.
 /// Garante que o navegador inicie sem popups intrusivos (gerenciador de senhas, tradutor)
@@ -10,7 +11,6 @@ use crate::models::Profile;
 pub fn setup_chromium_preferences(
     profile_dir: &Path,
     profile: &Profile,
-    network: &crate::network::ResolvedNetworkIdentity,
 ) -> Result<(), String> {
     let default_dir = profile_dir.join("Default");
     fs::create_dir_all(&default_dir)
@@ -32,34 +32,33 @@ pub fn setup_chromium_preferences(
         root = json!({});
     }
 
-    let fp_map = crate::fingerprint::translator::extract_fingerprint_map(&profile.fingerprint_json);
-    let (primary_lang, accept_languages) = if !network.country_code.is_empty() {
-        (Some(network.primary_language.clone()), Some(network.accept_languages.clone()))
-    } else if let Some(custom_l) = fp_map.get("custom_language").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty()) {
-        let primary = custom_l
-            .split(',')
-            .next()
-            .and_then(|s| s.split(';').next())
-            .map(|s| s.trim())
-            .filter(|s| !s.is_empty())
-            .unwrap_or(custom_l);
-        (Some(primary.to_string()), Some(custom_l.to_string()))
-    } else {
-        (None, None)
-    };
+    let fp = extract_fingerprint_map(&profile.fingerprint_json);
+    let locale_obj = fp.get("locale");
+    let primary_lang = locale_obj
+        .and_then(|l| l.get("primary_language"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("pt-BR");
+
+    let accept_languages = locale_obj
+        .and_then(|l| l.get("languages"))
+        .and_then(|v| v.as_array())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|x| x.as_str().map(|s| s.split(';').next().unwrap_or("").trim()))
+                .filter(|s| !s.is_empty())
+                .collect::<Vec<_>>()
+                .join(",")
+        })
+        .unwrap_or_else(|| format!("{},en-US,en", primary_lang));
 
     // Garante as seções fundamentais
     let root_obj = root.as_object_mut().unwrap();
 
-    // 1. intl (apenas injeta se resolvido pela rede ou customizado; sem fallbacks arbitrários)
-    if let (Some(primary), Some(accept)) = (primary_lang, accept_languages) {
-        if !primary.is_empty() && !accept.is_empty() {
-            let intl = root_obj.entry("intl").or_insert_with(|| json!({}));
-            if let Some(intl_obj) = intl.as_object_mut() {
-                intl_obj.insert("accept_languages".to_string(), Value::String(accept));
-                intl_obj.insert("selected_languages".to_string(), Value::String(primary));
-            }
-        }
+    // 1. intl
+    let intl = root_obj.entry("intl").or_insert_with(|| json!({}));
+    if let Some(intl_obj) = intl.as_object_mut() {
+        intl_obj.insert("accept_languages".to_string(), Value::String(accept_languages));
+        intl_obj.insert("selected_languages".to_string(), Value::String(primary_lang.to_string()));
     }
 
     // 2. translate
@@ -89,12 +88,6 @@ pub fn setup_chromium_preferences(
     if let Some(auto_obj) = autofill.as_object_mut() {
         auto_obj.insert("credit_card_enabled".to_string(), Value::Bool(false));
         auto_obj.insert("profile_enabled".to_string(), Value::Bool(false));
-    }
-
-    // 5. webrtc: bloqueia conexões UDP fora do proxy para evitar vazamento de IP real
-    let webrtc_prefs = root_obj.entry("webrtc").or_insert_with(|| json!({}));
-    if let Some(w_obj) = webrtc_prefs.as_object_mut() {
-        w_obj.insert("ip_handling_policy".to_string(), Value::String("disable_non_proxied_udp".to_string()));
     }
 
     root_obj.insert("credentials_enable_service".to_string(), Value::Bool(false));
