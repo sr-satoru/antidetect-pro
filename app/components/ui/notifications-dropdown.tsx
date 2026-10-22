@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-// Central de Notificações Popover do Star Multlogin
+// Central de Notificações Modal do Star Multilogin
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Bell,
   ShieldCheck,
@@ -11,14 +11,18 @@ import {
   Trash2,
   CheckCheck,
   Clock,
+  X,
+  Filter,
 } from 'lucide-react';
 import { serviceNotifications, NotificationItem } from '@/services/notifications/service.notifications';
 import { wsService, NotificationData } from '@/services/ws/service.ws';
 
+type FilterTab = 'all' | 'unread' | 'warnings' | 'migrations';
+
 export const NotificationsDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<FilterTab>('all');
 
   useEffect(() => {
     const unsubscribe = serviceNotifications.subscribe((items) => {
@@ -44,28 +48,18 @@ export const NotificationsDropdown: React.FC = () => {
     return unsubscribe;
   }, []);
 
+  // Fechar no ESC
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
       }
     };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const handleOpen = () => {
-    setIsOpen((prev) => !prev);
-    if (!isOpen && unreadCount > 0) {
-      // Opcional: marca como lidas ao abrir
-    }
-  };
 
   const formatRelativeTime = (timestamp: number) => {
     const diff = Math.floor((Date.now() - timestamp) / 1000);
@@ -75,128 +69,336 @@ export const NotificationsDropdown: React.FC = () => {
     return `Há ${Math.floor(diff / 86400)}d`;
   };
 
-  const renderIcon = (type: NotificationItem['type']) => {
-    switch (type) {
-      case 'migration':
-        return <ShieldCheck size={16} className="text-[#00FF66] shrink-0" />;
-      case 'success':
-        return <CheckCircle2 size={16} className="text-[#00FF66] shrink-0" />;
-      case 'warning':
-      case 'error':
-        return <AlertTriangle size={16} className="text-[#f87171] shrink-0" />;
-      default:
-        return <Info size={16} className="text-[#60a5fa] shrink-0" />;
+  const formatDateTime = (timestamp: number) => {
+    try {
+      const d = new Date(timestamp);
+      return d.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch {
+      return '';
     }
   };
 
+  const getTypeStyles = (type: NotificationItem['type']) => {
+    switch (type) {
+      case 'migration':
+        return {
+          label: 'Migração',
+          badge: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+          pill: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/50',
+          icon: <ShieldCheck size={17} className="text-purple-600 dark:text-purple-400 shrink-0" />,
+        };
+      case 'success':
+        return {
+          label: 'Sucesso',
+          badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+          pill: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/50',
+          icon: <CheckCircle2 size={17} className="text-emerald-600 dark:text-emerald-400 shrink-0" />,
+        };
+      case 'warning':
+        return {
+          label: 'Aviso',
+          badge: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+          pill: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/50',
+          icon: <AlertTriangle size={17} className="text-amber-600 dark:text-amber-400 shrink-0" />,
+        };
+      case 'error':
+        return {
+          label: 'Erro',
+          badge: 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20',
+          pill: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800/50',
+          icon: <AlertTriangle size={17} className="text-red-600 dark:text-red-400 shrink-0" />,
+        };
+      default:
+        return {
+          label: 'Info',
+          badge: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+          pill: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800/50',
+          icon: <Info size={17} className="text-blue-600 dark:text-blue-400 shrink-0" />,
+        };
+    }
+  };
+
+  const filteredNotifications = notifications.filter((notif) => {
+    if (activeTab === 'unread') return !notif.read;
+    if (activeTab === 'warnings') return notif.type === 'warning' || notif.type === 'error';
+    if (activeTab === 'migrations') return notif.type === 'migration';
+    return true;
+  });
+
   return (
-    <div className="relative" ref={containerRef}>
-      {/* Botão de Notificações com Badge */}
+    <>
+      {/* Botão de Disparo no Header */}
       <button
         type="button"
-        onClick={handleOpen}
-        title="Notificações"
-        className={`p-1.5 rounded-lg transition-all relative cursor-pointer border ${
-          isOpen
-            ? 'bg-slate-200 text-slate-900 border-slate-300 dark:bg-[#1E2028] dark:text-white dark:border-[#2B2D38] shadow-xs'
-            : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100 border-transparent dark:text-[#787C8A] dark:hover:text-white dark:hover:bg-[#15161D]'
-        }`}
+        onClick={() => setIsOpen(true)}
+        title="Central de Notificações"
+        className="relative flex items-center justify-center h-8.5 w-8.5 rounded-lg border border-slate-200 dark:border-[#2E2E38] bg-slate-50 hover:bg-slate-100 dark:bg-[#15151A] dark:hover:bg-[#24242C] text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-2xs"
       >
         <Bell size={15} />
         {unreadCount > 0 && (
-          <span className="flex items-center justify-center min-w-[14px] h-[14px] px-1 rounded-full bg-emerald-500 dark:bg-[#00FF66] text-[9px] font-black text-white dark:text-black absolute -top-1 -right-1 shadow-md shadow-emerald-500/30 dark:shadow-[#00FF66]/30 animate-pulse">
+          <span className="flex items-center justify-center min-w-[15px] h-[15px] px-1 rounded-full bg-emerald-500 text-[9.5px] font-black text-white absolute -top-1 -right-1 shadow-xs animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
 
-      {/* Popover / Dropdown Menu */}
+      {/* Modal Pop-up Espaçoso e Detalhado */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl border border-slate-200 dark:border-[#2B2D38] bg-white dark:bg-[#181920] shadow-xl shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/90 z-50 overflow-hidden flex flex-col text-left animate-in fade-in zoom-in-95 duration-150">
-          {/* Header do Dropdown */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-[#2B2D38] bg-slate-50/80 dark:bg-[#15161D]">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-900 dark:text-white tracking-wide">Notificações</span>
-              {unreadCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-[#00FF66] text-[10px] font-bold">
-                  {unreadCount} novas
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/50 dark:bg-black/75 backdrop-blur-xs animate-in fade-in duration-150"
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className="w-full max-w-2xl bg-white dark:bg-[#1A1A21] border border-slate-200 dark:border-[#2E2E38] rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden animate-in zoom-in-95 duration-150 text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header do Modal */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[#2E2E38] bg-slate-50/60 dark:bg-[#15151A]/60">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-[#2E2E38] flex items-center justify-center text-slate-700 dark:text-[#F1F1F4] shadow-inner">
+                  <Bell size={17} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-bold text-slate-900 dark:text-[#F1F1F4] tracking-tight">
+                      Notificações do Sistema
+                    </h2>
+                    {unreadCount > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold">
+                        {unreadCount} não {unreadCount === 1 ? 'lida' : 'lidas'}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-[#90909D]">
+                    Histórico detalhado de alertas, migrações e eventos do Star Multilogin
+                  </p>
+                </div>
+              </div>
+
+              {/* Botões de Ação Global do Header */}
+              <div className="flex items-center gap-2">
+                {notifications.length > 0 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => serviceNotifications.markAllAsRead()}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] transition-all cursor-pointer shadow-2xs"
+                      title="Marcar todas as notificações como lidas"
+                    >
+                      <CheckCheck size={14} />
+                      <span className="hidden sm:inline">Marcar lidas</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => serviceNotifications.clearAll()}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-red-600 dark:text-[#76736D] dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 border border-transparent hover:border-red-200 dark:hover:border-red-900/30 transition-all cursor-pointer"
+                      title="Limpar todo o histórico de notificações"
+                    >
+                      <Trash2 size={14} />
+                      <span className="hidden sm:inline">Limpar</span>
+                    </button>
+                  </>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-center h-8 w-8 rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#76736D] dark:hover:text-[#F1F1F4] hover:bg-slate-100 dark:hover:bg-[#24242C] transition-all cursor-pointer"
+                  title="Fechar modal (ESC)"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Barra de Filtros */}
+            <div className="flex items-center gap-1.5 px-6 py-2.5 border-b border-slate-200 dark:border-[#2E2E38] bg-slate-50/30 dark:bg-[#15151A]/30 overflow-x-auto [scrollbar-width:none]">
+              <button
+                type="button"
+                onClick={() => setActiveTab('all')}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'all'
+                    ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-xs'
+                    : 'text-slate-600 dark:text-[#90909D] hover:bg-slate-100 dark:hover:bg-[#24242C]'
+                }`}
+              >
+                Todas
+                <span className="text-[10px] opacity-75 font-mono">({notifications.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('unread')}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'unread'
+                    ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-xs'
+                    : 'text-slate-600 dark:text-[#90909D] hover:bg-slate-100 dark:hover:bg-[#24242C]'
+                }`}
+              >
+                Não Lidas
+                <span className="text-[10px] opacity-75 font-mono">({unreadCount})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('warnings')}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'warnings'
+                    ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-xs'
+                    : 'text-slate-600 dark:text-[#90909D] hover:bg-slate-100 dark:hover:bg-[#24242C]'
+                }`}
+              >
+                Avisos & Erros
+                <span className="text-[10px] opacity-75 font-mono">
+                  ({notifications.filter((n) => n.type === 'warning' || n.type === 'error').length})
                 </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('migrations')}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'migrations'
+                    ? 'bg-slate-900 dark:bg-white text-white dark:text-black shadow-xs'
+                    : 'text-slate-600 dark:text-[#90909D] hover:bg-slate-100 dark:hover:bg-[#24242C]'
+                }`}
+              >
+                Migrações
+                <span className="text-[10px] opacity-75 font-mono">
+                  ({notifications.filter((n) => n.type === 'migration').length})
+                </span>
+              </button>
+            </div>
+
+            {/* Corpo com Scroll e Cards Detalhados */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-3 [scrollbar-width:thin] [scrollbar-color:#CBD5E1_transparent] dark:[scrollbar-color:#3E404D_transparent]">
+              {filteredNotifications.length === 0 ? (
+                <div className="py-16 px-4 flex flex-col items-center justify-center text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-[#15151A] border border-slate-200 dark:border-[#2E2E38] flex items-center justify-center text-slate-400 dark:text-[#90909D] mb-3 shadow-inner">
+                    <Bell size={24} />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-[#F1F1F4]">
+                    Nenhuma notificação encontrada
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-[#90909D] mt-1 max-w-sm">
+                    {activeTab === 'unread'
+                      ? 'Você leu todas as notificações recentes.'
+                      : 'Tudo em dia! Avisos operacionais, logs de sincronização e migrações aparecerão aqui com detalhes completos.'}
+                  </p>
+                </div>
+              ) : (
+                filteredNotifications.map((notif) => {
+                  const style = getTypeStyles(notif.type);
+                  return (
+                    <div
+                      key={notif.id}
+                      className={`p-4 rounded-xl border transition-all ${
+                        !notif.read
+                          ? 'bg-slate-50/90 dark:bg-[#15151A] border-slate-300 dark:border-[#2E2E38] shadow-2xs'
+                          : 'bg-white dark:bg-[#1E1E26]/60 border-slate-200 dark:border-white/5 opacity-85 hover:opacity-100'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <div className={`p-2 rounded-xl border shrink-0 ${style.badge}`}>
+                          {style.icon}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span
+                                className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${style.pill}`}
+                              >
+                                {style.label}
+                              </span>
+                              <h4 className="text-[13.5px] font-semibold text-slate-900 dark:text-[#F1F1F4] truncate">
+                                {notif.title}
+                              </h4>
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="flex items-center gap-1 text-[11px] font-mono text-slate-400 dark:text-[#90909D]">
+                                <Clock size={11} />
+                                {formatRelativeTime(notif.timestamp)}
+                              </span>
+                              {!notif.read && (
+                                <span
+                                  className="w-2 h-2 rounded-full bg-emerald-500 shadow-xs"
+                                  title="Não lida"
+                                />
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Descrição Completa Sem Truncamento */}
+                          <div className="mt-2 text-[12.5px] text-slate-700 dark:text-[#C9C9D2] leading-relaxed whitespace-pre-wrap">
+                            {notif.description}
+                          </div>
+
+                          {/* Metadados Adicionais (se existirem) */}
+                          {notif.meta && Object.keys(notif.meta).length > 0 && (
+                            <div className="mt-3 p-2.5 rounded-lg bg-slate-100 dark:bg-[#111116] border border-slate-200 dark:border-[#2E2E38] text-[11px] font-mono text-slate-600 dark:text-[#90909D] overflow-x-auto">
+                              {JSON.stringify(notif.meta, null, 2)}
+                            </div>
+                          )}
+
+                          {/* Rodapé do Card com Data/Hora e Ações Individuais */}
+                          <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between text-[11px]">
+                            <span className="text-slate-400 dark:text-[#76736D]">
+                              {formatDateTime(notif.timestamp)}
+                            </span>
+
+                            <div className="flex items-center gap-2">
+                              {!notif.read && (
+                                <button
+                                  type="button"
+                                  onClick={() => serviceNotifications.markAsRead(notif.id)}
+                                  className="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold cursor-pointer"
+                                >
+                                  Marcar lida
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => serviceNotifications.remove(notif.id)}
+                                className="text-slate-400 hover:text-red-500 dark:text-[#76736D] dark:hover:text-red-400 transition-colors p-1 cursor-pointer"
+                                title="Excluir notificação"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
               )}
             </div>
 
-            {notifications.length > 0 && (
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => serviceNotifications.markAllAsRead()}
-                  className="flex items-center gap-1 px-2 py-1 rounded text-[11px] text-slate-600 dark:text-[#A5A8B6] hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-[#252834] transition-colors"
-                  title="Marcar todas como lidas"
-                >
-                  <CheckCheck size={13} />
-                  <span>Ler todas</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => serviceNotifications.clearAll()}
-                  className="flex items-center gap-1 px-2 py-1 rounded text-[11px] text-slate-400 dark:text-[#787C8A] hover:text-red-500 dark:hover:text-[#f87171] hover:bg-red-50 dark:hover:bg-[#2B1B20] transition-colors"
-                  title="Limpar todas as notificações"
-                >
-                  <Trash2 size={12} />
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Lista de Notificações com Scroll */}
-          <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-100 dark:divide-[#232530] [scrollbar-width:thin] [scrollbar-color:#CBD5E1_transparent] dark:[scrollbar-color:#3E404D_transparent]">
-            {notifications.length === 0 ? (
-              <div className="py-12 px-4 flex flex-col items-center justify-center text-center">
-                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#20222C] border border-slate-200 dark:border-[#2B2D38] flex items-center justify-center text-slate-400 dark:text-[#787C8A] mb-2.5">
-                  <Bell size={18} />
-                </div>
-                <p className="text-xs font-semibold text-slate-800 dark:text-white">Tudo em dia!</p>
-                <p className="text-[11px] text-slate-500 dark:text-[#787C8A] mt-0.5">
-                  Nenhuma notificação ou aviso recente.
-                </p>
-              </div>
-            ) : (
-              notifications.map((notif) => (
-                <div
-                  key={notif.id}
-                  onClick={() => serviceNotifications.markAsRead(notif.id)}
-                  className={`p-3.5 flex items-start gap-3 transition-colors cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1E2028] ${
-                    !notif.read ? 'bg-slate-50/60 dark:bg-[#15161D]/70' : 'bg-transparent'
-                  }`}
-                >
-                  <div className="mt-0.5 p-1.5 rounded-lg bg-slate-100 dark:bg-[#242633] border border-slate-200 dark:border-[#2E3142]">
-                    {renderIcon(notif.type)}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1.5">
-                      <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">
-                        {notif.title}
-                      </p>
-                      <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-[#787C8A] shrink-0 font-mono">
-                        <Clock size={10} />
-                        {formatRelativeTime(notif.timestamp)}
-                      </span>
-                    </div>
-
-                    <p className="text-[11px] text-slate-600 dark:text-[#C8CBD4] mt-0.5 leading-relaxed line-clamp-2">
-                      {notif.description}
-                    </p>
-                  </div>
-
-                  {!notif.read && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#00FF66] shrink-0 mt-2 shadow-xs shadow-emerald-500/50 dark:shadow-[#00FF66]/50" />
-                  )}
-                </div>
-              ))
-            )}
+            {/* Rodapé do Modal */}
+            <div className="flex items-center justify-between px-6 py-3 border-t border-slate-200 dark:border-[#2E2E38] bg-slate-50/60 dark:bg-[#15151A]/60 text-xs text-slate-500 dark:text-[#90909D]">
+              <span className="font-mono">
+                {notifications.length} {notifications.length === 1 ? 'notificação' : 'notificações'} no total
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="px-4 py-1.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-black font-semibold text-xs shadow-xs hover:bg-slate-800 dark:hover:bg-slate-100 transition-all cursor-pointer"
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
+
+export default NotificationsDropdown;

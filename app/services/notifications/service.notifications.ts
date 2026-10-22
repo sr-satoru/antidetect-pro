@@ -64,6 +64,11 @@ class NotificationsService {
     this.notify();
   }
 
+  public remove(id: string) {
+    this.notifications = this.notifications.filter((n) => n.id !== id);
+    this.notify();
+  }
+
   public clearAll() {
     this.notifications = [];
     this.notify();
