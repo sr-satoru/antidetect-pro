@@ -10,8 +10,10 @@ import { ApiTab } from '@/components/mcp-api/api-tab';
 import { AutomationTab } from '@/components/mcp-api/automation-tab';
 import { serviceMcp } from '@/services/mcp/service.mcp';
 
+type TabKey = 'mcp' | 'automation' | 'api';
+
 export const McpApiPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'mcp' | 'automation' | 'api'>('mcp');
+  const [activeTab, setActiveTab] = useState<TabKey>('mcp');
   const [showToken, setShowToken] = useState(false);
   const [token, setToken] = useState<string>(serviceMcp.getCachedToken());
 
@@ -29,63 +31,58 @@ export const McpApiPage: React.FC = () => {
     setShowToken((prev) => !prev);
   };
 
+  const tabs = [
+    { id: 'mcp', label: 'Agentes de IA (MCP)', icon: Bot },
+    { id: 'automation', label: 'Playwright Nativo', icon: Code2 },
+    { id: 'api', label: 'API REST', icon: Terminal },
+  ] as const;
+
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-y-auto pr-1">
-      {/* Top Bar with Navigation Tabs and Compact Credentials */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-        {/* Modern Segmented Navigation Pill (3 Tabs) */}
-        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-[#15151A] border border-slate-200 dark:border-[#2E2E38] rounded-xl w-fit shrink-0 shadow-2xs">
-          <button
-            type="button"
-            onClick={() => setActiveTab('mcp')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-              activeTab === 'mcp'
-                ? 'text-slate-900 dark:text-white bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
-                : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-200/50 dark:hover:bg-[#1E1F27]'
-            }`}
-          >
-            <Bot size={15} className={activeTab === 'mcp' ? 'text-[#238636] dark:text-[#2ea043]' : 'text-slate-400 dark:text-[#7E8294]'} />
-            <span>Agentes de IA (MCP)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('automation')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-              activeTab === 'automation'
-                ? 'text-slate-900 dark:text-white bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
-                : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-200/50 dark:hover:bg-[#1E1F27]'
-            }`}
-          >
-            <Code2 size={15} className={activeTab === 'automation' ? 'text-[#238636] dark:text-[#2ea043]' : 'text-slate-400 dark:text-[#7E8294]'} />
-            <span>Playwright Nativo</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('api')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-              activeTab === 'api'
-                ? 'text-slate-900 dark:text-white bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
-                : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-200/50 dark:hover:bg-[#1E1F27]'
-            }`}
-          >
-            <Terminal size={15} className={activeTab === 'api' ? 'text-[#238636] dark:text-[#2ea043]' : 'text-slate-400 dark:text-[#7E8294]'} />
-            <span>API REST</span>
-          </button>
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] shadow-xl shadow-slate-900/5 dark:shadow-2xl select-none">
+      {/* ═══════════════════════════════════════════════════════════════
+          MENU SUPERIOR DE ABAS (Estilo Oficial Configuration & Criar Perfil)
+      ═══════════════════════════════════════════════════════════════ */}
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#30323E] bg-slate-50/80 dark:bg-[#24252D] px-6 pt-4 select-none">
+        <div className="flex items-center gap-8 overflow-x-auto">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            const IconComponent = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id as TabKey)}
+                className={`relative flex items-center gap-2 cursor-pointer pb-3 text-[13.5px] tracking-wide transition-all ${
+                  isActive
+                    ? 'font-semibold text-slate-900 dark:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:bg-[#238636] dark:after:bg-[#2ea043] after:content-[""]'
+                    : 'text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-[#C4C7D5]'
+                }`}
+              >
+                <IconComponent
+                  size={15}
+                  className={isActive ? 'text-[#238636] dark:text-[#2ea043]' : 'text-slate-400 dark:text-[#7E8294]'}
+                />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Ultra-clean Compact Credentials Bar */}
-        <CompactCredentials
-          token={token}
-          showToken={showToken}
-          onToggleShowToken={handleToggleShowToken}
-          onTokenChange={setToken}
-        />
+        {/* Credenciais compactas alinhadas à direita com as abas */}
+        <div className="pb-3 shrink-0">
+          <CompactCredentials
+            token={token}
+            showToken={showToken}
+            onToggleShowToken={handleToggleShowToken}
+            onTokenChange={setToken}
+          />
+        </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 pb-4">
+      {/* ═══════════════════════════════════════════════════════════════
+          ÁREA CENTRAL DE CONTEÚDO (Scrollável padronizada com p-6 space-y-5)
+      ═══════════════════════════════════════════════════════════════ */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5 custom-scrollbar">
         {activeTab === 'mcp' && (
           <McpTab
             token={token}

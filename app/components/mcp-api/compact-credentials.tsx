@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Key, Copy, Check, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { serviceMcp } from '@/services/mcp/service.mcp';
 import { Tooltip } from '@/components/ui/tooltip';
+import { toast } from '@/components/ui/notification';
+import { ConfirmModal } from '@/components/ui/confirm-modal';
 
 interface CompactCredentialsProps {
   apiPort?: number;
@@ -23,6 +25,7 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
 
   const [copiedToken, setCopiedToken] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (!initialToken) {
@@ -62,34 +65,37 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
       if (res?.token) {
         setToken(res.token);
         onTokenChange?.(res.token);
+        toast.success('Chave de acesso rotacionada com sucesso!');
+        setIsConfirmOpen(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Falha ao rotacionar token:', err);
+      toast.error('Erro ao rotacionar chave: ' + (err?.message || 'Falha na comunicação com o servidor'));
     } finally {
       setIsRotating(false);
     }
   };
 
   return (
-    <div className="flex items-center gap-2.5 select-none">
-      {/* Secret Token Pill com fonte e padding confortáveis */}
-      <div className="flex items-center gap-3 bg-white dark:bg-[#24252D] border border-slate-200 dark:border-[#353744] rounded-xl px-4 py-2 text-[14px] font-mono transition-all shadow-xs">
-        <Key size={16} className="text-amber-500 dark:text-amber-400 shrink-0" />
+    <div className="flex items-center gap-2 select-none">
+      {/* Secret Token Pill integrado perfeitamente ao header */}
+      <div className="flex items-center gap-2 bg-white dark:bg-[#1C1D24] border border-slate-200 dark:border-[#353744] rounded-lg px-3 py-1.5 text-xs font-mono transition-all shadow-2xs">
+        <Key size={13} className="text-amber-500 dark:text-amber-400 shrink-0" />
         <span
-          className={`text-slate-800 dark:text-[#E2E4EC] font-mono font-medium transition-all duration-200 ${
+          className={`text-slate-800 dark:text-[#E2E4EC] font-mono transition-all duration-200 ${
             !isTokenVisible ? 'filter blur-[4px] select-none opacity-80' : 'select-all'
           }`}
         >
           {activeToken || 'Carregando chave...'}
         </span>
-        <div className="flex items-center gap-2 border-l border-slate-200 dark:border-[#353744] pl-2.5 ml-1">
+        <div className="flex items-center gap-1 border-l border-slate-200 dark:border-[#353744] pl-1.5 ml-0.5">
           <Tooltip content={isTokenVisible ? 'Ocultar token' : 'Revelar token'} position="top">
             <button
               type="button"
               onClick={handleToggle}
-              className="text-slate-400 hover:text-slate-700 dark:text-[#90909D] dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+              className="text-slate-400 hover:text-slate-700 dark:text-[#90909D] dark:hover:text-white p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
             >
-              {isTokenVisible ? <EyeOff size={16} /> : <Eye size={16} />}
+              {isTokenVisible ? <EyeOff size={13} /> : <Eye size={13} />}
             </button>
           </Tooltip>
 
@@ -97,24 +103,50 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
             <button
               type="button"
               onClick={handleCopyToken}
-              className="text-slate-400 hover:text-[#238636] dark:text-[#90909D] dark:hover:text-[#2ea043] p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors cursor-pointer"
+              className="text-slate-400 hover:text-[#238636] dark:text-[#90909D] dark:hover:text-[#2ea043] p-1 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors cursor-pointer"
             >
-              {copiedToken ? <Check size={16} className="text-[#238636] dark:text-[#2ea043]" /> : <Copy size={16} />}
+              {copiedToken ? <Check size={13} className="text-[#238636] dark:text-[#2ea043]" /> : <Copy size={13} />}
             </button>
           </Tooltip>
 
           <Tooltip content="Rotacionar chave (gera novo token)" position="top">
             <button
               type="button"
-              onClick={handleRotateToken}
+              onClick={() => setIsConfirmOpen(true)}
               disabled={isRotating}
-              className="text-slate-400 hover:text-amber-600 dark:text-[#90909D] dark:hover:text-amber-400 p-1.5 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors cursor-pointer disabled:opacity-50"
+              className="text-slate-400 hover:text-amber-600 dark:text-[#90909D] dark:hover:text-amber-400 p-1 rounded-md hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw size={16} className={isRotating ? 'animate-spin text-amber-500' : ''} />
+              <RefreshCw size={13} className={isRotating ? 'animate-spin text-amber-500' : ''} />
             </button>
           </Tooltip>
         </div>
       </div>
+
+      {/* Modal de Confirmação para Rotacionar Chave */}
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => {
+          if (!isRotating) setIsConfirmOpen(false);
+        }}
+        onConfirm={handleRotateToken}
+        isLoading={isRotating}
+        variant="warning"
+        icon={<RefreshCw size={20} className={isRotating ? 'animate-spin' : ''} />}
+        title="Rotacionar Chave de Acesso"
+        confirmText={isRotating ? 'Rotacionando...' : 'Rotacionar Chave'}
+        cancelText="Cancelar"
+        description={
+          <div className="space-y-2.5">
+            <p>
+              Deseja realmente gerar uma nova chave de acesso para a API e MCP?
+            </p>
+            <div className="rounded-xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/25 p-3 text-[11.5px] text-amber-800 dark:text-amber-300 leading-relaxed">
+              <span className="font-semibold block mb-0.5">⚠️ Impacto da alteração:</span>
+              A chave atual será invalidada imediatamente. Qualquer agente de IA (Cursor, Windsurf, Claude Desktop) ou script de automação Playwright conectado deixará de funcionar até que você configure o novo token.
+            </div>
+          </div>
+        }
+      />
     </div>
   );
 };

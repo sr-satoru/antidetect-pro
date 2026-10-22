@@ -445,6 +445,217 @@ async function runTestSuite() {
     });
     assert(delRes.ok, `DELETE permanente do perfil de teste executado com status ${delRes.status}.`);
 
+    // --------------------------------------------------------------------------
+    // GRUPO 7: Auditoria Abrangente de Todos os Serviços REST (Proxies, Tags, Extensões, Cookies, Browser)
+    // --------------------------------------------------------------------------
+    console.log('\n🔍 [GRUPO 7 - AUDITORIA 1] Auditoria de Serviços REST & Contratos de Endpoints:');
+
+    // 7.1 Proxies CRUD & Test
+    const proxyPayload = {
+      name: `Proxy Audit ${Date.now()}`,
+      type: 'socks5',
+      host: '127.0.0.1',
+      port: 9050,
+      username: 'audit_user',
+      password: 'audit_password',
+    };
+    const proxyCreateRes = await fetch('http://127.0.0.1:12540/api/proxies', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': sessionToken },
+      body: JSON.stringify(proxyPayload),
+    });
+    assert(proxyCreateRes.status === 201, `POST /api/proxies criou proxy com sucesso (201 Created).`);
+    const createdProxy = (await proxyCreateRes.json()) as any;
+    assert(typeof createdProxy.id === 'string', `Proxy criado possui ID ${createdProxy.id}.`);
+    assert(createdProxy.type === 'socks5', "Proxy type socks5 gravado e retornado no formato padronizado.");
+
+    // Listagem de proxies
+    const proxyListRes = await fetch('http://127.0.0.1:12540/api/proxies', {
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(proxyListRes.ok, `GET /api/proxies listou proxies com sucesso.`);
+    const proxyList = (await proxyListRes.json()) as any[];
+    assert(Array.isArray(proxyList) && proxyList.some((p) => p.id === createdProxy.id), "Proxy criado está presente na listagem.");
+
+    // Teste de proxy
+    const proxyTestRes = await fetch('http://127.0.0.1:12540/api/proxies/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': sessionToken },
+      body: JSON.stringify({
+        type: 'socks5',
+        host: '127.0.0.1',
+        port: 9050,
+      }),
+    });
+    assert(proxyTestRes.ok, `POST /api/proxies/test processou validação de proxy sem erros de rota.`);
+
+    // Exclusão do proxy
+    const proxyDelRes = await fetch(`http://127.0.0.1:12540/api/proxies/${createdProxy.id}`, {
+      method: 'DELETE',
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(proxyDelRes.status === 204, `DELETE /api/proxies/${createdProxy.id} removeu proxy com status 204.`);
+
+    // 7.2 Tags CRUD & Batch Delete
+    const tagCreateRes = await fetch('http://127.0.0.1:12540/api/tags', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': sessionToken },
+      body: JSON.stringify({ name: `TagAudit_${Date.now()}`, color: '#52C41A' }),
+    });
+    assert(tagCreateRes.status === 201, `POST /api/tags criou tag com sucesso (201 Created).`);
+    const createdTag = (await tagCreateRes.json()) as any;
+    assert(typeof createdTag.id === 'number', `Tag possui ID numérico ${createdTag.id}.`);
+
+    // Batch Delete com array de IDs numéricos
+    const tagBatchDelRes = await fetch('http://127.0.0.1:12540/api/tags/batch-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': sessionToken },
+      body: JSON.stringify({ ids: [createdTag.id] }),
+    });
+    assert(tagBatchDelRes.ok, `POST /api/tags/batch-delete removeu tag em lote com sucesso.`);
+
+    // 7.3 Extensões e Categorias
+    const catListRes = await fetch('http://127.0.0.1:12540/api/extension-categories', {
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(catListRes.ok, `GET /api/extension-categories retornou categorias registradas.`);
+    const catList = (await catListRes.json()) as any[];
+    assert(Array.isArray(catList) && catList.some((c) => c.id === 'kit_basico'), "Categoria oficial 'kit_basico' está disponível.");
+
+    // 7.4 Browser Engine Status & Manifest
+    const browserStatusRes = await fetch('http://127.0.0.1:12540/api/browser/status', {
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(browserStatusRes.ok, `GET /api/browser/status retornou status dos motores de browser.`);
+    const browserStatus = (await browserStatusRes.json()) as any;
+    assert(browserStatus.health && typeof browserStatus.health.status === 'string', "Status de saúde do motor principal presente.");
+    assert(browserStatus.download && typeof browserStatus.download.is_downloading === 'boolean', "Status de download presente.");
+
+    const manifestRes = await fetch('http://127.0.0.1:12540/api/browser/manifest', {
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(manifestRes.ok, `GET /api/browser/manifest retornou manifesto oficial de binários.`);
+
+    // 7.5 Action Ticket de Segurança
+    const ticketRes = await fetch('http://127.0.0.1:12540/api/local-auth/action-ticket', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': sessionToken },
+      body: JSON.stringify({ action: 'test_audit_action' }),
+    });
+    assert(ticketRes.ok, `POST /api/local-auth/action-ticket emitiu ticket de ação segura.`);
+    const ticketData = (await ticketRes.json()) as any;
+    assert(typeof ticketData.action_ticket === 'string' && ticketData.action_ticket.startsWith('ticket_'), "Action ticket emitido com prefixo 'ticket_'.");
+
+    // --------------------------------------------------------------------------
+    // GRUPO 8: Auditoria do Ciclo de Vida de Atualização, Lixeira e Imutabilidade
+    // --------------------------------------------------------------------------
+    console.log('\n🛡️ [GRUPO 8 - AUDITORIA 2] Auditoria do Ciclo de Atualização, Imutabilidade e Lixeira:');
+
+    // 8.1 Cria perfil para ciclo de atualização
+    const profileToUpdateRes = await fetch('http://127.0.0.1:12540/api/profiles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': sessionToken },
+      body: JSON.stringify(impressaoDigitalService.montarPayloadPerfil({
+        ...initialForm,
+        name: `Ciclo Audit ${Date.now()}`,
+        os: 'windows',
+        kernel: 'AstroFox',
+      })),
+    });
+    const profileToUpdate = (await profileToUpdateRes.json()) as any;
+    const updateId = profileToUpdate.id;
+    assert(typeof updateId === 'string', `Perfil para ciclo de auditoria criado com ID: ${updateId}.`);
+
+    // 8.2 Atualização parcial: apenas notas e grupo via PUT
+    const partialUpdatePayload = {
+      notes: 'Nota atualizada pela Auditoria 2',
+      group: 'Grupo Auditado',
+    };
+    const partialUpdateRes = await fetch(`http://127.0.0.1:12540/api/profiles/${updateId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': sessionToken },
+      body: JSON.stringify(partialUpdatePayload),
+    });
+    assert(partialUpdateRes.ok, `PUT /api/profiles/${updateId} aceitou atualização parcial.`);
+    const updatedProfile = (await partialUpdateRes.json()) as any;
+    assert(updatedProfile.notes === 'Nota atualizada pela Auditoria 2', "Notas atualizadas com sucesso no SQLite.");
+    assert(updatedProfile.group === 'Grupo Auditado', "Grupo atualizado com sucesso no SQLite.");
+    assert(updatedProfile.kernel === 'AstroFox', "Kernel AstroFox original preservado durante atualização parcial.");
+
+    // 8.3 Imutabilidade do Motor (Kernel Immutability): tentativa de trocar de AstroFox para AstroBrowser deve ser ignorada
+    const kernelTamperPayload = {
+      kernel: 'AstroBrowser',
+    };
+    const kernelTamperRes = await fetch(`http://127.0.0.1:12540/api/profiles/${updateId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': sessionToken },
+      body: JSON.stringify(kernelTamperPayload),
+    });
+    assert(kernelTamperRes.ok, `PUT /api/profiles/${updateId} respondeu com sucesso ao payload com tentativa de alteração de kernel.`);
+    const kernelCheckedProfile = (await kernelTamperRes.json()) as any;
+    assert(kernelCheckedProfile.kernel === 'AstroFox', "Segurança Antidetect garantida: Kernel permaneceu AstroFox (imutável após criação).");
+
+    // 8.4 Cookies do Perfil: Leitura, Injeção e Limpeza
+    const cookiesGetRes = await fetch(`http://127.0.0.1:12540/api/profiles/${updateId}/cookies`, {
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(cookiesGetRes.ok, `GET /api/profiles/${updateId}/cookies respondeu com sucesso.`);
+    const initialCookieStats = (await cookiesGetRes.json()) as any;
+    assert(typeof initialCookieStats.total_count === 'number', "CookieStats total_count é numérico.");
+
+    // Importa cookie via POST
+    const sampleCookie = JSON.stringify([{
+      name: 'star_audit_cookie',
+      value: 'session_value_xyz',
+      domain: '.starmultlogin.internal',
+      path: '/',
+      is_secure: true,
+      is_http_only: true,
+      same_site: 'Lax',
+    }]);
+    const cookieImportRes = await fetch(`http://127.0.0.1:12540/api/profiles/${updateId}/cookies`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': sessionToken },
+      body: JSON.stringify({ cookies_raw: sampleCookie }),
+    });
+    assert(cookieImportRes.ok, `POST /api/profiles/${updateId}/cookies importou cookies no SQLite do Vault.`);
+
+    // Limpa cookies via DELETE
+    const cookieClearRes = await fetch(`http://127.0.0.1:12540/api/profiles/${updateId}/cookies`, {
+      method: 'DELETE',
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(cookieClearRes.ok, `DELETE /api/profiles/${updateId}/cookies limpou os cookies gravados.`);
+
+    // 8.5 Soft Delete (Mover para Lixeira)
+    const softDelRes = await fetch(`http://127.0.0.1:12540/api/profiles/${updateId}`, {
+      method: 'DELETE',
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(softDelRes.status === 204, `DELETE /api/profiles/${updateId} moveu perfil para a lixeira (204 No Content).`);
+
+    // Consulta lixeira
+    const trashRes = await fetch('http://127.0.0.1:12540/api/profiles/trash', {
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(trashRes.ok, `GET /api/profiles/trash listou perfis na lixeira.`);
+    const trashList = (await trashRes.json()) as any[];
+    assert(Array.isArray(trashList) && trashList.some((p) => p.id === updateId), "Perfil está presente na lista de lixeira.");
+
+    // Restaura da lixeira
+    const restoreRes = await fetch(`http://127.0.0.1:12540/api/profiles/${updateId}/restore`, {
+      method: 'POST',
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(restoreRes.ok, `POST /api/profiles/${updateId}/restore restaurou o perfil da lixeira com sucesso.`);
+
+    // Exclusão Permanente final
+    const permDelRes = await fetch(`http://127.0.0.1:12540/api/profiles/${updateId}/permanent`, {
+      method: 'DELETE',
+      headers: { 'X-Session-Token': sessionToken },
+    });
+    assert(permDelRes.status === 204, `DELETE permanente do perfil da Auditoria 2 executado com sucesso (204 No Content).`);
+
   } catch (err: any) {
     console.error('⚠️ Falha no teste ao vivo com o backend:', err?.message || err);
     throw err;

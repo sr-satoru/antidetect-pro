@@ -198,3 +198,187 @@ async fn test_profile_storage_bidirectional_parity() {
 
     let _ = std::fs::remove_dir_all(temp_dir);
 }
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct StrictUpdateProfileDtoCheck {
+    pub id: Option<String>,
+    pub name: Option<String>,
+    pub group: Option<String>,
+    pub tags: Option<Vec<String>>,
+    pub tag_ids: Option<Vec<i64>>,
+    pub notes: Option<String>,
+    pub status: Option<String>,
+    pub kernel: Option<String>,
+    pub browser_version: Option<String>,
+    pub os: Option<String>,
+
+    pub proxy_type: Option<String>,
+    pub proxy_host: Option<String>,
+    pub proxy_port: Option<u16>,
+    pub proxy_username: Option<String>,
+    pub proxy_password: Option<String>,
+
+    pub fingerprint_json: Option<serde_json::Value>,
+
+    pub extension_mode: Option<String>,
+    pub extension_category: Option<String>,
+    pub extensions: Option<serde_json::Value>,
+}
+
+#[tokio::test]
+async fn test_update_profile_dto_and_kernel_immutability() {
+    // 1. Valida que o payload de update gerado pelo frontend não possui campos estranhos
+    let valid_update_payload = json!({
+        "notes": "Notas atualizadas",
+        "group": "Novo Grupo",
+        "fingerprint_json": {
+            "custom_screen_width": 1920,
+            "custom_screen_height": 1080
+        }
+    });
+    let parsed: Result<StrictUpdateProfileDtoCheck, _> = serde_json::from_value(valid_update_payload);
+    assert!(parsed.is_ok(), "UpdateProfileDto não contém campos além do devido: {:?}", parsed.err());
+
+    // Se injetar campos desconhecidos, deve rejeitar
+    let dirty_update = json!({
+        "notes": "Notas",
+        "unknown_leak_field": true
+    });
+    let dirty_parsed: Result<StrictUpdateProfileDtoCheck, _> = serde_json::from_value(dirty_update);
+    assert!(dirty_parsed.is_err(), "Campos desconhecidos no update devem ser rejeitados");
+
+    // 2. Valida imutabilidade do kernel no SQLite
+    let temp_dir = std::env::temp_dir().join(format!(
+        "star_update_test_{}",
+        std::time::SystemTime::now().elapsed().unwrap().as_nanos()
+    ));
+    let _ = std::fs::create_dir_all(&temp_dir);
+    let vault = Arc::new(Vault::new(&temp_dir).unwrap());
+    let ws = WsState::new();
+    let storage = star_multlogin_backend::service_database::profiles::ProfileService::new(
+        &temp_dir,
+        ws,
+        vault.clone(),
+    );
+
+    let profile = storage.create(CreateProfileDto {
+        id: Some("prf_immut_test".to_string()),
+        name: Some("Perfil Imutável".to_string()),
+        group: None,
+        tags: None,
+        tag_ids: None,
+        notes: None,
+        status: None,
+        kernel: Some("AstroFox".to_string()),
+        browser_version: None,
+        os: Some("windows".to_string()),
+        proxy_type: None,
+        proxy_host: None,
+        proxy_port: None,
+        proxy_username: None,
+        proxy_password: None,
+        fingerprint_json: None,
+        extension_mode: None,
+        extension_category: None,
+        extensions: None,
+    }).unwrap();
+
+    assert_eq!(profile.kernel, "AstroFox");
+
+    // Tenta trocar o kernel para AstroBrowser via update
+    let update_dto = star_multlogin_backend::core::models::UpdateProfileDto {
+        id: None,
+        name: None,
+        group: Some("Grupo Alterado".to_string()),
+        tags: None,
+        tag_ids: None,
+        notes: Some("Notas novas".to_string()),
+        status: None,
+        kernel: Some("AstroBrowser".to_string()), // Tentativa de troca
+        browser_version: None,
+        os: None,
+        proxy_type: None,
+        proxy_host: None,
+        proxy_port: None,
+        proxy_username: None,
+        proxy_password: None,
+        fingerprint_json: None,
+        extension_mode: None,
+        extension_category: None,
+        extensions: None,
+    };
+
+    let updated = storage.update(&profile.id, update_dto).unwrap();
+    assert_eq!(updated.kernel, "AstroFox", "Kernel DEVE ser imutável após a criação");
+    assert_eq!(updated.group, "Grupo Alterado", "Grupo deve ser atualizado com sucesso");
+    assert_eq!(updated.notes, "Notas novas", "Notas devem ser atualizadas com sucesso");
+
+    let _ = std::fs::remove_dir_all(temp_dir);
+}
+
+#[test]
+fn test_camou_config_masking_parity() {
+    let profile = star_multlogin_backend::core::models::Profile {
+        id: "prf_camou_test".to_string(),
+        name: "Test Profile".to_string(),
+        group: "Default".to_string(),
+        tags: vec![],
+        notes: "".to_string(),
+        status: "ready".to_string(),
+        kernel: "AstroFox".to_string(),
+        browser_version: "150".to_string(),
+        os: "windows".to_string(),
+        created_at: 1000,
+        updated_at: 1000,
+        last_launch: None,
+        is_deleted: false,
+        deleted_at: None,
+        proxy: star_multlogin_backend::core::models::ProfileProxyConfig::default(),
+        fingerprint_json: json!({
+            "canvas_seed": "1CCAE86B",
+            "audio_seed": "A0D105FF",
+            "custom_screen_width": 1920,
+            "custom_screen_height": 1080,
+            "cpu_cores": 12,
+            "max_touch_points": 0,
+            "webgl_vendor": "Google Inc. (NVIDIA)",
+            "webgl_renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11)",
+            "hardware_noise": {
+                "canvas": true,
+                "audio_context": true
+            }
+        }),
+        extension_mode: None,
+        extension_category: None,
+        extensions: None,
+    };
+
+    let config = star_multlogin_backend::browser::fingerprint::translator::build_camou_config(
+        &profile,
+        None,
+        &[],
+        None,
+    );
+
+    // Valida conversão de seeds hexadecimais em u32 para MaskConfig.hpp
+    assert!(config.get("canvas:seed").is_some(), "canvas:seed deve ser injetado quando noise.canvas = true");
+    let canvas_seed_val = config.get("canvas:seed").unwrap().as_u64().unwrap();
+    assert_eq!(canvas_seed_val, 0x1CCAE86B, "canvas_seed hexadecimal convertido corretamente para inteiro u32");
+
+    // Valida CPU cores
+    assert_eq!(
+        config.get("navigator.hardwareConcurrency").unwrap().as_u64().unwrap(),
+        12,
+        "hardwareConcurrency reflete cpu_cores"
+    );
+
+    // Valida Dimensões da tela e barra de tarefas do Windows (-40px)
+    assert_eq!(config.get("screen.width").unwrap().as_u64().unwrap(), 1920);
+    assert_eq!(config.get("screen.height").unwrap().as_u64().unwrap(), 1080);
+    assert_eq!(config.get("screen.availHeight").unwrap().as_u64().unwrap(), 1040, "Windows availHeight desconta barra de tarefas (-40px)");
+
+    // Valida Touch points em desktop
+    assert_eq!(config.get("navigator.maxTouchPoints").unwrap().as_u64().unwrap(), 0);
+}

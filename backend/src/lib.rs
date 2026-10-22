@@ -286,6 +286,7 @@ pub fn build_app_router_with_nonce_manager(
     let cloud_sync_routes = Router::new()
         .route("/health", get(routes::cloud_sync::check_cloud_health))
         .route("/pull", post(routes::cloud_sync::pull_all_cloud_profiles))
+        .route("/two-way", post(routes::cloud_sync::pull_all_cloud_profiles))
         .route("/{id}/sync", post(routes::cloud_sync::sync_to_cloud))
         .route("/{id}/restore", post(routes::cloud_sync::restore_from_cloud))
         .route("/{id}/stat", get(routes::cloud_sync::get_cloud_stat))

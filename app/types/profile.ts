@@ -141,6 +141,7 @@ export interface CreateProfileDto {
 }
 
 export interface UpdateProfileDto {
+  id?: string;
   name?: string;
   group?: string;
   tags?: string[];

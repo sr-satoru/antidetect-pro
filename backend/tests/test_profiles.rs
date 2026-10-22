@@ -86,6 +86,7 @@ async fn test_profile_tags_persistence_without_profile_tags_table() {
 
     // 4. Atualiza removendo uma tag e adicionando outra
     let update_dto = star_multlogin_backend::models::UpdateProfileDto {
+        id: None,
         name: None,
         group: None,
         tags: Some(vec!["Google".to_string()]),
@@ -338,6 +339,7 @@ async fn test_profile_kernel_immutability_on_update() {
 
     // 2. Tenta atualizar o kernel para AstroBrowser
     let update_dto = UpdateProfileDto {
+        id: None,
         name: Some("Perfil Fox Tentativa Troca".to_string()),
         group: None,
         notes: None,

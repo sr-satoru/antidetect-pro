@@ -17,14 +17,16 @@ import { McpApiPage } from './(app)/mcp-api/page';
 import { ConfigurationPage } from './(app)/configuration/page';
 
 import { Toaster } from './components/ui/notification';
+import { ConfirmProvider } from './components/ui/confirm-modal';
 
 export const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserProvider>
-          <Toaster position="top-center" />
-          <BrowserRouter>
+          <ConfirmProvider>
+            <Toaster position="top-center" />
+            <BrowserRouter>
         <Routes>
           {/* Rotas Públicas de Acesso */}
           <Route path="/auth/login" element={<LoginPage />} />
@@ -49,8 +51,9 @@ export const App: React.FC = () => {
           </Route>
         </Routes>
       </BrowserRouter>
-      </BrowserProvider>
-    </AuthProvider>
+          </ConfirmProvider>
+        </BrowserProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 };

@@ -74,7 +74,7 @@ export const serviceSync = {
     notifySyncListeners(true);
     try {
       const result = await http.post<CloudSyncResult>(
-        `/api/cloud-sync/two-way${force ? '?force=true' : ''}`,
+        `/api/cloud-sync/pull${force ? '?force=true' : ''}`,
       );
       if (onProfilesUpdated) {
         onProfilesUpdated();
@@ -95,10 +95,10 @@ export const serviceSync = {
     http.get<CloudHealthResponse>('/api/cloud-sync/health'),
 
   /**
-   * Dispara a Dupla Troca atômica (Download de perfis ausentes + Upload dos locais)
+   * Dispara a Sincronização atômica com a Nuvem (Download de perfis ausentes + Upload dos locais)
    */
   twoWaySync: (force = false): Promise<CloudSyncResult> =>
-    http.post<CloudSyncResult>(`/api/cloud-sync/two-way${force ? '?force=true' : ''}`),
+    http.post<CloudSyncResult>(`/api/cloud-sync/pull${force ? '?force=true' : ''}`),
 
   /**
    * Puxa perfis da nuvem para o disco local

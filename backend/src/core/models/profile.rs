@@ -178,6 +178,7 @@ pub struct CreateProfileDto {
 /// DTO para atualização de perfil
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateProfileDto {
+    pub id: Option<String>,
     pub name: Option<String>,
     pub group: Option<String>,
     pub tags: Option<Vec<String>>,

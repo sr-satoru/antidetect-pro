@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { BACKEND_PORT } from '@/services/http';
 import { serviceMcp } from '@/services/mcp/service.mcp';
+import { Tooltip } from '@/components/ui/tooltip';
 import { renderCodeWithKeyBlur, sanitizeCodeForCopy } from './code-blur-helper';
 
 interface AutomationTabProps {
@@ -423,6 +424,8 @@ warmUp();
     },
   };
 
+  const [copiedPip, setCopiedPip] = useState(false);
+
   const handleCopyCode = () => {
     const rawCode = recipeCodes[selectedRecipe][selectedLang];
     const textToCopy = sanitizeCodeForCopy(rawCode, token, showToken);
@@ -431,42 +434,58 @@ warmUp();
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Prerequisites Banner - Sem blur de fundo */}
-      <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-[#00FF66]/15 border border-emerald-200 dark:border-[#00FF66]/30 flex items-center justify-center text-emerald-600 dark:text-[#00FF66] shrink-0">
-            <Zap size={20} />
-          </div>
-          <div>
-            <h3 className="text-[15px] font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              SDK Star Driver: AstroFox (Firefox) & AstroBrowser (Chromium)
-              <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
-                Driver Oficial
-              </span>
-            </h3>
-            <p className="text-[12px] text-slate-600 dark:text-[#B5B5B5] mt-0.5 max-w-2xl leading-relaxed">
-              O Star Driver inicializa diretamente o perfil configurado no Star Multlogin com <strong>AstroFox</strong> ou <strong>AstroBrowser</strong>, com proxy residencial e camuflagem de hardware sem erros de compatibilidade.
-            </p>
-          </div>
-        </div>
+  const handleCopyPip = () => {
+    navigator.clipboard.writeText('pip install star-driver astrobrowser clearcote requests');
+    setCopiedPip(true);
+    setTimeout(() => setCopiedPip(false), 2000);
+  };
 
-        {/* Command Badge */}
-        <div className="bg-slate-50 dark:bg-[#0C0D12] border border-slate-200 dark:border-white/10 rounded-xl px-3.5 py-2 font-mono text-[11px] text-slate-800 dark:text-[#D8D8D8] shrink-0">
-          <span className="text-slate-500 dark:text-[#A0A0A0] block text-[9px] uppercase font-bold font-sans">
-            Instalação da SDK:
-          </span>
-          <code>pip install star-driver astrobrowser clearcote requests</code>
+  return (
+    <div className="space-y-4">
+      {/* 1. Banner Superior: SDK Star Driver */}
+      <div className="rounded-xl border border-slate-200/90 dark:border-[#353744] bg-slate-50/70 dark:bg-[#1C1D24] p-5 space-y-3.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#24252D] border border-slate-200 dark:border-[#353744] shadow-xs">
+              <Zap size={18} className="text-[#238636] dark:text-[#2ea043]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white">
+                  SDK Star Driver: AstroFox (Firefox) & AstroBrowser (Chromium)
+                </h4>
+                <span className="rounded-full bg-[#238636]/10 text-[#2ea043] border border-[#238636]/30 px-2 py-0.5 text-[10px] font-semibold">
+                  Driver Oficial
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-1 max-w-2xl leading-relaxed">
+                Inicialização direta do perfil no Star Multlogin com <strong>AstroFox</strong> ou <strong>AstroBrowser</strong>, com proxy residencial e camuflagem de hardware.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-[#24252D] border border-slate-200 dark:border-[#353744] text-xs font-mono shrink-0">
+            <span className="text-slate-500 dark:text-[#8E92A2] select-none text-[11px]">pip:</span>
+            <code className="text-slate-800 dark:text-[#E2E4EC]">pip install star-driver astrobrowser clearcote requests</code>
+            <Tooltip content={copiedPip ? 'Copiado!' : 'Copiar comando pip'} position="top">
+              <button
+                type="button"
+                onClick={handleCopyPip}
+                className="text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white p-1 rounded-md transition-colors cursor-pointer"
+              >
+                {copiedPip ? <Check size={13} className="text-[#238636] dark:text-[#2ea043]" /> : <Copy size={13} />}
+              </button>
+            </Tooltip>
+          </div>
         </div>
       </div>
 
-      {/* Main Grid: Recipe Selector on Left, Code on Right */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Recipe Selector - Sem blur */}
-        <div className="lg:col-span-4 bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-sm dark:shadow-none space-y-3">
-          <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-[#A0A0A0] px-1 flex items-center gap-1.5">
-            <Boxes size={14} className="text-emerald-600 dark:text-[#00FF66]" />
+      {/* 2. Grid Principal: Cenários à esquerda e Código à direita */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        {/* Coluna Esquerda: Cenários de Automação */}
+        <div className="lg:col-span-4 rounded-xl border border-slate-200/90 dark:border-[#353744] bg-slate-50/70 dark:bg-[#1C1D24] p-5 space-y-3.5">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+            <Boxes size={15} className="text-[#238636] dark:text-[#2ea043]" />
             Cenários de Automação
           </h4>
 
@@ -477,21 +496,21 @@ warmUp();
                 <div
                   key={r.id}
                   onClick={() => setSelectedRecipe(r.id)}
-                  className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                  className={`p-3.5 rounded-lg border cursor-pointer select-none transition-all ${
                     isSelected
-                      ? 'bg-emerald-50/70 border-emerald-300 dark:bg-[#1F212D] dark:border-white/20 shadow-xs text-emerald-800 dark:text-[#00FF66]'
-                      : 'bg-slate-50/80 border-slate-200 hover:bg-slate-100 dark:bg-[#181922] dark:border-white/10 dark:hover:bg-[#202230] dark:hover:border-white/15'
+                      ? 'border-[#238636] dark:border-[#2ea043] bg-white dark:bg-[#24252D] ring-2 ring-[#238636]/20 shadow-xs'
+                      : 'border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] hover:border-slate-300 dark:hover:border-[#434555]'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`text-[13px] font-bold ${isSelected ? 'text-emerald-700 dark:text-[#00FF66]' : 'text-slate-900 dark:text-white'}`}>
+                    <span className="text-xs font-semibold text-slate-900 dark:text-white">
                       {r.title}
                     </span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white dark:bg-[#0C0D12] text-slate-700 dark:text-[#C4C4C4] border border-slate-200 dark:border-white/10 shrink-0">
+                    <span className="rounded-full bg-slate-100 dark:bg-[#1C1D24] text-slate-700 dark:text-[#A7AAB9] border border-slate-200 dark:border-[#353744] px-2 py-0.5 text-[10px] font-semibold shrink-0">
                       {r.tag}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-600 dark:text-[#B8B8B8] mt-1 leading-snug">
+                  <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-1 leading-relaxed">
                     {r.desc}
                   </p>
                 </div>
@@ -500,28 +519,28 @@ warmUp();
           </div>
         </div>
 
-        {/* Right Column: Code Display - Sem blur */}
-        <div className="lg:col-span-8 bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-sm dark:shadow-none space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-white/10">
+        {/* Coluna Direita: Código de Automação */}
+        <div className="lg:col-span-8 rounded-xl border border-slate-200/90 dark:border-[#353744] bg-slate-50/70 dark:bg-[#1C1D24] p-5 space-y-3.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#353744]">
             <div>
-              <h4 className="text-[14px] font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <FileCode size={16} className="text-emerald-600 dark:text-[#00FF66]" />
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                <FileCode size={15} className="text-[#238636] dark:text-[#2ea043]" />
                 {recipes.find((r) => r.id === selectedRecipe)?.title}
               </h4>
-              <p className="text-[12px] text-slate-600 dark:text-[#B5B5B5]">
+              <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
                 Copie o script e execute no seu ambiente local com Python ou Node.js.
               </p>
             </div>
 
-            {/* Language Switcher */}
-            <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-[#0C0D12] border border-slate-200 dark:border-white/10 rounded-xl">
+            {/* Seletor de Linguagem */}
+            <div className="flex items-center gap-1 p-1 bg-white dark:bg-[#24252D] border border-slate-200 dark:border-[#353744] rounded-lg">
               <button
                 type="button"
                 onClick={() => setSelectedLang('python')}
-                className={`py-1.5 px-3 rounded-lg text-[12px] font-bold transition-all ${
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   selectedLang === 'python'
-                    ? 'bg-white text-emerald-700 shadow-xs border border-slate-200 dark:bg-[#1F212D] dark:text-[#00FF66] dark:border-white/15'
-                    : 'text-slate-600 hover:text-slate-900 dark:text-[#A6A6A6] dark:hover:text-white'
+                    ? 'bg-slate-100 dark:bg-[#1C1D24] text-slate-900 dark:text-white border border-slate-200 dark:border-[#383A48] shadow-xs'
+                    : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4]'
                 }`}
               >
                 Python (Playwright)
@@ -529,10 +548,10 @@ warmUp();
               <button
                 type="button"
                 onClick={() => setSelectedLang('node')}
-                className={`py-1.5 px-3 rounded-lg text-[12px] font-bold transition-all ${
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   selectedLang === 'node'
-                    ? 'bg-white text-emerald-700 shadow-xs border border-slate-200 dark:bg-[#1F212D] dark:text-[#00FF66] dark:border-white/15'
-                    : 'text-slate-600 hover:text-slate-900 dark:text-[#A6A6A6] dark:hover:text-white'
+                    ? 'bg-slate-100 dark:bg-[#1C1D24] text-slate-900 dark:text-white border border-slate-200 dark:border-[#383A48] shadow-xs'
+                    : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4]'
                 }`}
               >
                 Node.js
@@ -540,27 +559,50 @@ warmUp();
             </div>
           </div>
 
-          {/* Code Editor Container */}
-          <div className="relative group">
-            <pre className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-[12px] font-mono text-[#F0F0F0] overflow-x-auto max-h-[440px] leading-relaxed shadow-inner">
+          {/* Janela de Código */}
+          <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-[#353744] bg-slate-900 dark:bg-[#14151B]">
+            <div className="flex items-center justify-between px-3.5 py-2 bg-slate-800/80 dark:bg-[#1C1D24] border-b border-slate-800 dark:border-[#2C2E38]">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[#EC6A5E]" />
+                  <span className="h-2 w-2 rounded-full bg-[#F4BF4F]" />
+                  <span className="h-2 w-2 rounded-full bg-[#61C554]" />
+                </div>
+                <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300 dark:text-[#C4C7D5] ml-1">
+                  <FileCode size={13} className="text-slate-400" />
+                  <span>{selectedLang === 'python' ? 'script.py' : 'script.js'}</span>
+                </div>
+              </div>
+
+              <Tooltip
+                content={copiedCode ? 'Script copiado!' : 'Copiar script pronto'}
+                position="top"
+              >
+                <button
+                  type="button"
+                  onClick={handleCopyCode}
+                  className="flex h-7 items-center gap-1.5 rounded-md border border-slate-700 dark:border-[#353744] bg-slate-800 dark:bg-[#24252D] px-2.5 text-xs font-medium text-slate-200 dark:text-[#EDEDED] hover:bg-slate-700 dark:hover:bg-[#2C2E38] transition-all cursor-pointer shadow-2xs"
+                >
+                  {copiedCode ? (
+                    <Check size={12} className="text-[#238636] dark:text-[#2ea043]" />
+                  ) : (
+                    <Copy size={12} className="text-slate-400" />
+                  )}
+                  <span>{copiedCode ? 'Copiado!' : 'Copiar Script'}</span>
+                </button>
+              </Tooltip>
+            </div>
+
+            <pre className="p-4 text-xs font-mono leading-relaxed text-slate-100 dark:text-[#EDEDED] overflow-x-auto max-h-[440px]">
               {renderCodeWithKeyBlur(recipeCodes[selectedRecipe][selectedLang], token, showToken, onRevealKey)}
             </pre>
-            <button
-              type="button"
-              onClick={handleCopyCode}
-              className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1E202B] hover:bg-[#282B3A] text-[#00FF66] text-[12px] font-bold border border-white/10 transition-all shadow-sm dark:shadow-none cursor-pointer"
-              title={showToken ? "Copiar Script" : "Copiar Script (Chave vazia enquanto oculta)"}
-            >
-              {copiedCode ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-              <span>{copiedCode ? 'Copiado!' : 'Copiar Script'}</span>
-            </button>
           </div>
 
-          {/* Quick Info Footer */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-white/10 text-[11px] text-slate-500 dark:text-[#A6A6A6]">
+          {/* Rodapé com Endereço e Status */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-[#353744] text-xs text-slate-500 dark:text-[#8E92A2]">
             <span>Endereço da API: <strong className="text-slate-900 dark:text-white font-mono">{baseUrl}</strong></span>
-            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-              <ShieldCheck size={13} />
+            <span className="text-[#238636] dark:text-[#2ea043] flex items-center gap-1.5 font-medium">
+              <ShieldCheck size={14} />
               Isolamento Anti-Origin Ativo
             </span>
           </div>

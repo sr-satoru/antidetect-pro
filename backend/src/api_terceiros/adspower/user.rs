@@ -231,6 +231,7 @@ pub async fn update_user(
         };
 
     let dto = UpdateProfileDto {
+        id: None,
         name: body.name,
         group: body.group_id,
         tags: None,

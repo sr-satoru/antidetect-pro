@@ -137,7 +137,8 @@ export const serviceTags = {
   },
 
   deleteMany: async (ids: (string | number)[]) => {
-    const res = await http.post<any>('/api/tags/batch-delete', { ids });
+    const numericIds = ids.map(Number).filter((n) => !isNaN(n));
+    const res = await http.post<any>('/api/tags/batch-delete', { ids: numericIds });
     await serviceTags.list();
     return res;
   },
