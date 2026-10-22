@@ -630,26 +630,24 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('team')}
-              className={`rounded-lg px-5 py-2.5 text-[13px] font-medium transition-all flex items-center gap-2.5 cursor-pointer ${
+              className={`rounded-lg px-6 py-2.5 text-[13.5px] font-medium transition-all cursor-pointer ${
                 activeTab === 'team'
-                  ? 'bg-white dark:bg-[#3E4048] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
-                  : 'text-slate-600 dark:text-[#B0B3C2] hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white font-semibold shadow-xs border border-slate-200/50 dark:border-white/10'
+                  : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Users size={16} />
               <span>Extensões da equipe</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('recommended')}
-              className={`rounded-lg px-5 py-2.5 text-[13px] font-medium transition-all flex items-center gap-2.5 cursor-pointer ${
+              className={`rounded-lg px-6 py-2.5 text-[13.5px] font-medium transition-all cursor-pointer ${
                 activeTab === 'recommended'
-                  ? 'bg-white dark:bg-[#3E4048] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
-                  : 'text-slate-600 dark:text-[#B0B3C2] hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white font-semibold shadow-xs border border-slate-200/50 dark:border-white/10'
+                  : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Sparkles size={16} />
               <span>Recomendado para você</span>
             </button>
           </div>
@@ -731,23 +729,20 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           <button
                             type="button"
                             onClick={() => onToggleEnabled(ext.id)}
-                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${
-                              ext.enabled
+                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled
                                 ? 'bg-[#238636]'
                                 : 'bg-slate-300 dark:bg-[#484A54]'
-                            }`}
+                              }`}
                           >
                             <span
-                              className={`inline-block h-4.5 w-4.5 transform rounded-full bg-white transition duration-200 shadow-xs ${
-                                ext.enabled ? 'translate-x-5.5' : 'translate-x-1'
-                              }`}
+                              className={`inline-block h-4.5 w-4.5 transform rounded-full bg-white transition duration-200 shadow-xs ${ext.enabled ? 'translate-x-5.5' : 'translate-x-1'
+                                }`}
                             />
                           </button>
                           <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-slate-500 dark:text-[#B0B3C2]">
                             <span
-                              className={`h-2 w-2 rounded-full ${
-                                ext.enabled ? 'bg-[#238636]' : 'bg-slate-400 dark:bg-[#B0B3C2]'
-                              }`}
+                              className={`h-2 w-2 rounded-full ${ext.enabled ? 'bg-[#238636]' : 'bg-slate-400 dark:bg-[#B0B3C2]'
+                                }`}
                             />
                             <span>{ext.enabled ? 'Ativo' : 'Pausado'}</span>
                           </span>
@@ -894,11 +889,10 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   key={cat}
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`rounded-lg px-3.5 py-1.5 text-[12.5px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
-                    isSelected
+                  className={`rounded-lg px-3.5 py-1.5 text-[12.5px] font-medium whitespace-nowrap transition-colors cursor-pointer ${isSelected
                       ? 'border border-slate-300 dark:border-[#585B6A] bg-slate-200/70 dark:bg-[#3E4048] text-slate-900 dark:text-[#FFFFFF] shadow-2xs'
                       : 'text-slate-600 dark:text-[#B0B3C2] hover:text-slate-900 dark:hover:text-[#FFFFFF] border border-transparent'
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>
@@ -915,7 +909,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                     (item) =>
                       item.tab === 'team' &&
                       item.name.toLowerCase().trim() ===
-                        recExt.name.toLowerCase().trim(),
+                      recExt.name.toLowerCase().trim(),
                   );
 
                   return (
