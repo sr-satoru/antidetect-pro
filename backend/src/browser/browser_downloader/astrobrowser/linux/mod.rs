@@ -5,7 +5,7 @@ pub mod paths;
 use std::fs;
 use std::path::{Path, PathBuf};
 use async_trait::async_trait;
-use tracing::info;
+use tracing::debug;
 
 use super::error::AstrobrowserError;
 use crate::browser_downloader::detector::EngineHealthStatus;
@@ -92,7 +92,7 @@ impl PlatformOperations for LinuxOperations {
             .and_then(|j| j.get("version").and_then(|v| v.as_str().map(|v| v.to_string())))
             .unwrap_or_else(|| "150.0.7871.114".to_string());
 
-        info!("✅ AstroBrowser (Linux) detectado e saudável em {:?}", exe_path);
+        debug!("✅ AstroBrowser (Linux) detectado e saudável em {:?}", exe_path);
 
         Ok(EngineHealthStatus::Installed {
             executable_path: exe_path,

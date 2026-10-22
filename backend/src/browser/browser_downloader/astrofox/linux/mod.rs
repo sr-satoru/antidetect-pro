@@ -5,7 +5,7 @@ pub mod paths;
 use std::fs;
 use std::path::{Path, PathBuf};
 use async_trait::async_trait;
-use tracing::info;
+use tracing::debug;
 
 use super::error::AstrofoxError;
 use crate::browser_downloader::detector::EngineHealthStatus;
@@ -80,7 +80,7 @@ impl PlatformOperations for LinuxOperations {
             .and_then(|j| j.get("version").and_then(|v| v.as_str().map(|v| v.to_string())))
             .unwrap_or_else(|| "v2.1.0".to_string());
 
-        info!("✅ AstroFox (Linux) detectado e saudável em {:?}", exe_path);
+        debug!("✅ AstroFox (Linux) detectado e saudável em {:?}", exe_path);
 
         Ok(EngineHealthStatus::Installed {
             executable_path: exe_path,
