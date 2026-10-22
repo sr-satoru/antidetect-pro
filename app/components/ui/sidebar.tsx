@@ -50,8 +50,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
 
   const navItemClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 group relative select-none ${isActive
-      ? 'bg-slate-100 text-slate-900 dark:bg-white/[0.08] dark:text-white font-semibold shadow-2xs'
-      : 'text-slate-500 hover:bg-slate-100/70 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:bg-white/[0.04] dark:hover:text-white'
+      ? 'bg-[#EEF3FF] text-[#284A9E] dark:bg-[#151F38] dark:text-[#B3C6F8] font-semibold shadow-2xs'
+      : 'text-slate-600 hover:bg-[#F3F2EF] hover:text-[#1B1A18] dark:text-[#90909D] dark:hover:bg-[#24242C] dark:hover:text-[#F1F1F4]'
     } ${isCollapsed ? 'justify-center px-2' : ''}`;
 
   return (
@@ -111,7 +111,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         <button
           type="button"
           onClick={handleNewProfile}
-          className={`w-full flex cursor-pointer items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white dark:bg-white dark:hover:bg-white/90 dark:text-black font-bold text-[12.5px] rounded-xl transition-all shadow-xs active:scale-[0.98] ${isCollapsed ? 'h-9 px-0' : 'h-9 px-3.5'
+          className={`w-full flex cursor-pointer items-center justify-center gap-2 bg-[#3366E6] hover:bg-[#2A58CF] text-white font-semibold text-[13px] rounded-xl transition-all shadow-xs active:scale-[0.98] ${isCollapsed ? 'h-9 px-0' : 'h-9 px-3.5'
             }`}
           title="Criar Novo Perfil"
         >
@@ -128,11 +128,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
                 )}
                 <Layers
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-[#3366E6] dark:text-[#5E88F0]' : 'text-slate-400 dark:text-[#76736D] group-hover:text-slate-900 dark:group-hover:text-white'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Perfis</span>}
@@ -144,11 +144,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
                 )}
                 <Globe
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-[#3366E6] dark:text-[#5E88F0]' : 'text-slate-400 dark:text-[#76736D] group-hover:text-slate-900 dark:group-hover:text-[#F1F1F4]'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Proxies</span>}
@@ -160,11 +160,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
                 )}
                 <Puzzle
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-[#3366E6] dark:text-[#5E88F0]' : 'text-slate-400 dark:text-[#76736D] group-hover:text-slate-900 dark:group-hover:text-[#F1F1F4]'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Extensões</span>}
@@ -176,11 +176,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
                 )}
                 <Trash2
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-[#3366E6] dark:text-[#5E88F0]' : 'text-slate-400 dark:text-[#76736D] group-hover:text-slate-900 dark:group-hover:text-[#F1F1F4]'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Lixeira</span>}
@@ -192,7 +192,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         {/* Automação Section */}
         <div className="space-y-1">
           {!isCollapsed && (
-            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#686C7E]">
+            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#66666F]">
               Automação
             </div>
           )}
@@ -201,11 +201,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
                 )}
                 <Repeat
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-[#3366E6] dark:text-[#5E88F0]' : 'text-slate-400 dark:text-[#76736D] group-hover:text-slate-900 dark:group-hover:text-[#F1F1F4]'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Sincronizador</span>}
@@ -217,11 +217,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
                 )}
                 <Code
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-[#3366E6] dark:text-[#5E88F0]' : 'text-slate-400 dark:text-[#76736D] group-hover:text-slate-900 dark:group-hover:text-[#F1F1F4]'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">API & MCP</span>}
@@ -233,7 +233,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         {/* Gerenciamento Section */}
         <div className="space-y-1">
           {!isCollapsed && (
-            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#686C7E]">
+            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#66666F]">
               Gerenciamento
             </div>
           )}
@@ -242,11 +242,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
                 )}
                 <Users
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-[#3366E6] dark:text-[#5E88F0]' : 'text-slate-400 dark:text-[#76736D] group-hover:text-slate-900 dark:group-hover:text-[#F1F1F4]'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Membros</span>}
@@ -258,11 +258,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
                 )}
                 <FileText
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-[#3366E6] dark:text-[#5E88F0]' : 'text-slate-400 dark:text-[#76736D] group-hover:text-slate-900 dark:group-hover:text-[#F1F1F4]'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Logs de Ações</span>}
@@ -274,11 +274,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-emerald-500 dark:bg-[#00FF66]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
                 )}
                 <Settings
                   size={17}
-                  className={`shrink-0 transition-colors ${isActive ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#8E92A2] group-hover:text-slate-900 dark:group-hover:text-white'
+                  className={`shrink-0 transition-colors ${isActive ? 'text-[#3366E6] dark:text-[#5E88F0]' : 'text-slate-400 dark:text-[#76736D] group-hover:text-slate-900 dark:group-hover:text-[#F1F1F4]'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate">Configurações</span>}

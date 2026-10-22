@@ -27,47 +27,47 @@
 
 :root {
   color-scheme: light;
-  --color-bg-base: #F5F6F8;
+  --color-bg-base: #ECEBE7;
   --color-bg-surface: #FFFFFF;
   --color-bg-card: #FFFFFF;
-  --color-bg-input: #EEF0F4;
-  --color-border-subtle: #E2E4E9;
-  --color-border-hover: #CBD0D8;
-  --color-text-primary: #111216;
-  --color-text-secondary: #585B6A;
-  --color-text-muted: #8E92A2;
-  --scrollbar-thumb: #D1D5DB;
-  --scrollbar-thumb-hover: #9CA3AF;
+  --color-bg-input: #F8F7F5;
+  --color-border-subtle: #E6E3DD;
+  --color-border-hover: #D3CFC7;
+  --color-text-primary: #1B1A18;
+  --color-text-secondary: #45423D;
+  --color-text-muted: #76736D;
+  --scrollbar-thumb: #D3CFC7;
+  --scrollbar-thumb-hover: #B3AEA5;
   --scrollbar-track: transparent;
-  --selection-bg: #059669;
+  --selection-bg: #3366E6;
   --selection-color: #FFFFFF;
-  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-  --shadow-card-hover: 0 6px 16px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
-  --shadow-dropdown: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-  --shadow-modal: 0 20px 45px -10px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04);
-  --backdrop-overlay: rgba(15, 23, 42, 0.35);
+  --shadow-card: 0 1px 2px rgba(27, 26, 24, 0.05);
+  --shadow-card-hover: 0 3px 6px rgba(27, 26, 24, 0.07);
+  --shadow-dropdown: 0 10px 25px -5px rgba(27, 26, 24, 0.08);
+  --shadow-modal: 0 20px 45px -10px rgba(27, 26, 24, 0.16);
+  --backdrop-overlay: rgba(27, 26, 24, 0.4);
 }
 
 .dark {
   color-scheme: dark;
-  --color-bg-base: #08090C;
-  --color-bg-surface: #101116;
-  --color-bg-card: #15161C;
-  --color-bg-input: #191A21;
-  --color-border-subtle: #232530;
-  --color-border-hover: #333644;
-  --color-text-primary: #F4F4F6;
-  --color-text-secondary: #9093A2;
-  --color-text-muted: #5E6172;
-  --scrollbar-thumb: #252833;
-  --scrollbar-thumb-hover: #363a4a;
+  --color-bg-base: #0A0A0E;
+  --color-bg-surface: #1A1A21;
+  --color-bg-card: #1A1A21;
+  --color-bg-input: #15151A;
+  --color-border-subtle: #2E2E38;
+  --color-border-hover: #41414E;
+  --color-text-primary: #F1F1F4;
+  --color-text-secondary: #C9C9D2;
+  --color-text-muted: #90909D;
+  --scrollbar-thumb: #2E2E38;
+  --scrollbar-thumb-hover: #41414E;
   --scrollbar-track: transparent;
-  --selection-bg: #10b981;
+  --selection-bg: #3366E6;
   --selection-color: #FFFFFF;
-  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
-  --shadow-card-hover: 0 6px 18px -2px rgba(0, 0, 0, 0.7);
-  --shadow-dropdown: 0 14px 30px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
-  --shadow-modal: 0 25px 60px -12px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-dropdown: 0 14px 30px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px #2E2E38;
+  --shadow-modal: 0 25px 60px -12px rgba(0, 0, 0, 0.95), 0 0 0 1px #2E2E38;
   --backdrop-overlay: rgba(0, 0, 0, 0.75);
 }
 

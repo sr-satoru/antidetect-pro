@@ -203,18 +203,18 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   const isStriped = index % 2 === 1;
 
-  // Cores do Zebrado e Seleção Minimalista Cinza / Meio-Branco
+  // Cores do Zebrado e Seleção Estilo AliasMode
   const rowBg = isSelected
-    ? 'bg-slate-100 dark:bg-white/[0.08] border-l-2 border-l-slate-400 dark:border-l-white/70'
+    ? 'bg-[#EEF3FF] dark:bg-[#151F38] border-l-[3px] border-l-[#3366E6] dark:border-l-[#5E88F0]'
     : isStriped
-      ? 'bg-slate-50/60 dark:bg-[#1F2027] hover:bg-slate-100/70 dark:hover:bg-white/[0.04]'
-      : 'bg-white dark:bg-[#181920] hover:bg-slate-100/70 dark:hover:bg-white/[0.04]';
+      ? 'bg-slate-50/50 dark:bg-[#15151A] hover:bg-[#F3F2EF] dark:hover:bg-[#24242C]'
+      : 'bg-white dark:bg-[#1A1A21] hover:bg-[#F3F2EF] dark:hover:bg-[#24242C]';
 
   const stickyBg = isSelected
-    ? 'bg-slate-100 dark:bg-[#262832]'
+    ? 'bg-[#EEF3FF] dark:bg-[#151F38]'
     : isStriped
-      ? 'bg-slate-50/90 dark:bg-[#1F2027] group-hover:bg-slate-100 dark:group-hover:bg-[#262832]'
-      : 'bg-white dark:bg-[#181920] group-hover:bg-slate-100 dark:group-hover:bg-[#262832]';
+      ? 'bg-slate-50/90 dark:bg-[#15151A] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#24242C]'
+      : 'bg-white dark:bg-[#1A1A21] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#24242C]';
 
   const osKey = (profile.os || 'linux').toLowerCase();
 
@@ -267,7 +267,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   return (
     <tr
-      className={`group h-[60px] border-b border-slate-200/80 dark:border-white/[0.07] transition-colors ${rowBg}`}
+      className={`group h-[60px] border-b border-slate-200/80 dark:border-[#26262E] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td
