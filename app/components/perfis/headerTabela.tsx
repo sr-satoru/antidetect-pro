@@ -195,7 +195,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
             className="h-[38px] w-[38px] rounded-lg bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] border border-slate-200/80 dark:border-[#484A54] text-slate-500 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs disabled:opacity-60"
             title={isSyncing ? "Sincronizando com a nuvem..." : "Atualizar lista"}
           >
-            <RotateCw size={15} className={isSyncing ? "animate-spin text-emerald-500" : ""} />
+            <RotateCw size={15} className={isSyncing ? "animate-spin text-[#7C3AED] dark:text-[#A78BFA]" : ""} />
           </button>
         </div>
       </div>

@@ -144,18 +144,18 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   const isStriped = index % 2 === 1;
 
-  // Cores do Zebrado e Seleção Harmonizados com a paleta Extensões
+  // Cores do Zebrado e Seleção Harmonizados com a paleta Roxo Elétrico
   const rowBg = isSelected
-    ? 'bg-emerald-50/60 dark:bg-[#2ea043]/15 border-l-[3px] border-l-[#238636] dark:border-l-[#2ea043]'
+    ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/20 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
     : isStriped
-      ? 'bg-slate-50/50 dark:bg-[#28292E] hover:bg-slate-100/60 dark:hover:bg-[#32343C]'
-      : 'bg-white dark:bg-[#24252A] hover:bg-slate-100/60 dark:hover:bg-[#32343C]';
+      ? 'bg-slate-50/50 dark:bg-[#1E1F24] hover:bg-slate-100/60 dark:hover:bg-[#282930]'
+      : 'bg-white dark:bg-[#18191E] hover:bg-slate-100/60 dark:hover:bg-[#282930]';
 
   const stickyBg = isSelected
-    ? 'bg-emerald-50/80 dark:bg-[#25382B]'
+    ? 'bg-[#7C3AED]/15 dark:bg-[#2E1F4A]'
     : isStriped
-      ? 'bg-slate-50/90 dark:bg-[#28292E] group-hover:bg-slate-100/80 dark:group-hover:bg-[#32343C]'
-      : 'bg-white dark:bg-[#24252A] group-hover:bg-slate-100/80 dark:group-hover:bg-[#32343C]';
+      ? 'bg-slate-50/90 dark:bg-[#1E1F24] group-hover:bg-slate-100/80 dark:group-hover:bg-[#282930]'
+      : 'bg-white dark:bg-[#18191E] group-hover:bg-slate-100/80 dark:group-hover:bg-[#282930]';
 
   const osKey = (profile.os || 'linux').toLowerCase();
 
@@ -239,7 +239,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
                 e.stopPropagation();
                 onEdit(profile);
               }}
-              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:bg-emerald-500/10 transition-all active:scale-95"
+              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95"
             >
               <EditIcon size={13} />
             </button>
@@ -310,7 +310,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
                 e.stopPropagation();
                 onEditNotes && onEditNotes(profile);
               }}
-              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:bg-emerald-500/10 transition-all active:scale-95"
+              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95"
             >
               <EditIcon size={13} />
             </button>
@@ -347,10 +347,10 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
             className={`inline-flex h-[30px] w-auto items-center justify-center gap-1.5 rounded-[6px] px-3.5 text-[13px] font-semibold text-white transition-all active:scale-[0.97] ${isSyncing
                 ? 'cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500'
                 : isStarting
-                  ? 'cursor-wait bg-[#238636]/85 text-white animate-pulse shadow-xs'
+                  ? 'cursor-wait bg-[#7C3AED]/85 text-white animate-pulse shadow-xs'
                   : isRunning
                     ? 'cursor-pointer bg-[#e11d48] hover:bg-[#be123c] text-white shadow-xs'
-                    : 'cursor-pointer bg-[#238636] hover:bg-[#2ea043] text-white shadow-xs hover:shadow-sm'
+                    : 'cursor-pointer bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.35)]'
               }`}
           >
             {isSyncing ? (

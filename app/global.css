@@ -50,25 +50,25 @@
 
 .dark {
   color-scheme: dark;
-  --color-bg-base: #0D1117;
-  --color-bg-surface: #161B22;
-  --color-bg-card: #161B22;
-  --color-bg-input: #21262D;
-  --color-border-subtle: #30363D;
-  --color-border-hover: #8B949E;
-  --color-text-primary: #E6EDF3;
-  --color-text-secondary: #C9D1D9;
-  --color-text-muted: #848D97;
-  --scrollbar-thumb: #30363D;
-  --scrollbar-thumb-hover: #8B949E;
+  --color-bg-base: #121316;
+  --color-bg-surface: #1A1B20;
+  --color-bg-card: #1A1B20;
+  --color-bg-input: #222329;
+  --color-border-subtle: #2E303A;
+  --color-border-hover: #484E5C;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #D8DCE6;
+  --color-text-muted: #9DA2B4;
+  --scrollbar-thumb: #353844;
+  --scrollbar-thumb-hover: #5A5F72;
   --scrollbar-track: transparent;
   --selection-bg: #7C3AED;
   --selection-color: #FFFFFF;
-  --shadow-card: 0 1px 2px rgba(1, 4, 9, 0.4);
-  --shadow-card-hover: 0 4px 12px rgba(1, 4, 9, 0.6);
-  --shadow-dropdown: 0 14px 30px -4px rgba(1, 4, 9, 0.8), 0 0 0 1px #30363D;
-  --shadow-modal: 0 25px 60px -12px rgba(1, 4, 9, 0.95), 0 0 0 1px #30363D;
-  --backdrop-overlay: rgba(1, 4, 9, 0.8);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.45);
+  --shadow-card-hover: 0 6px 18px rgba(0, 0, 0, 0.65);
+  --shadow-dropdown: 0 14px 30px -4px rgba(0, 0, 0, 0.85), 0 0 0 1px #30363D;
+  --shadow-modal: 0 25px 60px -12px rgba(0, 0, 0, 0.95), 0 0 0 1px #353844;
+  --backdrop-overlay: rgba(0, 0, 0, 0.75);
 }
 
 @layer base {

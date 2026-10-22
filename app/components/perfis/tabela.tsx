@@ -133,7 +133,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                   <div className="flex flex-col items-center justify-center gap-3">
                     <RotateCw
                       size={28}
-                      className="animate-spin text-emerald-500"
+                      className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]"
                     />
                     <p className="text-sm font-semibold text-slate-700 dark:text-[#E6EDF3]">
                       Sincronizando perfis com a VPS...
@@ -179,7 +179,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             <strong className="text-emerald-600 dark:text-[#3fb950]">{runningCount}</strong>
           </span>
           {selectedIds.length > 0 && (
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 text-[#1b6528] dark:border-emerald-800/40 dark:bg-emerald-950/40 dark:text-[#7ee787] px-2.5 py-0.5 text-[11px] font-semibold">
+            <span className="rounded-full border border-[#7C3AED]/30 bg-[#7C3AED]/10 text-[#7C3AED] dark:border-[#7C3AED]/40 dark:bg-[#7C3AED]/20 dark:text-[#A78BFA] px-2.5 py-0.5 text-[11px] font-semibold shadow-xs">
               {selectedIds.length} marcado{selectedIds.length > 1 ? 's' : ''}
             </span>
           )}
@@ -196,7 +196,7 @@ export const Tabela: React.FC<TabelaProps> = ({
               <span>{pageSize} / pág</span>
               <ChevronDown
                 size={12}
-                className={`text-slate-400 dark:text-[#8E92A2] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#238636] dark:text-[#2ea043]' : ''}`}
+                className={`text-slate-400 dark:text-[#8E92A2] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#7C3AED] dark:text-[#A78BFA]' : ''}`}
               />
             </button>
 
@@ -211,7 +211,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                       setIsPageDropdownOpen(false);
                     }}
                     className={`flex w-full items-center px-3 py-1.5 text-[11.5px] transition-colors cursor-pointer select-none text-left ${pageSize === size
-                        ? 'bg-emerald-50 text-[#1b6528] dark:bg-emerald-950/30 dark:text-[#7ee787] font-medium'
+                        ? 'bg-[#7C3AED]/10 text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#A78BFA] font-medium'
                         : 'text-slate-700 dark:text-[#A6A9B6] hover:bg-[#F3F2EF] dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white'
                       }`}
                   >

@@ -316,11 +316,11 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
               type="button"
               onClick={handleRowTest}
               disabled={isChecking}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/15 dark:hover:text-[#2ea043] disabled:opacity-50"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-[#7C3AED]/10 hover:text-[#7C3AED] dark:hover:bg-[#7C3AED]/20 dark:hover:text-[#A78BFA] disabled:opacity-50"
               aria-label="Testar Proxy"
             >
               {isChecking ? (
-                <Loader2 size={14} className="animate-spin text-emerald-500" />
+                <Loader2 size={14} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
               ) : (
                 <RotateCw size={14} />
               )}

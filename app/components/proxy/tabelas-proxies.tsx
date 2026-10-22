@@ -150,19 +150,8 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
                               Nenhum proxy cadastrado ainda
                             </span>
                             <p className="text-xs text-slate-500 dark:text-[#7E8294]">
-                              Adicione um proxy individualmente ou importe em lote para começar a utilizá-los nos seus perfis.
+                              Adicione um proxy individualmente ou importe em lote utilizando os botões de ação acima.
                             </p>
-                            <div className="pt-2">
-                              <Button
-                                variant="default"
-                                size="sm"
-                                onClick={onOpenCadastro}
-                                className="gap-1.5"
-                              >
-                                <Plus size={14} />
-                                <span>Cadastrar Primeiro Proxy</span>
-                              </Button>
-                            </div>
                           </div>
                         )}
                       </div>

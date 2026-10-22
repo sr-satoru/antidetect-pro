@@ -664,7 +664,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
               <button
                 type="button"
                 onClick={onAddClick}
-                className="h-[38px] px-4 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white text-[13px] font-medium flex items-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+                className="h-[38px] px-4 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-[13px] font-medium flex items-center gap-2 transition-all cursor-pointer shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.35)] active:scale-[0.98]"
               >
                 <Plus size={16} />
                 <span>Adicionar extensão</span>
@@ -730,7 +730,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                             type="button"
                             onClick={() => onToggleEnabled(ext.id)}
                             className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled
-                                ? 'bg-[#238636]'
+                                ? 'bg-[#7C3AED]'
                                 : 'bg-slate-300 dark:bg-[#484A54]'
                               }`}
                           >
@@ -741,7 +741,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           </button>
                           <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-slate-500 dark:text-[#B0B3C2]">
                             <span
-                              className={`h-2 w-2 rounded-full ${ext.enabled ? 'bg-[#238636]' : 'bg-slate-400 dark:bg-[#B0B3C2]'
+                              className={`h-2 w-2 rounded-full ${ext.enabled ? 'bg-[#7C3AED]' : 'bg-slate-400 dark:bg-[#B0B3C2]'
                                 }`}
                             />
                             <span>{ext.enabled ? 'Ativo' : 'Pausado'}</span>

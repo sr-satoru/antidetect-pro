@@ -76,7 +76,7 @@ export const EditarPerfilPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] text-slate-800 dark:text-white">
-        <Loader2 size={24} className="animate-spin text-emerald-600 dark:text-[#2ea043]" />
+        <Loader2 size={24} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
         <span className="text-xs text-slate-500 dark:text-[#A6A9B6]">Carregando configurações do perfil...</span>
       </div>
     );

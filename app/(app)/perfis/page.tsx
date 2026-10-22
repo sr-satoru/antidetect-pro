@@ -407,7 +407,7 @@ export const PerfisPage: React.FC = () => {
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
           <div className="flex flex-col items-center gap-2 text-slate-500 dark:text-[#A6A9B6]">
-            <Loader2 size={28} className="animate-spin text-emerald-600 dark:text-[#3fb950]" />
+            <Loader2 size={28} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
             <span className="text-xs font-medium">Carregando perfis do banco local...</span>
           </div>
         </div>

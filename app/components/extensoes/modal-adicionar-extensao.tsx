@@ -218,7 +218,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
           <button
             type="button"
             onClick={handleConfirm}
-            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-6 py-2 text-xs font-semibold shadow-xs transition-all active:scale-[0.98]"
+            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-6 py-2 text-xs font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.35)] transition-all active:scale-[0.98]"
           >
             OK
           </button>

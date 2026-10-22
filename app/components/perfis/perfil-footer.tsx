@@ -19,7 +19,7 @@ export const PerfilFooter: React.FC<PerfilFooterProps> = ({
           type="button"
           disabled={isSaving}
           onClick={onSave}
-          className="flex h-[38px] items-center gap-2 cursor-pointer rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-6 text-[13px] font-semibold shadow-xs transition-all select-none active:scale-[0.98] disabled:opacity-50"
+          className="flex h-[38px] items-center gap-2 cursor-pointer rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-6 text-[13px] font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.35)] transition-all select-none active:scale-[0.98] disabled:opacity-50"
         >
           {isSaving && <Loader2 size={14} className="animate-spin text-white" />}
           <span>{isSaving ? 'Salvando...' : 'OK'}</span>

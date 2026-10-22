@@ -429,8 +429,12 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
           </button>
         </div>
       </div>
+    </div>
+  );
 
-      {/* Submodal Nova/Editar Etiqueta */}
+  return createPortal(
+    <>
+      {modalContent}
       <ModalNovaEtiqueta
         isOpen={isSubmodalOpen}
         onClose={() => {
@@ -440,10 +444,9 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         onSave={handleSaveTag}
         tagParaEditar={tagEmEdicao}
       />
-    </div>
+    </>,
+    document.body
   );
-
-  return createPortal(modalContent, document.body);
 };
 
 export default ModalEtiquetas;
