@@ -44,7 +44,7 @@ const DropdownMenuSubContent = React.forwardRef<
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-xl border border-slate-200 dark:border-[#2E313D] bg-white dark:bg-[#1A1C24] p-1 text-slate-800 dark:text-[#E1E4EE] shadow-lg animate-in data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1",
+      "z-50 min-w-[8rem] overflow-hidden rounded-xl border border-slate-200 dark:border-[#2E313D] bg-white dark:bg-[#18191E] p-1 text-slate-800 dark:text-[#E1E4EE] shadow-lg animate-in data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1",
       className
     )}
     {...props}
@@ -62,7 +62,7 @@ const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-[9rem] overflow-hidden rounded-xl border border-slate-200 dark:border-[#2E313D] bg-white dark:bg-[#1A1C24] p-1.5 text-slate-800 dark:text-[#E1E4EE] shadow-xl animate-in fade-in-80 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2",
+        "z-50 min-w-[9rem] overflow-hidden rounded-xl border border-slate-200 dark:border-[#2E313D] bg-white dark:bg-[#18191E] p-1.5 text-slate-800 dark:text-[#E1E4EE] shadow-xl animate-in fade-in-80 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2",
         className
       )}
       {...props}
@@ -110,7 +110,7 @@ const DropdownMenuLabel = React.forwardRef<
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
-      "px-2.5 py-1 text-[11px] font-semibold text-slate-500 dark:text-[#8E92A2] uppercase tracking-wider",
+      "px-2.5 py-1 text-[11px] font-semibold text-slate-500 dark:text-[#9DA2B4] uppercase tracking-wider",
       inset && "pl-8",
       className
     )}

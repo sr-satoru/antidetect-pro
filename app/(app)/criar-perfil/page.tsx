@@ -44,7 +44,7 @@ export const CriarPerfilPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-xs">
       {/* Barra superior de Abas */}
       <PerfilTabsHeader activeTab={activeTab} onTabChange={setActiveTab} />
 

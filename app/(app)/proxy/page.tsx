@@ -200,7 +200,7 @@ export const ProxyPage: React.FC = () => {
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="h-10 cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] pr-8 pl-3.5 text-[13px] text-slate-700 dark:text-[#E4E6EE] transition-colors hover:border-slate-300 dark:hover:border-[#606373] focus:outline-hidden shadow-xs"
+              className="h-10 cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] pr-8 pl-3.5 text-[13px] text-slate-700 dark:text-[#E2E4EC] transition-colors hover:border-slate-300 dark:hover:border-[#4B5063] focus:outline-hidden shadow-xs"
             >
               <option value="all">Todos os tipos</option>
               <option value="socks5">SOCKS5</option>
@@ -210,7 +210,7 @@ export const ProxyPage: React.FC = () => {
             </select>
             <ChevronDown
               size={14}
-              className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400 dark:text-[#8E92A2]"
+              className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400 dark:text-[#9DA2B4]"
             />
           </div>
 
@@ -219,7 +219,7 @@ export const ProxyPage: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="h-10 cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] pr-8 pl-3.5 text-[13px] text-slate-700 dark:text-[#E4E6EE] transition-colors hover:border-slate-300 dark:hover:border-[#606373] focus:outline-hidden shadow-xs"
+              className="h-10 cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] pr-8 pl-3.5 text-[13px] text-slate-700 dark:text-[#E2E4EC] transition-colors hover:border-slate-300 dark:hover:border-[#4B5063] focus:outline-hidden shadow-xs"
             >
               <option value="all">Todos os status</option>
               <option value="active">Somente ativos</option>
@@ -227,7 +227,7 @@ export const ProxyPage: React.FC = () => {
             </select>
             <ChevronDown
               size={14}
-              className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400 dark:text-[#8E92A2]"
+              className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400 dark:text-[#9DA2B4]"
             />
           </div>
 
@@ -235,14 +235,14 @@ export const ProxyPage: React.FC = () => {
           <div className="relative w-80 sm:w-96">
             <Search
               size={15}
-              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400 dark:text-[#8E92A2]"
+              className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400 dark:text-[#9DA2B4]"
             />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Pesquisar por Host, IP, País ou Nome..."
-              className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] pr-4 pl-10 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#8E92A2] transition-colors focus:border-slate-400 dark:focus:border-[#72768A] focus:outline-hidden shadow-xs"
+              className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] pr-4 pl-10 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-colors focus:border-slate-400 dark:focus:border-[#7C3AED] focus:outline-hidden shadow-xs"
             />
           </div>
 
@@ -267,7 +267,7 @@ export const ProxyPage: React.FC = () => {
             type="button"
             onClick={handleTestSelected}
             disabled={selectedIds.length === 0}
-            className="flex h-[38px] cursor-pointer items-center gap-2 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-3.5 text-slate-700 dark:text-[#E4E6EE] text-[13px] font-medium transition-colors hover:bg-slate-50 dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white disabled:cursor-not-allowed disabled:opacity-40 shadow-xs"
+            className="flex h-[38px] cursor-pointer items-center gap-2 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-slate-700 dark:text-[#E2E4EC] text-[13px] font-medium transition-colors hover:bg-slate-50 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white disabled:cursor-not-allowed disabled:opacity-40 shadow-xs"
           >
             <RotateCw size={14} />
             <span>Testar Selecionados ({selectedIds.length})</span>
@@ -287,8 +287,8 @@ export const ProxyPage: React.FC = () => {
 
       {/* Tabela de Proxies com Painel de Cadastro Embutido */}
       {isLoading ? (
-        <div className="flex flex-1 items-center justify-center rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
-          <div className="flex flex-col items-center gap-2 text-slate-400 dark:text-[#A6A9B6]">
+        <div className="flex flex-1 items-center justify-center rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-xs">
+          <div className="flex flex-col items-center gap-2 text-slate-400 dark:text-[#9DA2B4]">
             <Loader2 size={28} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
             <span className="text-xs">Carregando proxies...</span>
           </div>

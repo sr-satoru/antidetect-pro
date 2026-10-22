@@ -31,7 +31,7 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
       onClick={onClose}
     >
       <div
-        className={`animate-in zoom-in-95 w-full ${maxWidth} rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-7 shadow-2xl duration-150 mb-12`}
+        className={`animate-in zoom-in-95 w-full ${maxWidth} rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-7 shadow-2xl duration-150 mb-12`}
         onClick={(e) => e.stopPropagation()}
       >
         <form
@@ -48,7 +48,7 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
               type="button"
               onClick={onClose}
               disabled={isSaving}
-              className="h-[38px] px-5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] hover:bg-slate-100 dark:hover:bg-[#323338] text-slate-700 dark:text-[#A6A9B6] text-[13px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
+              className="h-[38px] px-5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#9DA2B4] text-[13px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
             >
               Cancelar
             </button>

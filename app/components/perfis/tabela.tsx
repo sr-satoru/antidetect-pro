@@ -62,11 +62,11 @@ export const Tabela: React.FC<TabelaProps> = ({
   }, [isPageDropdownOpen]);
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-xs">
       <div className="flex-1 custom-scrollbar overflow-auto relative">
         <table className="min-w-full w-full border-collapse text-left text-xs whitespace-nowrap">
           {/* Header */}
-          <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] text-[11.5px] font-semibold tracking-wider text-slate-600 dark:text-[#A6A9B6] uppercase select-none">
+          <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] text-[11.5px] font-semibold tracking-wider text-slate-600 dark:text-[#9DA2B4] uppercase select-none">
             <tr className="h-12">
               <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center">
                 <div className="flex items-center justify-center">
@@ -97,13 +97,13 @@ export const Tabela: React.FC<TabelaProps> = ({
                 Observação
               </th>
               <th className="w-[120px] min-w-[120px] px-3.5 py-2.5">Criação</th>
-              <th className="sticky right-[48px] z-20 w-[124px] max-w-[124px] min-w-[124px] bg-[#F8F7F5] dark:bg-[#323338] px-3 py-2.5 text-center">
+              <th className="sticky right-[48px] z-20 w-[124px] max-w-[124px] min-w-[124px] bg-[#F8F7F5] dark:bg-[#1F2026] px-3 py-2.5 text-center">
                 Ação
               </th>
-              <th className="sticky right-0 z-20 w-[48px] max-w-[48px] min-w-[48px] bg-[#F8F7F5] dark:bg-[#323338] px-2 py-2.5 text-center">
+              <th className="sticky right-0 z-20 w-[48px] max-w-[48px] min-w-[48px] bg-[#F8F7F5] dark:bg-[#1F2026] px-2 py-2.5 text-center">
                 <SlidersHorizontal
                   size={13}
-                  className="mx-auto text-slate-400 dark:text-[#8E92A2]"
+                  className="mx-auto text-slate-400 dark:text-[#9DA2B4]"
                 />
               </th>
             </tr>
@@ -129,7 +129,7 @@ export const Tabela: React.FC<TabelaProps> = ({
               ))
             ) : isSyncing ? (
               <tr>
-                <td colSpan={12} className="py-20 text-center text-slate-400 dark:text-[#848D97]">
+                <td colSpan={12} className="py-20 text-center text-slate-400 dark:text-[#9DA2B4]">
                   <div className="flex flex-col items-center justify-center gap-3">
                     <RotateCw
                       size={28}
@@ -138,7 +138,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                     <p className="text-sm font-semibold text-slate-700 dark:text-[#E6EDF3]">
                       Sincronizando perfis com a VPS...
                     </p>
-                    <p className="text-xs text-slate-400 dark:text-[#848D97]">
+                    <p className="text-xs text-slate-400 dark:text-[#9DA2B4]">
                       Baixando e descriptografando dados locais com segurança.
                     </p>
                   </div>
@@ -146,17 +146,17 @@ export const Tabela: React.FC<TabelaProps> = ({
               </tr>
             ) : (
               <tr>
-                <td colSpan={12} className="py-16 text-center text-slate-400 dark:text-[#848D97]">
+                <td colSpan={12} className="py-16 text-center text-slate-400 dark:text-[#9DA2B4]">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <Layers
                       size={32}
                       strokeWidth={1.5}
                       className="text-slate-300 dark:text-[#30363D]"
                     />
-                    <p className="text-sm font-medium text-slate-600 dark:text-[#848D97]">
+                    <p className="text-sm font-medium text-slate-600 dark:text-[#9DA2B4]">
                       Nenhum perfil encontrado
                     </p>
-                    <p className="text-xs text-slate-400 dark:text-[#848D97]">
+                    <p className="text-xs text-slate-400 dark:text-[#9DA2B4]">
                       Ajuste os filtros de pesquisa ou crie um novo perfil.
                     </p>
                   </div>
@@ -168,7 +168,7 @@ export const Tabela: React.FC<TabelaProps> = ({
       </div>
 
       {/* Paginação no Rodapé Minimalista */}
-      <div className="relative z-20 mt-auto flex h-12 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-4 text-xs text-slate-600 dark:text-[#A6A9B6]">
+      <div className="relative z-20 mt-auto flex h-12 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] px-4 text-xs text-slate-600 dark:text-[#9DA2B4]">
         <div className="flex items-center gap-4">
           <span>
             Total: <strong className="text-slate-900 dark:text-white">{profiles.length}</strong>{' '}
@@ -186,22 +186,22 @@ export const Tabela: React.FC<TabelaProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-slate-400 dark:text-[#8E92A2]">1 / 1</span>
+          <span className="font-mono text-xs text-slate-400 dark:text-[#9DA2B4]">1 / 1</span>
           <div className="relative" ref={pageDropdownRef}>
             <button
               type="button"
               onClick={() => setIsPageDropdownOpen(!isPageDropdownOpen)}
-              className="flex h-[28px] items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] px-2.5 text-[11.5px] text-slate-700 dark:text-[#E4E6EE] hover:border-slate-300 dark:hover:border-[#606373] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden shadow-xs"
+              className="flex h-[28px] items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] px-2.5 text-[11.5px] text-slate-700 dark:text-[#E2E4EC] hover:border-slate-300 dark:hover:border-[#4B5063] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden shadow-xs"
             >
               <span>{pageSize} / pág</span>
               <ChevronDown
                 size={12}
-                className={`text-slate-400 dark:text-[#8E92A2] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#7C3AED] dark:text-[#A78BFA]' : ''}`}
+                className={`text-slate-400 dark:text-[#9DA2B4] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#7C3AED] dark:text-[#A78BFA]' : ''}`}
               />
             </button>
 
             {isPageDropdownOpen && (
-              <div className="absolute bottom-full right-0 mb-1.5 z-50 min-w-[95px] overflow-hidden rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] py-1 shadow-lg shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/80 animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute bottom-full right-0 mb-1.5 z-50 min-w-[95px] overflow-hidden rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] py-1 shadow-lg shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/80 animate-in fade-in zoom-in-95 duration-100">
                 {['10', '20', '50', '100'].map((size) => (
                   <button
                     key={size}
@@ -212,7 +212,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                     }}
                     className={`flex w-full items-center px-3 py-1.5 text-[11.5px] transition-colors cursor-pointer select-none text-left ${pageSize === size
                         ? 'bg-[#7C3AED]/10 text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#A78BFA] font-medium'
-                        : 'text-slate-700 dark:text-[#A6A9B6] hover:bg-[#F3F2EF] dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white'
+                        : 'text-slate-700 dark:text-[#9DA2B4] hover:bg-[#F3F2EF] dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white'
                       }`}
                   >
                     {size} / pág
@@ -226,7 +226,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             <button
               type="button"
               disabled
-              className="flex h-[28px] w-[28px] cursor-not-allowed items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] text-slate-400 dark:text-[#8E92A2] disabled:opacity-40"
+              className="flex h-[28px] w-[28px] cursor-not-allowed items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] text-slate-400 dark:text-[#9DA2B4] disabled:opacity-40"
               title="Página anterior"
             >
               <ChevronLeft size={13} />
@@ -234,7 +234,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             <button
               type="button"
               disabled
-              className="flex h-[28px] w-[28px] cursor-not-allowed items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] text-slate-400 dark:text-[#8E92A2] disabled:opacity-40"
+              className="flex h-[28px] w-[28px] cursor-not-allowed items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] text-slate-400 dark:text-[#9DA2B4] disabled:opacity-40"
               title="Próxima página"
             >
               <ChevronRight size={13} />

@@ -206,7 +206,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
               e.stopPropagation();
               onEditTags && onEditTags(profile);
             }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95"
           >
             <EditIcon size={13} />
           </button>

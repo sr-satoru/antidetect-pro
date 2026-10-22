@@ -29,9 +29,9 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-2xl overflow-hidden">
+      <div className="w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] px-6 py-4 bg-[#F8F7F5] dark:bg-[#323338]">
+        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-[#2D3039] px-6 py-4 bg-[#F8F7F5] dark:bg-[#1F2026]">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#7C3AED]/15 text-[#A78BFA] border border-[#7C3AED]/30">
               <FileCode size={18} />
@@ -40,25 +40,25 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                 Editor do Preset Base Oficial (JSON)
               </h3>
-              <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-0.5">
                 Modifique diretamente o schema de configuração que alimenta novos perfis.
               </p>
             </div>
           </div>
 
-          <Button variant="ghost" size="icon-sm" onClick={onClose} className="rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white dark:hover:bg-[#3A3B42]">
+          <Button variant="ghost" size="icon-sm" onClick={onClose} className="rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white dark:hover:bg-[#282A33]">
             <X size={16} />
           </Button>
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] px-6 py-2.5 bg-slate-100/70 dark:bg-[#24252A] text-xs">
-          <span className="font-mono text-slate-500 dark:text-[#8E92A2]">default-base-preset.json</span>
+        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-[#2D3039] px-6 py-2.5 bg-slate-100/70 dark:bg-[#1F2026] text-xs">
+          <span className="font-mono text-slate-500 dark:text-[#9DA2B4]">default-base-preset.json</span>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onFormat}
-              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-[12px] font-medium text-slate-700 dark:text-[#E4E6EE] transition-colors cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-[12px] font-medium text-slate-700 dark:text-[#E2E4EC] transition-colors cursor-pointer shadow-xs"
             >
               <Code2 size={13} />
               <span>Formatar JSON</span>
@@ -66,7 +66,7 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
             <button
               type="button"
               onClick={onCopy}
-              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-[12px] font-medium text-slate-700 dark:text-[#E4E6EE] transition-colors cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-[12px] font-medium text-slate-700 dark:text-[#E2E4EC] transition-colors cursor-pointer shadow-xs"
             >
               <Copy size={13} />
               <span>Copiar</span>
@@ -92,11 +92,11 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] px-6 py-3.5 bg-[#F8F7F5] dark:bg-[#323338]">
+        <div className="flex items-center justify-between border-t border-slate-200/80 dark:border-[#2D3039] px-6 py-3.5 bg-[#F8F7F5] dark:bg-[#1F2026]">
           <button
             type="button"
             onClick={onResetDefaults}
-            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white transition-colors cursor-pointer"
           >
             <RotateCcw size={13} />
             <span>Restaurar Fábrica no Editor</span>
@@ -106,7 +106,7 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-slate-700 dark:text-[#E4E6EE] text-[13px] font-medium transition-colors shadow-xs cursor-pointer"
+              className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#E2E4EC] text-[13px] font-medium transition-colors shadow-xs cursor-pointer"
             >
               Cancelar
             </button>

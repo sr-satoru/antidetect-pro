@@ -13,11 +13,11 @@ const buttonVariants = cva(
         destructive:
           "border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20",
         outline:
-          "border border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-100 dark:hover:bg-[#2F313E] hover:text-slate-900 dark:hover:text-white shadow-2xs",
+          "border border-slate-200 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white shadow-2xs",
         secondary:
-          "bg-slate-100 text-slate-800 hover:bg-slate-200/80 dark:bg-[#2B2D38] dark:text-[#C4C7D5] dark:hover:bg-[#363847] dark:hover:text-white",
+          "bg-slate-100 text-slate-800 hover:bg-slate-200/80 dark:bg-[#1F2026] dark:text-[#E2E4EC] dark:hover:bg-[#282A33] dark:hover:text-white",
         ghost:
-          "text-slate-600 dark:text-[#8E92A2] hover:bg-slate-100 dark:hover:bg-[#2B2D3A] hover:text-slate-900 dark:hover:text-white",
+          "text-slate-600 dark:text-[#9DA2B4] hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white",
         link:
           "text-[#7C3AED] dark:text-[#A78BFA] underline-offset-4 hover:underline p-0 h-auto",
         accent:

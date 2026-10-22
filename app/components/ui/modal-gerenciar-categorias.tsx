@@ -75,7 +75,7 @@ export const ModalGerenciarCategorias: React.FC<
             <button
               type="button"
               onClick={onClose}
-              className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#8E92A2] transition-colors dark:hover:bg-[#2C2E38] dark:hover:text-white"
+              className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#9DA2B4] transition-colors dark:hover:bg-[#2C2E38] dark:hover:text-white"
               title="Fechar"
             >
               <X size={18} />
@@ -103,16 +103,16 @@ export const ModalGerenciarCategorias: React.FC<
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Pesquisar..."
-                className="h-8.5 w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] pr-3 pl-9 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#686C7E] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-hidden"
+                className="h-8.5 w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#141519] pr-3 pl-9 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-hidden"
               />
             </div>
           </div>
 
           {/* Tabela de Categorias */}
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-7 pb-7">
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#2D303E] bg-white dark:bg-[#1A1C24] shadow-xs">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-xs">
               {/* Cabeçalho da Tabela */}
-              <div className="grid grid-cols-12 border-b border-slate-200 dark:border-[#2D303E] bg-slate-100/90 dark:bg-[#1E202A] px-4 py-3 text-[12px] font-medium text-slate-600 dark:text-[#8E92A2] select-none">
+              <div className="grid grid-cols-12 border-b border-slate-200 dark:border-[#2D3039] bg-slate-100/90 dark:bg-[#1E202A] px-4 py-3 text-[12px] font-medium text-slate-600 dark:text-[#9DA2B4] select-none">
                 <div className="col-span-3">Nome</div>
                 <div className="col-span-4">Observação</div>
                 <div className="col-span-3">Extensão</div>
@@ -134,7 +134,7 @@ export const ModalGerenciarCategorias: React.FC<
 
                       {/* Observação */}
                       <div
-                        className="col-span-4 text-slate-500 dark:text-[#8E92A2] truncate pr-2"
+                        className="col-span-4 text-slate-500 dark:text-[#9DA2B4] truncate pr-2"
                         title={cat.description}
                       >
                         {cat.description || '-'}
@@ -164,7 +164,7 @@ export const ModalGerenciarCategorias: React.FC<
                               </div>
                             ))}
                             {cat.extensions.length > 3 && (
-                              <span className="shrink-0 rounded-md bg-slate-200 dark:bg-[#252834] px-1.5 py-0.5 text-[10px] font-medium text-slate-700 dark:text-[#8E92A2]">
+                              <span className="shrink-0 rounded-md bg-slate-200 dark:bg-[#252834] px-1.5 py-0.5 text-[10px] font-medium text-slate-700 dark:text-[#9DA2B4]">
                                 +{cat.extensions.length - 3}
                               </span>
                             )}
@@ -182,7 +182,7 @@ export const ModalGerenciarCategorias: React.FC<
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(cat)}
-                          className="cursor-pointer rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#8E92A2] transition-colors dark:hover:bg-[#2A2C38] dark:hover:text-white"
+                          className="cursor-pointer rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#9DA2B4] transition-colors dark:hover:bg-[#2A2C38] dark:hover:text-white"
                           title="Editar categoria"
                         >
                           <Edit2 size={13} />
@@ -190,7 +190,7 @@ export const ModalGerenciarCategorias: React.FC<
                         <button
                           type="button"
                           onClick={() => handleDelete(cat.id, cat.name)}
-                          className="cursor-pointer rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:text-[#8E92A2] transition-colors dark:hover:bg-[#34181E] dark:hover:text-[#FF6B6B]"
+                          className="cursor-pointer rounded-md p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:text-[#9DA2B4] transition-colors dark:hover:bg-[#34181E] dark:hover:text-[#FF6B6B]"
                           title="Excluir categoria"
                         >
                           <Trash2 size={13} />

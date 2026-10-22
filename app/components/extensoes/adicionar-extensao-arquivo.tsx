@@ -58,7 +58,7 @@ export const AdicionarExtensaoArquivo: React.FC<
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-slate-300 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] px-4 py-2 text-xs font-medium text-slate-800 dark:text-[#F1F1F4] transition-colors hover:border-slate-400 dark:hover:border-[#41414E] hover:bg-slate-100 dark:hover:bg-[#1C1C24] shadow-xs"
+            className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-slate-300 dark:border-[#2D3039] bg-slate-50 dark:bg-[#141519] px-4 py-2 text-xs font-medium text-slate-800 dark:text-[#F1F1F4] transition-colors hover:border-slate-400 dark:hover:border-[#41414E] hover:bg-slate-100 dark:hover:bg-[#1C1C24] shadow-xs"
           >
             <CloudUpload size={16} className="text-slate-600 dark:text-[#F1F1F4]" />
             <span>
@@ -72,7 +72,7 @@ export const AdicionarExtensaoArquivo: React.FC<
               )}
             </span>
           </button>
-          <div className="flex items-center gap-2 rounded-md border border-slate-200 dark:border-[#2E2E38] bg-slate-100 dark:bg-[#15151A] p-2 text-[11px] text-slate-600 dark:text-[#C9C9D2]">
+          <div className="flex items-center gap-2 rounded-md border border-slate-200 dark:border-[#2D3039] bg-slate-100 dark:bg-[#141519] p-2 text-[11px] text-slate-600 dark:text-[#C9C9D2]">
             <span>🔒 <strong className="text-slate-800 dark:text-[#F1F1F4]">Armazenamento Local Seguro:</strong> Arquivos carregados manualmente permanecem 100% no seu dispositivo físico e nunca são transmitidos para servidores externos, garantindo privacidade e proteção total.</span>
           </div>
         </div>
@@ -93,7 +93,7 @@ export const AdicionarExtensaoArquivo: React.FC<
           />
           <div
             onClick={() => iconInputRef.current?.click()}
-            className="flex h-24 w-36 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-slate-300 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] p-3 text-center transition-colors hover:border-slate-400 dark:hover:border-[#41414E] hover:bg-slate-100 dark:hover:bg-[#1C1C24] shadow-xs"
+            className="flex h-24 w-36 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-slate-300 dark:border-[#2D3039] bg-slate-50 dark:bg-[#141519] p-3 text-center transition-colors hover:border-slate-400 dark:hover:border-[#41414E] hover:bg-slate-100 dark:hover:bg-[#1C1C24] shadow-xs"
           >
             {values.iconName ? (
               <div className="flex flex-col items-center text-xs text-slate-800 dark:text-[#F1F1F4]">
@@ -131,7 +131,7 @@ export const AdicionarExtensaoArquivo: React.FC<
             placeholder="Obrigatório, por favor preencha o nome da extensão"
             value={values.name}
             onChange={(e) => onChange('name', e.target.value.slice(0, 20))}
-            className="w-full rounded-md border border-slate-300 dark:border-[#2E2E38] bg-white dark:bg-[#15151A] px-3.5 py-2 pr-14 text-[13px] text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#66666F] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden shadow-2xs"
+            className="w-full rounded-md border border-slate-300 dark:border-[#2D3039] bg-white dark:bg-[#141519] px-3.5 py-2 pr-14 text-[13px] text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#66666F] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden shadow-2xs"
           />
           <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 font-mono text-[11px] text-slate-400 dark:text-[#90909D]">
             {values.name.length} / 20
@@ -151,7 +151,7 @@ export const AdicionarExtensaoArquivo: React.FC<
             placeholder="Opcional, preencha a breve descrição da extensão"
             value={values.intro}
             onChange={(e) => onChange('intro', e.target.value.slice(0, 200))}
-            className="w-full rounded-md border border-slate-300 dark:border-[#2E2E38] bg-white dark:bg-[#15151A] px-3.5 py-2 pr-16 text-[13px] text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#66666F] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden shadow-2xs"
+            className="w-full rounded-md border border-slate-300 dark:border-[#2D3039] bg-white dark:bg-[#141519] px-3.5 py-2 pr-16 text-[13px] text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#66666F] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden shadow-2xs"
           />
           <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 font-mono text-[11px] text-slate-400 dark:text-[#90909D]">
             {values.intro.length} / 200

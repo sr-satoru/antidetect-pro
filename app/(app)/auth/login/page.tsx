@@ -113,16 +113,16 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-screen flex flex-col bg-slate-50 dark:bg-[#1C1D21] text-slate-900 dark:text-[#E1E4EA] select-none overflow-x-hidden font-sans">
+    <div className="relative min-h-screen w-screen flex flex-col bg-slate-50 dark:bg-[#121316] text-slate-900 dark:text-[#E1E4EA] select-none overflow-x-hidden font-sans">
       {/* Header superior da página centralizado */}
-      <header className="relative z-10 w-full h-16 border-b border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-6 flex items-center justify-center">
+      <header className="relative z-10 w-full h-16 border-b border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-6 flex items-center justify-center">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#7C3AED] text-white shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.3)]">
             <Star size={18} className="fill-white stroke-white" />
           </div>
           <div className="flex items-center gap-2.5">
             <span className="font-semibold text-slate-900 dark:text-white text-sm tracking-tight">One Star Multilogin</span>
-            <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#454750] border border-slate-200/80 dark:border-white/10 text-slate-600 dark:text-[#A6A9B6]">
+            <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#282A33] border border-slate-200/80 dark:border-white/10 text-slate-600 dark:text-[#9DA2B4]">
               Conta & Nuvem
             </span>
           </div>
@@ -132,7 +132,7 @@ export const LoginPage: React.FC = () => {
       {/* Conteúdo Principal da Página: Layout 2 Colunas (Formulário na Esquerda com foco prioritário) */}
       <main className="relative z-10 flex-1 max-w-6xl w-full mx-auto px-6 sm:px-10 py-8 sm:py-14 flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
         {/* Coluna 1 (Esquerda): Painel de Conexão / Formulário em Primeiro Plano */}
-        <div className="w-full max-w-[430px] rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-7 sm:p-8 shadow-xs relative overflow-hidden">
+        <div className="w-full max-w-[430px] rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-7 sm:p-8 shadow-xs relative overflow-hidden">
 
           {/* Cabeçalho do Card */}
           <div className="flex items-center gap-3.5 mb-6">
@@ -143,7 +143,7 @@ export const LoginPage: React.FC = () => {
               <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
                 Conectar Conta
               </h2>
-              <p className="text-xs text-slate-500 dark:text-[#A6A9B6]">
+              <p className="text-xs text-slate-500 dark:text-[#9DA2B4]">
                 Sincronize com a nuvem One Star
               </p>
             </div>
@@ -163,7 +163,7 @@ export const LoginPage: React.FC = () => {
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
                   Aguardando autorização no navegador...
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-[#A6A9B6] leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
                   Conclua o login na aba aberta do navegador para vincular este dispositivo automaticamente.
                 </p>
               </div>
@@ -172,7 +172,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => window.open(waitingSession.authUrl, '_blank', 'noopener,noreferrer')}
-                  className="w-full h-10 flex items-center justify-center gap-2 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] hover:bg-slate-100 dark:hover:bg-[#323338] px-4 text-[13px] font-semibold text-slate-900 dark:text-white transition-all shadow-xs cursor-pointer"
+                  className="w-full h-10 flex items-center justify-center gap-2 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] px-4 text-[13px] font-semibold text-slate-900 dark:text-white transition-all shadow-xs cursor-pointer"
                 >
                   <ExternalLink size={14} className="text-[#A78BFA]" />
                   <span>Reabrir Página no Navegador</span>
@@ -182,7 +182,7 @@ export const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleCancelWaiting}
-                    className="flex-1 h-10 flex items-center justify-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] hover:bg-slate-100 dark:hover:bg-[#323338] px-3 text-[13px] font-medium text-slate-700 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                    className="flex-1 h-10 flex items-center justify-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] px-3 text-[13px] font-medium text-slate-700 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                   >
                     <X size={14} />
                     <span>Cancelar Espera</span>
@@ -191,7 +191,7 @@ export const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleGoBack}
-                    className="flex-1 h-10 flex items-center justify-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] hover:bg-slate-100 dark:hover:bg-[#323338] px-3 text-[13px] font-medium text-slate-700 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                    className="flex-1 h-10 flex items-center justify-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] px-3 text-[13px] font-medium text-slate-700 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                   >
                     <ArrowLeft size={14} />
                     <span>Voltar aos Perfis</span>
@@ -202,7 +202,7 @@ export const LoginPage: React.FC = () => {
           ) : (
             /* Estado Inicial: Conectar Conta em Destaque */
             <div className="space-y-4">
-              <p className="text-xs text-slate-500 dark:text-[#A6A9B6] leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
                 Clique no botão abaixo para abrir a autenticação segura e sincronizar seus perfis neste computador.
               </p>
 
@@ -229,9 +229,9 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 disabled={isLoading}
                 onClick={handleGoBack}
-                className="w-full h-10 flex items-center justify-center gap-2 rounded-lg bg-white dark:bg-[#24252A] hover:bg-slate-100 dark:hover:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] px-4 text-[13px] font-medium text-slate-700 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-xs"
+                className="w-full h-10 flex items-center justify-center gap-2 rounded-lg bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] border border-slate-200/80 dark:border-[#2D3039] px-4 text-[13px] font-medium text-slate-700 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-xs"
               >
-                <ArrowLeft size={15} className="text-slate-500 dark:text-[#A6A9B6]" />
+                <ArrowLeft size={15} className="text-slate-500 dark:text-[#9DA2B4]" />
                 <span>Voltar para Perfis</span>
               </button>
             </div>
@@ -248,49 +248,49 @@ export const LoginPage: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-snug">
               Sincronize múltiplos perfis e proxies com segurança total.
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-[#A6A9B6] leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
               Ao vincular sua conta, seus perfis, cookies, extensões e configurações de fingerprint permanecem protegidos e sincronizados entre todas as suas estações de trabalho.
             </p>
           </div>
 
           {/* Cards de Recursos Secundários */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div className="rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] p-4 space-y-1.5 shadow-xs">
+            <div className="rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] p-4 space-y-1.5 shadow-xs">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500 dark:text-blue-400">
                 <Cloud size={16} />
               </div>
               <h3 className="text-xs font-semibold text-slate-900 dark:text-white">Sincronização Contínua</h3>
-              <p className="text-[11px] text-slate-500 dark:text-[#A6A9B6] leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
                 Backup instantâneo de cookies e abas ao fechar cada perfil.
               </p>
             </div>
 
-            <div className="rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] p-4 space-y-1.5 shadow-xs">
+            <div className="rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] p-4 space-y-1.5 shadow-xs">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C3AED]/10 border border-[#7C3AED]/20 text-[#A78BFA]">
                 <ShieldCheck size={16} />
               </div>
               <h3 className="text-xs font-semibold text-slate-900 dark:text-white">Zero Detecção</h3>
-              <p className="text-[11px] text-slate-500 dark:text-[#A6A9B6] leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
                 Isolamento estrito de Canvas, WebGL e AudioContext.
               </p>
             </div>
 
-            <div className="rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] p-4 space-y-1.5 shadow-xs">
+            <div className="rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] p-4 space-y-1.5 shadow-xs">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 dark:text-amber-400">
                 <Cpu size={16} />
               </div>
               <h3 className="text-xs font-semibold text-slate-900 dark:text-white">Desempenho Nativo</h3>
-              <p className="text-[11px] text-slate-500 dark:text-[#A6A9B6] leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
                 Execução local veloz com suporte a proxies dedicados.
               </p>
             </div>
 
-            <div className="rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] p-4 space-y-1.5 shadow-xs">
+            <div className="rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] p-4 space-y-1.5 shadow-xs">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-500 dark:text-purple-400">
                 <Zap size={16} />
               </div>
               <h3 className="text-xs font-semibold text-slate-900 dark:text-white">Conexão em 1 Clique</h3>
-              <p className="text-[11px] text-slate-500 dark:text-[#A6A9B6] leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
                 Autenticação OAuth 2.0 PKCE segura sem expor senhas.
               </p>
             </div>

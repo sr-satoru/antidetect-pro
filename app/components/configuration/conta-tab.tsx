@@ -43,7 +43,7 @@ export const ContaTab: React.FC = () => {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 focus-visible:outline-none">
       {/* Hero Card do Usuário */}
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 shadow-xs">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 shadow-xs">
         <div className="flex flex-wrap items-center justify-between gap-5 relative z-10">
           <div className="flex items-center gap-4">
             <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#7C3AED] to-[#A78BFA] text-white text-lg font-bold shadow-md shadow-[#7C3AED]/20">
@@ -56,7 +56,7 @@ export const ContaTab: React.FC = () => {
               ) : (
                 <User size={24} />
               )}
-              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-[#28292E]">
+              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-[#18191E]">
                 <span
                   className={`h-2.5 w-2.5 rounded-full ${
                     !user?.is_offline ? 'bg-emerald-500' : 'bg-slate-400'
@@ -78,7 +78,7 @@ export const ContaTab: React.FC = () => {
                     : 'OFFLINE MODE'}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-1 leading-relaxed">
                 {!user?.is_offline
                   ? 'Sessão autenticada e vinculada à nuvem Star Multilogin VPS.'
                   : 'Modo seguro local: dados de perfis e cookies residem exclusivamente no seu disco rígido.'}
@@ -113,7 +113,7 @@ export const ContaTab: React.FC = () => {
       </div>
 
       {/* Hub de Telemetria e Sincronização */}
-      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 space-y-4 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-[#7C3AED]/10 text-[#A78BFA]">
@@ -123,7 +123,7 @@ export const ContaTab: React.FC = () => {
               <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
                 Rede de Sincronização em Nuvem (Star VPS)
               </h4>
-              <p className="text-xs text-slate-500 dark:text-[#8E92A2]">
+              <p className="text-xs text-slate-500 dark:text-[#9DA2B4]">
                 Infraestrutura global de replicação de perfis, tags e proxies com criptografia AES-256.
               </p>
             </div>
@@ -132,8 +132,8 @@ export const ContaTab: React.FC = () => {
 
         {/* Status Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-slate-50/70 dark:bg-[#323338]">
-            <span className="text-[11px] font-medium text-slate-500 dark:text-[#8E92A2] block">
+          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-slate-50/70 dark:bg-[#1F2026]">
+            <span className="text-[11px] font-medium text-slate-500 dark:text-[#9DA2B4] block">
               Estado do Servidor
             </span>
             <div className="flex items-center gap-2 mt-1.5">
@@ -150,8 +150,8 @@ export const ContaTab: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-slate-50/70 dark:bg-[#323338]">
-            <span className="text-[11px] font-medium text-slate-500 dark:text-[#8E92A2] block">
+          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-slate-50/70 dark:bg-[#1F2026]">
+            <span className="text-[11px] font-medium text-slate-500 dark:text-[#9DA2B4] block">
               Criptografia Local
             </span>
             <div className="flex items-center gap-2 mt-1.5 text-xs font-semibold text-slate-900 dark:text-white">
@@ -160,8 +160,8 @@ export const ContaTab: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-slate-50/70 dark:bg-[#323338]">
-            <span className="text-[11px] font-medium text-slate-500 dark:text-[#8E92A2] block">
+          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-slate-50/70 dark:bg-[#1F2026]">
+            <span className="text-[11px] font-medium text-slate-500 dark:text-[#9DA2B4] block">
               Tipo de Replicação
             </span>
             <div className="flex items-center gap-2 mt-1.5 text-xs font-semibold text-slate-900 dark:text-white">
@@ -171,8 +171,8 @@ export const ContaTab: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200/80 dark:border-[#484A54]">
-          <span className="text-xs text-slate-500 dark:text-[#8E92A2]">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200/80 dark:border-[#2D3039]">
+          <span className="text-xs text-slate-500 dark:text-[#9DA2B4]">
             Sincronize alterações pendentes de múltiplos computadores instantaneamente.
           </span>
           <Button
@@ -180,7 +180,7 @@ export const ContaTab: React.FC = () => {
             size="sm"
             disabled={isSyncing}
             onClick={handleSyncNow}
-            className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-slate-700 dark:text-[#E4E6EE] text-[13px] font-medium gap-2"
+            className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#E2E4EC] text-[13px] font-medium gap-2"
           >
             <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
             <span>{isSyncing ? 'Sincronizando...' : 'Sincronizar Agora'}</span>

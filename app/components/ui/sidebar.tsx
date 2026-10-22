@@ -51,19 +51,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
   const navItemClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 group relative select-none ${isActive
       ? 'bg-[#7C3AED]/15 text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#A78BFA] font-semibold shadow-2xs'
-      : 'text-slate-600 hover:bg-[#F3F2EF] hover:text-[#1B1A18] dark:text-[#848D97] dark:hover:bg-[#21262D] dark:hover:text-[#E6EDF3]'
+      : 'text-slate-600 hover:bg-[#F3F2EF] hover:text-[#1B1A18] dark:text-[#9DA2B4] dark:hover:bg-[#282A33] dark:hover:text-[#E6EDF3]'
     } ${isCollapsed ? 'justify-center px-2' : ''}`;
 
   return (
     <aside
-      className={`relative h-screen bg-white dark:bg-[#161B22] border-r border-slate-200 dark:border-[#30363D] flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[64px]' : 'w-[230px]'
+      className={`relative h-screen bg-white dark:bg-[#18191E] border-r border-slate-200 dark:border-[#2D3039] flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[64px]' : 'w-[230px]'
         }`}
     >
       {/* Botão Flutuante de Recolher/Expandir */}
       <button
         type="button"
         onClick={toggleSidebar}
-        className="absolute top-[14px] -right-[16px] z-50 flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 dark:border-[#30363D] bg-white dark:bg-[#21262D] text-slate-700 dark:text-[#E6EDF3] hover:text-[#7C3AED] dark:hover:text-[#A78BFA] hover:border-[#7C3AED] dark:hover:border-[#A78BFA] hover:bg-[#7C3AED]/10 dark:hover:bg-[#7C3AED]/20 shadow-[0_2px_6px_rgba(0,0,0,0.14)] dark:shadow-[0_3px_12px_rgba(0,0,0,0.6)] transition-all duration-150 cursor-pointer hover:scale-110 active:scale-95"
+        className="absolute top-[14px] -right-[16px] z-50 flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] text-slate-700 dark:text-[#E6EDF3] hover:text-[#7C3AED] dark:hover:text-[#A78BFA] hover:border-[#7C3AED] dark:hover:border-[#A78BFA] hover:bg-[#7C3AED]/10 dark:hover:bg-[#7C3AED]/20 shadow-[0_2px_6px_rgba(0,0,0,0.14)] dark:shadow-[0_3px_12px_rgba(0,0,0,0.6)] transition-all duration-150 cursor-pointer hover:scale-110 active:scale-95"
         title={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
         aria-label={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
       >
@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
 
       {/* Header / Brand */}
       <div
-        className={`h-[60px] flex items-center border-b border-slate-200 dark:border-[#30363D] shrink-0 transition-all ${isCollapsed ? 'justify-center px-2' : 'px-4'
+        className={`h-[60px] flex items-center border-b border-slate-200 dark:border-[#2D3039] shrink-0 transition-all ${isCollapsed ? 'justify-center px-2' : 'px-4'
           }`}
       >
         {!isCollapsed ? (
@@ -84,20 +84,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
             to="/perfis"
             className="flex items-center gap-2.5 overflow-hidden transition-all group min-w-0 w-full"
           >
-            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-inner">
+            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-[#2D3039] text-slate-800 dark:text-white flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-inner">
               <AstroFoxIcon size={20} />
             </div>
             <div className="flex flex-col leading-tight min-w-0">
-              <span className="font-bold text-[14px] tracking-tight text-slate-900 dark:text-[#F1F1F4] truncate">
+              <span className="font-bold text-[14px] tracking-tight text-slate-900 dark:text-white truncate">
                 Super Star
               </span>
-              <span className="text-[9.5px] uppercase tracking-wider font-semibold text-slate-400 dark:text-[#7C8092] truncate">
+              <span className="text-[9.5px] uppercase tracking-wider font-semibold text-slate-400 dark:text-[#9DA2B4] truncate">
                 Multilogin
               </span>
             </div>
           </NavLink>
         ) : (
-          <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/10 text-slate-800 dark:text-white flex items-center justify-center shrink-0 shadow-inner">
+          <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-[#2D3039] text-slate-800 dark:text-white flex items-center justify-center shrink-0 shadow-inner">
             <AstroFoxIcon size={20} />
           </div>
         )}

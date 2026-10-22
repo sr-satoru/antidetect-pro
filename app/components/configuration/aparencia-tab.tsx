@@ -37,13 +37,13 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 focus-visible:outline-none">
       {/* Escolha do Tema Visual com Mini Previews */}
-      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 space-y-4 shadow-xs">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
             <Palette size={16} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             <span>Tema da Interface do Aplicativo</span>
           </h4>
-          <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-0.5">
             Alterne instantaneamente a paleta visual entre o modo escuro profundo e o modo claro nítido.
           </p>
         </div>
@@ -55,7 +55,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
             className={`group relative flex flex-col p-4 rounded-2xl border transition-all cursor-pointer select-none ${
               theme === 'dark'
                 ? 'border-[#7C3AED] dark:border-[#A78BFA] bg-violet-50/15 dark:bg-[#7C3AED]/15 ring-2 ring-[#7C3AED]/30 shadow-md'
-                : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
+                : 'border-slate-200/80 dark:border-[#2D3039] bg-slate-50/50 dark:bg-[#1F2026] hover:border-slate-300 dark:hover:border-[#4B5063]'
             }`}
           >
             <div className="flex items-center justify-between mb-3">
@@ -92,7 +92,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
                 </div>
               </div>
             </div>
-            <span className="text-[11px] text-slate-500 dark:text-[#8E92A2] mt-2.5 block">
+            <span className="text-[11px] text-slate-500 dark:text-[#9DA2B4] mt-2.5 block">
               Conforto visual calibrado para operações prolongadas de antidetecção.
             </span>
           </div>
@@ -103,7 +103,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
             className={`group relative flex flex-col p-4 rounded-2xl border transition-all cursor-pointer select-none ${
               theme === 'light'
                 ? 'border-[#7C3AED] dark:border-[#A78BFA] bg-violet-50/20 dark:bg-[#7C3AED]/15 ring-2 ring-[#7C3AED]/30 shadow-md'
-                : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
+                : 'border-slate-200/80 dark:border-[#2D3039] bg-slate-50/50 dark:bg-[#1F2026] hover:border-slate-300 dark:hover:border-[#4B5063]'
             }`}
           >
             <div className="flex items-center justify-between mb-3">
@@ -140,7 +140,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
                 </div>
               </div>
             </div>
-            <span className="text-[11px] text-slate-500 dark:text-[#8E92A2] mt-2.5 block">
+            <span className="text-[11px] text-slate-500 dark:text-[#9DA2B4] mt-2.5 block">
               Ambiente com alta luminosidade e definição nítida de bordas e tipografia.
             </span>
           </div>
@@ -148,13 +148,13 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
       </div>
 
       {/* Preferências de Sistema e Notificações */}
-      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 space-y-4 shadow-xs">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
             <Volume2 size={16} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             <span>Sons & Versão do Software</span>
           </h4>
-          <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-0.5">
             Feedback sensorial e checagem de novas releases oficiais.
           </p>
         </div>
@@ -166,7 +166,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
               <span className="font-semibold text-slate-900 dark:text-white text-xs">
                 Sons de Notificação
               </span>
-              <p className="text-slate-500 dark:text-[#8E92A2] mt-0.5">
+              <p className="text-slate-500 dark:text-[#9DA2B4] mt-0.5">
                 Dispara um feedback sonoro sutil ao concluir backups e sincronizações em nuvem.
               </p>
             </div>
@@ -182,7 +182,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
               <span className="font-semibold text-slate-900 dark:text-white text-xs">
                 Star Multilogin Core
               </span>
-              <p className="text-slate-500 dark:text-[#8E92A2] mt-0.5">
+              <p className="text-slate-500 dark:text-[#9DA2B4] mt-0.5">
                 Versão estável atual: <span className="font-mono font-bold text-slate-700 dark:text-[#C4C7D5]">v{CURRENT_APP_VERSION}</span>
               </p>
             </div>
@@ -191,7 +191,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
               size="sm"
               disabled={isCheckingUpdate}
               onClick={handleCheckUpdate}
-              className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-slate-700 dark:text-[#E4E6EE] text-[13px] font-medium gap-2 shrink-0"
+              className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#E2E4EC] text-[13px] font-medium gap-2 shrink-0"
             >
               <Download size={14} className={isCheckingUpdate ? 'animate-bounce' : ''} />
               <span>{isCheckingUpdate ? 'Consultando...' : 'Verificar Atualizações'}</span>

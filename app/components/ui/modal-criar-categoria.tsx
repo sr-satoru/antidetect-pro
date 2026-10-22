@@ -185,7 +185,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#8E92A2] transition-colors dark:hover:bg-[#2C2E38] dark:hover:text-white"
+            className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#9DA2B4] transition-colors dark:hover:bg-[#2C2E38] dark:hover:text-white"
             title="Fechar"
           >
             <X size={18} />
@@ -302,7 +302,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                   <div className="relative mb-2">
                     <Search
                       size={14}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#8E92A2]"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#9DA2B4]"
                     />
                     <input
                       ref={searchInputRef}
@@ -388,7 +388,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-[#8E92A2] transition-colors dark:hover:bg-[#2C2E38] dark:hover:text-white"
+            className="cursor-pointer rounded-lg px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-[#9DA2B4] transition-colors dark:hover:bg-[#2C2E38] dark:hover:text-white"
           >
             Cancelar
           </button>

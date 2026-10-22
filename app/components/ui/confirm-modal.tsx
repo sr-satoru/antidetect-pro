@@ -137,7 +137,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       }}
     >
       <div
-        className="w-full max-w-[490px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 overflow-hidden flex flex-col animate-in zoom-in-95 duration-150 mb-12"
+        className="w-full max-w-[490px] rounded-2xl border border-slate-200 dark:border-[#2D3039]/90 bg-white dark:bg-[#18191E] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 overflow-hidden flex flex-col animate-in zoom-in-95 duration-150 mb-12"
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-modal-title"
@@ -152,7 +152,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               {title}
             </h3>
             {description && (
-              <div className="text-xs text-slate-600 dark:text-[#8E92A2] leading-relaxed">
+              <div className="text-xs text-slate-600 dark:text-[#9DA2B4] leading-relaxed">
                 {description}
               </div>
             )}
@@ -162,18 +162,18 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="text-slate-400 hover:text-slate-700 dark:text-[#6C7082] dark:hover:text-white transition-colors cursor-pointer p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-slate-400 hover:text-slate-700 dark:text-[#82889A] dark:hover:text-white transition-colors cursor-pointer p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <X size={16} />
           </button>
         </div>
 
-        <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 bg-slate-50 dark:bg-[#14151B]/80 border-t border-slate-200 dark:border-[#2C2E3B]/70">
+        <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 bg-slate-50 dark:bg-[#141519]/80 border-t border-slate-200 dark:border-[#2D3039]/70">
           <button
             type="button"
             disabled={isLoading}
             onClick={onClose}
-            className="h-8.5 px-4 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-[#8E92A2] dark:hover:bg-[#252733] dark:hover:text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="h-8.5 px-4 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-[#9DA2B4] dark:hover:bg-[#252733] dark:hover:text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {cancelText}
           </button>

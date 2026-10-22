@@ -254,7 +254,7 @@ export const McpTab: React.FC<McpTabProps> = ({
   return (
     <div className="space-y-4">
       {/* 1. Cartão Principal: Conexão MCP & Seleção de IDE */}
-      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 space-y-4 shadow-xs">
         {/* Cabeçalho do Cartão */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -267,16 +267,16 @@ export const McpTab: React.FC<McpTabProps> = ({
                 Ativo
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-1 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-1 leading-relaxed">
               Integração nativa via protocolo MCP (Model Context Protocol) sobre transporte SSE em tempo real.
             </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
             {/* Status indicator com estilo oficial Configuration */}
-            <div className="flex items-center gap-2 rounded-full bg-slate-100 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] px-3 py-1">
+            <div className="flex items-center gap-2 rounded-full bg-slate-100 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] px-3 py-1">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-xs shadow-emerald-500/50" />
-              <span className="text-[11px] font-medium text-slate-700 dark:text-[#E4E6EE]">
+              <span className="text-[11px] font-medium text-slate-700 dark:text-[#E2E4EC]">
                 SSE Ativo · Porta {apiPort}
               </span>
             </div>
@@ -286,12 +286,12 @@ export const McpTab: React.FC<McpTabProps> = ({
               <button
                 type="button"
                 onClick={handleCopySseUrl}
-                className="flex h-[38px] items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E4E6EE] hover:bg-slate-50 dark:hover:bg-[#3A3B42] transition-all cursor-pointer shadow-xs"
+                className="flex h-[38px] items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33] transition-all cursor-pointer shadow-xs"
               >
                 {copiedSseUrl ? (
                   <Check size={14} className="text-[#7C3AED] dark:text-[#A78BFA]" />
                 ) : (
-                  <Copy size={14} className="text-slate-400 dark:text-[#8E92A2]" />
+                  <Copy size={14} className="text-slate-400 dark:text-[#9DA2B4]" />
                 )}
                 <span>{copiedSseUrl ? 'Copiado' : 'Copiar URL SSE'}</span>
               </button>
@@ -311,7 +311,7 @@ export const McpTab: React.FC<McpTabProps> = ({
                 className={`relative flex items-center justify-center gap-2 p-3 rounded-xl border text-center transition-all cursor-pointer select-none ${
                   isSelected
                     ? 'border-[#7C3AED] dark:border-[#A78BFA] bg-[#7C3AED]/10 dark:bg-[#7C3AED]/15 ring-2 ring-[#7C3AED]/20 shadow-xs'
-                    : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
+                    : 'border-slate-200/80 dark:border-[#2D3039] bg-slate-50/50 dark:bg-[#1F2026] hover:border-slate-300 dark:hover:border-[#4B5063]'
                 }`}
               >
                 {isSelected && (
@@ -321,7 +321,7 @@ export const McpTab: React.FC<McpTabProps> = ({
                 )}
                 <Icon
                   size={14}
-                  className={isSelected ? 'text-[#7C3AED] dark:text-[#A78BFA]' : 'text-slate-400 dark:text-[#8E92A2]'}
+                  className={isSelected ? 'text-[#7C3AED] dark:text-[#A78BFA]' : 'text-slate-400 dark:text-[#9DA2B4]'}
                 />
                 <span className="font-semibold text-xs text-slate-900 dark:text-white">
                   {c.name}
@@ -332,8 +332,8 @@ export const McpTab: React.FC<McpTabProps> = ({
         </div>
 
         {/* 3. Bloco de Código com Header estilo Janela de Configuração */}
-        <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#484A54] bg-slate-900 dark:bg-[#202126]">
-          <div className="flex items-center justify-between px-4 py-2.5 bg-slate-800/80 dark:bg-[#323338] border-b border-slate-800 dark:border-[#484A54]">
+        <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#2D3039] bg-slate-900 dark:bg-[#202126]">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-slate-800/80 dark:bg-[#1F2026] border-b border-slate-800 dark:border-[#2D3039]">
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-[#EC6A5E]" />
@@ -353,7 +353,7 @@ export const McpTab: React.FC<McpTabProps> = ({
               <button
                 type="button"
                 onClick={handleCopySnippet}
-                className="flex h-7 items-center gap-1.5 rounded-lg border border-slate-700 dark:border-[#484A54] bg-slate-800 dark:bg-[#28292E] px-2.5 text-xs font-medium text-slate-200 dark:text-[#EDEDED] hover:bg-slate-700 dark:hover:bg-[#3A3B42] transition-all cursor-pointer shadow-xs"
+                className="flex h-7 items-center gap-1.5 rounded-lg border border-slate-700 dark:border-[#2D3039] bg-slate-800 dark:bg-[#18191E] px-2.5 text-xs font-medium text-slate-200 dark:text-[#EDEDED] hover:bg-slate-700 dark:hover:bg-[#282A33] transition-all cursor-pointer shadow-xs"
               >
                 {copiedSnippet ? (
                   <Check size={12} className="text-[#7C3AED] dark:text-[#A78BFA]" />
@@ -371,10 +371,10 @@ export const McpTab: React.FC<McpTabProps> = ({
         </div>
 
         {/* 4. Local de Configuração */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-slate-50/70 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-slate-50/70 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039]">
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-slate-500 dark:text-[#8E92A2] font-medium">Onde configurar:</span>
-            <code className="font-mono text-slate-800 dark:text-white bg-white dark:bg-[#28292E] border border-slate-200/80 dark:border-[#484A54] px-2 py-0.5 rounded">
+            <span className="text-slate-500 dark:text-[#9DA2B4] font-medium">Onde configurar:</span>
+            <code className="font-mono text-slate-800 dark:text-white bg-white dark:bg-[#18191E] border border-slate-200/80 dark:border-[#2D3039] px-2 py-0.5 rounded">
               {activeClientData.pathText}
             </code>
           </div>
@@ -384,7 +384,7 @@ export const McpTab: React.FC<McpTabProps> = ({
               <button
                 type="button"
                 onClick={handleCopyPath}
-                className="flex h-7 items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] px-2.5 text-xs font-medium text-slate-700 dark:text-[#E4E6EE] hover:bg-slate-50 dark:hover:bg-[#3A3B42] transition-all cursor-pointer self-start sm:self-auto shrink-0 shadow-xs"
+                className="flex h-7 items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] px-2.5 text-xs font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33] transition-all cursor-pointer self-start sm:self-auto shrink-0 shadow-xs"
               >
                 {copiedPath ? (
                   <Check size={12} className="text-[#7C3AED] dark:text-[#A78BFA]" />
@@ -401,13 +401,13 @@ export const McpTab: React.FC<McpTabProps> = ({
       {/* 5. Grid Inferior (Prompts & Ferramentas) padronizado com os cartões da Configuration */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Coluna 1: Prompts Prontos para IA */}
-        <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 space-y-4 shadow-xs">
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
               <Sparkles size={15} className="text-[#7C3AED] dark:text-[#A78BFA]" />
               Prompts Prontos para IA
             </h4>
-            <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-0.5">
               Clique em qualquer prompt para copiar e colar diretamente no chat do seu assistente:
             </p>
           </div>
@@ -424,13 +424,13 @@ export const McpTab: React.FC<McpTabProps> = ({
                 >
                   <div
                     onClick={() => handleCopyPrompt(p.text, idx)}
-                    className="group flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-50/70 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] hover:border-slate-300 dark:hover:border-[#606373] transition-all cursor-pointer w-full"
+                    className="group flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-50/70 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] hover:border-slate-300 dark:hover:border-[#4B5063] transition-all cursor-pointer w-full"
                   >
                     <div className="min-w-0">
-                      <span className="block text-[10.5px] font-semibold uppercase tracking-wider text-slate-400 dark:text-[#8E92A2] mb-1">
+                      <span className="block text-[10.5px] font-semibold uppercase tracking-wider text-slate-400 dark:text-[#9DA2B4] mb-1">
                         {p.category}
                       </span>
-                      <p className="text-xs font-mono text-slate-800 dark:text-[#E4E6EE] leading-relaxed">
+                      <p className="text-xs font-mono text-slate-800 dark:text-[#E2E4EC] leading-relaxed">
                         "{p.text}"
                       </p>
                     </div>
@@ -450,14 +450,14 @@ export const McpTab: React.FC<McpTabProps> = ({
         </div>
 
         {/* Coluna 2: Ferramentas Star Driver (MCP Tools) */}
-        <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
+        <div className="rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 space-y-4 shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
                 <Code2 size={15} className="text-[#7C3AED] dark:text-[#A78BFA]" />
                 Ferramentas Star Driver (MCP)
               </h4>
-              <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-0.5">
                 Capacidades expostas nativamente pelo backend via Model Context Protocol:
               </p>
             </div>
@@ -470,24 +470,24 @@ export const McpTab: React.FC<McpTabProps> = ({
             {tools.map((t) => (
               <div
                 key={t.name}
-                className="p-3.5 rounded-xl bg-slate-50/70 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] space-y-1.5"
+                className="p-3.5 rounded-xl bg-slate-50/70 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] space-y-1.5"
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
-                    <Terminal size={13} className="text-slate-400 dark:text-[#8E92A2] shrink-0" />
+                    <Terminal size={13} className="text-slate-400 dark:text-[#9DA2B4] shrink-0" />
                     <span className="text-xs font-mono font-semibold text-slate-900 dark:text-white">
                       {t.name}
                     </span>
                   </div>
-                  <span className="rounded-full bg-slate-100 dark:bg-[#28292E] text-slate-700 dark:text-[#E4E6EE] border border-slate-200/80 dark:border-[#484A54] px-2 py-0.5 text-[10px] font-semibold">
+                  <span className="rounded-full bg-slate-100 dark:bg-[#18191E] text-slate-700 dark:text-[#E2E4EC] border border-slate-200/80 dark:border-[#2D3039] px-2 py-0.5 text-[10px] font-semibold">
                     {t.badge}
                   </span>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-[#8E92A2] leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-[#9DA2B4] leading-relaxed">
                   {t.desc}
                 </p>
-                <div className="text-[11px] font-mono text-slate-500 dark:text-[#8E92A2]">
-                  params: <span className="text-slate-700 dark:text-[#E4E6EE]">{t.params}</span>
+                <div className="text-[11px] font-mono text-slate-500 dark:text-[#9DA2B4]">
+                  params: <span className="text-slate-700 dark:text-[#E2E4EC]">{t.params}</span>
                 </div>
               </div>
             ))}

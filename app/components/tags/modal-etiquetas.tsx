@@ -198,7 +198,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[820px] h-[640px] max-h-[85vh] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1E1F24] shadow-2xl dark:shadow-black/95 overflow-hidden flex flex-col mb-12 animate-in zoom-in-95 duration-150 select-none text-left"
+        className="w-full max-w-[820px] h-[640px] max-h-[85vh] rounded-2xl border border-slate-200 dark:border-[#2D3039]/90 bg-white dark:bg-[#18191E] shadow-2xl dark:shadow-black/95 overflow-hidden flex flex-col mb-12 animate-in zoom-in-95 duration-150 select-none text-left"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Clean estilo AdsPower */}
@@ -209,7 +209,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#8E92A2] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#9DA2B4] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
             title="Fechar (Esc)"
           >
             <X size={18} />
@@ -236,7 +236,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
             <div className="relative w-64">
               <Search
                 size={14}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#6C7082] pointer-events-none"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#82889A] pointer-events-none"
               />
               <input
                 type="text"
@@ -246,7 +246,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                   setCurrentPage(1);
                 }}
                 placeholder="Search"
-                className="h-9 w-full rounded-lg border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#15161C] pl-9 pr-3 text-xs text-slate-900 dark:text-[#E1E4EE] placeholder-slate-400 dark:placeholder-[#585B6A] focus:border-blue-500 dark:focus:border-[#1677FF] focus:ring-1 focus:ring-blue-500/20 focus:outline-hidden transition-all shadow-2xs"
+                className="h-9 w-full rounded-lg border border-slate-200 dark:border-[#2D3039] bg-white dark:bg-[#141519] pl-9 pr-3 text-xs text-slate-900 dark:text-[#E1E4EE] placeholder-slate-400 dark:placeholder-[#6C7284] focus:border-blue-500 dark:focus:border-[#1677FF] focus:ring-1 focus:ring-blue-500/20 focus:outline-hidden transition-all shadow-2xs"
               />
             </div>
           </div>
@@ -259,7 +259,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
             className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-all ${
               selectedIds.length > 0
                 ? 'border-red-500/40 bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:border-red-500 cursor-pointer shadow-xs'
-                : 'border-slate-200 dark:border-[#303241] text-slate-400 dark:text-[#585B6A] cursor-not-allowed opacity-50'
+                : 'border-slate-200 dark:border-[#2D3039] text-slate-400 dark:text-[#82889A] cursor-not-allowed opacity-50'
             }`}
             title={
               selectedIds.length > 0
@@ -272,7 +272,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         </div>
 
         {/* Cabeçalho da Tabela */}
-        <div className="flex items-center px-4 py-2.5 mx-7 mt-2 mb-1 rounded-lg bg-slate-100/80 dark:bg-[#15161C] text-xs font-medium text-slate-600 dark:text-[#8E92A2] select-none shrink-0">
+        <div className="flex items-center px-4 py-2.5 mx-7 mt-2 mb-1 rounded-lg bg-slate-100/80 dark:bg-[#141519] text-xs font-medium text-slate-600 dark:text-[#9DA2B4] select-none shrink-0">
           <div className="w-8 flex items-center">
             <Checkbox
               checked={isAllSelected}
@@ -289,7 +289,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         {/* Tabela de Etiquetas */}
         <div className="flex-1 overflow-y-auto px-7 py-1">
           {filteredTags.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-28 text-slate-400 dark:text-[#6C7082] select-none">
+            <div className="flex flex-col items-center justify-center py-28 text-slate-400 dark:text-[#82889A] select-none">
               <TagIcon size={30} className="text-slate-300 dark:text-[#363847] mb-2" />
               <p className="text-xs">
                 {isLoading ? 'Carregando etiquetas...' : 'Nenhuma etiqueta encontrada'}
@@ -346,7 +346,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                             e.stopPropagation();
                             setMenuOpenId(menuOpenId === tag.id ? null : tag.id);
                           }}
-                          className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 dark:text-[#8E92A2] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+                          className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 dark:text-[#9DA2B4] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
                           title="Mais opções"
                         >
                           <MoreHorizontal size={14} />
@@ -355,7 +355,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                         {menuOpenId === tag.id && (
                           <div
                             onClick={(e) => e.stopPropagation()}
-                            className="animate-in fade-in zoom-in-95 absolute left-full top-0 ml-1 z-30 w-28 rounded-lg border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#1A1C24] p-1 shadow-xl text-xs select-none"
+                            className="animate-in fade-in zoom-in-95 absolute left-full top-0 ml-1 z-30 w-28 rounded-lg border border-slate-200 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-1 shadow-xl text-xs select-none"
                           >
                             <button
                               type="button"
@@ -399,7 +399,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         </div>
 
         {/* Rodapé com Paginação estilo AdsPower (Total: X  < [1] / Y >) */}
-        <div className="flex items-center justify-end gap-3 px-7 py-3.5 border-t border-slate-100 dark:border-[#282A35] text-xs text-slate-500 dark:text-[#8E92A2] select-none shrink-0 bg-white dark:bg-[#1E1F24]">
+        <div className="flex items-center justify-end gap-3 px-7 py-3.5 border-t border-slate-100 dark:border-[#2D3039] text-xs text-slate-500 dark:text-[#9DA2B4] select-none shrink-0 bg-white dark:bg-[#18191E]">
           <span>Total: {filteredTags.length}</span>
 
           <button
@@ -412,7 +412,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
             <ChevronLeft size={14} />
           </button>
 
-          <div className="flex h-7 min-w-[32px] px-2 items-center justify-center rounded border border-slate-200 dark:border-[#303241] bg-slate-50 dark:bg-[#15161C] text-xs font-mono font-medium text-slate-900 dark:text-white shadow-2xs">
+          <div className="flex h-7 min-w-[32px] px-2 items-center justify-center rounded border border-slate-200 dark:border-[#2D3039] bg-slate-50 dark:bg-[#141519] text-xs font-mono font-medium text-slate-900 dark:text-white shadow-2xs">
             {currentPage}
           </div>
 

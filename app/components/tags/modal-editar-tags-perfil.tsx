@@ -211,7 +211,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
       onClick={() => onClose()}
     >
       <div
-        className="w-full max-w-[620px] rounded-2xl border border-slate-200 dark:border-[#323543] bg-white dark:bg-[#1E1F24] shadow-2xl dark:shadow-black/90 overflow-visible text-left select-none animate-in zoom-in-95 duration-150 mb-12"
+        className="w-full max-w-[620px] rounded-2xl border border-slate-200 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-2xl dark:shadow-black/90 overflow-visible text-left select-none animate-in zoom-in-95 duration-150 mb-12"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header: "Definir tag" e botão fechar "✕" */}
@@ -222,7 +222,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#8E92A2] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#9DA2B4] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
             title="Fechar (Esc)"
           >
             <X size={16} />
@@ -233,7 +233,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
         <div className="px-7 pb-7 space-y-6">
           {/* Linha 1: Nº de perfil */}
           <div className="flex items-center gap-5">
-            <label className="w-24 text-right text-[13px] text-slate-500 dark:text-[#8E92A2] shrink-0 font-normal">
+            <label className="w-24 text-right text-[13px] text-slate-500 dark:text-[#9DA2B4] shrink-0 font-normal">
               Nº de perfil
             </label>
             <div className="flex items-center">
@@ -245,7 +245,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
 
           {/* Linha 2: Tags */}
           <div className="flex items-start gap-5">
-            <label className="w-24 text-right text-[13px] text-slate-500 dark:text-[#8E92A2] shrink-0 font-normal pt-2.5">
+            <label className="w-24 text-right text-[13px] text-slate-500 dark:text-[#9DA2B4] shrink-0 font-normal pt-2.5">
               Tags
             </label>
 
@@ -303,7 +303,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                     <button
                       type="button"
                       onClick={handleClearAll}
-                      className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:text-[#6C7082] dark:hover:text-white transition-colors"
+                      className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:text-[#82889A] dark:hover:text-white transition-colors"
                       title="Limpar todas as etiquetas"
                     >
                       <span className="flex h-4 w-4 items-center justify-center rounded-full bg-slate-300 dark:bg-[#343746] text-white">
@@ -317,7 +317,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                       e.stopPropagation();
                       setIsDropdownOpen(!isDropdownOpen);
                     }}
-                    className="flex h-5 w-5 cursor-pointer items-center justify-center text-slate-400 hover:text-slate-600 dark:text-[#6C7082] dark:hover:text-white transition-colors"
+                    className="flex h-5 w-5 cursor-pointer items-center justify-center text-slate-400 hover:text-slate-600 dark:text-[#82889A] dark:hover:text-white transition-colors"
                   >
                     <ChevronDown
                       size={14}
@@ -331,18 +331,18 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
 
               {/* Dropdown Flutuante de Seleção / Criação de Etiquetas */}
               {isDropdownOpen && (
-                <div className="animate-in fade-in zoom-in-95 absolute top-full left-0 right-0 z-50 mt-1.5 rounded-lg border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#1E2028] shadow-2xl shadow-slate-900/10 dark:shadow-black/90 select-none overflow-hidden duration-100">
+                <div className="animate-in fade-in zoom-in-95 absolute top-full left-0 right-0 z-50 mt-1.5 rounded-lg border border-slate-200 dark:border-[#2D3039] bg-white dark:bg-[#1E2028] shadow-2xl shadow-slate-900/10 dark:shadow-black/90 select-none overflow-hidden duration-100">
                   {/* Opção "Criar [nome ⌄] ↵" se o usuário digitou texto */}
                   {searchTerm.trim().length > 0 && (
                     <div
                       onClick={() => handleCreateOrSelectTag()}
-                      className="relative border-b border-slate-100 dark:border-[#2C2E3B] px-3.5 py-2.5 bg-slate-50 dark:bg-[#17181F]/60 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#252733] transition-colors"
+                      className="relative border-b border-slate-100 dark:border-[#2D3039] px-3.5 py-2.5 bg-slate-50 dark:bg-[#17181F]/60 cursor-pointer hover:bg-slate-100 dark:hover:bg-[#252733] transition-colors"
                     >
                       {/* Seletor flutuante de cor */}
                       {showColorPicker && (
                         <div
                           onClick={(e) => e.stopPropagation()}
-                          className="animate-in fade-in zoom-in-95 absolute bottom-full left-4 mb-2 z-60 rounded-md border border-slate-200 dark:border-[#383A49] bg-white dark:bg-[#14151B] p-2.5 shadow-xl shadow-slate-900/15 dark:shadow-black/90 duration-100"
+                          className="animate-in fade-in zoom-in-95 absolute bottom-full left-4 mb-2 z-60 rounded-md border border-slate-200 dark:border-[#383A49] bg-white dark:bg-[#141519] p-2.5 shadow-xl shadow-slate-900/15 dark:shadow-black/90 duration-100"
                         >
                           <div className="flex items-center gap-2">
                             {TAG_COLORS.map((c) => {
@@ -365,13 +365,13 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                               );
                             })}
                           </div>
-                          <div className="absolute -bottom-1.5 left-10 h-3 w-3 rotate-45 border-b border-r border-slate-200 dark:border-[#383A49] bg-white dark:bg-[#14151B]" />
+                          <div className="absolute -bottom-1.5 left-10 h-3 w-3 rotate-45 border-b border-r border-slate-200 dark:border-[#383A49] bg-white dark:bg-[#141519]" />
                         </div>
                       )}
 
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="text-slate-500 dark:text-[#8E92A2]">
+                          <span className="text-slate-500 dark:text-[#9DA2B4]">
                             {exactMatch ? 'Selecionar' : 'Criar'}
                           </span>
                           <button
@@ -408,7 +408,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                             handleCreateOrSelectTag();
                           }}
                           disabled={isCreatingTag}
-                          className="flex h-5 w-5 cursor-pointer items-center justify-center rounded text-slate-400 hover:bg-slate-200 hover:text-slate-800 dark:text-[#8E92A2] dark:hover:bg-[#2C2E3B] dark:hover:text-white transition-colors"
+                          className="flex h-5 w-5 cursor-pointer items-center justify-center rounded text-slate-400 hover:bg-slate-200 hover:text-slate-800 dark:text-[#9DA2B4] dark:hover:bg-[#2C2E3B] dark:hover:text-white transition-colors"
                           title={
                             exactMatch
                               ? 'Pressione Enter para selecionar'
@@ -424,7 +424,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                   {/* Lista de Etiquetas Cadastradas */}
                   <div className="max-h-60 overflow-y-auto divide-y divide-slate-100 dark:divide-[#2C2E3B]/40">
                     {filteredTags.length === 0 ? (
-                      <div className="py-7 text-center text-xs text-slate-400 dark:text-[#6C7082] select-none">
+                      <div className="py-7 text-center text-xs text-slate-400 dark:text-[#82889A] select-none">
                         Sem dados
                       </div>
                     ) : (
@@ -474,7 +474,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="h-9 cursor-pointer rounded-lg px-5 text-xs font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-[#8E92A2] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
+              className="h-9 cursor-pointer rounded-lg px-5 text-xs font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-[#9DA2B4] dark:hover:bg-white/10 dark:hover:text-white transition-colors"
             >
               Cancelar
             </button>

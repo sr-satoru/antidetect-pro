@@ -379,8 +379,8 @@ export const PerfisPage: React.FC = () => {
 
       {/* Indicador de Filtro por Etiqueta Ativo */}
       {selectedTag && (
-        <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-3.5 py-2 text-xs shrink-0 select-none shadow-xs">
-          <span className="text-slate-500 dark:text-[#A6A9B6]">Filtro ativo por etiqueta:</span>
+        <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 py-2 text-xs shrink-0 select-none shadow-xs">
+          <span className="text-slate-500 dark:text-[#9DA2B4]">Filtro ativo por etiqueta:</span>
           <TagBadge
             name={selectedTag}
             color={serviceTags.getColorByName(selectedTag)}
@@ -405,8 +405,8 @@ export const PerfisPage: React.FC = () => {
 
       {/* Tabela de dados */}
       {isLoading ? (
-        <div className="flex flex-1 items-center justify-center rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
-          <div className="flex flex-col items-center gap-2 text-slate-500 dark:text-[#A6A9B6]">
+        <div className="flex flex-1 items-center justify-center rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-xs">
+          <div className="flex flex-col items-center gap-2 text-slate-500 dark:text-[#9DA2B4]">
             <Loader2 size={28} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
             <span className="text-xs font-medium">Carregando perfis do banco local...</span>
           </div>

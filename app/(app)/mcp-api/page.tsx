@@ -38,13 +38,13 @@ export const McpApiPage: React.FC = () => {
   ] as const;
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#1C1D21] shadow-xs select-none">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#121316] shadow-xs select-none">
       {/* ═══════════════════════════════════════════════════════════════
           MENU SUPERIOR DE ABAS CENTRALIZADO (Estilo Oficial Configuration)
       ═══════════════════════════════════════════════════════════════ */}
-      <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-[#484A54] bg-white/90 dark:bg-[#28292E]/90 backdrop-blur-md px-6 py-3 select-none">
+      <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-[#2D3039] bg-white/90 dark:bg-[#18191E]/90 backdrop-blur-md px-6 py-3 select-none">
         <div className="max-w-4xl mx-auto w-full flex items-center justify-center">
-          <div className="bg-slate-100/90 dark:bg-[#323338] p-1.5 rounded-xl border border-slate-200/60 dark:border-[#484A54] flex items-center gap-1.5 shadow-xs">
+          <div className="bg-slate-100/90 dark:bg-[#1F2026] p-1.5 rounded-xl border border-slate-200/60 dark:border-[#2D3039] flex items-center gap-1.5 shadow-xs">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -54,8 +54,8 @@ export const McpApiPage: React.FC = () => {
                   onClick={() => setActiveTab(tab.id as TabKey)}
                   className={`rounded-lg px-6 py-2.5 text-[13.5px] font-medium transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white font-semibold shadow-xs border border-slate-200/50 dark:border-white/10'
-                      : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-white dark:bg-[#282A33] text-slate-900 dark:text-white font-semibold shadow-xs border border-slate-200/50 dark:border-white/10'
+                      : 'text-slate-600 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <span>{tab.label}</span>
@@ -69,9 +69,9 @@ export const McpApiPage: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════════
           SUB-BARRA DE CREDENCIAIS (Abaixo do menu de abas)
       ═══════════════════════════════════════════════════════════════ */}
-      <div className="flex shrink-0 items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] bg-slate-100/60 dark:bg-[#24252A] px-6 py-2.5 backdrop-blur-xs select-none">
-        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-[#8E92A2]">
-          <span className="font-medium text-slate-700 dark:text-[#E4E6EE]">Chave de Acesso da API:</span>
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-200/80 dark:border-[#2D3039] bg-slate-100/60 dark:bg-[#1F2026] px-6 py-2.5 backdrop-blur-xs select-none">
+        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-[#9DA2B4]">
+          <span className="font-medium text-slate-700 dark:text-[#E2E4EC]">Chave de Acesso da API:</span>
           <span className="hidden sm:inline">Utilizada para autenticar requisições de agentes MCP, Playwright e REST.</span>
         </div>
         <div className="shrink-0">

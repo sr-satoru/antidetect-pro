@@ -156,7 +156,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
                 className={`cursor-pointer rounded-xl border p-3 text-left transition-all select-none ${
                   isSelected
                     ? 'border-[#7C3AED] bg-[#7C3AED]/10 text-slate-900 dark:border-[#A78BFA] dark:bg-[#7C3AED]/20 dark:text-white shadow-xs ring-1 ring-[#7C3AED]/30'
-                    : 'border-slate-200 bg-white dark:border-white/10 dark:bg-[#181920] text-slate-600 dark:text-[#8E92A2] hover:border-slate-300 hover:text-slate-900 dark:hover:border-white/20 dark:hover:text-white'
+                    : 'border-slate-200 bg-white dark:border-white/10 dark:bg-[#181920] text-slate-600 dark:text-[#9DA2B4] hover:border-slate-300 hover:text-slate-900 dark:hover:border-white/20 dark:hover:text-white'
                 }`}
               >
                 <div className="mb-1.5 flex items-center justify-between">
@@ -179,7 +179,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
                   >
                     {p.badge}
                   </Badge>
-                  <span className="block truncate text-[10.5px] text-slate-500 dark:text-[#8E92A2]">
+                  <span className="block truncate text-[10.5px] text-slate-500 dark:text-[#9DA2B4]">
                     {p.desc}
                   </span>
                 </div>
@@ -194,7 +194,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
         className={`flex items-center gap-2 rounded-lg border px-3.5 py-2 text-xs ${
           values.type === 'mobile'
             ? 'border-emerald-500/20 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400'
-            : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] text-slate-600 dark:text-[#C8CBD4]'
+            : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#141519] text-slate-600 dark:text-[#C8CBD4]'
         }`}
       >
         <ProtoIcon size={14} className="shrink-0 opacity-80" />
@@ -300,7 +300,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
 
       {/* 6. Link de Rotação para Móvel */}
       {values.type === 'mobile' && (
-        <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] p-4 shadow-xs">
+        <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#141519] p-4 shadow-xs">
           <div className="mb-2 flex items-center justify-between">
             <Label className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
               <RefreshCw size={13} className="text-[#7C3AED] dark:text-[#A78BFA]" />
@@ -324,7 +324,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
       )}
 
       {/* 7. Ação de Testar Conexão Rápida */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#14151B]/70 p-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#141519]/70 p-3">
         <div className="flex items-center gap-2 text-xs">
           <Button
             type="button"
@@ -332,7 +332,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
             size="sm"
             onClick={handleTestConnection}
             disabled={!values.host.trim() || !values.port.trim() || isTesting}
-            className="gap-1.5 border-slate-300 dark:border-[#353744]"
+            className="gap-1.5 border-slate-300 dark:border-[#2D3039]"
           >
             {isTesting ? (
               <Loader2 size={13} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />

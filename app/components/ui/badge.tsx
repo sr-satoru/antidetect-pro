@@ -14,7 +14,7 @@ const badgeVariants = cva(
         destructive:
           "border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400",
         outline:
-          "border border-slate-200 dark:border-[#353744] text-slate-700 dark:text-[#C4C7D5]",
+          "border border-slate-200 dark:border-[#2D3039] text-slate-700 dark:text-[#C4C7D5]",
         success:
           "border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-[#00FF66]",
         warning:

@@ -57,7 +57,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <select
             value={selectedGroup}
             onChange={(e) => onGroupChange?.(e.target.value)}
-            className="h-10 pl-3.5 pr-8 rounded-lg bg-white dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] hover:border-slate-300 dark:hover:border-[#606373] text-[13px] text-slate-700 dark:text-[#E4E6EE] appearance-none cursor-pointer focus:outline-hidden transition-colors shadow-xs"
+            className="h-10 pl-3.5 pr-8 rounded-lg bg-white dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] hover:border-slate-300 dark:hover:border-[#4B5063] text-[13px] text-slate-700 dark:text-[#E2E4EC] appearance-none cursor-pointer focus:outline-hidden transition-colors shadow-xs"
           >
             <option value="Todos os grupos">Todos os grupos</option>
             <option value="Desagrupado">Desagrupado</option>
@@ -65,7 +65,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           </select>
           <ChevronDown
             size={14}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#8E92A2] pointer-events-none"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#9DA2B4] pointer-events-none"
           />
         </div>
 
@@ -73,18 +73,18 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
         <div className="relative w-96 sm:w-[460px]">
           <Search
             size={15}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#8E92A2]"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#9DA2B4]"
           />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange?.(e.target.value)}
             placeholder="Pesquisa ou novos critérios de pesquisa"
-            className="w-full h-10 bg-white dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] focus:border-slate-400 dark:focus:border-[#72768A] text-slate-900 dark:text-white text-[13px] pl-10 pr-9 rounded-lg placeholder-slate-400 dark:placeholder-[#8E92A2] focus:outline-hidden transition-colors shadow-xs"
+            className="w-full h-10 bg-white dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] focus:border-slate-400 dark:focus:border-[#7C3AED] text-slate-900 dark:text-white text-[13px] pl-10 pr-9 rounded-lg placeholder-slate-400 dark:placeholder-[#6C7284] focus:outline-hidden transition-colors shadow-xs"
           />
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#8E92A2] hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#9DA2B4] hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer"
             title="Critérios avançados de pesquisa"
           >
             <SlidersHorizontal size={14} />
@@ -114,7 +114,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
             type="button"
             onClick={onStopSelected}
             disabled={!hasSelected}
-            className="h-[38px] px-3.5 rounded-lg bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] border border-slate-200/80 dark:border-[#484A54] text-slate-700 dark:text-[#E4E6EE] hover:text-slate-900 dark:hover:text-white text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#323338] disabled:hover:text-slate-700 dark:disabled:hover:text-[#E4E6EE]"
+            className="h-[38px] px-3.5 rounded-lg bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] border border-slate-200/80 dark:border-[#2D3039] text-slate-700 dark:text-[#E2E4EC] hover:text-slate-900 dark:hover:text-white text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1F2026] disabled:hover:text-slate-700 dark:disabled:hover:text-[#E4E6EE]"
             title="Fechar"
           >
             <CircleX size={15} />
@@ -125,7 +125,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <button
             type="button"
             disabled={!hasSelected}
-            className="h-[38px] px-3.5 rounded-lg bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] border border-slate-200/80 dark:border-[#484A54] text-slate-700 dark:text-[#E4E6EE] hover:text-slate-900 dark:hover:text-white text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#323338] disabled:hover:text-slate-700 dark:disabled:hover:text-[#E4E6EE]"
+            className="h-[38px] px-3.5 rounded-lg bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] border border-slate-200/80 dark:border-[#2D3039] text-slate-700 dark:text-[#E2E4EC] hover:text-slate-900 dark:hover:text-white text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1F2026] disabled:hover:text-slate-700 dark:disabled:hover:text-[#E4E6EE]"
             title="Exportar"
           >
             <Upload size={15} />
@@ -136,7 +136,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <button
             type="button"
             disabled={!hasSelected}
-            className="h-[38px] px-3.5 rounded-lg bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] border border-slate-200/80 dark:border-[#484A54] text-slate-700 dark:text-[#E4E6EE] hover:text-slate-900 dark:hover:text-white text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#323338] disabled:hover:text-slate-700 dark:disabled:hover:text-[#E4E6EE]"
+            className="h-[38px] px-3.5 rounded-lg bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] border border-slate-200/80 dark:border-[#2D3039] text-slate-700 dark:text-[#E2E4EC] hover:text-slate-900 dark:hover:text-white text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1F2026] disabled:hover:text-slate-700 dark:disabled:hover:text-[#E4E6EE]"
             title="Mover"
           >
             <FolderInput size={15} />
@@ -147,7 +147,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <button
             type="button"
             disabled={!hasSelected}
-            className="h-[38px] px-3.5 rounded-lg bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] border border-slate-200/80 dark:border-[#484A54] text-slate-700 dark:text-[#E4E6EE] hover:text-slate-900 dark:hover:text-white text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#323338] disabled:hover:text-slate-700 dark:disabled:hover:text-[#E4E6EE]"
+            className="h-[38px] px-3.5 rounded-lg bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] border border-slate-200/80 dark:border-[#2D3039] text-slate-700 dark:text-[#E2E4EC] hover:text-slate-900 dark:hover:text-white text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1F2026] disabled:hover:text-slate-700 dark:disabled:hover:text-[#E4E6EE]"
             title="Partilhar"
           >
             <ExternalLink size={15} />
@@ -159,7 +159,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
             type="button"
             onClick={onDeleteSelected}
             disabled={!hasSelected}
-            className="h-[38px] w-[38px] rounded-lg bg-white dark:bg-[#323338] hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 border border-slate-200/80 dark:border-[#484A54] hover:border-red-200 dark:hover:border-red-500/30 text-slate-500 dark:text-[#A6A9B6] flex items-center justify-center transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#323338] disabled:hover:text-slate-500 dark:disabled:hover:text-[#A6A9B6] disabled:hover:border-slate-200/80 dark:disabled:hover:border-[#484A54]"
+            className="h-[38px] w-[38px] rounded-lg bg-white dark:bg-[#1F2026] hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 border border-slate-200/80 dark:border-[#2D3039] hover:border-red-200 dark:hover:border-red-500/30 text-slate-500 dark:text-[#9DA2B4] flex items-center justify-center transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1F2026] disabled:hover:text-slate-500 dark:disabled:hover:text-[#6C7284] disabled:hover:border-slate-200/80 dark:disabled:hover:border-[#2D3039]"
             title="Excluir"
           >
             <Trash2 size={15} />
@@ -170,7 +170,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
             type="button"
             onClick={onOpenMoreOptions}
             disabled={!hasSelected}
-            className="h-[38px] w-[38px] rounded-lg bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] border border-slate-200/80 dark:border-[#484A54] text-slate-500 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#323338] disabled:hover:text-slate-500 dark:disabled:hover:text-[#A6A9B6]"
+            className="h-[38px] w-[38px] rounded-lg bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] border border-slate-200/80 dark:border-[#2D3039] text-slate-500 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1F2026] disabled:hover:text-slate-500 dark:disabled:hover:text-[#6C7284]"
             title="Mais opções"
           >
             <MoreHorizontal size={15} />
@@ -182,7 +182,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <button
             type="button"
             onClick={onOpenTagFilter}
-            className="h-[38px] w-[38px] rounded-lg bg-white dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] text-slate-500 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#3A3B42] flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+            className="h-[38px] w-[38px] rounded-lg bg-white dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] text-slate-500 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#282A33] flex items-center justify-center transition-colors cursor-pointer shadow-xs"
             title="Filtrar por Tags"
           >
             <Tag size={15} />
@@ -192,7 +192,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
             type="button"
             onClick={onRefresh}
             disabled={isSyncing}
-            className="h-[38px] w-[38px] rounded-lg bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] border border-slate-200/80 dark:border-[#484A54] text-slate-500 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs disabled:opacity-60"
+            className="h-[38px] w-[38px] rounded-lg bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] border border-slate-200/80 dark:border-[#2D3039] text-slate-500 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs disabled:opacity-60"
             title={isSyncing ? "Sincronizando com a nuvem..." : "Atualizar lista"}
           >
             <RotateCw size={15} className={isSyncing ? "animate-spin text-[#7C3AED] dark:text-[#A78BFA]" : ""} />

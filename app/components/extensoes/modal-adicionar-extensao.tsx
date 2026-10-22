@@ -148,16 +148,16 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 dark:border-[#2E2E38] bg-white dark:bg-[#1A1A21] shadow-2xl animate-in fade-in zoom-in-95 duration-200 mb-12">
+      <div className="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-2xl animate-in fade-in zoom-in-95 duration-200 mb-12">
         {/* Header */}
-        <div className="flex h-14 items-center justify-between border-b border-slate-200 dark:border-[#2E2E38] px-7 select-none">
-          <span className="text-base font-semibold text-slate-900 dark:text-[#F1F1F4]">
+        <div className="flex h-14 items-center justify-between border-b border-slate-200 dark:border-[#2D3039] px-7 select-none">
+          <span className="text-base font-semibold text-slate-900 dark:text-white">
             Adicionar extensão
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#90909D] transition-colors dark:hover:bg-[#252530] dark:hover:text-[#F1F1F4]"
+            className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:text-[#9DA2B4] transition-colors dark:hover:bg-[#282A33] dark:hover:text-white"
             title="Fechar"
           >
             <X size={18} />
@@ -172,14 +172,14 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
               Tipo
             </label>
             <div className="sm:col-span-9">
-              <div className="inline-flex rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-slate-100/90 dark:bg-[#323338] p-1 gap-1">
+              <div className="inline-flex rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-slate-100/90 dark:bg-[#1F2026] p-1 gap-1">
                 <button
                   type="button"
                   onClick={() => setActiveTab('file')}
                   className={`cursor-pointer rounded-lg px-4 py-1.5 text-xs font-medium transition-all ${
                     activeTab === 'file'
-                      ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white font-semibold border border-slate-200/50 dark:border-white/10 shadow-xs'
-                      : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-white dark:bg-[#282A33] text-slate-900 dark:text-white font-semibold border border-slate-200/50 dark:border-white/10 shadow-xs'
+                      : 'text-slate-600 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   Upload File
@@ -189,8 +189,8 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
                   onClick={() => setActiveTab('web')}
                   className={`cursor-pointer rounded-lg px-4 py-1.5 text-xs font-medium transition-all ${
                     activeTab === 'web'
-                      ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white font-semibold border border-slate-200/50 dark:border-white/10 shadow-xs'
-                      : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-white dark:bg-[#282A33] text-slate-900 dark:text-white font-semibold border border-slate-200/50 dark:border-white/10 shadow-xs'
+                      : 'text-slate-600 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   Loja online (Firefox / Chrome)
@@ -214,7 +214,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex h-16 items-center justify-start gap-4 border-t border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] px-6 select-none sm:pl-36">
+        <div className="flex h-16 items-center justify-start gap-4 border-t border-slate-200 dark:border-[#2D3039] bg-slate-50 dark:bg-[#141519] px-6 select-none sm:pl-36">
           <button
             type="button"
             onClick={handleConfirm}
@@ -225,7 +225,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-[#90909D] transition-colors dark:hover:text-[#F1F1F4]"
+            className="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-[#9DA2B4] transition-colors dark:hover:text-white"
           >
             Cancelar
           </button>

@@ -96,7 +96,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
     },
     default: {
       cardBg:
-        'bg-slate-900 dark:bg-[#1A1A21] border border-slate-700 dark:border-[#2E2E38] text-white shadow-xl',
+        'bg-slate-900 dark:bg-[#1A1A21] border border-slate-700 dark:border-[#2D3039] text-white shadow-xl',
       iconBg: 'bg-white/10 text-white',
       defaultIcon: <CheckCircle2 size={16} strokeWidth={2.5} className="text-white" />,
     },

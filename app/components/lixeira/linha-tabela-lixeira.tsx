@@ -81,8 +81,8 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
   const rowBg = isSelected
     ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/15 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
     : isStriped
-      ? 'bg-slate-50/70 dark:bg-[#28292E] hover:bg-slate-100/80 dark:hover:bg-[#32343C]'
-      : 'bg-white dark:bg-[#24252A] hover:bg-slate-100/80 dark:hover:bg-[#32343C]';
+      ? 'bg-slate-50/70 dark:bg-[#18191E] hover:bg-slate-100/80 dark:hover:bg-[#32343C]'
+      : 'bg-white dark:bg-[#1F2026] hover:bg-slate-100/80 dark:hover:bg-[#32343C]';
 
   const deletedDate = getDeletedDate(item);
   const expiration = getExpirationDetails(deletedDate);
@@ -122,8 +122,8 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
 
       {/* 4. Grupo */}
       <td className="w-[150px] min-w-[150px] px-3.5 py-2 whitespace-nowrap">
-        <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-[#A6A9B6]">
-          <Folder size={13} className="shrink-0 text-slate-400 dark:text-[#8E92A2]" />
+        <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-[#9DA2B4]">
+          <Folder size={13} className="shrink-0 text-slate-400 dark:text-[#9DA2B4]" />
           <span className="truncate">{item.group}</span>
         </div>
       </td>
@@ -134,14 +134,14 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
           <span className="font-mono text-xs font-semibold text-[#10b981]">
             {item.ip || 'Sem Proxy'}
           </span>
-          <span className="text-[10.5px] text-slate-500 dark:text-[#8E92A2]">
+          <span className="text-[10.5px] text-slate-500 dark:text-[#9DA2B4]">
             {item.country || 'Direto'}
           </span>
         </div>
       </td>
 
       {/* 6. Data e Hora de Exclusão */}
-      <td className="w-[180px] min-w-[180px] px-3.5 py-2 font-mono text-xs whitespace-nowrap text-slate-700 dark:text-[#E4E6EE]">
+      <td className="w-[180px] min-w-[180px] px-3.5 py-2 font-mono text-xs whitespace-nowrap text-slate-700 dark:text-[#E2E4EC]">
         {formatDateTime(deletedDate)}
       </td>
 

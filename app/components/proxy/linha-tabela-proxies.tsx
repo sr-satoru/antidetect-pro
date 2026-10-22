@@ -88,14 +88,14 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
   const rowBg = isSelected
     ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/15 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
     : isStriped
-      ? 'bg-slate-50/60 dark:bg-[#28292E] hover:bg-slate-100/80 dark:hover:bg-[#32343C]'
-      : 'bg-white dark:bg-[#24252A] hover:bg-slate-100/80 dark:hover:bg-[#32343C]';
+      ? 'bg-slate-50/60 dark:bg-[#18191E] hover:bg-slate-100/80 dark:hover:bg-[#32343C]'
+      : 'bg-white dark:bg-[#1F2026] hover:bg-slate-100/80 dark:hover:bg-[#32343C]';
 
   const stickyBg = isSelected
-    ? 'bg-slate-100 dark:bg-[#28292E]'
+    ? 'bg-slate-100 dark:bg-[#18191E]'
     : isStriped
-      ? 'bg-slate-50/60 dark:bg-[#28292E] group-hover:bg-slate-100 dark:group-hover:bg-[#32343C]'
-      : 'bg-white dark:bg-[#24252A] group-hover:bg-slate-100 dark:group-hover:bg-[#32343C]';
+      ? 'bg-slate-50/60 dark:bg-[#18191E] group-hover:bg-slate-100 dark:group-hover:bg-[#32343C]'
+      : 'bg-white dark:bg-[#1F2026] group-hover:bg-slate-100 dark:group-hover:bg-[#32343C]';
 
   const isOnline = proxy.status === 'active';
   const isChecking = proxy.status === 'checking' || isTestingRow;
@@ -172,7 +172,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
               e.stopPropagation();
               onEdit(proxy);
             }}
-            className="ml-auto flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-[#8E92A2] opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-200/80 dark:hover:bg-white/10 hover:text-slate-800 dark:hover:text-white"
+            className="ml-auto flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-[#9DA2B4] opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-200/80 dark:hover:bg-white/10 hover:text-slate-800 dark:hover:text-white"
             title="Editar proxy"
           >
             <Pencil size={11} />
@@ -191,7 +191,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
           <span className="text-[12px] font-semibold text-slate-900 dark:text-white">
             {proxy.host}
           </span>
-          <span className="text-slate-400 dark:text-[#8E92A2]">:</span>
+          <span className="text-slate-400 dark:text-[#9DA2B4]">:</span>
           <span className="text-[12px] text-slate-600 dark:text-[#C8CBD4]">
             {proxy.port}
           </span>
@@ -244,7 +244,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
             </div>
           </div>
         ) : (
-          <span className="text-[11px] text-slate-400 dark:text-[#6C7082] italic">
+          <span className="text-[11px] text-slate-400 dark:text-[#82889A] italic">
             Sem autenticação
           </span>
         )}
@@ -293,7 +293,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
       {/* 9. Perfis Vinculados */}
       <td className="w-[120px] min-w-[120px] px-3.5 py-2 whitespace-nowrap">
         <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-[#C8CBD4]">
-          <Layers size={13} className="text-slate-400 dark:text-[#8E92A2]" />
+          <Layers size={13} className="text-slate-400 dark:text-[#9DA2B4]" />
           <span>{proxy.usageCount || 0} {proxy.usageCount === 1 ? 'perfil' : 'perfis'}</span>
         </div>
       </td>
@@ -332,7 +332,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
             <button
               type="button"
               onClick={() => onEdit(proxy)}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-slate-200/80 dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-slate-200/80 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white"
               aria-label="Editar Proxy"
             >
               <Pencil size={14} />

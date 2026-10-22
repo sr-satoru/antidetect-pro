@@ -125,12 +125,12 @@ export const UpdateCenterDropdown: React.FC = () => {
         }}
         className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer shadow-xs select-none ${
           isUpdating
-            ? 'bg-emerald-50 text-emerald-700 border-emerald-500/50 dark:bg-[#14151B] dark:text-[#00FF66] dark:border-[#00FF66]/50'
+            ? 'bg-emerald-50 text-emerald-700 border-emerald-500/50 dark:bg-[#141519] dark:text-[#00FF66] dark:border-[#00FF66]/50'
             : isAppReady
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-500 dark:bg-[#14151B] dark:text-[#00FF66] dark:border-[#00FF66]/70'
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-500 dark:bg-[#141519] dark:text-[#00FF66] dark:border-[#00FF66]/70'
               : hasAnyUpdate
                 ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 dark:text-amber-300 dark:border-amber-500/40'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 dark:bg-[#14151B] dark:hover:bg-[#181920] dark:text-[#E5E7EB] dark:border-[#22242F]'
+                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 dark:bg-[#141519] dark:hover:bg-[#181920] dark:text-[#E5E7EB] dark:border-[#22242F]'
         }`}
       >
         {isUpdating ? (
@@ -164,7 +164,7 @@ export const UpdateCenterDropdown: React.FC = () => {
 
       {/* Popover Compacto sem Popups Invasivos */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-[340px] rounded-2xl bg-white dark:bg-[#14151B] border border-slate-200 dark:border-[#22242F] shadow-xl shadow-black/20 z-50 overflow-hidden animate-in fade-in duration-150">
+        <div className="absolute right-0 top-full mt-2 w-[340px] rounded-2xl bg-white dark:bg-[#141519] border border-slate-200 dark:border-[#22242F] shadow-xl shadow-black/20 z-50 overflow-hidden animate-in fade-in duration-150">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-[#22242F] bg-slate-50/70 dark:bg-[#15161D]">
             <span className="text-xs font-bold text-slate-900 dark:text-white">Central de Atualizações</span>
@@ -227,7 +227,7 @@ export const UpdateCenterDropdown: React.FC = () => {
                     style={{ width: `${Math.max(5, currentProgress)}%` }}
                   />
                 </div>
-                <span className="text-[10.5px] text-slate-500 dark:text-[#8E92A2] block text-center">
+                <span className="text-[10.5px] text-slate-500 dark:text-[#9DA2B4] block text-center">
                   O download continua em segundo plano. Você pode continuar usando o app.
                 </span>
               </div>
@@ -251,7 +251,7 @@ export const UpdateCenterDropdown: React.FC = () => {
                 <span>Atualizar Agora</span>
               </button>
             ) : (
-              <div className="text-center py-2 text-xs text-slate-500 dark:text-[#8E92A2]">
+              <div className="text-center py-2 text-xs text-slate-500 dark:text-[#9DA2B4]">
                 <CheckCircle2 size={18} className="text-emerald-500 mx-auto mb-1" />
                 <span>Tudo em dia! Nenhum download necessário.</span>
               </div>

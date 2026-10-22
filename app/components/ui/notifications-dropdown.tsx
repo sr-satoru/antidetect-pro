@@ -143,7 +143,7 @@ export const NotificationsDropdown: React.FC = () => {
         type="button"
         onClick={() => setIsOpen(true)}
         title="Notificações"
-        className="relative flex items-center justify-center h-8.5 w-8.5 rounded-lg border border-slate-200 dark:border-[#2E2E38] bg-slate-50 hover:bg-slate-100 dark:bg-[#15151A] dark:hover:bg-[#24242C] text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-2xs"
+        className="relative flex items-center justify-center h-8.5 w-8.5 rounded-lg border border-slate-200 dark:border-[#2D3039] bg-slate-50 hover:bg-slate-100 dark:bg-[#141519] dark:hover:bg-[#24242C] text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-2xs"
       >
         <Bell size={15} />
         {unreadCount > 0 && (
@@ -161,11 +161,11 @@ export const NotificationsDropdown: React.FC = () => {
             onClick={() => setIsOpen(false)}
           >
             <div
-              className="w-full max-w-[660px] h-[480px] max-h-[85vh] bg-white dark:bg-[#1E1E22] border border-slate-200 dark:border-[#2E2E38] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 text-left select-none mb-12"
+              className="w-full max-w-[660px] h-[480px] max-h-[85vh] bg-white dark:bg-[#1E1E22] border border-slate-200 dark:border-[#2D3039] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 text-left select-none mb-12"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header com Abas Minimalistas e Botão Fechar */}
-              <div className="flex items-center justify-between px-6 pt-4 border-b border-slate-200 dark:border-[#2E2E38] shrink-0">
+              <div className="flex items-center justify-between px-6 pt-4 border-b border-slate-200 dark:border-[#2D3039] shrink-0">
               <div className="flex items-center gap-7">
                 <button
                   type="button"

@@ -28,7 +28,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
   return (
     <div className="flex flex-col gap-2.5">
       {/* Barra de Ações: Verificar proxy, Verificar duplicatas, Badge de contagem */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 dark:border-[#484A54] pt-3 select-none">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 dark:border-[#2D3039] pt-3 select-none">
         <div className="flex items-center gap-3">
           <Button
             type="button"
@@ -36,7 +36,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
             size="sm"
             onClick={onTestAll}
             disabled={!hasValidProxies || isChecking}
-            className="h-[38px] gap-2 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E4E6EE] hover:bg-slate-50 dark:hover:bg-[#3A3B42]"
+            className="h-[38px] gap-2 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33]"
           >
             {isChecking ? (
               <Loader2 size={14} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
@@ -46,7 +46,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
             <span>Verificar Conexões</span>
           </Button>
 
-          <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-[#A6A9B6] dark:hover:text-white transition-colors select-none">
+          <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-[#9DA2B4] dark:hover:text-white transition-colors select-none">
             <Checkbox
               size="sm"
               checked={checkDuplicates}
@@ -75,9 +75,9 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
       </div>
 
       {/* Tabela de Visualização dos Proxies Analisados */}
-      <div className="max-h-[260px] min-h-[170px] overflow-x-auto overflow-y-auto rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs [scrollbar-width:thin]">
+      <div className="max-h-[260px] min-h-[170px] overflow-x-auto overflow-y-auto rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-xs [scrollbar-width:thin]">
         <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
-          <thead className="sticky top-0 z-10 border-b border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] text-[11px] font-semibold tracking-wider text-slate-600 dark:text-[#A6A9B6] uppercase select-none">
+          <thead className="sticky top-0 z-10 border-b border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] text-[11px] font-semibold tracking-wider text-slate-600 dark:text-[#9DA2B4] uppercase select-none">
             <tr className="h-10">
               <th className="px-3.5 py-2">Tipo</th>
               <th className="px-3.5 py-2">Host / IP</th>
@@ -175,7 +175,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
               <tr>
                 <td colSpan={9} className="py-12 text-center select-none">
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-[#8E92A2]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-[#9DA2B4]">
                       <Globe size={18} />
                     </div>
                     <p className="text-[12.5px] font-medium text-slate-800 dark:text-[#D1D5DF]">

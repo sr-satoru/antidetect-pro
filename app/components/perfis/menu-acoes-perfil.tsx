@@ -64,7 +64,7 @@ export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
         right: `${right}px`,
         zIndex: 9999,
       }}
-      className="animate-in fade-in zoom-in-95 w-44 rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-1.5 shadow-xl shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/80 duration-100 select-none"
+      className="animate-in fade-in zoom-in-95 w-44 rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-1.5 shadow-xl shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/80 duration-100 select-none"
     >
       {/* Grupo Superior */}
       <div className="space-y-0.5">
@@ -74,9 +74,9 @@ export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
             onClose();
             onEditFull('geral');
           }}
-          className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-700 dark:text-[#E4E6EE] transition-colors hover:bg-slate-100 dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white"
+          className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-700 dark:text-[#E2E4EC] transition-colors hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white"
         >
-          <Pencil size={13} className="text-slate-400 dark:text-[#8E92A2]" />
+          <Pencil size={13} className="text-slate-400 dark:text-[#9DA2B4]" />
           <span>Editar</span>
         </button>
 
@@ -86,9 +86,9 @@ export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
             onClose();
             onDuplicate();
           }}
-          className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-700 dark:text-[#E4E6EE] transition-colors hover:bg-slate-100 dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white"
+          className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-700 dark:text-[#E2E4EC] transition-colors hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white"
         >
-          <Copy size={13} className="text-slate-400 dark:text-[#8E92A2]" />
+          <Copy size={13} className="text-slate-400 dark:text-[#9DA2B4]" />
           <span>Copiar</span>
         </button>
 
@@ -99,9 +99,9 @@ export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
               onClose();
               onRestoreCloud();
             }}
-            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-600 dark:text-[#A6A9B6] transition-colors hover:bg-slate-100 dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white"
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-600 dark:text-[#9DA2B4] transition-colors hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white"
           >
-            <CloudDownload size={13} className="text-emerald-600 dark:text-[#8E92A2]" />
+            <CloudDownload size={13} className="text-emerald-600 dark:text-[#9DA2B4]" />
             <span>Restaurar da Nuvem</span>
           </button>
         )}
@@ -130,7 +130,7 @@ export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
             onClose();
             onEditFull('proxy');
           }}
-          className="flex w-full cursor-pointer items-center rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-600 dark:text-[#A6A9B6] transition-colors hover:bg-slate-100 dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white"
+          className="flex w-full cursor-pointer items-center rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-600 dark:text-[#9DA2B4] transition-colors hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white"
         >
           <span>Editar proxy</span>
         </button>
@@ -141,7 +141,7 @@ export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
             onClose();
             onEditFull('plataforma');
           }}
-          className="flex w-full cursor-pointer items-center rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-600 dark:text-[#A6A9B6] transition-colors hover:bg-slate-100 dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white"
+          className="flex w-full cursor-pointer items-center rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-600 dark:text-[#9DA2B4] transition-colors hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white"
         >
           <span>Editar conta</span>
         </button>
@@ -152,7 +152,7 @@ export const MenuAcoesPerfil: React.FC<MenuAcoesPerfilProps> = ({
             onClose();
             onEditFull('impressao');
           }}
-          className="flex w-full cursor-pointer items-center rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-600 dark:text-[#A6A9B6] transition-colors hover:bg-slate-100 dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white"
+          className="flex w-full cursor-pointer items-center rounded-lg px-2.5 py-1.5 text-left text-[12px] font-normal text-slate-600 dark:text-[#9DA2B4] transition-colors hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white"
         >
           <span>Editar impressão digital</span>
         </button>

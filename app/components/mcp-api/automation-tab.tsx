@@ -443,10 +443,10 @@ warmUp();
   return (
     <div className="space-y-4">
       {/* 1. Banner Superior: SDK Star Driver */}
-      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 space-y-4 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] shadow-xs">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] shadow-xs">
               <Zap size={18} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             </div>
             <div>
@@ -458,20 +458,20 @@ warmUp();
                   Driver Oficial
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-1 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-1 max-w-2xl leading-relaxed">
                 Inicialização direta do perfil no Star Multlogin com <strong>AstroFox</strong> ou <strong>AstroBrowser</strong>, com proxy residencial e camuflagem de hardware.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] text-xs font-mono shrink-0">
-            <span className="text-slate-500 dark:text-[#8E92A2] select-none text-[11px]">pip:</span>
-            <code className="text-slate-800 dark:text-[#E4E6EE]">pip install star-driver astrobrowser clearcote requests</code>
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] text-xs font-mono shrink-0">
+            <span className="text-slate-500 dark:text-[#9DA2B4] select-none text-[11px]">pip:</span>
+            <code className="text-slate-800 dark:text-[#E2E4EC]">pip install star-driver astrobrowser clearcote requests</code>
             <Tooltip content={copiedPip ? 'Copiado!' : 'Copiar comando pip'} position="top">
               <button
                 type="button"
                 onClick={handleCopyPip}
-                className="text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white p-1 rounded-md transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white p-1 rounded-md transition-colors cursor-pointer"
               >
                 {copiedPip ? <Check size={13} className="text-[#7C3AED] dark:text-[#A78BFA]" /> : <Copy size={13} />}
               </button>
@@ -483,7 +483,7 @@ warmUp();
       {/* 2. Grid Principal: Cenários à esquerda e Código à direita */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
         {/* Coluna Esquerda: Cenários de Automação */}
-        <div className="lg:col-span-4 rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
+        <div className="lg:col-span-4 rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 space-y-4 shadow-xs">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
             <Boxes size={15} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             Cenários de Automação
@@ -499,18 +499,18 @@ warmUp();
                   className={`p-3.5 rounded-xl border cursor-pointer select-none transition-all ${
                     isSelected
                       ? 'border-[#7C3AED] dark:border-[#A78BFA] bg-[#7C3AED]/10 dark:bg-[#7C3AED]/15 ring-2 ring-[#7C3AED]/20 shadow-xs'
-                      : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/70 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
+                      : 'border-slate-200/80 dark:border-[#2D3039] bg-slate-50/70 dark:bg-[#1F2026] hover:border-slate-300 dark:hover:border-[#4B5063]'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-semibold text-slate-900 dark:text-white">
                       {r.title}
                     </span>
-                    <span className="rounded-full bg-slate-100 dark:bg-[#28292E] text-slate-700 dark:text-[#E4E6EE] border border-slate-200/80 dark:border-[#484A54] px-2 py-0.5 text-[10px] font-semibold shrink-0">
+                    <span className="rounded-full bg-slate-100 dark:bg-[#18191E] text-slate-700 dark:text-[#E2E4EC] border border-slate-200/80 dark:border-[#2D3039] px-2 py-0.5 text-[10px] font-semibold shrink-0">
                       {r.tag}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-1 leading-relaxed">
+                  <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-1 leading-relaxed">
                     {r.desc}
                   </p>
                 </div>
@@ -520,27 +520,27 @@ warmUp();
         </div>
 
         {/* Coluna Direita: Código de Automação */}
-        <div className="lg:col-span-8 rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-[#484A54]">
+        <div className="lg:col-span-8 rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 space-y-4 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-[#2D3039]">
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
                 <FileCode size={15} className="text-[#7C3AED] dark:text-[#A78BFA]" />
                 {recipes.find((r) => r.id === selectedRecipe)?.title}
               </h4>
-              <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-[#9DA2B4] mt-0.5">
                 Copie o script e execute no seu ambiente local com Python ou Node.js.
               </p>
             </div>
 
             {/* Seletor de Linguagem */}
-            <div className="flex items-center gap-1 p-1 bg-slate-50 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] rounded-lg">
+            <div className="flex items-center gap-1 p-1 bg-slate-50 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] rounded-lg">
               <button
                 type="button"
                 onClick={() => setSelectedLang('python')}
                 className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   selectedLang === 'python'
-                    ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white border border-slate-200/50 dark:border-white/10 shadow-xs font-semibold'
-                    : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-white dark:bg-[#282A33] text-slate-900 dark:text-white border border-slate-200/50 dark:border-white/10 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Python (Playwright)
@@ -550,8 +550,8 @@ warmUp();
                 onClick={() => setSelectedLang('node')}
                 className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   selectedLang === 'node'
-                    ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white border border-slate-200/50 dark:border-white/10 shadow-xs font-semibold'
-                    : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-white dark:bg-[#282A33] text-slate-900 dark:text-white border border-slate-200/50 dark:border-white/10 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Node.js
@@ -560,8 +560,8 @@ warmUp();
           </div>
 
           {/* Janela de Código */}
-          <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#484A54] bg-slate-900 dark:bg-[#202126]">
-            <div className="flex items-center justify-between px-4 py-2.5 bg-slate-800/80 dark:bg-[#323338] border-b border-slate-800 dark:border-[#484A54]">
+          <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#2D3039] bg-slate-900 dark:bg-[#202126]">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-slate-800/80 dark:bg-[#1F2026] border-b border-slate-800 dark:border-[#2D3039]">
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-[#EC6A5E]" />
@@ -581,7 +581,7 @@ warmUp();
                 <button
                   type="button"
                   onClick={handleCopyCode}
-                  className="flex h-7 items-center gap-1.5 rounded-lg border border-slate-700 dark:border-[#484A54] bg-slate-800 dark:bg-[#28292E] px-2.5 text-xs font-medium text-slate-200 dark:text-[#EDEDED] hover:bg-slate-700 dark:hover:bg-[#3A3B42] transition-all cursor-pointer shadow-xs"
+                  className="flex h-7 items-center gap-1.5 rounded-lg border border-slate-700 dark:border-[#2D3039] bg-slate-800 dark:bg-[#18191E] px-2.5 text-xs font-medium text-slate-200 dark:text-[#EDEDED] hover:bg-slate-700 dark:hover:bg-[#282A33] transition-all cursor-pointer shadow-xs"
                 >
                   {copiedCode ? (
                     <Check size={12} className="text-[#7C3AED] dark:text-[#A78BFA]" />
@@ -599,7 +599,7 @@ warmUp();
           </div>
 
           {/* Rodapé com Endereço e Status */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-200/80 dark:border-[#484A54] text-xs text-slate-500 dark:text-[#8E92A2]">
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200/80 dark:border-[#2D3039] text-xs text-slate-500 dark:text-[#9DA2B4]">
             <span>Endereço da API: <strong className="text-slate-900 dark:text-white font-mono">{baseUrl}</strong></span>
             <span className="text-[#7C3AED] dark:text-[#A78BFA] flex items-center gap-1.5 font-medium">
               <ShieldCheck size={14} />

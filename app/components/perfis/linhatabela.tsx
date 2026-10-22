@@ -148,13 +148,13 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   const rowBg = isSelected
     ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/20 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
     : isStriped
-      ? 'bg-slate-50/50 dark:bg-[#1E1F24] hover:bg-slate-100/60 dark:hover:bg-[#282930]'
+      ? 'bg-slate-50/50 dark:bg-[#18191E] hover:bg-slate-100/60 dark:hover:bg-[#282930]'
       : 'bg-white dark:bg-[#18191E] hover:bg-slate-100/60 dark:hover:bg-[#282930]';
 
   const stickyBg = isSelected
     ? 'bg-[#7C3AED]/15 dark:bg-[#2E1F4A]'
     : isStriped
-      ? 'bg-slate-50/90 dark:bg-[#1E1F24] group-hover:bg-slate-100/80 dark:group-hover:bg-[#282930]'
+      ? 'bg-slate-50/90 dark:bg-[#18191E] group-hover:bg-slate-100/80 dark:group-hover:bg-[#282930]'
       : 'bg-white dark:bg-[#18191E] group-hover:bg-slate-100/80 dark:group-hover:bg-[#282930]';
 
   const osKey = (profile.os || 'linux').toLowerCase();
@@ -239,7 +239,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
                 e.stopPropagation();
                 onEdit(profile);
               }}
-              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95"
+              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95"
             >
               <EditIcon size={13} />
             </button>
@@ -310,7 +310,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
                 e.stopPropagation();
                 onEditNotes && onEditNotes(profile);
               }}
-              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95"
+              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95"
             >
               <EditIcon size={13} />
             </button>
@@ -394,8 +394,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           type="button"
           onClick={handleToggleMenu}
           className={`mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-all ${isMenuOpen
-              ? 'bg-slate-200 text-slate-900 dark:bg-[#454750] dark:text-white shadow-xs'
-              : 'text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#A6A9B6] dark:hover:bg-[#3A3B42] dark:hover:text-white'
+              ? 'bg-slate-200 text-slate-900 dark:bg-[#282A33] dark:text-white shadow-xs'
+              : 'text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#9DA2B4] dark:hover:bg-[#282A33] dark:hover:text-white'
             }`}
           title="Opções do perfil"
         >

@@ -50,7 +50,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
   const errorCount = proxies.filter((p) => p.status === 'error').length;
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-xs">
       {isAddingOrEditing ? (
         <CadastroProxies onClose={onCloseCadastro} onSave={onSaveCadastro} />
       ) : (
@@ -58,7 +58,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
           <div className="flex-1 overflow-x-auto overflow-y-auto [scrollbar-width:thin]">
             <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
               {/* Header */}
-              <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] text-[11.5px] font-semibold tracking-wider text-slate-600 dark:text-[#A6A9B6] uppercase select-none">
+              <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] text-[11.5px] font-semibold tracking-wider text-slate-600 dark:text-[#9DA2B4] uppercase select-none">
                 <tr className="h-12">
                   <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2 text-center">
                     <div className="flex items-center justify-center">
@@ -95,7 +95,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
                   <th className="w-[130px] min-w-[130px] px-3.5 py-2">
                     Última Checagem
                   </th>
-                  <th className="sticky right-0 z-20 w-[120px] max-w-[120px] min-w-[120px] bg-[#F8F7F5] dark:bg-[#323338] px-3 py-2 text-center">
+                  <th className="sticky right-0 z-20 w-[120px] max-w-[120px] min-w-[120px] bg-[#F8F7F5] dark:bg-[#1F2026] px-3 py-2 text-center">
                     Ações
                   </th>
                 </tr>
@@ -120,10 +120,10 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
                   <tr>
                     <td
                       colSpan={11}
-                      className="py-20 text-center text-slate-500 dark:text-[#8E92A2]"
+                      className="py-20 text-center text-slate-500 dark:text-[#9DA2B4]"
                     >
                       <div className="flex flex-col items-center justify-center gap-3">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1A1C24] text-slate-400 dark:text-[#7E8294] shadow-xs">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#18191E] text-slate-400 dark:text-[#7E8294] shadow-xs">
                           <Globe size={26} />
                         </div>
                         {hasFiltersApplied ? (
@@ -163,7 +163,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
           </div>
 
           {/* Footer com Estatísticas e Seleção */}
-          <div className="flex h-12 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-4 text-xs text-slate-600 dark:text-[#A6A9B6] select-none">
+          <div className="flex h-12 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] px-4 text-xs text-slate-600 dark:text-[#9DA2B4] select-none">
             <div className="flex items-center gap-4">
               <span>
                 Total: <strong className="text-slate-900 dark:text-white">{proxies.length}</strong>{' '}

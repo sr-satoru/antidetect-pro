@@ -202,15 +202,15 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
     <div className="flex-1 space-y-5 pr-1 text-slate-800 dark:text-[#D2D5DF]">
       {/* 1. Título de Seção com divisor */}
       <div className="flex items-center gap-3">
-        <span className="text-[12px] font-medium text-slate-500 dark:text-[#A6A9B6] select-none">
+        <span className="text-[12px] font-medium text-slate-500 dark:text-[#9DA2B4] select-none">
           Plataforma
         </span>
-        <div className="h-[1px] flex-1 bg-slate-200/80 dark:bg-[#484A54]" />
+        <div className="h-[1px] flex-1 bg-slate-200/80 dark:bg-[#2D3039]" />
       </div>
 
       {/* 2. Área de Plataforma */}
       <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-start sm:gap-4">
-        <label className="shrink-0 pt-2.5 text-left text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[140px] sm:text-right">
+        <label className="shrink-0 pt-2.5 text-left text-[13px] text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[140px] sm:text-right">
           Plataforma
         </label>
 
@@ -231,10 +231,10 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                 className="flex w-full items-center gap-3"
               >
                 {/* O Card do formulário */}
-                <div className="relative flex-1 space-y-3.5 rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-slate-50 dark:bg-[#323338] p-4 shadow-xs sm:p-5">
+                <div className="relative flex-1 space-y-3.5 rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-slate-50 dark:bg-[#1F2026] p-4 shadow-xs sm:p-5">
                   {/* Linha 1: Seletor da Plataforma */}
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                    <span className="shrink-0 text-[12.5px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px]">
+                    <span className="shrink-0 text-[12.5px] text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[130px]">
                       Plataforma {idx + 1}
                     </span>
 
@@ -246,7 +246,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                             openCardDropdownIdx === idx ? null : idx,
                           )
                         }
-                        className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-800 dark:text-white hover:border-slate-400 dark:hover:border-[#484A54] shadow-xs"
+                        className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] text-slate-800 dark:text-white hover:border-slate-400 dark:hover:border-[#4B5063] shadow-xs"
                       >
                         <div className="flex items-center gap-2">
                           {currentPreset.icon}
@@ -265,7 +265,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
 
                       {/* Dropdown de troca de plataforma dentro do card */}
                       {openCardDropdownIdx === idx && (
-                        <div className="absolute top-full right-0 left-0 z-30 mt-1 max-h-56 overflow-y-auto rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] py-1.5 shadow-2xl">
+                        <div className="absolute top-full right-0 left-0 z-30 mt-1 max-h-56 overflow-y-auto rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] py-1.5 shadow-2xl">
                           {PLATFORM_PRESETS.map((preset) => (
                             <div
                               key={preset.id}
@@ -277,8 +277,8 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                               }}
                               className={`flex cursor-pointer items-center gap-2 px-3 py-2 text-[12px] transition-colors ${
                                 acc.platform === preset.id
-                                  ? 'bg-[#7C3AED]/10 text-[#7C3AED] dark:bg-[#454750] font-medium dark:text-white'
-                                  : 'text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-100 dark:hover:bg-[#454750]/50 hover:text-slate-900 dark:hover:text-white'
+                                  ? 'bg-[#7C3AED]/10 text-[#7C3AED] dark:bg-[#282A33] font-medium dark:text-white'
+                                  : 'text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-100 dark:hover:bg-[#282A33]/50 hover:text-slate-900 dark:hover:text-white'
                               }`}
                             >
                               {preset.icon}
@@ -293,7 +293,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   {/* Se 'other' for selecionado: Campo de Domínio Obrigatório com validação vermelha */}
                   {isOther && (
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
-                      <span className="shrink-0 pt-2 text-[12.5px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px]" />
+                      <span className="shrink-0 pt-2 text-[12.5px] text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[130px]" />
                       <div className="max-w-md flex-1">
                         <input
                           type="text"
@@ -304,10 +304,10 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                             })
                           }
                           placeholder="Indique por favor o domínio da plataforma"
-                          className={`h-10 w-full rounded-lg border bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:outline-none shadow-xs ${
+                          className={`h-10 w-full rounded-lg border bg-white dark:bg-[#1F2026] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:outline-none shadow-xs ${
                             isDomainEmpty
                               ? 'border-[#EF4444] focus:border-[#EF4444]'
-                              : 'border-slate-200/80 dark:border-[#484A54] focus:border-[#7C3AED] dark:focus:border-[#A78BFA]'
+                              : 'border-slate-200/80 dark:border-[#2D3039] focus:border-[#7C3AED] dark:focus:border-[#A78BFA]'
                           }`}
                         />
                         {isDomainEmpty && (
@@ -321,7 +321,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
 
                   {/* Linha 2: Nome do Utilizador */}
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                    <span className="shrink-0 text-[12.5px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px]">
+                    <span className="shrink-0 text-[12.5px] text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[130px]">
                       Nome do Utilizador
                     </span>
                     <div className="max-w-md flex-1">
@@ -332,14 +332,14 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           handleUpdateAccount(idx, { username: e.target.value })
                         }
                         placeholder="Indique por favor o nome do utilizador"
-                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
+                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
                       />
                     </div>
                   </div>
 
                   {/* Linha 3: Senha */}
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                    <span className="shrink-0 text-[12.5px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px]">
+                    <span className="shrink-0 text-[12.5px] text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[130px]">
                       Senha
                     </span>
                     <div className="max-w-md flex-1">
@@ -350,14 +350,14 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           handleUpdateAccount(idx, { password: e.target.value })
                         }
                         placeholder="Digite a senha"
-                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 font-mono text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
+                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 font-mono text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
                       />
                     </div>
                   </div>
 
                   {/* Linha 4: Chave 2FA */}
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                    <span className="shrink-0 text-[12.5px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px]">
+                    <span className="shrink-0 text-[12.5px] text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[130px]">
                       chave 2FA.
                     </span>
                     <div className="relative max-w-md flex-1">
@@ -370,13 +370,13 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           })
                         }
                         placeholder="Por favor, digite a chave."
-                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 pr-9 font-mono text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
+                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 pr-9 font-mono text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
                       />
                       <Tooltip
                         content="Chave secreta TOTP para geração automática do código de dois fatores ao fazer login."
                         position="top"
                       >
-                        <div className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-help text-slate-400 dark:text-[#A6A9B6] hover:text-slate-600 dark:hover:text-white">
+                        <div className="absolute top-1/2 right-2.5 -translate-y-1/2 cursor-help text-slate-400 dark:text-[#9DA2B4] hover:text-slate-600 dark:hover:text-white">
                           <svg
                             className="h-4 w-4"
                             viewBox="0 0 24 24"
@@ -398,7 +398,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                 <button
                   type="button"
                   onClick={() => handleRemoveAccount(idx)}
-                  className="shrink-0 cursor-pointer rounded-lg p-2 text-slate-400 dark:text-[#A6A9B6] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-[#24252A] dark:hover:text-[#EF4444]"
+                  className="shrink-0 cursor-pointer rounded-lg p-2 text-slate-400 dark:text-[#9DA2B4] transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-[#EF4444]"
                   title="Remover conta da plataforma"
                 >
                   <svg
@@ -420,7 +420,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
             <button
               type="button"
               onClick={() => setIsAddDropdownOpen(!isAddDropdownOpen)}
-              className="flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 dark:border-[#484A54] bg-slate-100/70 hover:bg-slate-200/70 dark:bg-[#24252A] dark:hover:bg-[#323338] px-4 text-[13px] font-medium text-slate-600 dark:text-[#A6A9B6] transition-all select-none hover:text-slate-900 dark:hover:text-white"
+              className="flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 dark:border-[#2D3039] bg-slate-100/70 hover:bg-slate-200/70 dark:bg-[#1F2026] dark:hover:bg-[#282A33] px-4 text-[13px] font-medium text-slate-600 dark:text-[#9DA2B4] transition-all select-none hover:text-slate-900 dark:hover:text-white"
             >
               <div className="flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#7C3AED] dark:border-[#A78BFA] text-[13px] leading-none font-bold text-[#7C3AED] dark:text-[#A78BFA]">
                 +
@@ -430,12 +430,12 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
 
             {/* Menu Dropdown de plataformas */}
             {isAddDropdownOpen && (
-              <div className="absolute top-full right-0 left-0 z-40 mt-1 max-h-72 [scrollbar-width:thin] overflow-y-auto rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] py-1.5 shadow-2xl">
+              <div className="absolute top-full right-0 left-0 z-40 mt-1 max-h-72 [scrollbar-width:thin] overflow-y-auto rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] py-1.5 shadow-2xl">
                 {PLATFORM_PRESETS.map((preset) => (
                   <div
                     key={preset.id}
                     onClick={() => handleSelectPlatformToAdd(preset)}
-                    className="flex cursor-pointer items-center gap-2.5 px-3.5 py-2 text-[12.5px] text-slate-700 dark:text-[#C4C7D5] transition-colors hover:bg-slate-100 dark:hover:bg-[#454750] hover:text-slate-900 dark:hover:text-white"
+                    className="flex cursor-pointer items-center gap-2.5 px-3.5 py-2 text-[12.5px] text-slate-700 dark:text-[#C4C7D5] transition-colors hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white"
                   >
                     {preset.icon}
                     <span>{preset.name}</span>
@@ -450,13 +450,13 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
       {/* 3. Seção: Verificar duplicado (apenas exibida se houver contas adicionadas) */}
       {accounts.length > 0 && (
         <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:items-start sm:gap-4">
-          <label className="flex shrink-0 items-center justify-end gap-1 pt-1 text-left text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[140px] sm:text-right">
+          <label className="flex shrink-0 items-center justify-end gap-1 pt-1 text-left text-[13px] text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[140px] sm:text-right">
             <span>Verificar duplicado</span>
             <InfoBalloon content="Regra de validação de duplicidade (aplica-se a todas as contas neste perfil)." />
           </label>
 
           <div className="flex-1 space-y-2">
-            <p className="text-[12px] text-slate-500 dark:text-[#A6A9B6] select-none">
+            <p className="text-[12px] text-slate-500 dark:text-[#9DA2B4] select-none">
               &quot;Regra de validação de duplicidade (aplica-se a todas as
               contas neste perfil) &quot;
             </p>
@@ -467,9 +467,9 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   type="checkbox"
                   checked={duplicateRules.usernamePassword}
                   onChange={() => handleToggleRule('usernamePassword')}
-                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#484A54] bg-white dark:bg-[#24252A] accent-[#7C3AED]"
+                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] accent-[#7C3AED]"
                 />
-                <span className="text-[12.5px] text-slate-700 dark:text-[#C4C7D5] underline decoration-slate-300 dark:decoration-[#484A54] decoration-dotted underline-offset-4 group-hover:text-slate-900 dark:group-hover:text-white">
+                <span className="text-[12.5px] text-slate-700 dark:text-[#C4C7D5] underline decoration-slate-300 dark:decoration-[#4B5063] decoration-dotted underline-offset-4 group-hover:text-slate-900 dark:group-hover:text-white">
                   Nome de utilizador e senha
                 </span>
               </label>
@@ -479,9 +479,9 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   type="checkbox"
                   checked={duplicateRules.cookie}
                   onChange={() => handleToggleRule('cookie')}
-                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#484A54] bg-white dark:bg-[#24252A] accent-[#7C3AED]"
+                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] accent-[#7C3AED]"
                 />
-                <span className="text-[12.5px] text-slate-700 dark:text-[#C4C7D5] underline decoration-slate-300 dark:decoration-[#484A54] decoration-dotted underline-offset-4 group-hover:text-slate-900 dark:group-hover:text-white">
+                <span className="text-[12.5px] text-slate-700 dark:text-[#C4C7D5] underline decoration-slate-300 dark:decoration-[#4B5063] decoration-dotted underline-offset-4 group-hover:text-slate-900 dark:group-hover:text-white">
                   Cookie
                 </span>
               </label>
@@ -491,9 +491,9 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   type="checkbox"
                   checked={duplicateRules.cUser}
                   onChange={() => handleToggleRule('cUser')}
-                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#484A54] bg-white dark:bg-[#24252A] accent-[#7C3AED]"
+                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] accent-[#7C3AED]"
                 />
-                <span className="text-[12.5px] text-slate-700 dark:text-[#C4C7D5] underline decoration-slate-300 dark:decoration-[#484A54] decoration-dotted underline-offset-4 group-hover:text-slate-900 dark:group-hover:text-white">
+                <span className="text-[12.5px] text-slate-700 dark:text-[#C4C7D5] underline decoration-slate-300 dark:decoration-[#4B5063] decoration-dotted underline-offset-4 group-hover:text-slate-900 dark:group-hover:text-white">
                   c_user
                 </span>
               </label>
@@ -504,7 +504,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
 
       {/* 4. Seção: Abas */}
       <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:items-start sm:gap-4">
-        <label className="flex shrink-0 items-center justify-end gap-1 pt-2 text-left text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[140px] sm:text-right">
+        <label className="flex shrink-0 items-center justify-end gap-1 pt-2 text-left text-[13px] text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[140px] sm:text-right">
           <span>Abas</span>
           <InfoBalloon content="URLs que abrirão automaticamente ao inicializar este perfil." />
         </label>
@@ -515,7 +515,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
             value={formData.openTabsUrls || ''}
             onChange={(e) => onChange('openTabsUrls', e.target.value)}
             placeholder={`Digite URLs (uma URL por linha)\nwww.google.com\nwww.facebook.com`}
-            className="w-full rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] p-3 font-mono text-[12.5px] leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
+            className="w-full rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] p-3 font-mono text-[12.5px] leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
           />
         </div>
       </div>

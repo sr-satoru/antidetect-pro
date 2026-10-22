@@ -75,22 +75,22 @@ export const EditarPerfilPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] text-slate-800 dark:text-white">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] text-slate-800 dark:text-white">
         <Loader2 size={24} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
-        <span className="text-xs text-slate-500 dark:text-[#A6A9B6]">Carregando configurações do perfil...</span>
+        <span className="text-xs text-slate-500 dark:text-[#9DA2B4]">Carregando configurações do perfil...</span>
       </div>
     );
   }
 
   if (error || !formData) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4 rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 text-slate-800 dark:text-white">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] p-6 text-slate-800 dark:text-white">
         <AlertCircle size={32} className="text-red-500 dark:text-[#ff5a6e]" />
         <p className="text-sm text-slate-700 dark:text-[#F4F4F6]">{error || 'Perfil não encontrado.'}</p>
         <button
           type="button"
           onClick={() => navigate('/perfis')}
-          className="h-[38px] px-5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-[#24252A] dark:text-[#A6A9B6] dark:hover:bg-[#323338] text-[13px] font-medium transition-colors cursor-pointer"
+          className="h-[38px] px-5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-[#1F2026] dark:text-[#9DA2B4] dark:hover:bg-[#282A33] text-[13px] font-medium transition-colors cursor-pointer"
         >
           Voltar para Perfis
         </button>
@@ -99,7 +99,7 @@ export const EditarPerfilPage: React.FC = () => {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] shadow-xs">
       {/* Abas Superiores Modulares */}
       <PerfilTabsHeader activeTab={activeTab} onTabChange={setActiveTab} />
 

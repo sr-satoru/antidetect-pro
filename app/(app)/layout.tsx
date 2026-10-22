@@ -47,7 +47,7 @@ class ContentErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
                 Ocorreu um erro ao carregar esta tela
               </h3>
-              <p className="text-xs text-slate-500 dark:text-[#8E92A2] leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
                 {this.state.error?.message || 'Houve uma falha inesperada na renderização deste módulo.'}
               </p>
             </div>
@@ -62,7 +62,7 @@ class ContentErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               </button>
               <a
                 href="/perfis"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium border border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-50 dark:hover:bg-[#2A2B36] transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium border border-slate-200 dark:border-[#2D3039] bg-white dark:bg-[#24252D] text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-50 dark:hover:bg-[#2A2B36] transition-colors"
               >
                 <Home size={13} />
                 <span>Ir para Perfis</span>
@@ -81,7 +81,7 @@ export const AppLayout: React.FC = () => {
 
   return (
     <TooltipProvider delay={150}>
-      <div className="flex h-screen w-screen overflow-hidden bg-[#ECEBE7] dark:bg-[#0D1117] text-[#1B1A18] dark:text-[#E6EDF3] transition-colors duration-150 select-none">
+      <div className="flex h-screen w-screen overflow-hidden bg-[#ECEBE7] dark:bg-[#121316] text-[#1B1A18] dark:text-[#E2E4EC] transition-colors duration-150 select-none">
         {/* Sidebar global */}
         <Sidebar />
 

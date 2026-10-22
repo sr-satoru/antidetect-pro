@@ -536,9 +536,9 @@ export const ApiTab: React.FC<ApiTabProps> = ({
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] overflow-hidden flex flex-col md:flex-row min-h-[580px] shadow-xs">
+    <div className="rounded-2xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] overflow-hidden flex flex-col md:flex-row min-h-[580px] shadow-xs">
       {/* PAINEL ESQUERDO: Lista de Endpoints para Navegação */}
-      <div className="w-full md:w-[260px] bg-slate-50 dark:bg-[#24252A] border-b md:border-b-0 md:border-r border-slate-200/80 dark:border-[#484A54] p-3.5 flex flex-col shrink-0 space-y-3">
+      <div className="w-full md:w-[260px] bg-slate-50 dark:bg-[#1F2026] border-b md:border-b-0 md:border-r border-slate-200/80 dark:border-[#2D3039] p-3.5 flex flex-col shrink-0 space-y-3">
         <div className="px-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white block">
             Catálogo de Rotas
@@ -558,8 +558,8 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                 }}
                 className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all flex items-center justify-between gap-2 cursor-pointer ${
                   isSelected
-                    ? 'bg-white text-slate-900 dark:bg-[#323338] dark:text-white font-semibold shadow-xs border border-slate-200/80 dark:border-[#484A54]'
-                    : 'text-slate-600 dark:text-[#A6A9B6] hover:bg-white/60 dark:hover:bg-[#323338]/60 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-white text-slate-900 dark:bg-[#1F2026] dark:text-white font-semibold shadow-xs border border-slate-200/80 dark:border-[#2D3039]'
+                    : 'text-slate-600 dark:text-[#9DA2B4] hover:bg-white/60 dark:hover:bg-[#282A33]/60 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 <div className="flex items-center gap-2 truncate">
@@ -582,21 +582,21 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       </div>
 
       {/* PAINEL DIREITO: 3 Cards no padrão /configuration */}
-      <div className="flex-1 p-5 md:p-6 flex flex-col space-y-4 overflow-y-auto bg-slate-50/40 dark:bg-[#28292E]">
+      <div className="flex-1 p-5 md:p-6 flex flex-col space-y-4 overflow-y-auto bg-slate-50/40 dark:bg-[#18191E]">
         {/* ========================================================================= */}
         {/* CARD 1: Base URL                                                          */}
         {/* ========================================================================= */}
-        <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] shadow-xs">
+        <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] shadow-xs">
           {/* Header Bar */}
-          <div className="bg-slate-50 dark:bg-[#24252A] px-4 py-2.5 border-b border-slate-200/80 dark:border-[#484A54]">
+          <div className="bg-slate-50 dark:bg-[#1F2026] px-4 py-2.5 border-b border-slate-200/80 dark:border-[#2D3039]">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white">Base URL</h4>
           </div>
 
           {/* Body */}
-          <div className="p-4 space-y-3 text-xs bg-white dark:bg-[#323338]">
-            <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-[#24252A] border border-slate-200/80 dark:border-[#484A54]">
+          <div className="p-4 space-y-3 text-xs bg-white dark:bg-[#1F2026]">
+            <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039]">
               <div>
-                <span className="text-slate-500 dark:text-[#A6A9B6] text-[11px] font-medium block">Produção:</span>
+                <span className="text-slate-500 dark:text-[#9DA2B4] text-[11px] font-medium block">Produção:</span>
                 <span className="text-slate-800 dark:text-white font-mono text-xs select-all block">
                   {baseUrl}
                 </span>
@@ -612,9 +612,9 @@ export const ApiTab: React.FC<ApiTabProps> = ({
               </Tooltip>
             </div>
 
-            <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-[#24252A] border border-slate-200/80 dark:border-[#484A54]">
+            <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039]">
               <div>
-                <span className="text-slate-500 dark:text-[#A6A9B6] text-[11px] font-medium block">SandBox (Homolog):</span>
+                <span className="text-slate-500 dark:text-[#9DA2B4] text-[11px] font-medium block">SandBox (Homolog):</span>
                 <span className="text-slate-800 dark:text-white font-mono text-xs select-all block">
                   {sandboxUrl}
                 </span>
@@ -635,14 +635,14 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         {/* ========================================================================= */}
         {/* CARD 2: Language Box (Tabs horizontais)                                    */}
         {/* ========================================================================= */}
-        <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] shadow-xs">
+        <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] shadow-xs">
           {/* Header Bar */}
-          <div className="bg-slate-50 dark:bg-[#24252A] px-4 py-2.5 border-b border-slate-200/80 dark:border-[#484A54]">
+          <div className="bg-slate-50 dark:bg-[#1F2026] px-4 py-2.5 border-b border-slate-200/80 dark:border-[#2D3039]">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white">Linguagens & Snippets</h4>
           </div>
 
           {/* Body: Horizontal Language Selector */}
-          <div className="bg-white dark:bg-[#323338] px-4 pt-3 pb-0 overflow-x-auto">
+          <div className="bg-white dark:bg-[#1F2026] px-4 pt-3 pb-0 overflow-x-auto">
             <div className="flex items-center gap-2 min-w-max">
               {languages.map((lang) => {
                 const isSelected = selectedLang === lang.id;
@@ -660,7 +660,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                       className={`text-xs font-medium transition-colors ${
                         isSelected
                           ? 'text-slate-900 dark:text-white font-bold'
-                          : 'text-slate-500 dark:text-[#A6A9B6] group-hover:text-slate-900 dark:group-hover:text-white'
+                          : 'text-slate-500 dark:text-[#9DA2B4] group-hover:text-slate-900 dark:group-hover:text-white'
                       }`}
                     >
                       {lang.name}
@@ -680,9 +680,9 @@ export const ApiTab: React.FC<ApiTabProps> = ({
         {/* ========================================================================= */}
         {/* CARD 3: Code Box com Linhas Numeradas e Botão 'Try in API Explorer'         */}
         {/* ========================================================================= */}
-        <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#484A54] bg-slate-900 dark:bg-[#202126] relative shadow-xs">
+        <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#2D3039] bg-slate-900 dark:bg-[#202126] relative shadow-xs">
           {/* Code Header Inside */}
-          <div className="px-4 py-2.5 flex items-center justify-between border-b border-slate-800 dark:border-[#484A54] bg-slate-800/80 dark:bg-[#24252A]">
+          <div className="px-4 py-2.5 flex items-center justify-between border-b border-slate-800 dark:border-[#2D3039] bg-slate-800/80 dark:bg-[#1F2026]">
             <div className="flex items-center gap-2 font-mono text-xs">
               <span className="text-emerald-400 dark:text-[#2ea043] font-bold tracking-wide">
                 {selectedEndpoint.method}
@@ -724,7 +724,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
           {/* Numbered Code Content */}
           <div className="p-4 overflow-x-auto text-xs font-mono leading-relaxed flex min-h-[220px]">
             {/* Line numbers gutter */}
-            <div className="select-none text-slate-500 dark:text-[#555555] pr-3 text-right border-r border-slate-800 dark:border-[#484A54] mr-3 flex flex-col font-mono text-xs">
+            <div className="select-none text-slate-500 dark:text-[#555555] pr-3 text-right border-r border-slate-800 dark:border-[#2D3039] mr-3 flex flex-col font-mono text-xs">
               {lines.map((_, i) => (
                 <span key={i}>{i + 1}</span>
               ))}
@@ -767,7 +767,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             <button
               type="button"
               onClick={() => setShowExplorer(!showExplorer)}
-              className="flex h-[34px] items-center gap-1.5 rounded-lg border border-slate-700 dark:border-[#484A54] bg-slate-800 dark:bg-[#323338] px-3 text-xs font-medium text-slate-200 hover:bg-slate-700 dark:hover:bg-[#454750] transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+              className="flex h-[34px] items-center gap-1.5 rounded-lg border border-slate-700 dark:border-[#2D3039] bg-slate-800 dark:bg-[#1F2026] px-3 text-xs font-medium text-slate-200 hover:bg-slate-700 dark:hover:bg-[#282A33] transition-all cursor-pointer shadow-xs active:scale-[0.98]"
             >
               <span>Try in API Explorer</span>
             </button>
@@ -776,8 +776,8 @@ export const ApiTab: React.FC<ApiTabProps> = ({
 
         {/* EXPANSÃO DO "API EXPLORER" */}
         {showExplorer && (
-          <div className="rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] p-4 shadow-sm space-y-3.5 animate-fadeIn">
-            <div className="flex items-center justify-between pb-2.5 border-b border-slate-200/80 dark:border-[#484A54]">
+          <div className="rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] p-4 shadow-sm space-y-3.5 animate-fadeIn">
+            <div className="flex items-center justify-between pb-2.5 border-b border-slate-200/80 dark:border-[#2D3039]">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">
                   {selectedEndpoint.method}
@@ -788,7 +788,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
               </div>
               <button
                 onClick={() => setShowExplorer(false)}
-                className="text-slate-400 hover:text-slate-700 dark:text-[#A6A9B6] dark:hover:text-white p-1 cursor-pointer"
+                className="text-slate-400 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white p-1 cursor-pointer"
               >
                 <X size={14} />
               </button>
@@ -797,14 +797,14 @@ export const ApiTab: React.FC<ApiTabProps> = ({
             {/* Parameter Input */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="flex-1">
-                <label className="text-xs text-slate-600 dark:text-[#A6A9B6] block mb-1 font-medium">
+                <label className="text-xs text-slate-600 dark:text-[#9DA2B4] block mb-1 font-medium">
                   ID do Perfil Star Multlogin:
                 </label>
                 <input
                   type="text"
                   value={testParamId}
                   onChange={(e) => setTestParamId(e.target.value)}
-                  className="w-full h-10 bg-slate-50 dark:bg-[#24252A] border border-slate-200/80 dark:border-[#484A54] rounded-lg px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-[#7C3AED] dark:focus:border-[#A78BFA]"
+                  className="w-full h-10 bg-slate-50 dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] rounded-lg px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-[#7C3AED] dark:focus:border-[#A78BFA]"
                 />
               </div>
 
@@ -840,10 +840,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                     Status: {executionStatus ? `${executionStatus} ${executionStatus === 200 ? 'OK' : executionStatus === 401 ? 'Unauthorized' : ''}` : 'Erro de Conexão'}
                   </span>
                   {executionTimeMs !== null && (
-                    <span className="text-slate-400 dark:text-[#A6A9B6]">{executionTimeMs}ms</span>
+                    <span className="text-slate-400 dark:text-[#9DA2B4]">{executionTimeMs}ms</span>
                   )}
                 </div>
-                <pre className="bg-slate-900 dark:bg-[#202126] border border-slate-800 dark:border-[#484A54] rounded-lg p-3 text-xs font-mono text-slate-200 dark:text-[#DCDCDC] overflow-x-auto shadow-inner max-h-[280px]">
+                <pre className="bg-slate-900 dark:bg-[#202126] border border-slate-800 dark:border-[#2D3039] rounded-lg p-3 text-xs font-mono text-slate-200 dark:text-[#DCDCDC] overflow-x-auto shadow-inner max-h-[280px]">
                   {JSON.stringify(apiResponse, null, 2)}
                 </pre>
               </div>

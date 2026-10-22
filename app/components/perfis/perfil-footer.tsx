@@ -13,7 +13,7 @@ export const PerfilFooter: React.FC<PerfilFooterProps> = ({
   onCancel,
 }) => {
   return (
-    <div className="flex shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-6 py-3">
+    <div className="flex shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] px-6 py-3">
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -28,7 +28,7 @@ export const PerfilFooter: React.FC<PerfilFooterProps> = ({
           type="button"
           disabled={isSaving}
           onClick={onCancel}
-          className="flex h-[38px] items-center cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] hover:bg-slate-100 dark:hover:bg-[#28292E] text-slate-700 dark:text-[#A6A9B6] dark:hover:text-white px-5 text-[13px] font-medium transition-all select-none active:scale-[0.98] disabled:opacity-50"
+          className="flex h-[38px] items-center cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white px-5 text-[13px] font-medium transition-all select-none active:scale-[0.98] disabled:opacity-50"
         >
           Cancelar
         </button>
@@ -36,7 +36,7 @@ export const PerfilFooter: React.FC<PerfilFooterProps> = ({
 
       {/* Ícone flutuante de suporte */}
       <div
-        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-white dark:bg-[#24252A] border border-slate-200/80 dark:border-[#484A54] hover:bg-slate-100 dark:hover:bg-[#28292E] text-slate-600 dark:text-[#A6A9B6] dark:hover:text-white shadow-xs transition-all active:scale-[0.98]"
+        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-white dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] hover:bg-slate-100 dark:hover:bg-[#282A33] text-slate-600 dark:text-[#9DA2B4] dark:hover:text-white shadow-xs transition-all active:scale-[0.98]"
         title="Suporte"
       >
         <svg

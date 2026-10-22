@@ -49,10 +49,10 @@ export const ModalEditarObservacao: React.FC<ModalEditarObservacaoProps> = ({
       maxWidth="max-w-[620px]"
     >
       <div className="mb-2 flex items-center justify-between">
-        <label className="text-[13px] font-semibold text-slate-800 dark:text-[#A6A9B6]">
+        <label className="text-[13px] font-semibold text-slate-800 dark:text-[#9DA2B4]">
           Observação do perfil: <span className="font-bold text-[#7C3AED] dark:text-[#A78BFA]">{profile?.name}</span>
         </label>
-        <span className="text-xs text-slate-400 dark:text-[#A6A9B6]">
+        <span className="text-xs text-slate-400 dark:text-[#9DA2B4]">
           {notesInput.length} caracteres
         </span>
       </div>
@@ -69,7 +69,7 @@ export const ModalEditarObservacao: React.FC<ModalEditarObservacaoProps> = ({
         disabled={isSaving}
         rows={4}
         placeholder="Escreva uma observação, anotação ou nota para este perfil..."
-        className="w-full rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] p-3 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs resize-none leading-relaxed disabled:opacity-50"
+        className="w-full rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] p-3 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs resize-none leading-relaxed disabled:opacity-50"
       />
     </ModalBase>
   );

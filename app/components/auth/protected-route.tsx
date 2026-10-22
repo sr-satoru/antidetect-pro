@@ -11,7 +11,7 @@ export const ProtectedRoute: React.FC = () => {
       <div className="flex h-screen w-screen items-center justify-center bg-slate-50 dark:bg-[#08090C] text-slate-800 dark:text-white">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={32} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
-          <span className="text-xs text-slate-500 dark:text-[#8E92A2]">Iniciando One Star Multilogin...</span>
+          <span className="text-xs text-slate-500 dark:text-[#9DA2B4]">Iniciando One Star Multilogin...</span>
         </div>
       </div>
     );

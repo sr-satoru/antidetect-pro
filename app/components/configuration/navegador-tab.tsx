@@ -23,10 +23,10 @@ export const NavegadorTab: React.FC<NavegadorTabProps> = ({
       {/* ─── Seção 1: Geral ────────────────────────────────────── */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pt-2">
-          <span className="text-[12px] font-medium text-slate-500 dark:text-[#8E92A2] select-none">
+          <span className="text-[12px] font-medium text-slate-500 dark:text-[#9DA2B4] select-none">
             Geral
           </span>
-          <div className="h-[1px] flex-1 bg-slate-200/80 dark:bg-[#484A54]" />
+          <div className="h-[1px] flex-1 bg-slate-200/80 dark:bg-[#2D3039]" />
         </div>
         <GeralTab formData={formData} onChange={onChange} />
       </div>
@@ -49,16 +49,16 @@ export const NavegadorTab: React.FC<NavegadorTabProps> = ({
       {/* ─── Seção 5: Avançado ──────────────────────────────────── */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pt-2">
-          <span className="text-[12px] font-medium text-slate-500 dark:text-[#8E92A2] select-none">
+          <span className="text-[12px] font-medium text-slate-500 dark:text-[#9DA2B4] select-none">
             Avançado
           </span>
-          <div className="h-[1px] flex-1 bg-slate-200/80 dark:bg-[#484A54]" />
+          <div className="h-[1px] flex-1 bg-slate-200/80 dark:bg-[#2D3039]" />
         </div>
         <AvancadoTab formData={formData} onChange={onChange} />
       </div>
 
       {/* ─── Ações Inferiores (Conforme referência do sistema) ───── */}
-      <div className="flex items-center gap-4 pt-6 pb-4 border-t border-slate-200/80 dark:border-[#484A54]">
+      <div className="flex items-center gap-4 pt-6 pb-4 border-t border-slate-200/80 dark:border-[#2D3039]">
         <button
           type="button"
           onClick={onSave}
@@ -69,7 +69,7 @@ export const NavegadorTab: React.FC<NavegadorTabProps> = ({
         <button
           type="button"
           onClick={onReset}
-          className="text-[13px] font-medium text-slate-500 hover:text-slate-800 dark:text-[#8E92A2] dark:hover:text-white transition-colors cursor-pointer select-none"
+          className="text-[13px] font-medium text-slate-500 hover:text-slate-800 dark:text-[#9DA2B4] dark:hover:text-white transition-colors cursor-pointer select-none"
         >
           Restaurar configurações padrão
         </button>

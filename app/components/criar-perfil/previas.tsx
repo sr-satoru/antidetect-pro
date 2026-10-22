@@ -211,10 +211,10 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   ];
 
   return (
-    <div className="flex h-[calc(100vh-215px)] max-h-[850px] min-h-[500px] w-full flex-col justify-between rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] p-5 shadow-xs overflow-hidden">
+    <div className="flex h-[calc(100vh-215px)] max-h-[850px] min-h-[500px] w-full flex-col justify-between rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] p-5 shadow-xs overflow-hidden">
       <div className="flex flex-1 min-h-0 flex-col">
         {/* Header do card com título e botão New fingerprint */}
-        <div className="mb-3.5 shrink-0 flex items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] pb-3.5">
+        <div className="mb-3.5 shrink-0 flex items-center justify-between border-b border-slate-200/80 dark:border-[#2D3039] pb-3.5">
           <h3 className="text-[14px] font-semibold tracking-wide text-slate-900 dark:text-white">
             Visão Geral ({formData.kernel === 'AstroBrowser' ? 'AstroBrowser' : 'AstroFox'})
           </h3>
@@ -251,7 +251,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
               key={idx}
               className="grid grid-cols-[130px_minmax(0,1fr)] items-start gap-2.5 leading-snug"
             >
-              <span className="shrink-0 font-normal text-slate-500 dark:text-[#A6A9B6] select-none text-[12px]">
+              <span className="shrink-0 font-normal text-slate-500 dark:text-[#9DA2B4] select-none text-[12px]">
                 {row.label}
               </span>
               <span
@@ -267,7 +267,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       </div>
 
       {/* Rodapé da prévia */}
-      <div className="mt-4 shrink-0 border-t border-slate-200/80 dark:border-[#484A54] pt-3 text-[11px] text-slate-500 dark:text-[#A6A9B6] select-none text-center">
+      <div className="mt-4 shrink-0 border-t border-slate-200/80 dark:border-[#2D3039] pt-3 text-[11px] text-slate-500 dark:text-[#9DA2B4] select-none text-center">
         Presets oficiais carregados de{' '}
         <button
           type="button"
