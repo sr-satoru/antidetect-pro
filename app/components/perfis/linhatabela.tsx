@@ -144,18 +144,18 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   const isStriped = index % 2 === 1;
 
-  // Cores do Zebrado e Seleção Verde Harmonizado
+  // Cores do Zebrado e Seleção Harmonizados com a paleta Extensões
   const rowBg = isSelected
-    ? 'bg-emerald-50/60 dark:bg-emerald-950/25 border-l-[3px] border-l-[#238636] dark:border-l-[#2ea043]'
+    ? 'bg-emerald-50/60 dark:bg-[#2ea043]/15 border-l-[3px] border-l-[#238636] dark:border-l-[#2ea043]'
     : isStriped
-      ? 'bg-slate-50/50 dark:bg-[#18181b] hover:bg-[#F3F2EF] dark:hover:bg-[#27272a]'
-      : 'bg-white dark:bg-[#09090b] hover:bg-[#F3F2EF] dark:hover:bg-[#27272a]';
+      ? 'bg-slate-50/50 dark:bg-[#28292E] hover:bg-slate-100/60 dark:hover:bg-[#32343C]'
+      : 'bg-white dark:bg-[#24252A] hover:bg-slate-100/60 dark:hover:bg-[#32343C]';
 
   const stickyBg = isSelected
-    ? 'bg-emerald-50/80 dark:bg-[#132019]'
+    ? 'bg-emerald-50/80 dark:bg-[#25382B]'
     : isStriped
-      ? 'bg-slate-50/90 dark:bg-[#18181b] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#27272a]'
-      : 'bg-white dark:bg-[#09090b] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#27272a]';
+      ? 'bg-slate-50/90 dark:bg-[#28292E] group-hover:bg-slate-100/80 dark:group-hover:bg-[#32343C]'
+      : 'bg-white dark:bg-[#24252A] group-hover:bg-slate-100/80 dark:group-hover:bg-[#32343C]';
 
   const osKey = (profile.os || 'linux').toLowerCase();
 
@@ -192,7 +192,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   return (
     <tr
-      className={`group h-[60px] border-b border-slate-200/80 dark:border-[#27272a] transition-colors ${rowBg}`}
+      className={`group h-[60px] border-b border-slate-200/80 dark:border-white/[0.06] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td
@@ -393,9 +393,9 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           ref={buttonRef}
           type="button"
           onClick={handleToggleMenu}
-          className={`mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md transition-all ${isMenuOpen
-              ? 'bg-slate-200 text-slate-900 dark:bg-[#383A44] dark:text-white shadow-xs'
-              : 'text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#9EA2AE] dark:hover:bg-[#383A44] dark:hover:text-white'
+          className={`mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-all ${isMenuOpen
+              ? 'bg-slate-200 text-slate-900 dark:bg-[#454750] dark:text-white shadow-xs'
+              : 'text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#A6A9B6] dark:hover:bg-[#3A3B42] dark:hover:text-white'
             }`}
           title="Opções do perfil"
         >

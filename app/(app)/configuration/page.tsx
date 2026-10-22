@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { User, ShieldCheck, Palette, RotateCcw, CheckCircle2 } from 'lucide-react';
+import { User, ShieldCheck, Palette } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { serviceConfiguration, NetworkSettings } from '@/services/configuration';
 import { ContaTab, NavegadorTab, AparenciaTab } from '@/components/configuration';
@@ -120,31 +119,6 @@ export const ConfigurationPage: React.FC = () => {
             <AparenciaTab soundEnabled={soundEnabled} onSoundEnabledChange={setSoundEnabled} />
           </TabsContent>
         </main>
-
-        {/* ═══════════════════════════════════════════════════════════════
-            RODAPÉ FIXO CENTRALIZADO (Glassmorphism Footer)
-        ═══════════════════════════════════════════════════════════════ */}
-        <footer className="flex shrink-0 items-center border-t border-slate-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#1A1B23]/95 backdrop-blur-md px-6 py-3.5">
-          <div className="max-w-4xl mx-auto flex items-center justify-between w-full">
-            <Button
-              variant="ghost"
-              onClick={handleResetAll}
-              className="gap-2 text-xs text-slate-500 hover:text-red-500 dark:text-[#8E92A2] dark:hover:text-red-400"
-            >
-              <RotateCcw size={14} />
-              <span>Restaurar Fábrica</span>
-            </Button>
-
-            <Button
-              variant="default"
-              onClick={handleSaveAll}
-              className="gap-2 px-7 py-2.5 text-xs font-bold shadow-md shadow-[#238636]/25"
-            >
-              <CheckCircle2 size={15} />
-              <span>Salvar Alterações</span>
-            </Button>
-          </div>
-        </footer>
       </Tabs>
     </div>
   );

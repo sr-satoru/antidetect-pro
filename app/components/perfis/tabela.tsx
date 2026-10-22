@@ -62,12 +62,12 @@ export const Tabela: React.FC<TabelaProps> = ({
   }, [isPageDropdownOpen]);
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-[#27272a] bg-white dark:bg-[#18181b] shadow-sm shadow-slate-200/50 dark:shadow-none">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
       <div className="flex-1 custom-scrollbar overflow-auto relative">
         <table className="min-w-full w-full border-collapse text-left text-xs whitespace-nowrap">
           {/* Header */}
-          <thead className="sticky top-0 z-20 border-b border-slate-200 dark:border-[#27272a] bg-[#F8F7F5] dark:bg-[#18181b] text-[11px] font-semibold tracking-wider text-slate-500 dark:text-[#a1a1aa] uppercase select-none">
-            <tr className="h-11">
+          <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] text-[11.5px] font-semibold tracking-wider text-slate-600 dark:text-[#A6A9B6] uppercase select-none">
+            <tr className="h-12">
               <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center">
                 <div className="flex items-center justify-center">
                   <Checkbox
@@ -97,13 +97,13 @@ export const Tabela: React.FC<TabelaProps> = ({
                 Observação
               </th>
               <th className="w-[120px] min-w-[120px] px-3.5 py-2.5">Criação</th>
-              <th className="sticky right-[48px] z-20 w-[124px] max-w-[124px] min-w-[124px] bg-[#F8F7F5] dark:bg-[#161B22] px-3 py-2.5 text-center">
+              <th className="sticky right-[48px] z-20 w-[124px] max-w-[124px] min-w-[124px] bg-[#F8F7F5] dark:bg-[#323338] px-3 py-2.5 text-center">
                 Ação
               </th>
-              <th className="sticky right-0 z-20 w-[48px] max-w-[48px] min-w-[48px] bg-[#F8F7F5] dark:bg-[#161B22] px-2 py-2.5 text-center">
+              <th className="sticky right-0 z-20 w-[48px] max-w-[48px] min-w-[48px] bg-[#F8F7F5] dark:bg-[#323338] px-2 py-2.5 text-center">
                 <SlidersHorizontal
                   size={13}
-                  className="mx-auto text-slate-400 dark:text-[#848D97]"
+                  className="mx-auto text-slate-400 dark:text-[#8E92A2]"
                 />
               </th>
             </tr>
@@ -168,10 +168,10 @@ export const Tabela: React.FC<TabelaProps> = ({
       </div>
 
       {/* Paginação no Rodapé Minimalista */}
-      <div className="relative z-20 mt-auto flex h-12 shrink-0 items-center justify-between border-t border-slate-200 dark:border-[#30363D] bg-[#F8F7F5] dark:bg-[#161B22] px-4 text-xs text-slate-600 dark:text-[#848D97]">
+      <div className="relative z-20 mt-auto flex h-12 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-4 text-xs text-slate-600 dark:text-[#A6A9B6]">
         <div className="flex items-center gap-4">
           <span>
-            Total: <strong className="text-slate-900 dark:text-[#E6EDF3]">{profiles.length}</strong>{' '}
+            Total: <strong className="text-slate-900 dark:text-white">{profiles.length}</strong>{' '}
             perfis
           </span>
           <span>
@@ -186,22 +186,22 @@ export const Tabela: React.FC<TabelaProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-slate-400 dark:text-[#848D97]">1 / 1</span>
+          <span className="font-mono text-xs text-slate-400 dark:text-[#8E92A2]">1 / 1</span>
           <div className="relative" ref={pageDropdownRef}>
             <button
               type="button"
               onClick={() => setIsPageDropdownOpen(!isPageDropdownOpen)}
-              className="flex h-[26px] items-center gap-1.5 rounded-md border border-slate-200 dark:border-[#30363D] bg-white dark:bg-[#21262D] px-2.5 text-[11px] text-slate-700 dark:text-[#848D97] hover:border-slate-300 dark:hover:border-[#848D97] hover:text-slate-900 dark:hover:text-[#E6EDF3] transition-colors cursor-pointer select-none focus:outline-hidden shadow-2xs"
+              className="flex h-[28px] items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] px-2.5 text-[11.5px] text-slate-700 dark:text-[#E4E6EE] hover:border-slate-300 dark:hover:border-[#606373] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden shadow-xs"
             >
               <span>{pageSize} / pág</span>
               <ChevronDown
                 size={12}
-                className={`text-slate-400 dark:text-[#848D97] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#238636] dark:text-[#2ea043]' : ''}`}
+                className={`text-slate-400 dark:text-[#8E92A2] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#238636] dark:text-[#2ea043]' : ''}`}
               />
             </button>
 
             {isPageDropdownOpen && (
-              <div className="absolute bottom-full right-0 mb-1.5 z-50 min-w-[95px] overflow-hidden rounded-md border border-slate-200 dark:border-[#30363D] bg-white dark:bg-[#161B22] py-1 shadow-lg shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/80 animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute bottom-full right-0 mb-1.5 z-50 min-w-[95px] overflow-hidden rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] py-1 shadow-lg shadow-slate-900/10 dark:shadow-2xl dark:shadow-black/80 animate-in fade-in zoom-in-95 duration-100">
                 {['10', '20', '50', '100'].map((size) => (
                   <button
                     key={size}
@@ -210,9 +210,9 @@ export const Tabela: React.FC<TabelaProps> = ({
                       setPageSize(size);
                       setIsPageDropdownOpen(false);
                     }}
-                    className={`flex w-full items-center px-3 py-1 text-[11px] transition-colors cursor-pointer select-none text-left ${pageSize === size
+                    className={`flex w-full items-center px-3 py-1.5 text-[11.5px] transition-colors cursor-pointer select-none text-left ${pageSize === size
                         ? 'bg-emerald-50 text-[#1b6528] dark:bg-emerald-950/30 dark:text-[#7ee787] font-medium'
-                        : 'text-slate-700 dark:text-[#848D97] hover:bg-[#F3F2EF] dark:hover:bg-[#21262D] hover:text-slate-900 dark:hover:text-[#E6EDF3]'
+                        : 'text-slate-700 dark:text-[#A6A9B6] hover:bg-[#F3F2EF] dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white'
                       }`}
                   >
                     {size} / pág
@@ -226,7 +226,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             <button
               type="button"
               disabled
-              className="flex h-[26px] w-[26px] cursor-not-allowed items-center justify-center rounded border border-slate-200 dark:border-[#30363D] bg-white dark:bg-[#21262D] text-slate-400 dark:text-[#848D97] disabled:opacity-40"
+              className="flex h-[28px] w-[28px] cursor-not-allowed items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] text-slate-400 dark:text-[#8E92A2] disabled:opacity-40"
               title="Página anterior"
             >
               <ChevronLeft size={13} />
@@ -234,7 +234,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             <button
               type="button"
               disabled
-              className="flex h-[26px] w-[26px] cursor-not-allowed items-center justify-center rounded border border-slate-200 dark:border-[#30363D] bg-white dark:bg-[#21262D] text-slate-400 dark:text-[#848D97] disabled:opacity-40"
+              className="flex h-[28px] w-[28px] cursor-not-allowed items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] text-slate-400 dark:text-[#8E92A2] disabled:opacity-40"
               title="Próxima página"
             >
               <ChevronRight size={13} />
