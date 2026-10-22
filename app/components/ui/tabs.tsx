@@ -26,7 +26,7 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "relative inline-flex items-center justify-center gap-2 whitespace-nowrap pb-3 pt-3.5 text-[13px] font-medium tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#238636]/40 disabled:pointer-events-none disabled:opacity-50 cursor-pointer select-none text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-[#C4C7D5] data-[state=active]:font-semibold data-[state=active]:text-slate-900 dark:data-[state=active]:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:content-[''] data-[state=active]:after:bg-[#238636] dark:data-[state=active]:after:bg-[#2ea043]",
+      "relative inline-flex items-center justify-center gap-2 whitespace-nowrap pb-3 pt-3.5 text-[13px] font-medium tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/40 disabled:pointer-events-none disabled:opacity-50 cursor-pointer select-none text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-[#C4C7D5] data-[state=active]:font-semibold data-[state=active]:text-slate-900 dark:data-[state=active]:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:content-[''] data-[state=active]:after:bg-slate-900 dark:data-[state=active]:after:bg-white",
       className
     )}
     {...props}

@@ -172,14 +172,14 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
               Tipo
             </label>
             <div className="sm:col-span-9">
-              <div className="inline-flex rounded-lg border border-slate-200 dark:border-[#2E2E38] bg-slate-100 dark:bg-[#15151A] p-1">
+              <div className="inline-flex rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-slate-100/90 dark:bg-[#323338] p-1 gap-1">
                 <button
                   type="button"
                   onClick={() => setActiveTab('file')}
-                  className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
+                  className={`cursor-pointer rounded-lg px-4 py-1.5 text-xs font-medium transition-all ${
                     activeTab === 'file'
-                      ? 'bg-white dark:bg-[#252530] text-slate-900 dark:text-[#F1F1F4] border border-slate-200 dark:border-[#41414E] shadow-2xs'
-                      : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4]'
+                      ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white font-semibold border border-slate-200/50 dark:border-white/10 shadow-xs'
+                      : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   Upload File
@@ -187,10 +187,10 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('web')}
-                  className={`cursor-pointer rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
+                  className={`cursor-pointer rounded-lg px-4 py-1.5 text-xs font-medium transition-all ${
                     activeTab === 'web'
-                      ? 'bg-white dark:bg-[#252530] text-slate-900 dark:text-[#F1F1F4] border border-slate-200 dark:border-[#41414E] shadow-2xs'
-                      : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4]'
+                      ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white font-semibold border border-slate-200/50 dark:border-white/10 shadow-xs'
+                      : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   Loja online (Firefox / Chrome)

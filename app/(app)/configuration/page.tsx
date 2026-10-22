@@ -78,18 +78,16 @@ export const ConfigurationPage: React.FC = () => {
         {/* ═══════════════════════════════════════════════════════════════
             TOP BAR DE NAVEGAÇÃO PREMIUM CENTRALIZADA (Capsule Tabs)
         ═══════════════════════════════════════════════════════════════ */}
-        <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-white/[0.07] bg-white/90 dark:bg-[#1A1B24]/90 backdrop-blur-md px-6 py-2.5">
+        <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-[#484A54] bg-white/90 dark:bg-[#28292E]/90 backdrop-blur-md px-6 py-3">
           <div className="max-w-4xl mx-auto w-full flex items-center justify-center">
-            <TabsList className="bg-slate-100/90 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200/60 dark:border-white/[0.06] flex items-center gap-1 border-b-0">
+            <TabsList className="bg-slate-100/90 dark:bg-[#323338] p-1.5 rounded-xl border border-slate-200/60 dark:border-[#484A54] flex items-center gap-1.5 border-b-0 shadow-xs">
               {tabs.map((tab) => {
-                const IconComponent = tab.icon;
                 return (
                   <TabsTrigger
                     key={tab.id}
                     value={tab.id}
-                    className="rounded-lg px-4 py-2 text-xs font-medium transition-all text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#24252F] data-[state=active]:text-[#2ea043] dark:data-[state=active]:text-[#3fb950] data-[state=active]:font-semibold data-[state=active]:shadow-xs after:hidden gap-2"
+                    className="rounded-lg px-6 py-2.5 text-[13.5px] font-medium transition-all text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white data-[state=active]:bg-white dark:data-[state=active]:bg-[#454750] data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:font-semibold data-[state=active]:shadow-xs data-[state=active]:border data-[state=active]:border-slate-200/50 dark:data-[state=active]:border-white/10 after:hidden cursor-pointer"
                   >
-                    <IconComponent size={14} />
                     <span>{tab.label}</span>
                   </TabsTrigger>
                 );

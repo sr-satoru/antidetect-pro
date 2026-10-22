@@ -42,24 +42,22 @@ export const McpApiPage: React.FC = () => {
       {/* ═══════════════════════════════════════════════════════════════
           MENU SUPERIOR DE ABAS CENTRALIZADO (Estilo Oficial Configuration)
       ═══════════════════════════════════════════════════════════════ */}
-      <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-white/[0.07] bg-white/90 dark:bg-[#1A1B24]/90 backdrop-blur-md px-6 py-2.5 select-none">
+      <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-[#484A54] bg-white/90 dark:bg-[#28292E]/90 backdrop-blur-md px-6 py-3 select-none">
         <div className="max-w-4xl mx-auto w-full flex items-center justify-center">
-          <div className="bg-slate-100/90 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200/60 dark:border-white/[0.06] flex items-center gap-1 border-b-0">
+          <div className="bg-slate-100/90 dark:bg-[#323338] p-1.5 rounded-xl border border-slate-200/60 dark:border-[#484A54] flex items-center gap-1.5 shadow-xs">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
-              const IconComponent = tab.icon;
               return (
                 <button
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id as TabKey)}
-                  className={`rounded-lg px-4 py-2 text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                  className={`rounded-lg px-6 py-2.5 text-[13.5px] font-medium transition-all cursor-pointer ${
                     isActive
-                      ? 'bg-white dark:bg-[#24252F] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
-                      : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-white'
+                      ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white font-semibold shadow-xs border border-slate-200/50 dark:border-white/10'
+                      : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  <IconComponent size={14} />
                   <span>{tab.label}</span>
                 </button>
               );
