@@ -117,8 +117,8 @@ export const LoginPage: React.FC = () => {
       {/* Header superior da página centralizado */}
       <header className="relative z-10 w-full h-16 border-b border-[#232530] bg-[#101116] px-6 flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#00FF66] to-[#00D655] shadow-md shadow-[#00FF66]/20">
-            <Star size={18} className="fill-black stroke-black" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#3366E6] text-white shadow-xs">
+            <Star size={18} className="fill-white stroke-white" />
           </div>
           <div className="flex items-center gap-2.5">
             <span className="font-semibold text-white text-sm tracking-tight">One Star Multilogin</span>
@@ -136,8 +136,8 @@ export const LoginPage: React.FC = () => {
 
           {/* Cabeçalho do Card */}
           <div className="flex items-center gap-3.5 mb-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#00FF66] to-[#00D655] shadow-lg shadow-[#00FF66]/25">
-              <Star size={24} className="fill-black stroke-black" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#3366E6] text-white shadow-xs">
+              <Star size={24} className="fill-white stroke-white" />
             </div>
             <div>
               <h2 className="text-xl font-bold tracking-tight text-white leading-tight">
@@ -206,22 +206,22 @@ export const LoginPage: React.FC = () => {
                 Clique no botão abaixo para abrir a autenticação segura e sincronizar seus perfis neste computador.
               </p>
 
-              {/* Botão Primário Vibrante (Impossível passar despercebido) */}
+              {/* Botão Primário Elegante */}
               <button
                 type="button"
                 disabled={isLoading}
                 onClick={handleConnect}
-                className="w-full flex items-center justify-between rounded-xl bg-gradient-to-r from-[#00FF66] via-[#00F05E] to-[#00D655] hover:brightness-110 active:scale-[0.99] px-5 py-3.5 text-sm font-bold text-black shadow-lg shadow-[#00FF66]/25 disabled:opacity-50 transition-all group cursor-pointer"
+                className="w-full flex items-center justify-between rounded-xl bg-[#3366E6] hover:bg-[#2A58CF] text-white active:scale-[0.99] px-5 py-3.5 text-sm font-semibold shadow-xs disabled:opacity-50 transition-all group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   {isLoading ? (
-                    <Loader2 size={18} className="animate-spin text-black" />
+                    <Loader2 size={18} className="animate-spin text-white" />
                   ) : (
-                    <LogIn size={18} className="text-black stroke-[2.5]" />
+                    <LogIn size={18} className="text-white stroke-[2.5]" />
                   )}
                   <span className="tracking-wide">Conectar Conta Nuvem</span>
                 </div>
-                <ArrowRight size={17} className="text-black stroke-[2.5] group-hover:translate-x-1 transition-transform" />
+                <ArrowRight size={17} className="text-white stroke-[2.5] group-hover:translate-x-1 transition-transform" />
               </button>
 
               {/* Botão Secundário: Voltar para Perfis com Contraste Elegante */}

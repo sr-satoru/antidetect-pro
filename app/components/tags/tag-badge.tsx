@@ -48,7 +48,7 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
           style={{ backgroundColor: styles.color }}
         />
       )}
-      <span className="truncate max-w-[120px]">{name}</span>
+      <span className="truncate max-w-[220px]">{name}</span>
       {onRemove && (
         <button
           type="button"

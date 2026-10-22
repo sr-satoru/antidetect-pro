@@ -66,38 +66,38 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
   const typeConfig = {
     success: {
       cardBg:
-        'bg-gradient-to-r from-emerald-600 to-emerald-500 border border-emerald-400/40 shadow-[0_10px_25px_-5px_rgba(16,185,129,0.35)]',
-      iconBg: 'bg-white/20 text-white',
-      defaultIcon: <CheckCircle2 size={16} strokeWidth={2.5} className="text-white" />,
+        'bg-slate-900 dark:bg-[#1A1A21] border border-emerald-500/40 text-white shadow-xl',
+      iconBg: 'bg-emerald-500/20 text-emerald-400',
+      defaultIcon: <CheckCircle2 size={16} strokeWidth={2.5} className="text-emerald-400" />,
     },
     info: {
       cardBg:
-        'bg-gradient-to-r from-sky-600 to-sky-500 border border-sky-400/40 shadow-[0_10px_25px_-5px_rgba(14,165,233,0.35)]',
-      iconBg: 'bg-white/20 text-white',
-      defaultIcon: <Info size={16} strokeWidth={2.5} className="text-white" />,
+        'bg-slate-900 dark:bg-[#1A1A21] border border-sky-500/40 text-white shadow-xl',
+      iconBg: 'bg-sky-500/20 text-sky-400',
+      defaultIcon: <Info size={16} strokeWidth={2.5} className="text-sky-400" />,
     },
     warning: {
       cardBg:
-        'bg-gradient-to-r from-amber-600 to-amber-500 border border-amber-400/40 shadow-[0_10px_25px_-5px_rgba(245,158,11,0.35)]',
-      iconBg: 'bg-white/20 text-white',
-      defaultIcon: <AlertTriangle size={16} strokeWidth={2.5} className="text-white" />,
+        'bg-slate-900 dark:bg-[#1A1A21] border border-amber-500/40 text-white shadow-xl',
+      iconBg: 'bg-amber-500/20 text-amber-400',
+      defaultIcon: <AlertTriangle size={16} strokeWidth={2.5} className="text-amber-400" />,
     },
     error: {
       cardBg:
-        'bg-gradient-to-r from-rose-600 to-rose-500 border border-rose-400/40 shadow-[0_10px_25px_-5px_rgba(244,63,94,0.35)]',
-      iconBg: 'bg-white/20 text-white',
-      defaultIcon: <AlertCircle size={16} strokeWidth={2.5} className="text-white" />,
+        'bg-slate-900 dark:bg-[#1A1A21] border border-rose-500/40 text-white shadow-xl',
+      iconBg: 'bg-rose-500/20 text-rose-400',
+      defaultIcon: <AlertCircle size={16} strokeWidth={2.5} className="text-rose-400" />,
     },
     loading: {
       cardBg:
-        'bg-gradient-to-r from-emerald-600 to-emerald-500 border border-emerald-400/40 shadow-[0_10px_25px_-5px_rgba(16,185,129,0.35)]',
-      iconBg: 'bg-white/20 text-white',
-      defaultIcon: <Loader2 size={16} className="animate-spin text-white" />,
+        'bg-slate-900 dark:bg-[#1A1A21] border border-[#3366E6]/40 text-white shadow-xl',
+      iconBg: 'bg-[#3366E6]/20 text-[#5E88F0]',
+      defaultIcon: <Loader2 size={16} className="animate-spin text-[#5E88F0]" />,
     },
     default: {
       cardBg:
-        'bg-gradient-to-r from-emerald-600 to-emerald-500 border border-emerald-400/40 shadow-[0_10px_25px_-5px_rgba(16,185,129,0.35)]',
-      iconBg: 'bg-white/20 text-white',
+        'bg-slate-900 dark:bg-[#1A1A21] border border-slate-700 dark:border-[#2E2E38] text-white shadow-xl',
+      iconBg: 'bg-white/10 text-white',
       defaultIcon: <CheckCircle2 size={16} strokeWidth={2.5} className="text-white" />,
     },
   }[type];

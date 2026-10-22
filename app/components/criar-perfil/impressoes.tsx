@@ -245,12 +245,12 @@ const NoisePill: React.FC<{
     >
       <div
         className={`h-4 w-8 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${checked
-            ? 'bg-emerald-500 dark:bg-[#00FF66] shadow-[0_0_8px_rgba(16,185,129,0.35)] dark:shadow-[0_0_8px_rgba(0,255,102,0.35)]'
+            ? 'bg-[#3366E6]'
             : 'bg-slate-300 dark:bg-[#333541]'
           }`}
       >
         <div
-          className={`h-3 w-3 rounded-full transition-transform duration-200 ease-in-out ${checked ? 'translate-x-4 bg-white dark:bg-[#090A0F]' : 'translate-x-0 bg-white'
+          className={`h-3 w-3 rounded-full bg-white transition-transform duration-200 ease-in-out ${checked ? 'translate-x-4' : 'translate-x-0'
             }`}
         />
       </div>

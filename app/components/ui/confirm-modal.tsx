@@ -71,7 +71,7 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
       case 'primary':
       default:
         return (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 dark:bg-[#00FF66]/10 text-emerald-600 dark:text-[#00FF66] border border-emerald-500/20 dark:border-[#00FF66]/25 shadow-sm shadow-emerald-500/10">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 dark:bg-[#3366E6]/15 text-[#3366E6] dark:text-[#5E88F0] border border-blue-500/20 dark:border-[#3366E6]/30 shadow-xs">
             <HelpCircle size={20} />
           </div>
         );
@@ -81,13 +81,13 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
   const getConfirmButtonClasses = (variant?: ConfirmVariant) => {
     switch (variant) {
       case 'danger':
-        return 'bg-gradient-to-r from-red-500 to-red-600 hover:brightness-110 text-white shadow-md shadow-red-500/25';
+        return 'bg-[#E11D48] hover:bg-[#BE123C] text-white shadow-xs';
       case 'warning':
-        return 'bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-110 text-white shadow-md shadow-amber-500/25';
+        return 'bg-[#D97706] hover:bg-[#B45309] text-white shadow-xs';
       case 'info':
       case 'primary':
       default:
-        return 'bg-slate-900 hover:bg-slate-800 text-white dark:bg-[#1E2028] dark:border dark:border-white/30 dark:hover:border-white dark:hover:bg-[#252834] shadow-sm';
+        return 'bg-[#3366E6] hover:bg-[#2A58CF] text-white shadow-xs';
     }
   };
 

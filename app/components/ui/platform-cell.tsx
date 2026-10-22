@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Copy, Check, ExternalLink, ShieldCheck, KeyRound } from 'lucide-react';
+import { toast } from 'sonner';
 
 export interface PlatformAccount {
   id?: string;
@@ -188,25 +188,33 @@ export function resolvePlatformKey(raw?: string): string {
 }
 
 /**
- * Renderiza o ícone de marca redondo (18x18 ou 20x20)
+ * Renderiza o ícone de marca redondo (16x16, 18x18 ou 22x22)
  */
 export const PlatformBrandIcon: React.FC<{
   platform: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   className?: string;
 }> = ({ platform, size = 'sm', className = '' }) => {
   const key = resolvePlatformKey(platform);
   const cfg = PLATFORM_CONFIGS[key];
 
   const sizeClasses =
-    size === 'sm'
+    size === 'xs'
+      ? 'w-4 h-4 text-[8px]'
+      : size === 'sm'
       ? 'w-[18px] h-[18px] text-[9.5px]'
       : size === 'md'
       ? 'w-[22px] h-[22px] text-[10.5px]'
       : 'w-[26px] h-[26px] text-[12px]';
 
   const iconSizeClass =
-    size === 'sm' ? 'w-3 h-3' : size === 'md' ? 'w-3.5 h-3.5' : 'w-4 h-4';
+    size === 'xs'
+      ? 'w-2.5 h-2.5'
+      : size === 'sm'
+      ? 'w-3 h-3'
+      : size === 'md'
+      ? 'w-3.5 h-3.5'
+      : 'w-4 h-4';
 
   if (cfg) {
     return (
@@ -234,7 +242,7 @@ export const PlatformBrandIcon: React.FC<{
   return (
     <span
       title={platform || 'Plataforma'}
-      className={`shrink-0 inline-flex items-center justify-center rounded-full bg-slate-200 dark:bg-[#2C2E38] text-slate-700 dark:text-[#E1E4EE] font-bold border border-slate-300 dark:border-white/10 select-none shadow-xs ${sizeClasses} ${className}`}
+      className={`shrink-0 inline-flex items-center justify-center rounded-full bg-slate-400 text-white font-bold select-none shadow-xs ${sizeClasses} ${className}`}
     >
       {initial}
     </span>
@@ -247,17 +255,21 @@ export const PlatformBrandIcon: React.FC<{
 export function extractProfilePlatforms(profile: any): PlatformAccount[] {
   if (!profile) return [];
 
-  // 1. Tentar direto em `profile.platformAccounts`
-  if (Array.isArray(profile.platformAccounts) && profile.platformAccounts.length > 0) {
-    return profile.platformAccounts.filter((a: any) => a && (a.platform || a.username || a.customDomain));
+  // 1. Tentar direto em `profile.platformAccounts` ou `profile.platform_accounts`
+  let direct = profile.platformAccounts || profile.platform_accounts;
+  if (typeof direct === 'string') {
+    try {
+      direct = JSON.parse(direct);
+    } catch {
+      direct = null;
+    }
+  }
+  if (Array.isArray(direct) && direct.length > 0) {
+    const list = direct.filter((a: any) => a && (a.platform || a.username || a.customDomain || a.password));
+    if (list.length > 0) return list;
   }
 
-  // 2. Tentar em `profile.platform_accounts`
-  if (Array.isArray(profile.platform_accounts) && profile.platform_accounts.length > 0) {
-    return profile.platform_accounts.filter((a: any) => a && (a.platform || a.username || a.customDomain));
-  }
-
-  // 3. Tentar inspecionar dentro de `profile.fingerprint_json`
+  // 2. Tentar inspecionar dentro de `profile.fingerprint_json`
   let fp: any = null;
   if (typeof profile.fingerprint_json === 'string') {
     try {
@@ -270,12 +282,20 @@ export function extractProfilePlatforms(profile: any): PlatformAccount[] {
   }
 
   if (fp) {
-    const fromFp = fp.platform_accounts || fp.platformAccounts;
+    let fromFp = fp.platform_accounts || fp.platformAccounts;
+    if (typeof fromFp === 'string') {
+      try {
+        fromFp = JSON.parse(fromFp);
+      } catch {
+        fromFp = null;
+      }
+    }
     if (Array.isArray(fromFp) && fromFp.length > 0) {
-      return fromFp.filter((a: any) => a && (a.platform || a.username || a.customDomain));
+      const list = fromFp.filter((a: any) => a && (a.platform || a.username || a.customDomain || a.password));
+      if (list.length > 0) return list;
     }
 
-    // Fallback para platform_url configurado
+    // Fallback para platform_url configurado no fingerprint
     if (fp.platform_url && typeof fp.platform_url === 'string') {
       try {
         const u = new URL(
@@ -286,7 +306,9 @@ export function extractProfilePlatforms(profile: any): PlatformAccount[] {
           {
             platform: host,
             customDomain: host,
-            username: '',
+            username: fp.username || profile.username || '',
+            password: fp.password || profile.password || '',
+            twoFactorKey: fp.twoFactorKey || profile.twofa || profile.twoFactorKey || '',
           },
         ];
       } catch {
@@ -294,21 +316,25 @@ export function extractProfilePlatforms(profile: any): PlatformAccount[] {
           {
             platform: fp.platform_url,
             customDomain: fp.platform_url,
-            username: '',
+            username: fp.username || profile.username || '',
+            password: fp.password || profile.password || '',
+            twoFactorKey: fp.twoFactorKey || profile.twofa || profile.twoFactorKey || '',
           },
         ];
       }
     }
   }
 
-  // 4. Fallback legado em `profile.platform`
+  // 3. Fallback legado em `profile.platform`
   if (profile.platform) {
     if (typeof profile.platform === 'object') {
       return [
         {
-          platform: profile.platform.name || 'other',
-          username: profile.platform.handle || profile.platform.username || '',
+          platform: profile.platform.name || profile.platform.platform || 'other',
+          username: profile.platform.handle || profile.platform.username || profile.username || '',
+          password: profile.platform.password || profile.password || '',
           customDomain: profile.platform.domain || '',
+          twoFactorKey: profile.platform.twofa || profile.platform.twoFactorKey || profile.twofa || profile.twoFactorKey || '',
         },
       ];
     }
@@ -317,19 +343,35 @@ export function extractProfilePlatforms(profile: any): PlatformAccount[] {
         {
           platform: profile.platform,
           customDomain: profile.platform,
-          username: '',
+          username: profile.username || '',
+          password: profile.password || '',
+          twoFactorKey: profile.twofa || profile.twoFactorKey || '',
         },
       ];
     }
   }
 
-  // 5. Fallback em `profile.platformUrl`
+  // 4. Fallback legado em `profile.platformUrl`
   if (profile.platformUrl && typeof profile.platformUrl === 'string') {
     return [
       {
         platform: profile.platformUrl,
         customDomain: profile.platformUrl,
-        username: '',
+        username: profile.username || '',
+        password: profile.password || '',
+        twoFactorKey: profile.twofa || profile.twoFactorKey || '',
+      },
+    ];
+  }
+
+  // 5. Fallback isolado caso tenha username ou password
+  if (profile.username || profile.password) {
+    return [
+      {
+        platform: 'other',
+        username: profile.username || '',
+        password: profile.password || '',
+        twoFactorKey: profile.twofa || profile.twoFactorKey || '',
       },
     ];
   }
@@ -338,14 +380,14 @@ export function extractProfilePlatforms(profile: any): PlatformAccount[] {
 }
 
 /**
- * Componente principal desacoplado da Célula de Plataforma da Tabela.
- * Apresenta a visualização condensada na linha e o Tooltip Popover Flutuante
- * rico (igual ao AdsPower / AliasMode) com portaling para nunca ser cortado pela tabela.
+ * Componente da Célula de Plataforma da Tabela.
+ * Exibe o ícone de marca + nome na linha, e um tooltip flutuante ultra-minimalista,
+ * limpo e sem poluição visual (com fundo cinza claro e indicador em seta estilo AdsPower/AliasMode).
  */
 export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
+  const [coords, setCoords] = useState<{ top: number; left: number; arrowLeft: number } | null>(null);
+  const [position, setPosition] = useState<'top' | 'bottom'>('top');
 
   const triggerRef = useRef<HTMLDivElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
@@ -357,22 +399,27 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
   const updatePosition = () => {
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
-    const popoverWidth = 280;
-    const padding = 12;
+    const popoverWidth = accounts.length > 1 ? 250 : 170;
+    const padding = 10;
 
-    // Calcular x evitando overflow na borda direita da tela
-    let left = rect.left;
+    // Alinhamento horizontal baseado no centro do gatilho
+    const triggerCenterX = rect.left + Math.min(rect.width, 130) / 2;
+
+    let left = triggerCenterX - popoverWidth / 2;
     if (left + popoverWidth > window.innerWidth - padding) {
       left = window.innerWidth - popoverWidth - padding;
     }
     if (left < padding) left = padding;
 
-    // Se estiver muito embaixo da tela, exibe acima da célula; caso contrário, abaixo
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const shouldShowAbove = spaceBelow < 220;
-    const top = shouldShowAbove ? rect.top - 8 : rect.bottom + 6;
+    // Posição da seta indicadora relativa à borda esquerda do balão
+    const arrowLeft = Math.max(14, Math.min(popoverWidth - 14, triggerCenterX - left));
 
-    setCoords({ top, left });
+    // Exibe acima com seta para baixo se houver espaço na tela
+    const showAbove = rect.top > 90;
+    const top = showAbove ? rect.top - 7 : rect.bottom + 7;
+
+    setPosition(showAbove ? 'top' : 'bottom');
+    setCoords({ top, left, arrowLeft });
   };
 
   const handleMouseEnter = () => {
@@ -387,7 +434,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
   const handleMouseLeave = () => {
     hideTimeoutRef.current = setTimeout(() => {
       setIsOpen(false);
-    }, 150);
+    }, 120);
   };
 
   // Re-calcular posição em scroll/resize
@@ -400,15 +447,13 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
       window.removeEventListener('scroll', handleScrollOrResize, true);
       window.removeEventListener('resize', handleScrollOrResize);
     };
-  }, [isOpen]);
+  }, [isOpen, accounts]);
 
-  const handleCopy = (text: string, id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleCopy = (text?: string, e?: React.MouseEvent) => {
+    if (!text) return;
+    if (e) e.stopPropagation();
     navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => {
-      setCopiedId(null);
-    }, 1500);
+    toast.success(`Copiado: ${text}`);
   };
 
   // 1. Estado Vazio: perfil sem contas de plataforma
@@ -425,7 +470,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
     );
   }
 
-  // 2. Conta principal exibida na célula
+  // 2. Conta principal exibida na célula da tabela
   const primary = accounts[0];
   const totalCount = accounts.length;
   const platformName = PLATFORM_CONFIGS[resolvePlatformKey(primary.platform)]?.name || primary.platform;
@@ -449,7 +494,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
               {primary.username || platformName}
             </span>
 
-            {/* Badge de contador se houver múltiplas contas vinculadas */}
+            {/* Contador sutil se houver mais de uma conta vinculada */}
             {totalCount > 1 && (
               <span className="shrink-0 px-1 py-0.2 rounded bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-400 text-[9.5px] font-semibold border border-blue-200 dark:border-blue-900/60">
                 +{totalCount - 1}
@@ -457,14 +502,14 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
             )}
           </div>
 
-          {/* Subtítulo: Senha ou domínio sutil */}
+          {/* Subtítulo: Senha oculta ou domínio */}
           <span className="text-[10px] text-slate-400 dark:text-[#8D90A0] truncate">
             {primary.password ? '••••••••' : primary.customDomain || platformName}
           </span>
         </div>
       </div>
 
-      {/* 3. Popover Flutuante Portaled (estilo AdsPower / AliasMode) */}
+      {/* 3. Tooltip Popover Flutuante Minimalista (conforme imagem do usuário) */}
       {isOpen &&
         coords &&
         typeof document !== 'undefined' &&
@@ -477,119 +522,72 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
               position: 'fixed',
               top: `${coords.top}px`,
               left: `${coords.left}px`,
+              transform: position === 'top' ? 'translateY(-100%)' : 'translateY(0)',
               zIndex: 99999,
             }}
-            className="w-[290px] rounded-xl border border-slate-200 dark:border-[#2D303C] bg-white/95 dark:bg-[#1A1C24]/95 backdrop-blur-md shadow-2xl p-3 text-slate-800 dark:text-[#D5D8E2] text-left animate-in fade-in zoom-in-95 duration-100 select-none"
+            className="w-max max-w-[340px] rounded-[10px] bg-[#C0C2C8] shadow-lg shadow-black/25 px-3 py-2 text-left animate-in fade-in zoom-in-95 duration-100 select-none pointer-events-auto"
           >
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-[#282A35]">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-[#7A7F90]">
-                Plataformas Vinculadas ({accounts.length})
-              </span>
-              <span className="text-[10px] text-slate-400 dark:text-[#686C7D]">
-                {profile.name || 'Perfil'}
-              </span>
-            </div>
+            {/* Seta indicadora (caret) apontando diretamente para o elemento */}
+            <div
+              style={{ left: `${coords.arrowLeft}px` }}
+              className={`absolute -translate-x-1/2 w-0 h-0 border-solid pointer-events-none ${
+                position === 'top'
+                  ? 'top-full border-t-[#C0C2C8] border-t-[5px] border-x-[5px] border-x-transparent border-b-0'
+                  : 'bottom-full border-b-[#C0C2C8] border-b-[5px] border-x-[5px] border-x-transparent border-t-0'
+              }`}
+            />
 
-            <div className="flex flex-col gap-2.5 max-h-[300px] overflow-y-auto pr-0.5 scrollbar-thin">
+            {/* Grid minimalista de contas (1 ou 2 colunas) */}
+            <div
+              className={`grid ${
+                accounts.length > 1 ? 'grid-cols-2 gap-x-4 gap-y-2' : 'grid-cols-1 gap-y-1.5'
+              }`}
+            >
               {accounts.map((acc, idx) => {
-                const pKey = resolvePlatformKey(acc.platform);
-                const info = PLATFORM_CONFIGS[pKey];
-                const accId = acc.id || `acc-${idx}`;
+                const username = acc.username;
+                const password = acc.password;
+                const subtext = password || acc.twoFactorKey || acc.customDomain;
 
                 return (
                   <div
-                    key={accId}
-                    className="flex flex-col gap-1 p-2 rounded-lg bg-slate-50 dark:bg-[#20222D] border border-slate-100 dark:border-[#2C2E3B] transition-colors"
+                    key={acc.id || idx}
+                    className="flex flex-col min-w-[90px] max-w-[155px] leading-tight"
                   >
-                    {/* Linha 1: Ícone + Usuário + Ação de Copiar */}
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <PlatformBrandIcon platform={acc.platform} size="sm" />
-                        <div className="flex flex-col min-w-0">
-                          <span
-                            title={acc.username || info?.name || acc.platform}
-                            className="text-[12px] font-semibold text-slate-900 dark:text-white truncate"
-                          >
-                            {acc.username || (
-                              <span className="text-slate-400 dark:text-slate-500 italic font-normal">
-                                Sem usuário
-                              </span>
-                            )}
-                          </span>
-                          <span className="text-[10px] text-slate-400 dark:text-[#8D90A0]">
-                            {info?.name || acc.platform}
-                          </span>
-                        </div>
-                      </div>
-
-                      {acc.username && (
-                        <button
-                          type="button"
-                          onClick={(e) => handleCopy(acc.username!, `user-${accId}`, e)}
-                          title="Copiar usuário"
-                          className="shrink-0 p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-[#2E3140] transition-colors cursor-pointer"
-                        >
-                          {copiedId === `user-${accId}` ? (
-                            <Check size={12} className="text-emerald-500" />
-                          ) : (
-                            <Copy size={12} />
-                          )}
-                        </button>
-                      )}
+                    {/* Linha 1: Ícone + Usuário */}
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {acc.platform ? (
+                        <PlatformBrandIcon platform={acc.platform} size="xs" />
+                      ) : null}
+                      <span
+                        onClick={(e) => handleCopy(username || acc.platform, e)}
+                        className="text-[12px] font-semibold text-[#18181b] tracking-tight truncate cursor-pointer hover:opacity-75 transition-opacity"
+                        title={username ? `Usuário: ${username} (clique para copiar)` : undefined}
+                      >
+                        {username || acc.platform || 'Conta'}
+                      </span>
                     </div>
 
-                    {/* Linha 2: Senha / Domínio / 2FA se existirem */}
-                    {(acc.password || acc.customDomain || acc.twoFactorKey) && (
-                      <div className="mt-1 pt-1 border-t border-slate-200/60 dark:border-white/5 flex flex-col gap-0.5 text-[10.5px]">
-                        {acc.password && (
-                          <div className="flex items-center justify-between text-slate-500 dark:text-[#9A9EB0] font-mono">
-                            <span className="flex items-center gap-1">
-                              <KeyRound size={10} className="text-slate-400 shrink-0" />
-                              <span className="truncate max-w-[170px]">{acc.password}</span>
-                            </span>
-                            <button
-                              type="button"
-                              onClick={(e) => handleCopy(acc.password!, `pass-${accId}`, e)}
-                              title="Copiar senha"
-                              className="p-0.5 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer"
-                            >
-                              {copiedId === `pass-${accId}` ? (
-                                <Check size={10} className="text-emerald-500" />
-                              ) : (
-                                <Copy size={10} />
-                              )}
-                            </button>
-                          </div>
-                        )}
-
-                        {acc.twoFactorKey && (
-                          <div className="flex items-center justify-between text-slate-500 dark:text-[#9A9EB0] font-mono">
-                            <span className="flex items-center gap-1 text-[10px]">
-                              <ShieldCheck size={10} className="text-amber-500 shrink-0" />
-                              <span className="truncate max-w-[170px]">2FA: {acc.twoFactorKey}</span>
-                            </span>
-                            <button
-                              type="button"
-                              onClick={(e) => handleCopy(acc.twoFactorKey!, `2fa-${accId}`, e)}
-                              title="Copiar chave 2FA"
-                              className="p-0.5 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer"
-                            >
-                              {copiedId === `2fa-${accId}` ? (
-                                <Check size={10} className="text-emerald-500" />
-                              ) : (
-                                <Copy size={10} />
-                              )}
-                            </button>
-                          </div>
-                        )}
-
-                        {acc.customDomain && (
-                          <div className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-[#7A7F90] truncate">
-                            <ExternalLink size={9} className="shrink-0" />
-                            <span className="truncate">{acc.customDomain}</span>
-                          </div>
-                        )}
-                      </div>
+                    {/* Linha 2: Senha / Código / Domínio alinhado abaixo do texto */}
+                    {subtext && (
+                      <span
+                        onClick={(e) => (password || acc.twoFactorKey) && handleCopy(subtext, e)}
+                        className={`text-[10.5px] font-mono text-[#52525b] truncate ${
+                          acc.platform ? 'pl-[22px]' : ''
+                        } ${
+                          password || acc.twoFactorKey
+                            ? 'cursor-pointer hover:opacity-75 transition-opacity'
+                            : ''
+                        }`}
+                        title={
+                          password
+                            ? `Senha: ${password} (clique para copiar)`
+                            : acc.twoFactorKey
+                            ? `2FA: ${acc.twoFactorKey} (clique para copiar)`
+                            : subtext
+                        }
+                      >
+                        {subtext}
+                      </span>
                     )}
                   </div>
                 );
@@ -603,3 +601,4 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
 };
 
 export default PlatformCell;
+

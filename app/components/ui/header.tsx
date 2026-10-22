@@ -7,6 +7,8 @@ import {
   LogOut,
   Sun,
   Moon,
+  User,
+  ChevronRight,
 } from 'lucide-react';
 import { serviceSync } from '@/services/sync/service.sync';
 
@@ -60,7 +62,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     if (path.startsWith('/api-mcp')) return 'API & Protocolo MCP';
     if (path.startsWith('/membros')) return 'Gerenciamento de Equipe';
     if (path.startsWith('/logs')) return 'Auditoria & Logs';
-    if (path.startsWith('/configuration')) return 'Configurações Globais';
+    if (path.startsWith('/configuration') || path.startsWith('/configuracoes')) return 'Configurações Globais';
     return 'Painel de Controle';
   };
 
@@ -111,38 +113,53 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         {/* Separador sutil */}
         <div className="w-px h-5 bg-slate-200 dark:bg-[#2E2E38] mx-1" />
 
-        {/* Account Button Estilo AliasMode (.account-button) */}
-        {!user?.is_offline && user?.email ? (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2.5 rounded-full border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] hover:bg-slate-100/80 dark:hover:bg-[#24242C] pl-1 pr-3 py-1 select-none shadow-2xs transition-all">
-              <div className="w-6.5 h-6.5 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-xs font-bold text-white shadow-xs">
-                {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="text-[12px] font-semibold text-slate-900 dark:text-[#F1F1F4] leading-tight truncate max-w-[130px]">
-                  {user?.email || `@${user?.username}`}
-                </span>
-                <span className="text-[9.5px] text-emerald-600 dark:text-[#52C41A] leading-tight font-medium">
-                  {cloudOnline ? '☁️ Sincronizado' : '⚡ Conectado'}
-                </span>
-              </div>
-            </div>
+        {/* Botão de Conta estilo AliasMode (.account-button) que direciona para Configurações */}
+        <button
+          type="button"
+          onClick={() => navigate('/configuration')}
+          title="Abrir Conta & Configurações"
+          aria-label="Abrir Conta e Configurações"
+          className={`group flex items-center gap-2.5 h-[38px] max-w-[230px] pl-1.5 pr-2.5 py-1 rounded-full border transition-all duration-150 cursor-pointer text-left select-none active:scale-[0.98] shadow-2xs ${
+            location.pathname === '/configuration' || location.pathname === '/configuracoes'
+              ? 'border-[#3366E6] bg-[#EEF3FF] dark:bg-[#151F38] dark:border-[#3B66D4] ring-2 ring-[#3366E6]/20'
+              : 'border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] hover:bg-slate-100 dark:hover:bg-[#24242C] hover:border-slate-300 dark:hover:border-[#3E4150]'
+          }`}
+        >
+          {/* Avatar com gradiente e micro-sombra estilo AliasMode */}
+          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white shadow-xs font-bold text-xs transition-transform group-hover:scale-105 bg-gradient-to-tr from-[#3366E6] to-[#6366F1]">
+            {!user?.is_offline && user?.email ? (
+              user?.username ? user.username.charAt(0).toUpperCase() : 'U'
+            ) : (
+              <User size={14} className="text-white" />
+            )}
+          </div>
 
-            <button
-              type="button"
-              onClick={logout}
-              title="Desconectar da Nuvem"
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-400 dark:text-[#787C8A] transition-colors hover:bg-red-50 dark:hover:bg-[#2B1B20] hover:text-red-500 dark:hover:text-[#FF6B6B] border border-transparent hover:border-red-200 dark:hover:border-red-900/30"
-            >
-              <LogOut size={14} />
-            </button>
+          {/* Dados da identidade (who) */}
+          <div className="flex flex-col min-w-0 leading-tight">
+            <b className="text-[12px] font-semibold text-slate-900 dark:text-[#F1F1F4] truncate max-w-[125px]">
+              {!user?.is_offline && user?.email ? user.email : 'Workspace Local'}
+            </b>
+            <span className="text-[10px] text-slate-500 dark:text-[#90909D] truncate flex items-center gap-1">
+              {!user?.is_offline ? (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span>{user?.plan ? `${user.plan.toUpperCase()} · Nuvem` : (cloudOnline ? '☁️ Sincronizado' : '⚡ Conectado')}</span>
+                </>
+              ) : (
+                <>
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-[#66666F] shrink-0" />
+                  <span>Modo Local Seguro</span>
+                </>
+              )}
+            </span>
           </div>
-        ) : (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] select-none shadow-2xs text-xs">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 shadow-xs" />
-            <span className="font-medium text-[11.5px] text-slate-700 dark:text-[#C9C9D2]">Modo Local Seguro</span>
-          </div>
-        )}
+
+          {/* Seta Chevron Right para indicar navegação */}
+          <ChevronRight
+            size={14}
+            className="ml-auto text-slate-400 dark:text-[#76736D] group-hover:text-slate-700 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0"
+          />
+        </button>
       </div>
     </header>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { TagBadge } from '../tags/tag-badge';
 import { serviceTags } from '../../services/tags/service.tags';
@@ -63,8 +63,8 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
     const rect = triggerRef.current.getBoundingClientRect();
     const triggerCenterX = rect.left + rect.width / 2;
 
-    const popoverWidth = popoverRef.current ? popoverRef.current.offsetWidth : 280;
-    const popoverHeight = popoverRef.current ? popoverRef.current.offsetHeight : 44;
+    const popoverWidth = popoverRef.current ? popoverRef.current.offsetWidth : 460;
+    const popoverHeight = popoverRef.current ? popoverRef.current.offsetHeight : 68;
     const padding = 12;
 
     let left = triggerCenterX - popoverWidth / 2;
@@ -98,9 +98,14 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
     }, 150);
   };
 
-  useEffect(() => {
+  // Mede as dimensões reais do popover antes do paint para calcular posição e seta exatas
+  useLayoutEffect(() => {
     if (!isOpen) return;
     updatePosition();
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
     const handleScrollOrResize = () => updatePosition();
     window.addEventListener('scroll', handleScrollOrResize, true);
     window.addEventListener('resize', handleScrollOrResize);
@@ -116,9 +121,9 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
 
   return (
     <>
-      <div className={`flex w-full items-center justify-between gap-1.5 overflow-hidden ${className}`}>
+      <div className={`flex w-full items-center justify-between gap-1.5 overflow-hidden select-none ${className}`}>
         {totalTags === 0 ? (
-          <span className="text-slate-400 dark:text-[#9EA2AE] select-none text-xs">-</span>
+          <span className="text-slate-400 dark:text-[#9EA2AE] text-xs">-</span>
         ) : totalTags === 1 ? (
           <div className="flex flex-col gap-1 items-start justify-center min-w-0 max-w-[145px]">
             <TagBadge
@@ -126,7 +131,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
               color={tagsList[0].color}
               variant="solid-pastel"
               showDot={false}
-              className="max-w-[135px]"
+              className="max-w-[130px]"
             />
           </div>
         ) : totalTags === 2 ? (
@@ -136,25 +141,25 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
               color={tagsList[0].color}
               variant="solid-pastel"
               showDot={false}
-              className="max-w-[135px]"
+              className="max-w-[130px]"
             />
             <TagBadge
               name={tagsList[1].name}
               color={tagsList[1].color}
               variant="solid-pastel"
               showDot={false}
-              className="max-w-[135px]"
+              className="max-w-[130px]"
             />
           </div>
         ) : (
-          /* Mais de 2 tags: Tag 1 na linha superior, Tag 2 + contador (+N) na linha inferior */
+          /* Quando houver mais de 2 tags: Linha 1 = Tag 1, Linha 2 = Tag 2 + contador (+N) */
           <div className="flex flex-col gap-1 items-start justify-center min-w-0 max-w-[145px]">
             <TagBadge
               name={tagsList[0].name}
               color={tagsList[0].color}
               variant="solid-pastel"
               showDot={false}
-              className="max-w-[135px]"
+              className="max-w-[130px]"
             />
             <div className="flex items-center gap-1.5 min-w-0">
               <TagBadge
@@ -162,7 +167,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
                 color={tagsList[1].color}
                 variant="solid-pastel"
                 showDot={false}
-                className="max-w-[90px]"
+                className="max-w-[85px]"
               />
               <button
                 ref={triggerRef}
@@ -182,7 +187,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
           </div>
         )}
 
-        {/* Botão de Editar Etiquetas (visível ao passar o mouse na linha) */}
+        {/* Botão de Editar Etiquetas (aparece ao passar o mouse na linha) */}
         <button
           type="button"
           onClick={(e) => {
@@ -196,7 +201,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
         </button>
       </div>
 
-      {/* Tooltip flutuante exibindo todas as tags (estilo Dolphin Anty) */}
+      {/* Tooltip flutuante com todas as etiquetas lado a lado, quebrando linha sem scroll (fiel à imagem) */}
       {isOpen &&
         coords &&
         typeof document !== 'undefined' &&
@@ -211,7 +216,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
               left: `${coords.left}px`,
               zIndex: 99999,
             }}
-            className="rounded-lg border border-[#B8BCC8] bg-[#D4D6DC] dark:bg-[#D4D6DC] text-slate-800 shadow-xl shadow-black/30 px-2.5 py-2 select-none animate-in fade-in zoom-in-95 duration-100 flex items-center gap-1.5 flex-wrap max-w-[420px] max-h-[160px] overflow-y-auto custom-scrollbar"
+            className="rounded-lg border border-[#B8BCC8] bg-[#D4D6DC] dark:bg-[#D4D6DC] text-slate-800 shadow-xl shadow-black/30 px-3 py-2.5 select-none animate-in fade-in zoom-in-95 duration-100 flex items-center gap-1.5 flex-wrap w-max max-w-[485px]"
           >
             {tagsList.map((tag, idx) => (
               <TagBadge
@@ -220,7 +225,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
                 color={tag.color}
                 variant="solid-pastel"
                 showDot={false}
-                className="shadow-2xs text-[11px]"
+                className="shadow-2xs text-[11px] leading-tight"
               />
             ))}
 

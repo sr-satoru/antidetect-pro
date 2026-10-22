@@ -51,10 +51,10 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           checked={checked}
           disabled={disabled}
           onChange={onChange}
-          className={`peer appearance-none cursor-pointer border transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 dark:focus-visible:ring-[#00FF66]/50 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#181920] ${sizeClasses} ${
+          className={`peer appearance-none cursor-pointer border transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3366E6]/40 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#181920] ${sizeClasses} ${
             isMarked
-              ? 'bg-emerald-600 border-emerald-600 text-white dark:bg-[#00FF66] dark:border-[#00FF66] shadow-xs dark:shadow-[0_0_8px_rgba(0,255,102,0.35)]'
-              : 'bg-white dark:bg-[#22242D] border-slate-300 dark:border-white/20 hover:border-emerald-500 dark:hover:border-white/40 hover:bg-slate-50 dark:hover:bg-[#282B36]'
+              ? 'bg-[#3366E6] border-[#3366E6] text-white dark:bg-[#3366E6] dark:border-[#3366E6] shadow-xs'
+              : 'bg-white dark:bg-[#1A1A21] border-slate-300 dark:border-[#2E2E38] hover:border-[#3366E6] dark:hover:border-[#4B4B58] hover:bg-slate-50 dark:hover:bg-[#24242C]'
           } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
           {...props}
         />
@@ -62,14 +62,14 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           <Check
             size={iconSize}
             strokeWidth={3.5}
-            className="pointer-events-none absolute text-white dark:text-[#08090C] transition-transform animate-in zoom-in-95"
+            className="pointer-events-none absolute text-white transition-transform animate-in zoom-in-95"
           />
         )}
         {indeterminate && (
           <Minus
             size={iconSize}
             strokeWidth={3.5}
-            className="pointer-events-none absolute text-white dark:text-[#08090C] transition-transform animate-in zoom-in-95"
+            className="pointer-events-none absolute text-white transition-transform animate-in zoom-in-95"
           />
         )}
       </label>

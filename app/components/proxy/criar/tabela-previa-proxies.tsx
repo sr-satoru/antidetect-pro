@@ -129,13 +129,13 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
                       <span className="flex items-center gap-1.5 font-mono text-[11.5px] text-slate-600 dark:text-[#A6ABB9]">
                         <Loader2
                           size={12}
-                          className="animate-spin text-emerald-600 dark:text-[#00FF66]"
+                          className="animate-spin text-emerald-600 dark:text-emerald-400"
                         />
                         <span>Testando...</span>
                       </span>
                     ) : item.status === 'active' ? (
-                      <span className="flex items-center gap-1.5 font-mono text-[11.5px] font-semibold text-emerald-600 dark:text-[#00FF66]">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-[#00FF66] shadow-[0_0_6px_rgba(0,255,102,0.6)]" />
+                      <span className="flex items-center gap-1.5 font-mono text-[11.5px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                         <span>{item.outboundIp}</span>
                       </span>
                     ) : item.status === 'auth_error' ? (
