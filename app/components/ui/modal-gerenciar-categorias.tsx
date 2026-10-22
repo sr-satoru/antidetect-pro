@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Search, PlusCircle, Trash2, Edit2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import {
@@ -21,6 +22,8 @@ export const ModalGerenciarCategorias: React.FC<
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] =
     useState<ExtensionCategory | null>(null);
+
+  if (!isOpen) return null;
 
   // Filtra as categorias criadas pelo usuário (não exibe o kit_basico padrão como "dado criado")
   const filteredCategories = useMemo(() => {
@@ -56,9 +59,9 @@ export const ModalGerenciarCategorias: React.FC<
     }
   };
 
-  return (
+  return createPortal(
     <>
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-[7vh] sm:pt-[9vh] p-4 overflow-y-auto">
+      <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[7vh] sm:pt-[9vh] p-4 overflow-y-auto">
         {/* Backdrop */}
         <div
           className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 transition-opacity"
@@ -217,7 +220,8 @@ export const ModalGerenciarCategorias: React.FC<
         }}
         categoryToEdit={categoryToEdit}
       />
-    </>
+    </>,
+    document.body
   );
 };
 

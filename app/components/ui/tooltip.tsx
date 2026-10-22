@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface TooltipProps {
   content: React.ReactNode;
@@ -132,6 +133,70 @@ export const InfoBalloon: React.FC<InfoBalloonProps> = ({
         ?
       </span>
     </Tooltip>
+  );
+};
+
+export interface TooltipFloatingPortalProps {
+  isOpen: boolean;
+  coords: {
+    top: number;
+    left: number;
+    arrowLeft: number;
+    isAbove?: boolean;
+  } | null;
+  children: React.ReactNode;
+  className?: string;
+  popoverRef?: React.RefObject<HTMLDivElement | null>;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  transform?: string;
+}
+
+/**
+ * Componente Portal Oficial para Tooltips e Balões Flutuantes (TagsCell, PlatformCell, etc.).
+ * Terceiriza 100% da renderização do portal, posicionamento fixo, tema e triângulo indicador.
+ */
+export const TooltipFloatingPortal: React.FC<TooltipFloatingPortalProps> = ({
+  isOpen,
+  coords,
+  children,
+  className = '',
+  popoverRef,
+  onMouseEnter,
+  onMouseLeave,
+  transform,
+}) => {
+  if (!isOpen || !coords || typeof document === 'undefined') return null;
+
+  const isAbove = coords.isAbove !== false;
+
+  return createPortal(
+    <div
+      ref={popoverRef}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={{
+        position: 'fixed',
+        top: `${coords.top}px`,
+        left: `${coords.left}px`,
+        transform: transform ?? undefined,
+        zIndex: 99999,
+      }}
+      className={`${TOOLTIP_THEME.container} pointer-events-auto text-left ${className}`}
+    >
+      {children}
+
+      {/* Seta indicadora (caret) padronizada e centralizada */}
+      <div
+        style={{ left: `${coords.arrowLeft}px` }}
+        className={`absolute -translate-x-1/2 w-0 h-0 border-solid pointer-events-none ${
+          isAbove
+            ? `top-full ${TOOLTIP_THEME.arrowTop} border-t-[5px] border-x-[5px] border-x-transparent border-b-0`
+            : `bottom-full ${TOOLTIP_THEME.arrowBottom} border-b-[5px] border-x-[5px] border-x-transparent border-t-0`
+        }`}
+      />
+    </div>,
+    document.body,
   );
 };
 

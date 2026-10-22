@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import {
@@ -138,8 +139,8 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] sm:pt-[12vh] p-4 overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[10vh] sm:pt-[12vh] p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 transition-opacity"
@@ -230,7 +231,8 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

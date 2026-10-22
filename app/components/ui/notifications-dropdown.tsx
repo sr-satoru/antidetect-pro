@@ -2,6 +2,7 @@
 // Central de Notificações Modal do Star Multilogin
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Bell,
   ShieldCheck,
@@ -22,6 +23,18 @@ export const NotificationsDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>('unread');
+
+  // Fechar com tecla Esc
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
 
   useEffect(() => {
     const unsubscribe = serviceNotifications.subscribe((items) => {
@@ -141,17 +154,18 @@ export const NotificationsDropdown: React.FC = () => {
       </button>
 
       {/* Modal Clean & Moderno estilo Imagem de Referência */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 dark:bg-black/75 backdrop-blur-xs animate-in fade-in duration-150"
-          onClick={() => setIsOpen(false)}
-        >
+      {isOpen &&
+        createPortal(
           <div
-            className="w-full max-w-[620px] h-[440px] max-h-[85vh] bg-white dark:bg-[#1E1E22] border border-slate-200 dark:border-[#2E2E38] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 text-left select-none"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[9999] flex items-start justify-center pt-[10vh] sm:pt-[12vh] p-4 sm:p-6 overflow-y-auto bg-black/60 dark:bg-black/80 backdrop-blur-xs animate-in fade-in duration-150"
+            onClick={() => setIsOpen(false)}
           >
-            {/* Header com Abas Minimalistas e Botão Fechar */}
-            <div className="flex items-center justify-between px-6 pt-4 border-b border-slate-200 dark:border-[#2E2E38] shrink-0">
+            <div
+              className="w-full max-w-[660px] h-[480px] max-h-[85vh] bg-white dark:bg-[#1E1E22] border border-slate-200 dark:border-[#2E2E38] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 text-left select-none mb-12"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header com Abas Minimalistas e Botão Fechar */}
+              <div className="flex items-center justify-between px-6 pt-4 border-b border-slate-200 dark:border-[#2E2E38] shrink-0">
               <div className="flex items-center gap-7">
                 <button
                   type="button"
@@ -309,7 +323,8 @@ export const NotificationsDropdown: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Info, RotateCw, Loader2 } from 'lucide-react';
 import { api } from '@/services/index.api';
 import { formatProxyTestResult, FormattedTestResult } from '@/services/proxies/service.proxies';
@@ -116,8 +117,8 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[7vh] sm:pt-[9vh] p-6 select-none overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[7vh] sm:pt-[9vh] p-6 select-none overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 dark:bg-black/85 transition-opacity"
@@ -286,7 +287,8 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

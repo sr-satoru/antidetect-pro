@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { createPortal } from 'react-dom';
 import { Copy, Check } from 'lucide-react';
-import { TOOLTIP_THEME } from './tooltip';
+import { TooltipFloatingPortal } from './tooltip';
 
 export interface PlatformAccount {
   id?: string;
@@ -526,36 +525,18 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
         </div>
       </div>
 
-      {/* 3. Tooltip Popover Flutuante Minimalista: itens um debaixo do outro */}
-      {isOpen &&
-        coords &&
-        typeof document !== 'undefined' &&
-        createPortal(
-          <div
-            ref={popoverRef}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              position: 'fixed',
-              top: `${coords.top}px`,
-              left: `${coords.left}px`,
-              transform: position === 'top' ? 'translateY(-100%)' : 'translateY(0)',
-              zIndex: 99999,
-            }}
-            className={`w-max min-w-[150px] max-w-[260px] px-3 py-2 text-left pointer-events-auto ${TOOLTIP_THEME.container}`}
-          >
-            {/* Seta indicadora (caret) apontando diretamente para o elemento */}
-            <div
-              style={{ left: `${coords.arrowLeft}px` }}
-              className={`absolute -translate-x-1/2 w-0 h-0 border-solid pointer-events-none ${
-                position === 'top'
-                  ? `top-full ${TOOLTIP_THEME.arrowTop} border-t-[5px] border-x-[5px] border-x-transparent border-b-0`
-                  : `bottom-full ${TOOLTIP_THEME.arrowBottom} border-b-[5px] border-x-[5px] border-x-transparent border-t-0`
-              }`}
-            />
-
-            {/* Lista minimalista vertical: uma conta debaixo da outra */}
-            <div className="flex flex-col gap-2.5">
+      {/* 3. Tooltip Popover Flutuante Minimalista terceirizado no TooltipFloatingPortal */}
+      <TooltipFloatingPortal
+        isOpen={isOpen}
+        coords={coords ? { ...coords, isAbove: position === 'top' } : null}
+        popoverRef={popoverRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        transform={position === 'top' ? 'translateY(-100%)' : 'translateY(0)'}
+        className="w-max min-w-[150px] max-w-[260px] px-3 py-2"
+      >
+        {/* Lista minimalista vertical: uma conta debaixo da outra */}
+        <div className="flex flex-col gap-2.5">
               {accounts.map((acc, idx) => {
                 const username = acc.username?.trim() || '';
                 const password = acc.password?.trim() || '';
@@ -650,9 +631,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                 );
               })}
             </div>
-          </div>,
-          document.body,
-        )}
+      </TooltipFloatingPortal>
     </>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Search, Check, Plus, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import {
@@ -166,8 +167,8 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[11vh] sm:pt-[13vh] p-4 overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[11vh] sm:pt-[13vh] p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 transition-opacity"
@@ -401,7 +402,8 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

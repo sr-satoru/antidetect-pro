@@ -265,7 +265,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       </div>
 
       {/* Rodapé da prévia */}
-      <div className="mt-4 shrink-0 border-t border-slate-200 dark:border-[#2C2E38] pt-3 text-[11px] text-slate-500 dark:text-[#8E92A2] select-none">
+      <div className="mt-4 shrink-0 border-t border-slate-200 dark:border-[#2C2E38] pt-3 text-[11px] text-slate-500 dark:text-[#8E92A2] select-none text-center">
         Presets oficiais carregados de{' '}
         <button
           type="button"
