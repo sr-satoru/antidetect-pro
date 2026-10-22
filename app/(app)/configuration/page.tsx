@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { User, ShieldCheck, Globe, Palette, RotateCcw, CheckCircle2 } from 'lucide-react';
+import { User, ShieldCheck, Palette, RotateCcw, CheckCircle2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { serviceConfiguration, NetworkSettings } from '@/services/configuration';
-import { ContaTab, NavegadorTab, RedeTab, AparenciaTab } from '@/components/configuration';
+import { ContaTab, NavegadorTab, AparenciaTab } from '@/components/configuration';
 
-type ConfigTab = 'account' | 'browser' | 'network' | 'appearance';
+type ConfigTab = 'account' | 'browser' | 'appearance';
 
 export const ConfigurationPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab') as ConfigTab | null;
   const [activeTab, setActiveTab] = useState<ConfigTab>(
-    tabParam && ['account', 'browser', 'network', 'appearance'].includes(tabParam)
+    tabParam && ['account', 'browser', 'appearance'].includes(tabParam)
       ? tabParam
       : 'account'
   );
 
   useEffect(() => {
     const current = searchParams.get('tab') as ConfigTab | null;
-    if (current && ['account', 'browser', 'network', 'appearance'].includes(current)) {
+    if (current && ['account', 'browser', 'appearance'].includes(current)) {
       setActiveTab(current);
     }
   }, [searchParams]);
@@ -62,7 +62,6 @@ export const ConfigurationPage: React.FC = () => {
   const tabs = [
     { id: 'account', label: 'Conta & Nuvem', icon: User },
     { id: 'browser', label: 'Navegador & Antidetect', icon: ShieldCheck },
-    { id: 'network', label: 'Rede & Proxies', icon: Globe },
     { id: 'appearance', label: 'Geral & Aparência', icon: Palette },
   ] as const;
 
@@ -118,12 +117,7 @@ export const ConfigurationPage: React.FC = () => {
             />
           </TabsContent>
 
-          {/* Aba 3: Rede & Proxies */}
-          <TabsContent value="network">
-            <RedeTab settings={networkSettings} onChange={setNetworkSettings} />
-          </TabsContent>
-
-          {/* Aba 4: Geral & Aparência */}
+          {/* Aba 3: Geral & Aparência */}
           <TabsContent value="appearance">
             <AparenciaTab soundEnabled={soundEnabled} onSoundEnabledChange={setSoundEnabled} />
           </TabsContent>

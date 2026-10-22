@@ -38,12 +38,12 @@ export const McpApiPage: React.FC = () => {
   ] as const;
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] shadow-xl shadow-slate-900/5 dark:shadow-2xl select-none">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-slate-50 dark:bg-[#15161E] shadow-2xl select-none">
       {/* ═══════════════════════════════════════════════════════════════
-          MENU SUPERIOR DE ABAS (Estilo Oficial Configuration & Criar Perfil)
+          MENU SUPERIOR DE ABAS (Estilo Oficial Configuration)
       ═══════════════════════════════════════════════════════════════ */}
-      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#30323E] bg-slate-50/80 dark:bg-[#24252D] px-6 pt-4 select-none">
-        <div className="flex items-center gap-8 overflow-x-auto">
+      <header className="flex shrink-0 items-center justify-between border-b border-slate-200/80 dark:border-white/[0.07] bg-white/90 dark:bg-[#1A1B24]/90 backdrop-blur-md px-6 py-2.5 select-none">
+        <div className="bg-slate-100/90 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200/60 dark:border-white/[0.06] flex items-center gap-1 border-b-0">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             const IconComponent = tab.icon;
@@ -52,24 +52,21 @@ export const McpApiPage: React.FC = () => {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id as TabKey)}
-                className={`relative flex items-center gap-2 cursor-pointer pb-3 text-[13.5px] tracking-wide transition-all ${
+                className={`rounded-lg px-4 py-2 text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
                   isActive
-                    ? 'font-semibold text-slate-900 dark:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:bg-[#238636] dark:after:bg-[#2ea043] after:content-[""]'
-                    : 'text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-[#C4C7D5]'
+                    ? 'bg-white dark:bg-[#24252F] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
+                    : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                <IconComponent
-                  size={15}
-                  className={isActive ? 'text-[#238636] dark:text-[#2ea043]' : 'text-slate-400 dark:text-[#7E8294]'}
-                />
+                <IconComponent size={14} />
                 <span>{tab.label}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Credenciais compactas alinhadas à direita com as abas */}
-        <div className="pb-3 shrink-0">
+        {/* Credenciais compactas alinhadas à direita */}
+        <div className="shrink-0">
           <CompactCredentials
             token={token}
             showToken={showToken}

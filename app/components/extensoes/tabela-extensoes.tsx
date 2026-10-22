@@ -11,6 +11,7 @@ import {
   Plus,
   Shield,
   Check,
+  Users,
 } from 'lucide-react';
 import { api } from '@/services/index.api';
 import { ModalGerenciarCategorias } from '@/components/ui/modal-gerenciar-categorias';
@@ -619,41 +620,41 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
   });
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-white dark:bg-[#1A1A21] text-slate-800 dark:text-[#C9C9D2]">
-      {/* 1. Abas Superiores Idênticas à Imagem de Referência */}
-      <div className="flex h-12 shrink-0 items-center border-b border-slate-200 dark:border-[#2E2E38] px-6 select-none bg-white dark:bg-[#1A1A21]">
-        <div className="flex items-center gap-7">
-          <button
-            type="button"
-            onClick={() => setActiveTab('team')}
-            className={`relative cursor-pointer pb-3 text-sm transition-colors ${
-              activeTab === 'team'
-                ? 'font-medium text-slate-900 dark:text-[#F1F1F4]'
-                : 'text-slate-500 hover:text-slate-900 dark:text-[#90909D] dark:hover:text-[#F1F1F4]'
-            }`}
-          >
-            <span>Extensões da equipe</span>
-            {activeTab === 'team' && (
-              <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-slate-900 dark:bg-[#F1F1F4]" />
-            )}
-          </button>
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-slate-50 dark:bg-[#15161E] text-slate-800 dark:text-[#C9C9D2]">
+      {/* ═══════════════════════════════════════════════════════════════
+          TOP BAR DE NAVEGAÇÃO PREMIUM CENTRALIZADA (Capsule Tabs - Estilo Configuration)
+      ═══════════════════════════════════════════════════════════════ */}
+      <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-white/[0.07] bg-white/90 dark:bg-[#1A1B24]/90 backdrop-blur-md px-6 py-2.5">
+        <div className="max-w-4xl mx-auto w-full flex items-center justify-center">
+          <div className="bg-slate-100/90 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200/60 dark:border-white/[0.06] flex items-center gap-1 border-b-0">
+            <button
+              type="button"
+              onClick={() => setActiveTab('team')}
+              className={`rounded-lg px-4 py-2 text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                activeTab === 'team'
+                  ? 'bg-white dark:bg-[#24252F] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
+                  : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Users size={14} />
+              <span>Extensões da equipe</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('recommended')}
-            className={`relative cursor-pointer pb-3 text-sm transition-colors ${
-              activeTab === 'recommended'
-                ? 'font-medium text-slate-900 dark:text-[#F1F1F4]'
-                : 'text-slate-500 hover:text-slate-900 dark:text-[#90909D] dark:hover:text-[#F1F1F4]'
-            }`}
-          >
-            <span>Recomendado para você</span>
-            {activeTab === 'recommended' && (
-              <span className="absolute bottom-0 left-0 h-[2px] w-full rounded-full bg-slate-900 dark:bg-[#F1F1F4]" />
-            )}
-          </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('recommended')}
+              className={`rounded-lg px-4 py-2 text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                activeTab === 'recommended'
+                  ? 'bg-white dark:bg-[#24252F] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
+                  : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <Sparkles size={14} />
+              <span>Recomendado para você</span>
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* 2. Conteúdo Condicional Conforme a Aba Ativa */}
       {activeTab === 'team' ? (
@@ -681,7 +682,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   placeholder="Procurar"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] pr-3 pl-9 text-xs text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#90909D] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden"
+                  className="h-9 w-full rounded-lg border border-slate-200/80 dark:border-white/[0.08] bg-white dark:bg-[#1A1B24] pr-3 pl-9 text-xs text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#9EA2B4] transition-colors focus:border-slate-400 dark:focus:border-white/20 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -689,7 +690,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
             <button
               type="button"
               onClick={() => setIsCategoryModalOpen(true)}
-              className="h-[34px] px-3 rounded-lg border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] text-slate-700 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-100 dark:hover:bg-[#24242C] text-xs font-normal flex items-center gap-2 transition-colors cursor-pointer"
+              className="h-[34px] px-3 rounded-lg border border-slate-200/80 dark:border-white/[0.08] bg-white dark:bg-[#1A1B24] text-slate-700 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-100 dark:hover:bg-[#24252F] text-xs font-normal flex items-center gap-2 transition-colors cursor-pointer"
             >
               <LayoutGrid size={14} />
               <span>Categoria</span>
@@ -703,7 +704,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 {teamExtensions.map((ext) => (
                   <div
                     key={ext.id}
-                    className="group relative flex flex-col justify-between rounded-xl border border-slate-200 dark:border-[#2E2E38] bg-slate-50/50 dark:bg-[#15151A]/60 p-4 hover:border-slate-300 dark:hover:border-[#41414E] dark:hover:bg-[#1A1A22] transition-colors duration-150"
+                    className="group relative flex flex-col justify-between rounded-xl border border-slate-200/80 dark:border-white/[0.07] bg-white/80 dark:bg-[#1A1B24]/80 p-4 hover:border-slate-300 dark:hover:border-white/[0.15] dark:hover:bg-[#1E1F2A] transition-all duration-150 backdrop-blur-xs"
                   >
                     <div>
                       {/* Topo: Ícone, Título e Switch de Ativação */}
@@ -861,7 +862,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 placeholder="Procurar"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-full rounded-lg border border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] pr-8 pl-9 text-xs text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#90909D] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden"
+                className="h-9 w-full rounded-lg border border-slate-200/80 dark:border-white/[0.08] bg-white dark:bg-[#1A1B24] pr-8 pl-9 text-xs text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#9EA2B4] transition-colors focus:border-slate-400 dark:focus:border-white/20 focus:outline-hidden"
               />
               {isLoadingSearch && (
                 <Loader2
@@ -895,8 +896,8 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   onClick={() => setSelectedCategory(cat)}
                   className={`rounded-md px-2.5 py-1 text-xs font-normal whitespace-nowrap transition-colors cursor-pointer ${
                     isSelected
-                      ? 'border border-slate-300 dark:border-[#41414E] bg-slate-200/70 dark:bg-[#24242C] text-slate-900 dark:text-[#F1F1F4]'
-                      : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] border border-transparent'
+                      ? 'border border-slate-300 dark:border-white/20 bg-slate-200/70 dark:bg-[#24252F] text-slate-900 dark:text-[#F1F1F4]'
+                      : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-[#F1F1F4] border border-transparent'
                   }`}
                 >
                   {cat}
@@ -920,7 +921,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   return (
                     <div
                       key={recExt.id}
-                      className="group relative flex flex-col justify-between rounded-xl border border-slate-200 dark:border-[#2E2E38] bg-slate-50/50 dark:bg-[#15151A]/60 p-4 hover:border-slate-300 dark:hover:border-[#41414E] dark:hover:bg-[#1A1A22] transition-colors duration-150"
+                      className="group relative flex flex-col justify-between rounded-xl border border-slate-200/80 dark:border-white/[0.07] bg-white/80 dark:bg-[#1A1B24]/80 p-4 hover:border-slate-300 dark:hover:border-white/[0.15] dark:hover:bg-[#1E1F2A] transition-all duration-150 backdrop-blur-xs"
                     >
                       <div>
                         {/* Linha Superior: Ícone, Título e Botão Adicionar sutil */}
