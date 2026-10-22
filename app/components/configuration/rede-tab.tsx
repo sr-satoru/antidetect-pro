@@ -17,7 +17,7 @@ export const RedeTab: React.FC<RedeTabProps> = ({ settings, onChange }) => {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 focus-visible:outline-none">
       {/* Kill Switch Card */}
-      <div className="rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-white dark:bg-[#1A1B23] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3.5">
             <div className="p-2.5 rounded-xl bg-red-500/10 text-red-500 shrink-0 mt-0.5">
@@ -48,10 +48,10 @@ export const RedeTab: React.FC<RedeTabProps> = ({ settings, onChange }) => {
       </div>
 
       {/* DNS Seguro (DoH) */}
-      <div className="rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-white dark:bg-[#1A1B23] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-            <Radio size={16} className="text-slate-400" />
+            <Radio size={16} className="text-slate-400 dark:text-[#8E92A2]" />
             <span>Provedor de DNS Seguro (DNS-over-HTTPS)</span>
           </h4>
           <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
@@ -73,7 +73,7 @@ export const RedeTab: React.FC<RedeTabProps> = ({ settings, onChange }) => {
                 className={`p-4 rounded-xl border transition-all cursor-pointer select-none ${
                   isSelected
                     ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/20 dark:bg-[#238636]/10 ring-2 ring-[#238636]/25 shadow-xs'
-                    : 'border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] hover:border-slate-300 dark:hover:border-white/20'
+                    : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
@@ -98,10 +98,10 @@ export const RedeTab: React.FC<RedeTabProps> = ({ settings, onChange }) => {
       </div>
 
       {/* Tempo Limite de Latência */}
-      <div className="rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-white dark:bg-[#1A1B23] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-            <Clock size={16} className="text-slate-400" />
+            <Clock size={16} className="text-slate-400 dark:text-[#8E92A2]" />
             <span>Tempo Limite de Teste (Timeout)</span>
           </h4>
           <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
@@ -124,7 +124,7 @@ export const RedeTab: React.FC<RedeTabProps> = ({ settings, onChange }) => {
                 className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                   isSelected
                     ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/20 dark:bg-[#238636]/10 ring-2 ring-[#238636]/25 shadow-xs'
-                    : 'border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] hover:border-slate-300 dark:hover:border-white/20'
+                    : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
                 }`}
               >
                 <span className="block font-semibold text-xs text-slate-900 dark:text-white">

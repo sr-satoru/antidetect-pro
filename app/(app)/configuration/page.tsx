@@ -65,7 +65,7 @@ export const ConfigurationPage: React.FC = () => {
   ] as const;
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-slate-50 dark:bg-[#15161E] shadow-2xl select-none">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#1C1D21] shadow-xs select-none">
       <Tabs
         value={activeTab}
         onValueChange={(v) => {

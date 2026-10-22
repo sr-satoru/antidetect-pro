@@ -43,10 +43,10 @@ export const ContaTab: React.FC = () => {
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 focus-visible:outline-none">
       {/* Hero Card do Usuário */}
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-gradient-to-br from-white via-slate-50 to-emerald-50/20 dark:from-[#1C1D26] dark:via-[#1A1B23] dark:to-[#17241C] p-6 shadow-xs">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 shadow-xs">
         <div className="flex flex-wrap items-center justify-between gap-5 relative z-10">
           <div className="flex items-center gap-4">
-            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#238636] to-[#34d399] text-white text-lg font-bold shadow-lg shadow-[#238636]/30">
+            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#238636] to-[#34d399] text-white text-lg font-bold shadow-md shadow-[#238636]/20">
               {!user?.is_offline && user?.email ? (
                 user?.username ? (
                   user.username.charAt(0).toUpperCase()
@@ -56,7 +56,7 @@ export const ContaTab: React.FC = () => {
               ) : (
                 <User size={24} />
               )}
-              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-[#1A1B23]">
+              <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-[#28292E]">
                 <span
                   className={`h-2.5 w-2.5 rounded-full ${
                     !user?.is_offline ? 'bg-emerald-500' : 'bg-slate-400'
@@ -78,7 +78,7 @@ export const ContaTab: React.FC = () => {
                     : 'OFFLINE MODE'}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-[#9EA2B4] mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-1 leading-relaxed">
                 {!user?.is_offline
                   ? 'Sessão autenticada e vinculada à nuvem Star Multilogin VPS.'
                   : 'Modo seguro local: dados de perfis e cookies residem exclusivamente no seu disco rígido.'}
@@ -92,9 +92,9 @@ export const ContaTab: React.FC = () => {
                 variant="destructive"
                 size="sm"
                 onClick={logout}
-                className="gap-2 shadow-xs"
+                className="h-[38px] px-4 rounded-lg gap-2 text-[13px] font-medium shadow-xs"
               >
-                <LogOut size={13} />
+                <LogOut size={14} />
                 <span>Desconectar Sessão</span>
               </Button>
             ) : (
@@ -102,7 +102,7 @@ export const ContaTab: React.FC = () => {
                 variant="default"
                 size="sm"
                 onClick={() => navigate('/auth/login')}
-                className="gap-2 shadow-md shadow-[#238636]/20"
+                className="h-[38px] px-4 rounded-lg gap-2 bg-[#238636] hover:bg-[#2ea043] text-white text-[13px] font-medium shadow-xs"
               >
                 <Zap size={14} />
                 <span>Conectar à Nuvem</span>
@@ -113,7 +113,7 @@ export const ContaTab: React.FC = () => {
       </div>
 
       {/* Hub de Telemetria e Sincronização */}
-      <div className="rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-white dark:bg-[#1A1B23] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-[#238636]/10 text-[#2ea043]">
@@ -132,7 +132,7 @@ export const ContaTab: React.FC = () => {
 
         {/* Status Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-white/[0.06] bg-slate-50/70 dark:bg-white/[0.02]">
+          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-slate-50/70 dark:bg-[#323338]">
             <span className="text-[11px] font-medium text-slate-500 dark:text-[#8E92A2] block">
               Estado do Servidor
             </span>
@@ -150,7 +150,7 @@ export const ContaTab: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-white/[0.06] bg-slate-50/70 dark:bg-white/[0.02]">
+          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-slate-50/70 dark:bg-[#323338]">
             <span className="text-[11px] font-medium text-slate-500 dark:text-[#8E92A2] block">
               Criptografia Local
             </span>
@@ -160,7 +160,7 @@ export const ContaTab: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-white/[0.06] bg-slate-50/70 dark:bg-white/[0.02]">
+          <div className="p-3.5 rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-slate-50/70 dark:bg-[#323338]">
             <span className="text-[11px] font-medium text-slate-500 dark:text-[#8E92A2] block">
               Tipo de Replicação
             </span>
@@ -171,7 +171,7 @@ export const ContaTab: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200/70 dark:border-white/[0.06]">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200/80 dark:border-[#484A54]">
           <span className="text-xs text-slate-500 dark:text-[#8E92A2]">
             Sincronize alterações pendentes de múltiplos computadores instantaneamente.
           </span>
@@ -180,10 +180,10 @@ export const ContaTab: React.FC = () => {
             size="sm"
             disabled={isSyncing}
             onClick={handleSyncNow}
-            className="gap-2 font-medium"
+            className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-slate-700 dark:text-[#E4E6EE] text-[13px] font-medium gap-2"
           >
-            <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
-            <span>{isSyncing ? 'Sincronizando Banco de Dados...' : 'Sincronizar Agora'}</span>
+            <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
+            <span>{isSyncing ? 'Sincronizando...' : 'Sincronizar Agora'}</span>
           </Button>
         </div>
       </div>

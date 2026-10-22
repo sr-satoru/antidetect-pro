@@ -37,7 +37,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 focus-visible:outline-none">
       {/* Escolha do Tema Visual com Mini Previews */}
-      <div className="rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-white dark:bg-[#1A1B23] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
             <Palette size={16} className="text-[#238636]" />
@@ -55,12 +55,12 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
             className={`group relative flex flex-col p-4 rounded-2xl border transition-all cursor-pointer select-none ${
               theme === 'dark'
                 ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/10 dark:bg-[#238636]/10 ring-2 ring-[#238636]/30 shadow-md'
-                : 'border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] hover:border-slate-300 dark:hover:border-white/20'
+                : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
             }`}
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0A0A0E] text-white border border-white/10">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#202126] text-white border border-white/10">
                   <Moon size={14} />
                 </div>
                 <span className="font-semibold text-xs text-slate-900 dark:text-white">
@@ -75,7 +75,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
             </div>
 
             {/* Realistic Window Preview */}
-            <div className="w-full h-24 rounded-xl bg-[#0F1015] border border-white/10 p-2.5 flex flex-col justify-between overflow-hidden shadow-inner">
+            <div className="w-full h-24 rounded-xl bg-[#202126] border border-white/10 p-2.5 flex flex-col justify-between overflow-hidden shadow-inner">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-1.5">
                 <div className="flex items-center gap-1.5">
                   <div className="h-2 w-2 rounded-full bg-red-500/80" />
@@ -103,7 +103,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
             className={`group relative flex flex-col p-4 rounded-2xl border transition-all cursor-pointer select-none ${
               theme === 'light'
                 ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/20 dark:bg-[#238636]/10 ring-2 ring-[#238636]/30 shadow-md'
-                : 'border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] hover:border-slate-300 dark:hover:border-white/20'
+                : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
             }`}
           >
             <div className="flex items-center justify-between mb-3">
@@ -148,7 +148,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
       </div>
 
       {/* Preferências de Sistema e Notificações */}
-      <div className="rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-white dark:bg-[#1A1B23] p-6 space-y-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
             <Volume2 size={16} className="text-[#238636]" />
@@ -159,7 +159,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
           </p>
         </div>
 
-        <div className="divide-y divide-slate-200/70 dark:divide-white/[0.06] text-xs">
+        <div className="divide-y divide-slate-200/80 dark:divide-white/[0.06] text-xs">
           {/* Som Switch */}
           <div className="py-3.5 flex items-center justify-between gap-4">
             <div>
@@ -191,10 +191,10 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
               size="sm"
               disabled={isCheckingUpdate}
               onClick={handleCheckUpdate}
-              className="gap-2 shrink-0 font-medium"
+              className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-slate-700 dark:text-[#E4E6EE] text-[13px] font-medium gap-2 shrink-0"
             >
-              <Download size={13} className={isCheckingUpdate ? 'animate-bounce' : ''} />
-              <span>{isCheckingUpdate ? 'Consultando Servidor...' : 'Verificar Atualizações'}</span>
+              <Download size={14} className={isCheckingUpdate ? 'animate-bounce' : ''} />
+              <span>{isCheckingUpdate ? 'Consultando...' : 'Verificar Atualizações'}</span>
             </Button>
           </div>
         </div>

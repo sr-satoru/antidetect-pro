@@ -29,9 +29,9 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151C] shadow-2xl overflow-hidden">
+      <div className="w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/[0.08] px-6 py-4 bg-slate-50 dark:bg-[#181922]">
+        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] px-6 py-4 bg-[#F8F7F5] dark:bg-[#323338]">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#238636]/15 text-[#2ea043] border border-[#238636]/30">
               <FileCode size={18} />
@@ -46,33 +46,31 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
             </div>
           </div>
 
-          <Button variant="ghost" size="icon-sm" onClick={onClose}>
+          <Button variant="ghost" size="icon-sm" onClick={onClose} className="rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white dark:hover:bg-[#3A3B42]">
             <X size={16} />
           </Button>
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-white/[0.06] px-6 py-2 bg-slate-100/70 dark:bg-[#1B1C25] text-xs">
+        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] px-6 py-2.5 bg-slate-100/70 dark:bg-[#24252A] text-xs">
           <span className="font-mono text-slate-500 dark:text-[#8E92A2]">default-base-preset.json</span>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
+            <button
+              type="button"
               onClick={onFormat}
-              className="gap-1 h-7 text-[11px] px-2.5"
+              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-[12px] font-medium text-slate-700 dark:text-[#E4E6EE] transition-colors cursor-pointer shadow-xs"
             >
-              <Code2 size={12} />
+              <Code2 size={13} />
               <span>Formatar JSON</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
+            </button>
+            <button
+              type="button"
               onClick={onCopy}
-              className="gap-1 h-7 text-[11px] px-2.5"
+              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-[12px] font-medium text-slate-700 dark:text-[#E4E6EE] transition-colors cursor-pointer shadow-xs"
             >
-              <Copy size={12} />
+              <Copy size={13} />
               <span>Copiar</span>
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -94,25 +92,32 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-slate-200 dark:border-white/[0.08] px-6 py-3.5 bg-slate-50 dark:bg-[#181922]">
-          <Button
-            variant="ghost"
-            size="sm"
+        <div className="flex items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] px-6 py-3.5 bg-[#F8F7F5] dark:bg-[#323338]">
+          <button
+            type="button"
             onClick={onResetDefaults}
-            className="gap-1.5 text-xs text-slate-500 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white"
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white transition-colors cursor-pointer"
           >
-            <RotateCcw size={12} />
+            <RotateCcw size={13} />
             <span>Restaurar Fábrica no Editor</span>
-          </Button>
+          </button>
 
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={onClose}>
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] hover:bg-slate-50 dark:hover:bg-[#3A3B42] text-slate-700 dark:text-[#E4E6EE] text-[13px] font-medium transition-colors shadow-xs cursor-pointer"
+            >
               Cancelar
-            </Button>
-            <Button variant="default" size="sm" onClick={onApply} className="gap-1.5 px-4 font-bold">
-              <Check size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={onApply}
+              className="h-[38px] px-5 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white text-[13px] font-medium flex items-center gap-1.5 shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+            >
+              <Check size={14} strokeWidth={2.5} />
               <span>Aplicar & Salvar</span>
-            </Button>
+            </button>
           </div>
         </div>
       </div>
