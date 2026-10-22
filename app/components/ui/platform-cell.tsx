@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Copy, Check } from 'lucide-react';
+import { TOOLTIP_THEME } from './tooltip';
 
 export interface PlatformAccount {
   id?: string;
@@ -541,15 +542,15 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
               transform: position === 'top' ? 'translateY(-100%)' : 'translateY(0)',
               zIndex: 99999,
             }}
-            className="w-max min-w-[150px] max-w-[260px] rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-md px-3 py-2 text-left select-none pointer-events-auto"
+            className={`w-max min-w-[150px] max-w-[260px] px-3 py-2 text-left pointer-events-auto ${TOOLTIP_THEME.container}`}
           >
             {/* Seta indicadora (caret) apontando diretamente para o elemento */}
             <div
               style={{ left: `${coords.arrowLeft}px` }}
               className={`absolute -translate-x-1/2 w-0 h-0 border-solid pointer-events-none ${
                 position === 'top'
-                  ? 'top-full border-t-gray-100 dark:border-t-gray-800 border-t-[5px] border-x-[5px] border-x-transparent border-b-0'
-                  : 'bottom-full border-b-gray-100 dark:border-b-gray-800 border-b-[5px] border-x-[5px] border-x-transparent border-t-0'
+                  ? `top-full ${TOOLTIP_THEME.arrowTop} border-t-[5px] border-x-[5px] border-x-transparent border-b-0`
+                  : `bottom-full ${TOOLTIP_THEME.arrowBottom} border-b-[5px] border-x-[5px] border-x-transparent border-t-0`
               }`}
             />
 

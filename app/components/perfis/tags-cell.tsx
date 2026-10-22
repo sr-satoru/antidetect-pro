@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 're
 import { createPortal } from 'react-dom';
 import { TagBadge } from '../tags/tag-badge';
 import { serviceTags } from '../../services/tags/service.tags';
+import { TOOLTIP_THEME } from '../ui/tooltip';
 
 interface TagsCellProps {
   profile: any;
@@ -228,7 +229,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
               left: `${coords.left}px`,
               zIndex: 99999,
             }}
-            className="rounded-lg border border-[#B8BCC8] bg-[#D4D6DC] dark:bg-[#D4D6DC] text-slate-800 shadow-xl shadow-black/30 px-3 py-2.5 select-none animate-in fade-in zoom-in-95 duration-100 flex items-center gap-1.5 flex-wrap w-max max-w-[485px]"
+            className={`${TOOLTIP_THEME.container} px-3 py-2 text-left pointer-events-auto flex items-center gap-1.5 flex-wrap w-max max-w-[485px] animate-in fade-in zoom-in-95 duration-100`}
           >
             {tagsList.map((tag, idx) => (
               <TagBadge
@@ -237,20 +238,20 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
                 color={tag.color}
                 variant="vivid"
                 showDot={false}
-                className="shadow-2xs text-[11px] leading-tight"
+                className="text-[11px] leading-tight"
               />
             ))}
 
-            {/* Seta indicadora apontando diretamente para o botão +N */}
+            {/* Seta indicadora apontando diretamente para o botão +N (centralizada via TOOLTIP_THEME) */}
             {coords.isAbove ? (
               <div
                 style={{ left: `${coords.arrowLeft}px` }}
-                className="absolute top-full -translate-x-1/2 w-0 h-0 border-solid border-t-[#D4D6DC] border-t-[7px] border-x-[7px] border-x-transparent border-b-0 drop-shadow-xs pointer-events-none"
+                className={`absolute top-full -translate-x-1/2 w-0 h-0 border-solid ${TOOLTIP_THEME.arrowTop} border-t-[5px] border-x-[5px] border-x-transparent border-b-0 pointer-events-none`}
               />
             ) : (
               <div
                 style={{ left: `${coords.arrowLeft}px` }}
-                className="absolute bottom-full -translate-x-1/2 w-0 h-0 border-solid border-b-[#D4D6DC] border-b-[7px] border-x-[7px] border-x-transparent border-t-0 drop-shadow-xs pointer-events-none"
+                className={`absolute bottom-full -translate-x-1/2 w-0 h-0 border-solid ${TOOLTIP_THEME.arrowBottom} border-b-[5px] border-x-[5px] border-x-transparent border-t-0 pointer-events-none`}
               />
             )}
           </div>,

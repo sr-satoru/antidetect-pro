@@ -46,7 +46,7 @@ export const ModalEditarObservacao: React.FC<ModalEditarObservacaoProps> = ({
       onClose={onClose}
       onSave={handleSave}
       isSaving={isSaving}
-      maxWidth="max-w-[580px]"
+      maxWidth="max-w-[620px]"
     >
       <div className="mb-2 flex items-center justify-between">
         <label className="text-sm font-semibold text-slate-800 dark:text-[#B0B4C3]">

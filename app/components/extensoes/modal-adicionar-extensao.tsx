@@ -139,7 +139,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] sm:pt-[12vh] p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 transition-opacity"
@@ -147,9 +147,9 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 w-full max-w-xl overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] shadow-2xl shadow-slate-900/15 dark:shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] shadow-2xl shadow-slate-900/15 dark:shadow-2xl animate-in fade-in zoom-in-95 duration-200 mb-12">
         {/* Header */}
-        <div className="flex h-14 items-center justify-between border-b border-slate-200 dark:border-white/10 px-6 select-none">
+        <div className="flex h-14 items-center justify-between border-b border-slate-200 dark:border-white/10 px-7 select-none">
           <span className="text-base font-semibold text-slate-900 dark:text-white">
             Adicionar extensão
           </span>

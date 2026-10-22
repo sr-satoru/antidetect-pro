@@ -13,58 +13,58 @@ export interface TagColor {
 export const TAG_COLORS: TagColor[] = [
   {
     id: 'blue',
-    hex: '#1677FF',
-    bgRgba: 'rgba(22, 119, 255, 0.14)',
-    borderHex: 'rgba(22, 119, 255, 0.4)',
+    hex: '#2563EB',
+    bgRgba: 'rgba(37, 99, 235, 0.16)',
+    borderHex: 'rgba(37, 99, 235, 0.4)',
     name: 'Azul',
   },
   {
     id: 'sky',
-    hex: '#00A3FF',
-    bgRgba: 'rgba(0, 163, 255, 0.14)',
-    borderHex: 'rgba(0, 163, 255, 0.4)',
+    hex: '#0284C7',
+    bgRgba: 'rgba(2, 132, 199, 0.16)',
+    borderHex: 'rgba(2, 132, 199, 0.4)',
     name: 'Ciano',
   },
   {
     id: 'teal',
-    hex: '#00E5BC',
-    bgRgba: 'rgba(0, 229, 188, 0.14)',
-    borderHex: 'rgba(0, 229, 188, 0.4)',
+    hex: '#0D9488',
+    bgRgba: 'rgba(13, 148, 136, 0.16)',
+    borderHex: 'rgba(13, 148, 136, 0.4)',
     name: 'Verde Água',
   },
   {
-    id: 'lime',
-    hex: '#95E035',
-    bgRgba: 'rgba(149, 224, 53, 0.14)',
-    borderHex: 'rgba(149, 224, 53, 0.4)',
-    name: 'Verde Limão',
+    id: 'green',
+    hex: '#16A34A',
+    bgRgba: 'rgba(22, 163, 74, 0.16)',
+    borderHex: 'rgba(22, 163, 74, 0.4)',
+    name: 'Verde',
   },
   {
     id: 'amber',
-    hex: '#FFB020',
-    bgRgba: 'rgba(255, 176, 32, 0.14)',
-    borderHex: 'rgba(255, 176, 32, 0.4)',
+    hex: '#D97706',
+    bgRgba: 'rgba(217, 119, 6, 0.16)',
+    borderHex: 'rgba(217, 119, 6, 0.4)',
     name: 'Âmbar',
   },
   {
     id: 'orange',
-    hex: '#FF7728',
-    bgRgba: 'rgba(255, 119, 40, 0.14)',
-    borderHex: 'rgba(255, 119, 40, 0.4)',
+    hex: '#EA580C',
+    bgRgba: 'rgba(234, 88, 12, 0.16)',
+    borderHex: 'rgba(234, 88, 12, 0.4)',
     name: 'Laranja',
   },
   {
     id: 'red',
-    hex: '#FF4D4F',
-    bgRgba: 'rgba(255, 77, 79, 0.14)',
-    borderHex: 'rgba(255, 77, 79, 0.4)',
+    hex: '#DC2626',
+    bgRgba: 'rgba(220, 38, 38, 0.16)',
+    borderHex: 'rgba(220, 38, 38, 0.4)',
     name: 'Vermelho',
   },
   {
     id: 'purple',
-    hex: '#7B4DFF',
-    bgRgba: 'rgba(123, 77, 255, 0.14)',
-    borderHex: 'rgba(123, 77, 255, 0.4)',
+    hex: '#7C3AED',
+    bgRgba: 'rgba(124, 58, 237, 0.16)',
+    borderHex: 'rgba(124, 58, 237, 0.4)',
     name: 'Roxo',
   },
 ];
@@ -252,7 +252,37 @@ export function getPastelTagStyle(colorHex?: string, fallbackName?: string): Pas
 
 export const DEFAULT_TAG_COLOR = TAG_COLORS[0].hex;
 
-// Estilo Vívido e Marcante (cores saturadas, ricas e nítidas)
+// Calibra a cor para manter saturação vívida e marcante, sem ofuscamento/luminosidade excessiva
+export function toneDownHighLuminance(hex: string): string {
+  let cleanHex = hex.replace('#', '');
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map((c) => c + c).join('');
+  }
+  if (cleanHex.length !== 6) return hex;
+
+  const r = parseInt(cleanHex.slice(0, 2), 16) / 255;
+  const g = parseInt(cleanHex.slice(2, 4), 16) / 255;
+  const b = parseInt(cleanHex.slice(4, 6), 16) / 255;
+
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return hex;
+
+  // Luminância percebida padrão ITU-R BT.601
+  const perceivedLuminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+  // Se a luminosidade for ofuscante/muito clara (> 0.48), reduz a intensidade mantendo a saturação rica
+  if (perceivedLuminance > 0.48) {
+    const scale = 0.44 / perceivedLuminance;
+    const rNew = Math.min(255, Math.round(r * 255 * scale));
+    const gNew = Math.min(255, Math.round(g * 255 * scale));
+    const bNew = Math.min(255, Math.round(b * 255 * scale));
+    const toHex = (n: number) => n.toString(16).padStart(2, '0');
+    return `#${toHex(rNew)}${toHex(gNew)}${toHex(bNew)}`;
+  }
+
+  return hex;
+}
+
+// Estilo Vívido e Marcante (cores saturadas, ricas e nítidas sem luminosidade ofuscante)
 export interface VividTagStyle {
   color: string;
   backgroundColor: string;
@@ -274,7 +304,7 @@ export function getVividTagStyle(colorHex?: string, fallbackName?: string): Vivi
     hex = colorItem.hex;
   }
 
-  // Se for nome de cor mapeado (ex: "blue", "red", "azul", etc.)
+  // Normaliza nomes de cores e hexadecimais para garantir saturação vívida sem claridade/luminosidade excessiva
   const norm = hex.toLowerCase();
   const matched = TAG_COLORS.find(
     (c) => c.id.toLowerCase() === norm || c.name.toLowerCase() === norm || c.hex.toLowerCase() === norm,
@@ -283,43 +313,28 @@ export function getVividTagStyle(colorHex?: string, fallbackName?: string): Vivi
     hex = matched.hex;
   } else if (!hex.startsWith('#')) {
     if (norm.includes('red') || norm.includes('vermelho') || norm.includes('pink') || norm.includes('rosa')) {
-      hex = '#FF4D4F';
+      hex = '#DC2626';
     } else if (norm.includes('orange') || norm.includes('laranja')) {
-      hex = '#FF7728';
+      hex = '#EA580C';
     } else if (norm.includes('green') || norm.includes('verde') || norm.includes('lime')) {
-      hex = '#10B981';
+      hex = '#16A34A';
     } else if (norm.includes('purple') || norm.includes('roxo')) {
-      hex = '#7B4DFF';
+      hex = '#7C3AED';
     } else if (norm.includes('cyan') || norm.includes('sky') || norm.includes('ciano')) {
-      hex = '#00A3FF';
+      hex = '#0284C7';
     } else if (norm.includes('yellow') || norm.includes('amarelo') || norm.includes('amber')) {
-      hex = '#FFB020';
+      hex = '#D97706';
     } else {
-      hex = '#1677FF';
+      hex = '#2563EB';
     }
   }
 
-  // Calcula luminância para garantir contraste perfeito no texto
-  let text = '#FFFFFF';
-  let cleanHex = hex.replace('#', '');
-  if (cleanHex.length === 3) {
-    cleanHex = cleanHex.split('').map((c) => c + c).join('');
-  }
-  if (cleanHex.length === 6) {
-    const r = parseInt(cleanHex.slice(0, 2), 16);
-    const g = parseInt(cleanHex.slice(2, 4), 16);
-    const b = parseInt(cleanHex.slice(4, 6), 16);
-    if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
-      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-      if (luminance > 0.65) {
-        text = '#0F172A';
-      }
-    }
-  }
+  // Aplica calibração para garantir que nenhuma cor fique ofuscante/com luminosidade excessiva
+  const finalBg = toneDownHighLuminance(hex);
 
   return {
-    color: text,
-    backgroundColor: hex,
+    color: '#FFFFFF',
+    backgroundColor: finalBg,
     borderColor: 'rgba(0, 0, 0, 0.15)',
   };
 }

@@ -137,10 +137,10 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
   if (!isOpen) return null;
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 dark:bg-black/70 p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-[680px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/90 overflow-hidden flex flex-col max-h-[85vh]">
+    <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[9vh] sm:pt-[11vh] bg-slate-900/40 dark:bg-black/70 p-4 overflow-y-auto animate-in fade-in duration-200">
+      <div className="w-full max-w-[760px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/90 overflow-hidden flex flex-col max-h-[82vh] mb-12">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E3B]/80 px-6 py-4 shrink-0">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E3B]/80 px-7 py-4.5 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 dark:bg-[#00FF66]/15 text-emerald-600 dark:text-[#00FF66]">
               <TagIcon size={15} />
@@ -157,7 +157,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
         </div>
 
         {/* Toolbar de Ações */}
-        <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-slate-200 dark:border-[#2C2E3B]/70 bg-slate-50/70 dark:bg-[#16171E]/60 shrink-0">
+        <div className="flex items-center justify-between gap-3 px-7 py-4 border-b border-slate-200 dark:border-[#2C2E3B]/70 bg-slate-50/70 dark:bg-[#16171E]/60 shrink-0">
           <div className="flex items-center gap-3 w-full">
             {/* Botão Nova Etiqueta */}
             <button

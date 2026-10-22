@@ -63,10 +63,10 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/40 dark:bg-black/70 p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-[460px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/90 overflow-hidden">
+    <div className="fixed inset-0 z-[10000] flex items-start justify-center pt-[14vh] sm:pt-[16vh] bg-slate-900/40 dark:bg-black/70 p-4 overflow-y-auto animate-in fade-in duration-200">
+      <div className="w-full max-w-[520px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/90 overflow-hidden mb-12">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E3B]/80 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E3B]/80 px-7 py-4.5">
           <h3 className="text-[15px] font-semibold text-slate-900 dark:text-[#E1E4EE]">
             {tagParaEditar ? 'Editar Etiqueta' : 'Nova Etiqueta'}
           </h3>
@@ -80,7 +80,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-7 space-y-6">
           {/* Seletor de Cores */}
           <div className="flex items-center gap-2.5">
             {TAG_COLORS.map((c) => {

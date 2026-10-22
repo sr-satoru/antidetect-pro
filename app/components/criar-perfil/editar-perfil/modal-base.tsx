@@ -20,18 +20,18 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
   isSaving = false,
   isSaveDisabled = false,
   saveLabel = 'Salvar Alteração',
-  maxWidth = 'max-w-[560px]',
+  maxWidth = 'max-w-[600px]',
   children,
 }) => {
   if (!isOpen) return null;
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 dark:bg-black/85 p-6 select-none"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh] sm:pt-[14vh] bg-slate-900/40 dark:bg-black/85 p-6 select-none overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className={`animate-in zoom-in-95 w-full ${maxWidth} rounded-2xl border border-slate-200 dark:border-[#343644] bg-white dark:bg-[#1C1E26] p-7 shadow-2xl shadow-slate-900/15 dark:shadow-black/95 duration-150`}
+        className={`animate-in zoom-in-95 w-full ${maxWidth} rounded-2xl border border-slate-200 dark:border-[#343644] bg-white dark:bg-[#1C1E26] p-7 shadow-2xl shadow-slate-900/15 dark:shadow-black/95 duration-150 mb-12`}
         onClick={(e) => e.stopPropagation()}
       >
         <form

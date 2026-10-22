@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   User,
   ShieldCheck,
@@ -84,10 +84,24 @@ const Switch: React.FC<{
 
 export const ConfigurationPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
 
-  const [activeTab, setActiveTab] = useState<ConfigTab>('account');
+  const tabParam = searchParams.get('tab') as ConfigTab | null;
+  const initialTab: ConfigTab =
+    tabParam && ['account', 'browser', 'network', 'appearance'].includes(tabParam)
+      ? tabParam
+      : 'account';
+
+  const [activeTab, setActiveTab] = useState<ConfigTab>(initialTab);
+
+  useEffect(() => {
+    const currentTab = searchParams.get('tab') as ConfigTab | null;
+    if (currentTab && ['account', 'browser', 'network', 'appearance'].includes(currentTab)) {
+      setActiveTab(currentTab);
+    }
+  }, [searchParams]);
   const [cloudOnline, setCloudOnline] = useState<boolean | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
@@ -208,7 +222,10 @@ export const ConfigurationPage: React.FC = () => {
             <button
               key={tab.id}
               type="button"
-              onClick={() => setActiveTab(tab.id as ConfigTab)}
+              onClick={() => {
+                setActiveTab(tab.id as ConfigTab);
+                setSearchParams({ tab: tab.id }, { replace: true });
+              }}
               className={`relative flex items-center gap-2 cursor-pointer pb-3 text-[13.5px] tracking-wide transition-all ${
                 isActive
                   ? 'font-semibold text-slate-900 dark:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:bg-[#3366E6] dark:after:bg-[#5E88F0] after:content-[""]'

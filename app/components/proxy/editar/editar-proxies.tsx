@@ -117,7 +117,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 select-none">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[7vh] sm:pt-[9vh] p-6 select-none overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 dark:bg-black/85 transition-opacity"
@@ -125,7 +125,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
       />
 
       {/* Modal Popup Box - Sem cabeçalho e sem botão X (fechamento via Cancelar) */}
-      <div className="relative z-10 w-full max-w-[760px] overflow-hidden rounded-2xl border border-slate-200 dark:border-[#343644] bg-white dark:bg-[#1C1E26] text-slate-800 dark:text-[#E0E2EC] shadow-2xl shadow-slate-900/10 dark:shadow-black/95 animate-in fade-in zoom-in-95 duration-150">
+      <div className="relative z-10 w-full max-w-[840px] overflow-hidden rounded-2xl border border-slate-200 dark:border-[#343644] bg-white dark:bg-[#1C1E26] text-slate-800 dark:text-[#E0E2EC] shadow-2xl shadow-slate-900/10 dark:shadow-black/95 animate-in fade-in zoom-in-95 duration-150 mb-12">
         {/* Form Body - Letras aumentadas, campos mais altos e confortáveis */}
         <div className="space-y-5 p-8">
           {/* Row 1: ID do agente */}

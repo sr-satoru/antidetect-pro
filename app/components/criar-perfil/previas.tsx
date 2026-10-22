@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getRandomPreset } from '@/services/navegador-presets';
 import { generateDeviceName, generateMacAddress } from './impressoes';
 
@@ -8,6 +9,7 @@ interface PreviasProps {
 }
 
 export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
+  const navigate = useNavigate();
   const handleRegenerateFingerprint = () => {
     const currentOs = formData.os || 'windows';
     const currentKernel = formData.kernel || 'AstroFox';
@@ -263,11 +265,16 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       </div>
 
       {/* Rodapé da prévia */}
-      <div className="mt-4 shrink-0 border-t border-slate-200 dark:border-[#2C2E38] pt-3 text-[11px] text-slate-500 dark:text-[#8E92A2]">
+      <div className="mt-4 shrink-0 border-t border-slate-200 dark:border-[#2C2E38] pt-3 text-[11px] text-slate-500 dark:text-[#8E92A2] select-none">
         Presets oficiais carregados de{' '}
-        <span className="font-medium text-emerald-600 dark:text-[#00FF66]">
+        <button
+          type="button"
+          onClick={() => navigate('/configuration?tab=browser')}
+          className="font-medium text-emerald-600 hover:text-emerald-700 dark:text-[#00FF66] dark:hover:text-[#00FF66]/80 underline decoration-emerald-500/40 hover:decoration-emerald-500 cursor-pointer transition-colors"
+          title="Abrir configurações de Navegador & Antidetect"
+        >
           backend/presets
-        </span>
+        </button>
         .
       </div>
     </div>

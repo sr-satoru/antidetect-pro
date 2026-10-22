@@ -96,9 +96,9 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
       {dialogState?.isOpen &&
         createPortal(
-          <div className="fixed inset-0 z-[10001] flex items-center justify-center bg-slate-900/40 dark:bg-black/80 p-4 animate-in fade-in duration-200">
-            <div className="w-full max-w-[440px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 overflow-hidden flex flex-col animate-in zoom-in-95 duration-150">
-              <div className="flex items-start gap-4 p-6">
+          <div className="fixed inset-0 z-[10001] flex items-start justify-center pt-[15vh] sm:pt-[17vh] bg-slate-900/40 dark:bg-black/80 p-4 overflow-y-auto animate-in fade-in duration-200">
+            <div className="w-full max-w-[490px] rounded-2xl border border-slate-200 dark:border-[#303241]/90 bg-white dark:bg-[#1A1C24] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 overflow-hidden flex flex-col animate-in zoom-in-95 duration-150 mb-12">
+              <div className="flex items-start gap-4 p-7">
                 {renderIcon(dialogState.options.variant)}
                 <div className="flex-1 space-y-1.5 pt-0.5">
                   <h3 className="text-[15px] font-semibold text-slate-900 dark:text-[#E1E4EE] tracking-tight">

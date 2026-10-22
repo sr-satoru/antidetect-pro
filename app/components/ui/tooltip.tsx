@@ -10,6 +10,19 @@ export interface TooltipProps {
   maxWidth?: number | string;
 }
 
+/**
+ * Padrão oficial de cores e estilização para TODOS os tooltips do sistema (fonte única da verdade):
+ * - Modo Claro: Fundo cinza suave (bg-gray-100), texto escuro (text-gray-900)
+ * - Modo Escuro: Fundo escuro (dark:bg-gray-800), texto claro (dark:text-gray-100)
+ * - Bordas e sombras padronizadas para alto requinte visual.
+ */
+export const TOOLTIP_THEME = {
+  container:
+    'rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-md border border-slate-200/80 dark:border-white/10 select-none',
+  arrowTop: 'border-t-gray-100 dark:border-t-gray-800',
+  arrowBottom: 'border-b-gray-100 dark:border-b-gray-800',
+};
+
 export const Tooltip: React.FC<TooltipProps> = ({
   content,
   children,
@@ -73,8 +86,10 @@ export const Tooltip: React.FC<TooltipProps> = ({
             maxWidth: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
           }}
         >
-          {/* Balão com alto contraste e acabamento de luxo */}
-          <div className="bg-slate-900 text-slate-100 dark:bg-[#1E2028] dark:text-[#E1E4EE] border border-slate-800 dark:border-white/15 text-[11.5px] font-normal leading-[1.4] px-3.5 py-2 rounded-lg shadow-xl shadow-slate-900/20 dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)] select-none text-left">
+          {/* Balão com acabamento oficial terceirizado e padronizado */}
+          <div
+            className={`${TOOLTIP_THEME.container} text-[11.5px] font-normal leading-[1.4] px-3 py-1.5 text-left`}
+          >
             {content}
           </div>
 
@@ -82,8 +97,8 @@ export const Tooltip: React.FC<TooltipProps> = ({
           <div
             className={`absolute w-0 h-0 border-solid ${arrowAlignClass} ${
               position === 'top'
-                ? 'top-full border-t-slate-900 dark:border-t-[#1E2028] border-t-[6px] border-x-[6px] border-x-transparent border-b-0'
-                : 'bottom-full border-b-slate-900 dark:border-b-[#1E2028] border-b-[6px] border-x-[6px] border-x-transparent border-t-0'
+                ? `top-full ${TOOLTIP_THEME.arrowTop} border-t-[5px] border-x-[5px] border-x-transparent border-b-0`
+                : `bottom-full ${TOOLTIP_THEME.arrowBottom} border-b-[5px] border-x-[5px] border-x-transparent border-t-0`
             }`}
           />
         </div>

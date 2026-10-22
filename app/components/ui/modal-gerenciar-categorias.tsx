@@ -58,7 +58,7 @@ export const ModalGerenciarCategorias: React.FC<
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-start justify-center pt-[7vh] sm:pt-[9vh] p-4 overflow-y-auto">
         {/* Backdrop */}
         <div
           className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 transition-opacity"
@@ -66,9 +66,9 @@ export const ModalGerenciarCategorias: React.FC<
         />
 
         {/* Modal Dialog */}
-        <div className="relative z-10 flex w-full max-w-3xl max-h-[85vh] flex-col rounded-2xl border border-slate-200 dark:border-[#333543] bg-white dark:bg-[#22242C] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 animate-in fade-in zoom-in-95 duration-150">
+        <div className="relative z-10 flex w-full max-w-4xl max-h-[82vh] flex-col rounded-2xl border border-slate-200 dark:border-[#333543] bg-white dark:bg-[#22242C] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 animate-in fade-in zoom-in-95 duration-150 mb-12">
           {/* Header */}
-          <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#2F3240] px-6 select-none">
+          <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#2F3240] px-7 select-none">
             <span className="text-base font-semibold text-slate-900 dark:text-white">Categoria</span>
             <button
               type="button"
@@ -81,7 +81,7 @@ export const ModalGerenciarCategorias: React.FC<
           </div>
 
           {/* Barra de Ações: Botão Nova categoria + Busca */}
-          <div className="flex shrink-0 items-center gap-3.5 px-6 pt-5 pb-4 select-none">
+          <div className="flex shrink-0 items-center gap-3.5 px-7 pt-5 pb-4 select-none">
             <button
               type="button"
               onClick={handleOpenCreate}
@@ -107,7 +107,7 @@ export const ModalGerenciarCategorias: React.FC<
           </div>
 
           {/* Tabela de Categorias */}
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-6 pb-6">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-7 pb-7">
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#2D303E] bg-white dark:bg-[#1A1C24] shadow-xs">
               {/* Cabeçalho da Tabela */}
               <div className="grid grid-cols-12 border-b border-slate-200 dark:border-[#2D303E] bg-slate-100/90 dark:bg-[#1E202A] px-4 py-3 text-[12px] font-medium text-slate-600 dark:text-[#8E92A2] select-none">

@@ -167,7 +167,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[11vh] sm:pt-[13vh] p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 transition-opacity"
@@ -175,9 +175,9 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
       />
 
       {/* Modal Dialog */}
-      <div className="relative z-10 flex w-full max-w-[540px] max-h-[90vh] flex-col rounded-2xl border border-slate-200 dark:border-[#333543] bg-white dark:bg-[#22242C] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 animate-in fade-in zoom-in-95 duration-150">
+      <div className="relative z-10 flex w-full max-w-[590px] max-h-[85vh] flex-col rounded-2xl border border-slate-200 dark:border-[#333543] bg-white dark:bg-[#22242C] shadow-2xl shadow-slate-900/15 dark:shadow-black/95 animate-in fade-in zoom-in-95 duration-150 mb-12">
         {/* Header */}
-        <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#2F3240] px-6 select-none">
+        <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-[#2F3240] px-7 select-none">
           <span className="text-base font-semibold text-slate-900 dark:text-white">
             {categoryToEdit ? 'Editar categoria' : 'Nova categoria'}
           </span>
@@ -192,7 +192,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto space-y-5 p-6 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto space-y-6 p-7 custom-scrollbar">
           {/* Campo Nome */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <label className="shrink-0 text-left text-[13px] text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
