@@ -233,7 +233,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
         <div className="px-7 pb-7 space-y-6">
           {/* Linha 1: Nº de perfil */}
           <div className="flex items-center gap-5">
-            <label className="w-24 text-right text-[13px] text-slate-500 dark:text-[#9DA2B4] shrink-0 font-normal">
+            <label className="w-24 text-right text-xs font-medium text-slate-500 dark:text-[#9DA2B4] shrink-0">
               Nº de perfil
             </label>
             <div className="flex items-center">
@@ -245,7 +245,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
 
           {/* Linha 2: Tags */}
           <div className="flex items-start gap-5">
-            <label className="w-24 text-right text-[13px] text-slate-500 dark:text-[#9DA2B4] shrink-0 font-normal pt-2.5">
+            <label className="w-24 text-right text-xs font-medium text-slate-500 dark:text-[#9DA2B4] shrink-0 pt-2.5">
               Tags
             </label>
 

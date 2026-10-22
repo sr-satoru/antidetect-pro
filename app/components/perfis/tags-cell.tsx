@@ -135,7 +135,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
     <>
       <div className={`flex w-full items-center justify-between gap-1.5 overflow-hidden select-none ${className}`}>
         {totalTags === 0 ? (
-          <span className="text-slate-400 dark:text-[#9EA2AE] text-xs">-</span>
+          <span className="text-slate-400 dark:text-[#9DA2B4] text-xs">-</span>
         ) : totalTags === 1 ? (
           <div className="flex flex-col gap-1 items-start justify-center min-w-0 max-w-[145px]">
             <TagBadge
@@ -190,7 +190,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
                   e.stopPropagation();
                   setIsOpen((prev) => !prev);
                 }}
-                className="text-[#7C3AED] hover:text-[#6D28D9] dark:text-[#A78BFA] dark:hover:text-[#C4B5FD] underline underline-offset-2 font-semibold text-[12px] cursor-pointer select-none transition-colors shrink-0"
+                className="text-slate-500 hover:text-slate-900 dark:text-[#9DA2B4] dark:hover:text-white underline underline-offset-2 font-semibold text-xs cursor-pointer select-none transition-colors shrink-0"
               >
                 +{extraCount}
               </button>

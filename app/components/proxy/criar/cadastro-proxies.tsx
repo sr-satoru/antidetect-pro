@@ -164,7 +164,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
             <Network size={16} />
           </div>
           <div>
-            <h2 className="text-[13.5px] font-semibold text-slate-900 dark:text-white">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
               Adicionar Proxies em Lote
             </h2>
             <p className="text-[11px] text-slate-500 dark:text-[#9DA2B4]">
@@ -208,7 +208,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
 
       {/* Footer do Modal */}
       <div className="flex h-16 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] px-6 select-none">
-        <div className="text-[12px] text-slate-500 dark:text-[#9DA2B4]">
+        <div className="text-xs text-slate-500 dark:text-[#9DA2B4]">
           {hasValidProxies ? (
             <span className="text-slate-700 dark:text-[#C4C7D5]">
               Pronto para salvar{' '}
@@ -225,7 +225,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-4 py-2 text-[13px] font-medium text-slate-700 dark:text-[#E2E4EC] transition-all hover:border-slate-400 hover:bg-slate-50 dark:hover:bg-[#282A33] dark:hover:text-white shadow-xs"
+            className="h-9 cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-4 text-xs font-medium text-slate-700 dark:text-[#E2E4EC] transition-all hover:border-slate-400 hover:bg-slate-50 dark:hover:bg-[#282A33] dark:hover:text-white shadow-2xs"
           >
             Cancelar
           </button>
@@ -233,9 +233,9 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
             type="button"
             onClick={handleSave}
             disabled={!hasValidProxies}
-            className="flex h-[38px] cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-5 text-[13px] font-medium shadow-xs transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-5 text-xs font-semibold shadow-xs transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <Check size={15} strokeWidth={2.5} />
+            <Check size={14} strokeWidth={2.5} />
             <span>Salvar Proxies</span>
           </button>
         </div>

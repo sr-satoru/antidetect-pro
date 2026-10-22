@@ -52,7 +52,7 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
         <div>
           <div className="mb-3 flex items-center gap-2 border-b border-slate-200/80 dark:border-[#2D3039] pb-2.5">
             <Info size={15} className="text-[#7C3AED] dark:text-[#A78BFA]" />
-            <span className="text-[13px] font-semibold tracking-wide text-slate-900 dark:text-white">
+            <span className="text-xs font-semibold tracking-wide text-slate-900 dark:text-white">
               Guia de Preenchimento
             </span>
           </div>
@@ -136,14 +136,14 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {/* Tipo proxy */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-[12px] font-medium text-slate-600 dark:text-[#9DA2B4]">
+            <label className="text-xs font-medium text-slate-600 dark:text-[#9DA2B4]">
               Tipo de Proxy
             </label>
             <div className="relative">
               <select
                 value={proxyType}
                 onChange={(e) => setProxyType(e.target.value)}
-                className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 pr-9 text-[13px] font-medium text-slate-900 dark:text-white transition-all hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-hidden shadow-xs"
+                className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 pr-9 text-xs font-medium text-slate-900 dark:text-white transition-all hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-hidden shadow-2xs"
               >
                 <option value="Socks5">Socks5</option>
                 <option value="HTTP">HTTP</option>
@@ -159,14 +159,14 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
 
           {/* Verificador de IP */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-[12px] font-medium text-slate-600 dark:text-[#9DA2B4]">
+            <label className="text-xs font-medium text-slate-600 dark:text-[#9DA2B4]">
               Verificador de IP
             </label>
             <div className="relative">
               <select
                 value={ipChecker}
                 onChange={(e) => setIpChecker(e.target.value)}
-                className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 pr-9 text-[13px] font-medium text-slate-900 dark:text-white transition-all hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-hidden shadow-xs"
+                className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 pr-9 text-xs font-medium text-slate-900 dark:text-white transition-all hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-hidden shadow-2xs"
               >
                 <option value="IP2Location">IP2Location</option>
                 <option value="ip-api.com">ip-api.com</option>
@@ -182,13 +182,13 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
 
         {/* Linha 2: Tags */}
         <div className="relative flex flex-col gap-1.5">
-          <label className="text-[12px] font-medium text-slate-600 dark:text-[#9DA2B4]">
+          <label className="text-xs font-medium text-slate-600 dark:text-[#9DA2B4]">
             Etiquetas / Tags
           </label>
           <div
             onClick={() => setTagDropdownOpen((prev) => !prev)}
             onMouseDown={(e) => e.stopPropagation()}
-            className={`flex min-h-[40px] flex-1 cursor-pointer flex-wrap items-center justify-between gap-1.5 rounded-lg border px-3.5 py-1.5 text-[13px] text-slate-900 dark:text-white transition-all shadow-xs ${
+            className={`flex min-h-[36px] flex-1 cursor-pointer flex-wrap items-center justify-between gap-1.5 rounded-lg border px-3.5 py-1 text-xs text-slate-900 dark:text-white transition-all shadow-2xs ${
               tagDropdownOpen
                 ? 'border-slate-400 dark:border-[#72768A] bg-white dark:bg-[#1F2026]'
                 : 'border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:border-slate-400 dark:hover:border-[#4B5063]'
@@ -205,7 +205,7 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
                   />
                 ))
               ) : (
-                <span className="text-[12px] text-slate-400 dark:text-[#9DA2B4]">
+                <span className="text-xs text-slate-400 dark:text-[#9DA2B4]">
                   Selecione ou digite para criar etiquetas...
                 </span>
               )}
@@ -230,7 +230,7 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
         {/* Linha 3: Textarea com Contador */}
         <div className="flex flex-1 flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-[12px] font-medium text-slate-600 dark:text-[#9DA2B4]">
+            <label className="text-xs font-medium text-slate-600 dark:text-[#9DA2B4]">
               Lista de Proxies
             </label>
             <span className="text-[11px] text-slate-500 dark:text-[#9DA2B4]">
@@ -243,7 +243,7 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}
               placeholder="Cole seus proxies aqui (um por linha)...&#10;ex: 192.168.0.1:8080:usuario:senha{Meu Proxy}"
-              className="h-[140px] w-full resize-none rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] p-3.5 font-mono text-[12.5px] leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-all hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-hidden shadow-xs"
+              className="h-[140px] w-full resize-none rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] p-3.5 font-mono text-xs leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-all hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-hidden shadow-2xs"
             />
           </div>
         </div>

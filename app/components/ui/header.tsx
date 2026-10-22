@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
     <header className="relative h-[60px] bg-white dark:bg-[#18191E] border-b border-slate-200 dark:border-[#2D3039] px-4 sm:px-6 flex items-center justify-between shrink-0 z-30 transition-colors shadow-2xs">
       {/* Title e indicador de contexto */}
       <div className="flex items-center gap-3">
-        <h1 className="text-base sm:text-[17px] font-bold text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
           {title || getAutoTitle()}
         </h1>
         {location.pathname.startsWith('/perfis') && (
@@ -103,7 +103,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           >
             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
             <Cloud size={13} />
-            <span className="hidden sm:inline text-[11px] font-mono">Nuvem Online</span>
+            <span className="hidden sm:inline text-xs font-medium">Nuvem Online</span>
           </div>
         )}
 
@@ -136,10 +136,10 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
           {/* Dados da identidade (who) */}
           <div className="flex flex-col min-w-0 leading-tight">
-            <b className="text-[12px] font-semibold text-slate-900 dark:text-white truncate max-w-[125px]">
+            <b className="text-xs font-semibold text-slate-900 dark:text-white truncate max-w-[125px]">
               {!user?.is_offline && user?.email ? user.email : 'Workspace Local'}
             </b>
-            <span className="text-[10px] text-slate-500 dark:text-[#90909D] truncate flex items-center gap-1">
+            <span className="text-[11px] text-slate-500 dark:text-[#9DA2B4] truncate flex items-center gap-1">
               {!user?.is_offline ? (
                 <>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />

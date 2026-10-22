@@ -238,7 +238,7 @@ export const NotificationsDropdown: React.FC = () => {
             {/* Conteúdo Central: Lista ou Empty State */}
             {filteredNotifications.length === 0 ? (
               <div className="flex-1 flex items-center justify-center p-6 select-none">
-                <span className="text-[14px] text-slate-400 dark:text-[#71717A] font-normal tracking-wide">
+                <span className="text-xs text-slate-400 dark:text-[#71717A] font-normal tracking-wide">
                   Sem novas notificações
                 </span>
               </div>
@@ -262,7 +262,7 @@ export const NotificationsDropdown: React.FC = () => {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <h4 className="text-[13.5px] font-medium text-slate-900 dark:text-[#F1F1F4] truncate">
+                            <h4 className="text-xs font-semibold text-slate-900 dark:text-[#F1F1F4] truncate">
                               {notif.title}
                             </h4>
 

@@ -191,7 +191,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
               size="sm"
               disabled={isCheckingUpdate}
               onClick={handleCheckUpdate}
-              className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#E2E4EC] text-[13px] font-medium gap-2 shrink-0"
+              className="h-9 px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#E2E4EC] text-xs font-medium gap-2 shrink-0"
             >
               <Download size={14} className={isCheckingUpdate ? 'animate-bounce' : ''} />
               <span>{isCheckingUpdate ? 'Consultando...' : 'Verificar Atualizações'}</span>

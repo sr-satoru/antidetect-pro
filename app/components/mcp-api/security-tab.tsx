@@ -107,7 +107,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ apiPort = 18922 }) => 
             className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl p-4 space-y-2 hover:border-slate-300 dark:hover:border-white/20 transition-all shadow-sm dark:shadow-none"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[13px] font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span className="w-4 h-4 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 flex items-center justify-center text-[10px] font-bold">
                   {idx + 1}
                 </span>
@@ -118,7 +118,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({ apiPort = 18922 }) => 
               </span>
             </div>
 
-            <p className="text-[12px] text-slate-600 dark:text-[#B0B0B0] leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-[#B0B0B0] leading-relaxed">
               {layer.desc}
             </p>
 

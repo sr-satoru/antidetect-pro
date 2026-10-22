@@ -116,7 +116,7 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
 
       {/* Conteúdo textual: todo branco */}
       <div className="flex-1 min-w-0 pr-0.5">
-        <div className="text-[13px] font-medium text-white tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis">
+        <div className="text-xs font-semibold text-white tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis">
           {title}
         </div>
         {description && (

@@ -344,7 +344,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
                     ? 'Parar navegador em execução'
                     : `Abrir no ${isChromium ? 'AstroBrowser (Chrome)' : 'AstroFox (Firefox)'}`
             }
-            className={`inline-flex h-[30px] w-auto items-center justify-center gap-1.5 rounded-[6px] px-3.5 text-[13px] font-semibold text-white transition-all active:scale-[0.97] ${isSyncing
+            className={`inline-flex h-[30px] w-auto items-center justify-center gap-1.5 rounded-[6px] px-3.5 text-xs font-semibold text-white transition-all active:scale-[0.97] ${isSyncing
                 ? 'cursor-not-allowed bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500'
                 : isStarting
                   ? 'cursor-wait bg-[#7C3AED]/85 text-white animate-pulse shadow-xs'

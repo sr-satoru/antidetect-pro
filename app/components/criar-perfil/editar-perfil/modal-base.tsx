@@ -48,19 +48,19 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
               type="button"
               onClick={onClose}
               disabled={isSaving}
-              className="h-[38px] px-5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#9DA2B4] text-[13px] font-medium transition-colors disabled:opacity-50 cursor-pointer"
+              className="h-9 px-5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#9DA2B4] text-xs font-medium transition-colors disabled:opacity-50 cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSaving || isSaveDisabled}
-              className="flex h-[38px] cursor-pointer items-center gap-2 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-white px-6 text-[13px] font-semibold transition-all active:scale-[0.98] shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-white px-6 text-xs font-semibold transition-all active:scale-[0.98] shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isSaving ? (
-                <Loader2 size={16} className="animate-spin text-white" />
+                <Loader2 size={15} className="animate-spin text-white" />
               ) : (
-                <Check size={16} strokeWidth={2.5} />
+                <Check size={15} strokeWidth={2.5} />
               )}
               <span>{saveLabel}</span>
             </button>

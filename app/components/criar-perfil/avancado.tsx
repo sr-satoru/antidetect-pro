@@ -101,7 +101,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
     <div className="flex-1 space-y-4 pr-1 text-slate-800 dark:text-[#D2D5DF]">
       {/* Campo Extensões conforme o layout padrão */}
       <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-start sm:gap-4">
-        <label className="shrink-0 pt-2 text-left text-[13px] text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[130px] sm:text-right">
+        <label className="shrink-0 pt-2 text-left text-xs font-medium text-slate-600 dark:text-[#9DA2B4] select-none sm:w-[130px] sm:text-right">
           Extensões
         </label>
 
@@ -111,7 +111,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
             <button
               type="button"
               onClick={() => setShowExtensionDropdown(!showExtensionDropdown)}
-              className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] text-slate-800 dark:text-[#9DA2B4] transition-colors hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-none shadow-xs"
+              className="flex h-9 w-full cursor-pointer items-center justify-between rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs text-slate-800 dark:text-[#9DA2B4] transition-colors hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-none shadow-xs"
             >
               <span className={currentMode ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-400 dark:text-[#9DA2B4]'}>
                 {getDisplayLabel()}
@@ -132,7 +132,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                     setShowExtensionDropdown(false);
                     setShowCreateCategoryModal(true);
                   }}
-                  className="flex w-full cursor-pointer items-center justify-center gap-2 py-2.5 text-[13px] font-medium text-[#7C3AED] hover:bg-[#7C3AED]/10 dark:text-[#A78BFA] dark:hover:bg-[#282A33] transition-colors"
+                  className="flex w-full cursor-pointer items-center justify-center gap-2 py-2.5 text-xs font-semibold text-[#7C3AED] hover:bg-[#7C3AED]/10 dark:text-[#A78BFA] dark:hover:bg-[#282A33] transition-colors"
                 >
                   <PlusCircle size={15} className="text-[#7C3AED] dark:text-[#A78BFA]" />
                   <span>Nova categoria</span>
@@ -144,8 +144,8 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                 <div className="px-2 py-1">
                   <div
                     onClick={() => handleSelectMode('team')}
-                    className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 text-[13px] transition-colors ${currentMode === 'team'
-                        ? 'bg-[#7C3AED]/10 text-[#7C3AED] font-medium dark:bg-[#282A33] dark:text-white'
+                    className={`flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-xs transition-colors ${currentMode === 'team'
+                        ? 'bg-[#7C3AED]/10 text-[#7C3AED] font-semibold dark:bg-[#282A33] dark:text-white'
                         : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-[#C5C8D6] dark:hover:bg-[#282A33]/50 dark:hover:text-white'
                       }`}
                   >
@@ -175,11 +175,11 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                           }`}
                       >
                         <div className="min-w-0 flex-1">
-                          <span className="block text-[13px] font-medium text-slate-900 dark:text-white">
+                          <span className="block text-xs font-semibold text-slate-900 dark:text-white">
                             {cat.name}
                           </span>
 
-                          {/* Miniaturas das extensões com badge verde */}
+                          {/* Miniaturas das extensões com badge */}
                           <div className="flex flex-wrap items-center gap-1.5 pt-1.5">
                             {cat.id === 'kit_basico' && loadingExtensions ? (
                               <span className="text-[11px] text-slate-400 dark:text-[#9DA2B4]">
@@ -190,7 +190,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                                 <div
                                   key={ext.id}
                                   title={ext.name}
-                                  className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] border border-slate-200/80 dark:border-[#2D3039] bg-slate-100 dark:bg-[#1F2026] p-0.5 shadow-2xs"
+                                  className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white p-0.5 shadow-2xs"
                                 >
                                   {ext.iconUrl ? (
                                     <img
@@ -199,7 +199,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
                                       className="h-full w-full rounded-[3px] object-contain"
                                     />
                                   ) : (
-                                    <span className="text-[10px] font-bold text-slate-800 dark:text-white">
+                                    <span className="text-[10px] font-bold text-slate-800 dark:text-slate-900">
                                       {ext.name.charAt(0).toUpperCase()}
                                     </span>
                                   )}
@@ -241,7 +241,7 @@ export const AvancadoTab: React.FC<AvancadoTabProps> = ({
           </div>
 
           {/* Subtítulo / Descrição */}
-          <p className="pt-2 text-[12px] text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
+          <p className="pt-2 text-xs text-slate-500 dark:text-[#9DA2B4] leading-relaxed">
             As extensões habilitadas de{' '}
             <span className="text-slate-700 dark:text-[#E1E4EA] font-medium">
               [Extensões - Extensões da equipe]

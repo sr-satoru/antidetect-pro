@@ -58,7 +58,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
           <div className="flex-1 overflow-x-auto overflow-y-auto [scrollbar-width:thin]">
             <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
               {/* Header */}
-              <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] text-[11.5px] font-semibold tracking-wider text-slate-600 dark:text-[#9DA2B4] uppercase select-none">
+              <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] text-xs font-semibold tracking-wider text-slate-600 dark:text-[#9DA2B4] uppercase select-none">
                 <tr className="h-12">
                   <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2 text-center">
                     <div className="flex items-center justify-center">

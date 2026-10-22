@@ -19,7 +19,7 @@ export const PerfilFooter: React.FC<PerfilFooterProps> = ({
           type="button"
           disabled={isSaving}
           onClick={onSave}
-          className="flex h-[38px] items-center gap-2 cursor-pointer rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-6 text-[13px] font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.35)] transition-all select-none active:scale-[0.98] disabled:opacity-50"
+          className="flex h-9 items-center gap-2 cursor-pointer rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-5 text-xs font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.35)] transition-all select-none active:scale-[0.98] disabled:opacity-50"
         >
           {isSaving && <Loader2 size={14} className="animate-spin text-white" />}
           <span>{isSaving ? 'Salvando...' : 'OK'}</span>
@@ -28,7 +28,7 @@ export const PerfilFooter: React.FC<PerfilFooterProps> = ({
           type="button"
           disabled={isSaving}
           onClick={onCancel}
-          className="flex h-[38px] items-center cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white px-5 text-[13px] font-medium transition-all select-none active:scale-[0.98] disabled:opacity-50"
+          className="flex h-9 items-center cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white px-4 text-xs font-medium transition-all select-none active:scale-[0.98] disabled:opacity-50"
         >
           Cancelar
         </button>

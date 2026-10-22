@@ -147,7 +147,7 @@ const FormRow: React.FC<{
       }`}
   >
     <label
-      className={`shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[150px] sm:text-right ${alignTop ? 'pt-2' : ''
+      className={`shrink-0 text-left text-xs font-medium text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[150px] sm:text-right ${alignTop ? 'pt-2' : ''
         }`}
     >
       {label}
@@ -175,7 +175,7 @@ const SegmentedGroup: React.FC<{
           key={item.id}
           type="button"
           onClick={() => onChange(item.id)}
-          className={`cursor-pointer rounded-md px-3 py-1.5 text-[12px] font-medium transition-all select-none ${isSelected
+          className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-all select-none ${isSelected
               ? 'border border-slate-300 dark:border-transparent bg-white text-slate-900 dark:bg-[#282A33] font-semibold dark:text-white shadow-xs'
               : 'border border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 dark:text-[#9DA2B4] dark:hover:bg-[#282A33]/40 dark:hover:text-white'
             }`}
@@ -219,13 +219,13 @@ const ShuffleInput: React.FC<{
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`flex-1 h-10 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs ${mono ? 'font-mono' : ''
+        className={`flex-1 h-9 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-2xs ${mono ? 'font-mono' : ''
           }`}
       />
       <button
         type="button"
         onClick={onShuffle}
-        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-slate-100 hover:bg-slate-200 text-[#7C3AED] dark:bg-[#1F2026] dark:text-[#A78BFA] shadow-2xs transition-all dark:hover:border-[#4B5063] dark:hover:bg-[#282A33] active:scale-95"
+        className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-slate-100 hover:bg-slate-200 text-[#7C3AED] dark:bg-[#1F2026] dark:text-[#A78BFA] shadow-2xs transition-all dark:hover:border-[#4B5063] dark:hover:bg-[#282A33] active:scale-95"
         title={title}
       >
         <Shuffle size={14} />
@@ -256,7 +256,7 @@ const NoisePill: React.FC<{
         />
       </div>
       <span
-        className={`text-[12.5px] transition-colors ${checked ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 group-hover:text-slate-900 dark:text-[#9DA2B4] dark:group-hover:text-white'
+        className={`text-xs transition-colors ${checked ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 group-hover:text-slate-900 dark:text-[#9DA2B4] dark:group-hover:text-white'
           }`}
       >
         {label}
@@ -313,7 +313,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
           setIsOpen(!isOpen);
           setSearchTerm('');
         }}
-        className="w-full h-10 flex items-center justify-between cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[12.5px] text-slate-800 dark:text-white transition-all hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-none shadow-xs text-left select-none"
+        className="w-full h-9 flex items-center justify-between cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs text-slate-800 dark:text-white transition-all hover:border-slate-400 dark:hover:border-[#4B5063] focus:outline-none shadow-2xs text-left select-none"
       >
         <span className="truncate">{value || placeholder}</span>
         <ChevronDown
@@ -518,7 +518,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                   <label
                     key={perm.id}
                     onClick={() => onChange('locationPermission', perm.id)}
-                    className="flex cursor-pointer items-center gap-2 text-[12.5px] text-[#A6ABB9] select-none hover:text-white"
+                    className="flex cursor-pointer items-center gap-2 text-xs text-[#A6ABB9] select-none hover:text-white"
                   >
                     <input
                       type="radio"
@@ -537,7 +537,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
             {formData.locationMode === 'custom' && (
               <div className="max-w-lg space-y-3.5 rounded-xl border border-slate-200/80 dark:border-[#2D3039] bg-slate-50 dark:bg-[#1F2026] p-4 shadow-xs">
                 <div>
-                  <label className="mb-1.5 block text-[12px] text-slate-600 dark:text-[#9DA2B4]">
+                  <label className="mb-1.5 block text-xs font-medium text-slate-600 dark:text-[#9DA2B4]">
                     <span className="mr-1 font-bold text-red-500">*</span>
                     Latitude / Longitude
                   </label>
@@ -550,7 +550,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         onChange={(e) =>
                           onChange('customLatitude', e.target.value)
                         }
-                        className={`w-full h-10 rounded-lg bg-white dark:bg-[#1F2026] px-3.5 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:outline-none ${isLatInvalid
+                        className={`w-full h-9 rounded-lg bg-white dark:bg-[#1F2026] px-3.5 text-xs text-slate-900 dark:text-white transition-colors focus:outline-none ${isLatInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
                             : 'border border-slate-200/80 dark:border-[#2D3039] focus:border-[#7C3AED] dark:focus:border-[#A78BFA]'
                           }`}
@@ -570,7 +570,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         onChange={(e) =>
                           onChange('customLongitude', e.target.value)
                         }
-                        className={`w-full h-10 rounded-lg bg-white dark:bg-[#1F2026] px-3.5 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:outline-none ${isLngInvalid
+                        className={`w-full h-9 rounded-lg bg-white dark:bg-[#1F2026] px-3.5 text-xs text-slate-900 dark:text-white transition-colors focus:outline-none ${isLngInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
                             : 'border border-slate-200/80 dark:border-[#2D3039] focus:border-[#7C3AED] dark:focus:border-[#A78BFA]'
                           }`}
@@ -585,7 +585,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-[12px] text-slate-600 dark:text-[#9DA2B4]">
+                  <label className="mb-1.5 block text-xs font-medium text-slate-600 dark:text-[#9DA2B4]">
                     Precisão (m)
                   </label>
                   <input
@@ -596,7 +596,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                     onChange={(e) =>
                       onChange('customAccuracy', Number(e.target.value) || 0)
                     }
-                    className="w-36 h-10 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none"
+                    className="w-36 h-9 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs text-slate-900 dark:text-white transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none"
                   />
                 </div>
               </div>
@@ -757,7 +757,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                 value={formData.webglVendor || ''}
                 onChange={(e) => onChange('webglVendor', e.target.value)}
                 placeholder="Ex: Google Inc. (NVIDIA)"
-                className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
+                className="h-9 w-full rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-2xs"
               />
             </div>
 
@@ -766,7 +766,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                 <label className="block text-[11.5px] font-medium text-slate-600 dark:text-[#9DA2B4]">
                   Renderizador GPU ({currentOs.toUpperCase()})
                 </label>
-                <span className="text-[10.5px] text-slate-400 dark:text-[#9DA2B4]">
+                <span className="text-[11px] text-slate-400 dark:text-[#9DA2B4]">
                   Catálogo Camoufox ({currentOs})
                 </span>
               </div>
@@ -935,7 +935,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           placeholder="Opcional: Portas autorizadas (ex: 80, 443, 8080)"
           value={formData.portScanAllowedPorts || ''}
           onChange={(e) => onChange('portScanAllowedPorts', e.target.value)}
-          className="h-10 w-full max-w-md rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
+          className="h-9 w-full max-w-md rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-2xs"
         />
       </FormRow>
 

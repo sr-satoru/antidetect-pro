@@ -196,7 +196,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
         <div className="flex-1 overflow-y-auto space-y-6 p-7 custom-scrollbar">
           {/* Campo Nome */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <label className="shrink-0 text-left text-[13px] text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
+            <label className="shrink-0 text-left text-xs font-medium text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
               <span className="mr-1 text-red-500 font-semibold">*</span>
               Nome
             </label>
@@ -207,7 +207,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                 maxLength={50}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Por favor, insira o nome da categoria."
-                className="w-full rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 py-2 pr-16 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]/30"
+                className="h-9 w-full rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 pr-16 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]/30"
               />
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 dark:text-[#6E7385] select-none">
                 {nome.length} / 50
@@ -217,7 +217,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
 
           {/* Campo Observação */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
-            <label className="shrink-0 pt-2 text-left text-[13px] text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
+            <label className="shrink-0 pt-2 text-left text-xs font-medium text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
               Observação
             </label>
             <div className="relative flex-1">
@@ -227,7 +227,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                 rows={2}
                 onChange={(e) => setObservacao(e.target.value)}
                 placeholder="Por favor, insira uma observação."
-                className="w-full resize-none rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 py-2 pb-6 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]/30"
+                className="w-full resize-none rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 py-2 pb-6 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]/30"
               />
               <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] text-slate-400 dark:text-[#6E7385] select-none">
                 {observacao.length} / 500
@@ -237,7 +237,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
 
           {/* Campo Extensão */}
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
-            <label className="shrink-0 pt-2 text-left text-[13px] text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
+            <label className="shrink-0 pt-2 text-left text-xs font-medium text-slate-700 dark:text-[#A6ABB9] select-none sm:w-[90px] sm:text-right">
               Extensão
             </label>
 
@@ -246,7 +246,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
               <button
                 type="button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed px-4 py-2.5 text-[13px] font-medium transition-all active:scale-[0.99] ${
+                className={`flex h-9 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed px-4 text-xs font-medium transition-all active:scale-[0.99] ${
                   isDropdownOpen
                     ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:border-white/40 dark:bg-white/10 dark:text-white'
                     : 'border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-[#1E2028]/70 text-slate-700 dark:text-white hover:border-slate-400 dark:hover:border-white/40 hover:bg-slate-100 dark:hover:bg-[#252732]'
@@ -277,7 +277,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                           {ext.name.charAt(0).toUpperCase()}
                         </span>
                       )}
-                      <span className="max-w-[120px] truncate text-[11.5px]">
+                      <span className="max-w-[120px] truncate text-xs">
                         {ext.name}
                       </span>
                       <button
@@ -310,7 +310,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Pesquisar..."
-                      className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#13141C] py-2 pl-9 pr-8 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5D6274] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:outline-none"
+                      className="h-9 w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#13141C] pl-9 pr-8 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5D6274] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:outline-none"
                     />
                     {searching && (
                       <Loader2
@@ -351,7 +351,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                                 <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-[#00FF66] ring-1 ring-white dark:ring-[#14151C]" />
                               </div>
 
-                              <span className="truncate text-[12.5px]">
+                              <span className="truncate text-xs">
                                 {ext.name}
                               </span>
                             </div>

@@ -38,10 +38,10 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
   }, [values.url]);
 
   return (
-    <div className="space-y-5 text-[13px] text-slate-700 dark:text-[#C9C9D2]">
+    <div className="space-y-5 text-xs text-slate-700 dark:text-[#C9C9D2]">
       {/* 1. Seleção da Loja Online */}
       <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-12">
-        <label className="text-right text-[12.5px] font-medium text-slate-600 dark:text-[#C9C9D2] select-none sm:col-span-3">
+        <label className="text-right text-xs font-medium text-slate-600 dark:text-[#C9C9D2] select-none sm:col-span-3">
           Loja de origem
         </label>
         <div className="flex flex-wrap items-center gap-2 sm:col-span-9">
@@ -85,7 +85,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
 
       {/* 2. URL da extensão */}
       <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-12">
-        <label className="text-right text-[12.5px] font-medium text-slate-600 dark:text-[#C9C9D2] select-none sm:col-span-3">
+        <label className="text-right text-xs font-medium text-slate-600 dark:text-[#C9C9D2] select-none sm:col-span-3">
           <span className="mr-1 text-red-500">*</span> URL da extensão
         </label>
         <div className="sm:col-span-9">
@@ -99,7 +99,7 @@ export const AdicionarExtensaoWeb: React.FC<AdicionarExtensaoWebProps> = ({
             }
             value={values.url}
             onChange={(e) => onChange('url', e.target.value)}
-            className="w-full rounded-md border border-slate-300 dark:border-[#2D3039] bg-white dark:bg-[#141519] px-3.5 py-2 font-mono text-[12.5px] text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#66666F] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden shadow-2xs"
+            className="h-9 w-full rounded-lg border border-slate-300 dark:border-[#2D3039] bg-white dark:bg-[#141519] px-3.5 font-mono text-xs text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#66666F] transition-colors focus:border-slate-400 dark:focus:border-[#41414E] focus:outline-hidden shadow-2xs"
           />
         </div>
       </div>

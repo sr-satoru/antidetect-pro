@@ -302,7 +302,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
               size="sm"
               onClick={handleTest}
               disabled={isTesting || !form.host.trim() || !form.port.trim()}
-              className="h-[38px] gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33]"
+              className="h-9 gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33]"
             >
               {isTesting ? (
                 <Loader2 size={14} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
@@ -341,7 +341,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
             variant="outline"
             size="sm"
             onClick={onClose}
-            className="h-[38px] rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-4 text-[13px] font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33]"
+            className="h-9 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-4 text-xs font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33]"
           >
             Cancelar
           </Button>
@@ -351,7 +351,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
             size="sm"
             onClick={handleSave}
             disabled={!form.host.trim() || !form.port.trim()}
-            className="h-[38px] rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-5 text-[13px] font-medium shadow-xs"
+            className="h-9 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-5 text-xs font-semibold shadow-xs"
           >
             Salvar Alterações
           </Button>

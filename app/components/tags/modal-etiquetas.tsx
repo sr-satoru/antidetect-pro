@@ -203,7 +203,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
       >
         {/* Header Clean estilo AdsPower */}
         <div className="flex items-center justify-between px-7 pt-6 pb-4 shrink-0">
-          <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-white tracking-tight">
             Etiqueta
           </h2>
           <button

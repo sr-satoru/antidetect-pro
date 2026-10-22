@@ -19,7 +19,7 @@ export const PerfilTabsHeader: React.FC<PerfilTabsHeaderProps> = ({
             key={tab.id}
             type="button"
             onClick={() => onTabChange(tab.id)}
-            className={`px-4 py-1.5 rounded-lg text-[13px] font-medium transition-all cursor-pointer ${
+            className={`px-4 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               isActive
                 ? 'bg-white dark:bg-[#282A33] text-slate-900 dark:text-white font-semibold shadow-xs border border-slate-200/50 dark:border-white/10'
                 : 'text-slate-600 dark:text-[#9DA2B4] hover:bg-slate-200/60 dark:hover:bg-[#282A33]/50 hover:text-slate-900 dark:hover:text-white'

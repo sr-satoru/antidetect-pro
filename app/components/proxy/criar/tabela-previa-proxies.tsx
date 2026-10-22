@@ -36,7 +36,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
             size="sm"
             onClick={onTestAll}
             disabled={!hasValidProxies || isChecking}
-            className="h-[38px] gap-2 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33]"
+            className="h-9 gap-2 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33]"
           >
             {isChecking ? (
               <Loader2 size={14} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
@@ -185,10 +185,10 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-[#9DA2B4]">
                       <Globe size={18} />
                     </div>
-                    <p className="text-[12.5px] font-medium text-slate-800 dark:text-[#D1D5DF]">
+                    <p className="text-xs font-medium text-slate-800 dark:text-[#D1D5DF]">
                       Nenhum proxy detectado ainda
                     </p>
-                    <p className="text-[11.5px] text-slate-500 dark:text-[#7E8294]">
+                    <p className="text-[11px] text-slate-500 dark:text-[#7E8294]">
                       Cole suas linhas no campo acima para gerar a tabela de
                       prévia automaticamente.
                     </p>

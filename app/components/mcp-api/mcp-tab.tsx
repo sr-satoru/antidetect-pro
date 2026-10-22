@@ -286,12 +286,12 @@ export const McpTab: React.FC<McpTabProps> = ({
               <button
                 type="button"
                 onClick={handleCopySseUrl}
-                className="flex h-[38px] items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33] transition-all cursor-pointer shadow-xs"
+                className="flex h-9 items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 text-xs font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-50 dark:hover:bg-[#282A33] transition-all cursor-pointer shadow-2xs"
               >
                 {copiedSseUrl ? (
-                  <Check size={14} className="text-[#7C3AED] dark:text-[#A78BFA]" />
+                  <Check size={13} className="text-[#7C3AED] dark:text-[#A78BFA]" />
                 ) : (
-                  <Copy size={14} className="text-slate-400 dark:text-[#9DA2B4]" />
+                  <Copy size={13} className="text-slate-400 dark:text-[#9DA2B4]" />
                 )}
                 <span>{copiedSseUrl ? 'Copiado' : 'Copiar URL SSE'}</span>
               </button>

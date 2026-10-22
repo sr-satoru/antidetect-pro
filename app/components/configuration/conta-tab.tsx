@@ -72,7 +72,7 @@ export const ContaTab: React.FC = () => {
                     ? user.email
                     : 'Workspace Local Isolado'}
                 </h3>
-                <span className="rounded-full bg-[#7C3AED]/15 border border-[#7C3AED]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#A78BFA] uppercase tracking-wider">
+                <span className="rounded-full bg-[#7C3AED]/15 border border-[#7C3AED]/30 px-2.5 py-0.5 text-[11px] font-bold text-[#7C3AED] dark:text-[#A78BFA] uppercase tracking-wider">
                   {!user?.is_offline
                     ? (user?.plan || 'PRO LIFETIME').toUpperCase()
                     : 'OFFLINE MODE'}
@@ -92,7 +92,7 @@ export const ContaTab: React.FC = () => {
                 variant="destructive"
                 size="sm"
                 onClick={logout}
-                className="h-[38px] px-4 rounded-lg gap-2 text-[13px] font-medium shadow-xs"
+                className="h-9 px-4 rounded-lg gap-2 text-xs font-semibold shadow-xs"
               >
                 <LogOut size={14} />
                 <span>Desconectar Sessão</span>
@@ -102,7 +102,7 @@ export const ContaTab: React.FC = () => {
                 variant="default"
                 size="sm"
                 onClick={() => navigate('/auth/login')}
-                className="h-[38px] px-4 rounded-lg gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-[13px] font-medium shadow-xs"
+                className="h-9 px-4 rounded-lg gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-semibold shadow-xs"
               >
                 <Zap size={14} />
                 <span>Conectar à Nuvem</span>
@@ -180,7 +180,7 @@ export const ContaTab: React.FC = () => {
             size="sm"
             disabled={isSyncing}
             onClick={handleSyncNow}
-            className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#E2E4EC] text-[13px] font-medium gap-2"
+            className="h-9 px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#E2E4EC] text-xs font-medium gap-2"
           >
             <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
             <span>{isSyncing ? 'Sincronizando...' : 'Sincronizar Agora'}</span>

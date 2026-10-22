@@ -23,7 +23,7 @@ export const NavegadorTab: React.FC<NavegadorTabProps> = ({
       {/* ─── Seção 1: Geral ────────────────────────────────────── */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pt-2">
-          <span className="text-[12px] font-medium text-slate-500 dark:text-[#9DA2B4] select-none">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#9DA2B4] select-none">
             Geral
           </span>
           <div className="h-[1px] flex-1 bg-slate-200/80 dark:bg-[#2D3039]" />
@@ -49,7 +49,7 @@ export const NavegadorTab: React.FC<NavegadorTabProps> = ({
       {/* ─── Seção 5: Avançado ──────────────────────────────────── */}
       <div className="space-y-4">
         <div className="flex items-center gap-3 pt-2">
-          <span className="text-[12px] font-medium text-slate-500 dark:text-[#9DA2B4] select-none">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#9DA2B4] select-none">
             Avançado
           </span>
           <div className="h-[1px] flex-1 bg-slate-200/80 dark:bg-[#2D3039]" />
@@ -62,14 +62,14 @@ export const NavegadorTab: React.FC<NavegadorTabProps> = ({
         <button
           type="button"
           onClick={onSave}
-          className="h-[38px] px-6 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-[13px] font-semibold text-white shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all cursor-pointer active:scale-[0.98]"
+          className="h-9 px-6 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-xs font-semibold text-white shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all cursor-pointer active:scale-[0.98]"
         >
           Gravar a Configuração
         </button>
         <button
           type="button"
           onClick={onReset}
-          className="text-[13px] font-medium text-slate-500 hover:text-slate-800 dark:text-[#9DA2B4] dark:hover:text-white transition-colors cursor-pointer select-none"
+          className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-[#9DA2B4] dark:hover:text-white transition-colors cursor-pointer select-none"
         >
           Restaurar configurações padrão
         </button>

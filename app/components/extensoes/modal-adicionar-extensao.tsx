@@ -168,7 +168,7 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
         <div className="space-y-6 p-6">
           {/* Linha do Tipo: Segmented Control */}
           <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-12">
-            <label className="text-right text-[12.5px] font-medium text-slate-700 dark:text-[#C9C9D2] select-none sm:col-span-3">
+            <label className="text-right text-xs font-medium text-slate-700 dark:text-[#C9C9D2] select-none sm:col-span-3">
               Tipo
             </label>
             <div className="sm:col-span-9">
@@ -218,14 +218,14 @@ export const ModalAdicionarExtensao: React.FC<ModalAdicionarExtensaoProps> = ({
           <button
             type="button"
             onClick={handleConfirm}
-            className="flex cursor-pointer items-center justify-center rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-6 py-2 text-xs font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.35)] transition-all active:scale-[0.98]"
+            className="flex h-9 cursor-pointer items-center justify-center rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-6 text-xs font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.35)] transition-all active:scale-[0.98]"
           >
             OK
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-[#9DA2B4] transition-colors dark:hover:text-white"
+            className="flex h-9 cursor-pointer items-center justify-center rounded-lg px-4 text-xs font-medium text-slate-500 hover:text-slate-900 dark:text-[#9DA2B4] transition-colors dark:hover:text-white"
           >
             Cancelar
           </button>

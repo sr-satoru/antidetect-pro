@@ -49,9 +49,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
   };
 
   const navItemClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 group relative select-none ${isActive
+    `flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 group relative select-none ${isActive
       ? 'bg-[#7C3AED]/15 text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#A78BFA] font-semibold shadow-2xs'
-      : 'text-slate-600 hover:bg-[#F3F2EF] hover:text-[#1B1A18] dark:text-[#9DA2B4] dark:hover:bg-[#282A33] dark:hover:text-[#E6EDF3]'
+      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-[#9DA2B4] dark:hover:bg-[#282A33] dark:hover:text-white'
     } ${isCollapsed ? 'justify-center px-2' : ''}`;
 
   return (
@@ -63,14 +63,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
       <button
         type="button"
         onClick={toggleSidebar}
-        className="absolute top-[17px] -right-3.5 z-50 flex h-6.5 w-6.5 items-center justify-center rounded-full border border-slate-200/90 dark:border-[#2D3039] bg-white dark:bg-[#18191E] text-slate-500 hover:text-slate-900 dark:text-[#9DA2B4] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#252733] shadow-sm transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95"
+        className="absolute top-[18px] right-0 translate-x-1/2 z-50 flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 dark:border-[#353844] bg-white dark:bg-[#1E2028] text-slate-500 hover:text-slate-900 dark:text-[#9DA2B4] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#282B37] shadow-xs hover:shadow-sm transition-all duration-150 cursor-pointer hover:scale-110 active:scale-95"
         title={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
         aria-label={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
       >
         {isCollapsed ? (
-          <ChevronRight size={13} strokeWidth={2.2} />
+          <ChevronRight size={12} strokeWidth={2.5} />
         ) : (
-          <ChevronLeft size={13} strokeWidth={2.2} />
+          <ChevronLeft size={12} strokeWidth={2.5} />
         )}
       </button>
 
@@ -88,10 +88,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
               <AstroFoxIcon size={20} />
             </div>
             <div className="flex flex-col leading-tight min-w-0">
-              <span className="font-bold text-[14px] tracking-tight text-slate-900 dark:text-white truncate">
+              <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white truncate">
                 Super Star
               </span>
-              <span className="text-[9.5px] uppercase tracking-wider font-semibold text-slate-400 dark:text-[#9DA2B4] truncate">
+              <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-400 dark:text-[#9DA2B4] truncate">
                 Multilogin
               </span>
             </div>
@@ -108,11 +108,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         <button
           type="button"
           onClick={handleNewProfile}
-          className={`w-full flex cursor-pointer items-center justify-center gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-semibold text-[13px] rounded-xl transition-all shadow-xs active:scale-[0.98] ${isCollapsed ? 'h-9 px-0' : 'h-9 px-3.5'
+          className={`w-full flex cursor-pointer items-center justify-center gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white font-semibold text-xs rounded-xl transition-all shadow-xs active:scale-[0.98] ${isCollapsed ? 'h-9 px-0' : 'h-9 px-3.5'
             }`}
           title="Criar Novo Perfil"
         >
-          <Plus size={16} strokeWidth={2.5} />
+          <Plus size={15} strokeWidth={2.5} />
           {!isCollapsed && <span>Novo Perfil</span>}
         </button>
       </div>
@@ -189,7 +189,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         {/* Automação Section */}
         <div className="space-y-1">
           {!isCollapsed && (
-            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#66666F]">
+            <div className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#9DA2B4]">
               Automação
             </div>
           )}
@@ -230,7 +230,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
         {/* Gerenciamento Section */}
         <div className="space-y-1">
           {!isCollapsed && (
-            <div className="px-3 pt-3 pb-1 text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#66666F]">
+            <div className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-[#9DA2B4]">
               Gerenciamento
             </div>
           )}

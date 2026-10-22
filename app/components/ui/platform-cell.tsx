@@ -505,21 +505,21 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
           <div className="flex items-center gap-1.5 overflow-hidden">
             <span
               title={primary.username || platformName}
-              className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+              className="text-xs font-semibold text-slate-900 dark:text-white truncate"
             >
               {primary.username || platformName}
             </span>
 
             {/* Contador sutil se houver mais de uma conta vinculada */}
             {totalCount > 1 && (
-              <span className="shrink-0 px-1 py-0.2 rounded bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-400 text-[9.5px] font-semibold border border-blue-200 dark:border-blue-900/60">
+              <span className="shrink-0 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-[#252733] text-slate-600 dark:text-[#9DA2B4] text-[10px] font-semibold border border-slate-200/80 dark:border-[#2D3039]">
                 +{totalCount - 1}
               </span>
             )}
           </div>
 
           {/* Subtítulo: Senha oculta ou domínio */}
-          <span className="text-[10px] text-slate-400 dark:text-[#8D90A0] truncate">
+          <span className="text-[11px] text-slate-400 dark:text-[#9DA2B4] truncate">
             {primary.password ? '••••••••' : primary.customDomain || platformName}
           </span>
         </div>
@@ -562,7 +562,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                           onClick={(e) =>
                             handleCopy(username || acc.platform, e, `user-${acc.id || idx}`)
                           }
-                          className="text-sm font-semibold text-gray-800 dark:text-gray-200 tracking-tight truncate cursor-pointer hover:opacity-75 transition-opacity"
+                          className="text-xs font-semibold text-slate-900 dark:text-white tracking-tight truncate cursor-pointer hover:opacity-75 transition-opacity"
                           title={
                             username
                               ? `Usuário: ${username} (clique para copiar apenas o usuário)`
@@ -579,7 +579,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                         onClick={(e) =>
                           handleCopy(combinedCredentials, e, accountCopyId)
                         }
-                        className="shrink-0 p-1 rounded text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                        className="shrink-0 p-1 rounded text-slate-400 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
                         title={
                           username && password
                             ? `Copiar usuário e senha (${combinedCredentials})`
@@ -610,7 +610,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                             (password || acc.twoFactorKey) &&
                             handleCopy(subtext, e, `sub-${acc.id || idx}`)
                           }
-                          className={`text-[10.5px] font-mono text-[#52525b] dark:text-gray-400 truncate block ${
+                          className={`text-[11px] font-mono text-slate-500 dark:text-[#9DA2B4] truncate block ${
                             password || acc.twoFactorKey
                               ? 'cursor-pointer hover:opacity-75 transition-opacity'
                               : ''

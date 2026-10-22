@@ -58,7 +58,7 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
             <button
               type="button"
               onClick={onFormat}
-              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-[12px] font-medium text-slate-700 dark:text-[#E2E4EC] transition-colors cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-xs font-medium text-slate-700 dark:text-[#E2E4EC] transition-colors cursor-pointer shadow-xs"
             >
               <Code2 size={13} />
               <span>Formatar JSON</span>
@@ -66,7 +66,7 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
             <button
               type="button"
               onClick={onCopy}
-              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-[12px] font-medium text-slate-700 dark:text-[#E2E4EC] transition-colors cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-xs font-medium text-slate-700 dark:text-[#E2E4EC] transition-colors cursor-pointer shadow-xs"
             >
               <Copy size={13} />
               <span>Copiar</span>
@@ -80,7 +80,7 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
             value={rawJsonText}
             onChange={(e) => onChangeText(e.target.value)}
             spellCheck={false}
-            className="w-full flex-1 resize-none bg-transparent font-mono text-[12.5px] leading-relaxed text-violet-300 focus:outline-hidden custom-scrollbar"
+            className="w-full flex-1 resize-none bg-transparent font-mono text-xs leading-relaxed text-violet-300 focus:outline-hidden custom-scrollbar"
             placeholder="Insira o JSON do preset..."
           />
           {rawJsonError && (
@@ -106,14 +106,14 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#E2E4EC] text-[13px] font-medium transition-colors shadow-xs cursor-pointer"
+              className="h-9 px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] hover:bg-slate-50 dark:hover:bg-[#282A33] text-slate-700 dark:text-[#E2E4EC] text-xs font-medium transition-colors shadow-xs cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="button"
               onClick={onApply}
-              className="h-[38px] px-5 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all active:scale-[0.98] cursor-pointer"
+              className="h-9 px-5 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all active:scale-[0.98] cursor-pointer"
             >
               <Check size={14} strokeWidth={2.5} />
               <span>Aplicar & Salvar</span>

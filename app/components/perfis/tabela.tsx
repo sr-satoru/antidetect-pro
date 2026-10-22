@@ -66,7 +66,7 @@ export const Tabela: React.FC<TabelaProps> = ({
       <div className="flex-1 custom-scrollbar overflow-auto relative">
         <table className="min-w-full w-full border-collapse text-left text-xs whitespace-nowrap">
           {/* Header */}
-          <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] text-[11.5px] font-semibold tracking-wider text-slate-600 dark:text-[#9DA2B4] uppercase select-none">
+          <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] text-xs font-semibold tracking-wider text-slate-600 dark:text-[#9DA2B4] uppercase select-none">
             <tr className="h-12">
               <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center">
                 <div className="flex items-center justify-center">
@@ -171,12 +171,13 @@ export const Tabela: React.FC<TabelaProps> = ({
       <div className="relative z-20 mt-auto flex h-12 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#2D3039] bg-[#F8F7F5] dark:bg-[#1F2026] px-4 text-xs text-slate-600 dark:text-[#9DA2B4]">
         <div className="flex items-center gap-4">
           <span>
-            Total: <strong className="text-slate-900 dark:text-white">{profiles.length}</strong>{' '}
+            Total: <strong className="text-slate-900 dark:text-white font-semibold">{profiles.length}</strong>{' '}
             perfis
           </span>
-          <span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
             Executando:{' '}
-            <strong className="text-emerald-600 dark:text-[#3fb950]">{runningCount}</strong>
+            <strong className="text-slate-900 dark:text-white font-semibold">{runningCount}</strong>
           </span>
           {selectedIds.length > 0 && (
             <span className="rounded-full border border-[#7C3AED]/30 bg-[#7C3AED]/10 text-[#7C3AED] dark:border-[#7C3AED]/40 dark:bg-[#7C3AED]/20 dark:text-[#A78BFA] px-2.5 py-0.5 text-[11px] font-semibold shadow-xs">
@@ -186,12 +187,12 @@ export const Tabela: React.FC<TabelaProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-slate-400 dark:text-[#9DA2B4]">1 / 1</span>
+          <span className="font-mono text-xs text-slate-500 dark:text-[#9DA2B4]">1 / 1</span>
           <div className="relative" ref={pageDropdownRef}>
             <button
               type="button"
               onClick={() => setIsPageDropdownOpen(!isPageDropdownOpen)}
-              className="flex h-[28px] items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] px-2.5 text-[11.5px] text-slate-700 dark:text-[#E2E4EC] hover:border-slate-300 dark:hover:border-[#4B5063] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden shadow-xs"
+              className="flex h-[28px] items-center gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#18191E] px-2.5 text-xs text-slate-700 dark:text-[#E2E4EC] hover:border-slate-300 dark:hover:border-[#4B5063] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer select-none focus:outline-hidden shadow-xs"
             >
               <span>{pageSize} / pág</span>
               <ChevronDown
@@ -210,7 +211,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                       setPageSize(size);
                       setIsPageDropdownOpen(false);
                     }}
-                    className={`flex w-full items-center px-3 py-1.5 text-[11.5px] transition-colors cursor-pointer select-none text-left ${pageSize === size
+                    className={`flex w-full items-center px-3 py-1.5 text-xs transition-colors cursor-pointer select-none text-left ${pageSize === size
                         ? 'bg-[#7C3AED]/10 text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#A78BFA] font-medium'
                         : 'text-slate-700 dark:text-[#9DA2B4] hover:bg-[#F3F2EF] dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white'
                       }`}

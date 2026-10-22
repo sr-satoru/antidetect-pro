@@ -85,7 +85,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2D3039]/80 px-7 py-4.5">
-          <h3 className="text-[15px] font-semibold text-slate-900 dark:text-[#E1E4EE]">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-[#E1E4EE]">
             {tagParaEditar ? 'Editar Etiqueta' : 'Nova Etiqueta'}
           </h3>
           <button
@@ -124,7 +124,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
           {/* Campo de Nome da Etiqueta */}
           <div className="space-y-1.5">
             <div className="flex items-center gap-3">
-              <label className="text-[13px] text-slate-700 dark:text-[#A6ABB9] select-none whitespace-nowrap">
+              <label className="text-xs font-medium text-slate-700 dark:text-[#A6ABB9] select-none whitespace-nowrap">
                 <span className="text-[#FF4D4F] mr-1">*</span>Etiqueta
               </label>
               <div className="relative flex-1">
@@ -137,7 +137,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
                     if (erro && e.target.value.trim()) setErro(false);
                   }}
                   placeholder="Por favor, insira o nome da etiqueta."
-                  className={`w-full rounded-lg border bg-slate-50 dark:bg-[#141519] px-3.5 py-2.5 pr-14 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] focus:outline-hidden transition-all ${
+                  className={`h-9 w-full rounded-lg border bg-slate-50 dark:bg-[#141519] px-3.5 pr-14 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] focus:outline-hidden transition-all ${
                     erro
                       ? 'border-red-500 focus:ring-1 focus:ring-red-500'
                       : 'border-slate-200 dark:border-[#2D3039]/80 focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 dark:focus:ring-[#A78BFA]/20'
@@ -161,14 +161,14 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-8.5 min-w-[80px] cursor-pointer rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-white px-4 text-xs font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.3)] transition-all active:scale-[0.98] disabled:opacity-50"
+              className="h-9 min-w-[80px] cursor-pointer rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-white px-4 text-xs font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.3)] transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {isSubmitting ? 'Salvando...' : 'OK'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="h-8.5 cursor-pointer rounded-lg px-4 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-[#9DA2B4] transition-colors dark:hover:bg-[#2A2C38] dark:hover:text-white"
+              className="h-9 cursor-pointer rounded-lg px-4 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-[#9DA2B4] transition-colors dark:hover:bg-[#2A2C38] dark:hover:text-white"
             >
               Cancelar
             </button>

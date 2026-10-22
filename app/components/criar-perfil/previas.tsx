@@ -245,18 +245,18 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
         </div>
 
         {/* Lista de parâmetros chave-valor com scroll sutil e quebra de linha fluida (sem scroll horizontal) */}
-        <div className="flex-1 min-h-0 space-y-3 overflow-y-auto overflow-x-hidden pr-1.5 text-[12.5px] scrollbar-thin overscroll-contain">
+        <div className="flex-1 min-h-0 space-y-3 overflow-y-auto overflow-x-hidden pr-1.5 text-xs scrollbar-thin overscroll-contain">
           {rows.map((row, idx) => (
             <div
               key={idx}
               className="grid grid-cols-[130px_minmax(0,1fr)] items-start gap-2.5 leading-snug"
             >
-              <span className="shrink-0 font-normal text-slate-500 dark:text-[#9DA2B4] select-none text-[12px]">
+              <span className="shrink-0 font-normal text-slate-500 dark:text-[#9DA2B4] select-none text-xs">
                 {row.label}
               </span>
               <span
                 className={`min-w-0 text-right leading-snug font-normal break-words [overflow-wrap:anywhere] text-slate-800 dark:text-white ${
-                  row.isMono ? 'font-mono text-[11.5px] opacity-90' : 'text-[12.5px]'
+                  row.isMono ? 'font-mono text-[11px] opacity-90' : 'text-xs'
                 }`}
               >
                 {row.value}

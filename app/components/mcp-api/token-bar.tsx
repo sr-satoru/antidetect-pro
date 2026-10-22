@@ -86,7 +86,7 @@ export const TokenBar: React.FC<TokenBarProps> = ({
             <span>Endereço Base da API</span>
             <span className="text-emerald-600 dark:text-emerald-400 font-medium lowercase">porta: {apiPort}</span>
           </label>
-          <div className="flex items-center bg-slate-50 dark:bg-[#0C0D12] border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 focus-within:border-emerald-500 dark:focus-within:border-white/60 focus-within:ring-1 focus-within:ring-emerald-500/20 dark:focus-within:ring-white/15 rounded-xl px-3.5 py-2.5 text-[13px] text-slate-900 dark:text-white font-mono transition-colors shadow-xs">
+          <div className="flex items-center bg-slate-50 dark:bg-[#0C0D12] border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 focus-within:border-emerald-500 dark:focus-within:border-white/60 focus-within:ring-1 focus-within:ring-emerald-500/20 dark:focus-within:ring-white/15 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white font-mono transition-colors shadow-2xs">
             <span className="flex-1 truncate select-all">{baseUrl}</span>
             <button
               type="button"
@@ -105,13 +105,13 @@ export const TokenBar: React.FC<TokenBarProps> = ({
             <span>Bearer Token Secreto</span>
             <span className="text-emerald-600 dark:text-[#00FF66] font-medium lowercase">anti-CSRF blindado</span>
           </label>
-          <div className="flex items-center bg-slate-50 dark:bg-[#0C0D12] border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 focus-within:border-emerald-500 dark:focus-within:border-white/60 focus-within:ring-1 focus-within:ring-emerald-500/20 dark:focus-within:ring-white/15 rounded-xl px-3.5 py-2 text-[13px] text-slate-900 dark:text-white font-mono gap-2 transition-colors shadow-xs">
+          <div className="flex items-center bg-slate-50 dark:bg-[#0C0D12] border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 focus-within:border-emerald-500 dark:focus-within:border-white/60 focus-within:ring-1 focus-within:ring-emerald-500/20 dark:focus-within:ring-white/15 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white font-mono gap-2 transition-colors shadow-2xs">
             <Key size={15} className="text-amber-500 dark:text-[#00FF66] shrink-0" />
             <input
               type={showToken ? 'text' : 'password'}
               readOnly
               value={token}
-              className="bg-transparent flex-1 outline-none text-[13px] text-slate-800 dark:text-[#EDEDED] font-mono select-all truncate"
+              className="bg-transparent flex-1 outline-none text-xs text-slate-800 dark:text-[#EDEDED] font-mono select-all truncate"
             />
             <div className="flex items-center gap-1 shrink-0">
               <button

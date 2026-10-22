@@ -210,7 +210,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
       id: 'curl',
       name: 'cURL',
       icon: (
-        <span className="font-mono font-black text-[13px] tracking-tight text-white px-0.5">
+        <span className="font-mono font-black text-xs tracking-tight text-white px-0.5">
           curl://
         </span>
       ),
