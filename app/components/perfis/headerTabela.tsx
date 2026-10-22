@@ -78,7 +78,7 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange?.(e.target.value)}
             placeholder="Pesquisa ou novos critérios de pesquisa"
-            className="w-full h-9 bg-white dark:bg-[#15151A] border border-slate-200 dark:border-[#2E2E38] focus:border-[#3366E6] dark:focus:border-[#5E88F0] text-slate-900 dark:text-[#F1F1F4] text-[13px] pl-9 pr-8 rounded-md placeholder-slate-400 dark:placeholder-[#66666F] focus:outline-hidden transition-colors shadow-2xs"
+            className="w-full h-9 bg-white dark:bg-[#15151A] border border-slate-200 dark:border-[#2E2E38] focus:border-[#238636] dark:focus:border-[#2ea043] text-slate-900 dark:text-[#F1F1F4] text-[13px] pl-9 pr-8 rounded-md placeholder-slate-400 dark:placeholder-[#66666F] focus:outline-hidden transition-colors shadow-2xs"
           />
           <button
             type="button"

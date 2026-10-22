@@ -99,7 +99,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       value:
         formData.timezoneMode === 'ip'
           ? 'Com base no IP'
-          : formData.customTimezone,
+          : formData.customTimezone || 'Com base no IP',
     },
     {
       label: 'Localização',
@@ -119,13 +119,13 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
     },
     {
       label: 'Resolução do Ecrã',
-      value: `${formData.screenResolution || `${formData.customScreenWidth || 1920} × ${formData.customScreenHeight || 1080}`} (DPR ${formData.devicePixelRatio || 1})`,
+      value: `${formData.customScreenWidth || 1920} × ${formData.customScreenHeight || 1080} (DPR ${formData.devicePixelRatio || 1}) • ${formData.screenResolution || 'Com base no User-Agent'}`,
     },
     {
       label: 'Metadados WebGL',
       value: formData.webglMetadataMode === 'default'
         ? 'Predefinição'
-        : `${formData.webglRenderer || 'Intel(R) HD Graphics'} (${formData.webglVendor || 'Google Inc.'})`,
+        : `${formData.webglRenderer || 'Nativo'} (${formData.webglVendor || 'Nativo'})`,
     },
     {
       label: 'CPU / Processador',

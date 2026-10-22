@@ -65,7 +65,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
 
   // Cores do Zebrado e Seleção Adaptativas
   const rowBg = isSelected
-    ? 'bg-blue-500/10 dark:bg-white/[0.08] border-l-2 border-l-blue-600 dark:border-l-white/70'
+    ? 'bg-emerald-50/60 dark:bg-emerald-950/25 border-l-[3px] border-l-[#238636] dark:border-l-[#2ea043]'
     : isStriped
       ? 'bg-slate-50/70 dark:bg-[#1F2027] hover:bg-slate-100/80 dark:hover:bg-white/[0.04]'
       : 'bg-white dark:bg-[#181920] hover:bg-slate-100/80 dark:hover:bg-white/[0.04]';

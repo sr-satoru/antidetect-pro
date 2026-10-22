@@ -204,7 +204,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                   <span
                     className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${
                       isChromium
-                        ? 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-white/10 dark:text-white/90 dark:border-white/15'
+                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-white/10 dark:text-white/90 dark:border-white/15'
                         : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-white/5 dark:text-slate-400 dark:border-white/10'
                     }`}
                   >
@@ -520,7 +520,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                       setShowGroupDropdown(false);
                     }}
                     className={`cursor-pointer px-3 py-2 text-[12.5px] ${formData.group === grp.name
-                        ? 'bg-blue-50 font-medium text-blue-700 dark:bg-[#1D2B44] dark:text-[#3E8BFF]'
+                        ? 'bg-emerald-50 font-medium text-[#1b6528] dark:bg-emerald-950/40 dark:text-[#7ee787]'
                         : 'text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-100 dark:hover:bg-[#2C2E38] hover:text-slate-900 dark:hover:text-white'
                       }`}
                   >

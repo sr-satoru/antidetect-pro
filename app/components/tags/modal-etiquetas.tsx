@@ -235,7 +235,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                     key={tag.id}
                     className={`flex items-center px-6 py-3 text-xs transition-colors group ${
                       isSelected
-                        ? 'bg-blue-500/10 dark:bg-[#1677FF]/10'
+                        ? 'bg-emerald-500/10 dark:bg-emerald-500/15'
                         : isFilteringThis
                         ? 'bg-slate-100 dark:bg-[#1D2436]'
                         : 'hover:bg-slate-50 dark:hover:bg-[#232532]/70'
@@ -262,7 +262,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                     >
                       <TagBadge name={tag.name} color={tag.color} />
                       {isFilteringThis && (
-                        <span className="flex items-center gap-1 rounded-md bg-blue-500/15 dark:bg-[#1677FF]/20 px-2 py-0.5 text-[10px] text-blue-600 dark:text-[#64B5F6] font-medium border border-blue-500/25 dark:border-[#1677FF]/30">
+                        <span className="flex items-center gap-1 rounded-md bg-emerald-500/15 dark:bg-emerald-500/20 px-2 py-0.5 text-[10px] text-[#238636] dark:text-[#2ea043] font-medium border border-emerald-500/25 dark:border-emerald-500/30">
                           <Check size={10} /> Filtro Ativo
                         </span>
                       )}
@@ -276,7 +276,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                           setTagEmEdicao(tag);
                           setIsSubmodalOpen(true);
                         }}
-                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-blue-600 dark:text-[#8E92A2] dark:hover:bg-[#2C2E3B] dark:hover:text-[#1677FF] transition-colors"
+                        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-[#238636] dark:text-[#8E92A2] dark:hover:bg-[#2C2E3B] dark:hover:text-[#2ea043] transition-colors"
                         title="Editar"
                       >
                         <Pencil size={13} />

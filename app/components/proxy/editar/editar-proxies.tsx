@@ -131,7 +131,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
         <div className="space-y-5 p-8">
           {/* Row 1: ID do agente */}
           <FieldRow label="ID do Agente">
-            <span className="inline-flex items-center rounded-lg bg-blue-50 dark:bg-[#1677FF]/15 border border-blue-200 dark:border-[#1677FF]/35 px-3 py-1.5 text-xs font-mono font-semibold text-blue-600 dark:text-[#4096FF]">
+            <span className="inline-flex items-center rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 px-3 py-1.5 text-xs font-mono font-semibold text-[#1b6528] dark:text-[#7ee787]">
               {proxy?.id ?? 2}
             </span>
           </FieldRow>
@@ -248,7 +248,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
                 <button
                   type="button"
                   title="Recarregar"
-                  className="cursor-pointer text-blue-500 hover:text-blue-600 transition-transform hover:rotate-180"
+                  className="cursor-pointer text-[#238636] hover:text-[#2ea043] transition-transform hover:rotate-180"
                 >
                   <RotateCw size={15} />
                 </button>

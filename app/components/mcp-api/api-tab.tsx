@@ -646,15 +646,15 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                     </div>
                     <span
                       className={`text-[12px] font-medium transition-colors ${
-                        isSelected ? 'text-blue-600 dark:text-white font-bold' : 'text-slate-500 dark:text-[#9E9E9E] group-hover:text-slate-900 dark:group-hover:text-white'
+                        isSelected ? 'text-[#238636] dark:text-[#2ea043] font-bold' : 'text-slate-500 dark:text-[#9E9E9E] group-hover:text-slate-900 dark:group-hover:text-white'
                       }`}
                     >
                       {lang.name}
                     </span>
 
-                    {/* Active Underline Indicator (Azul exatamente como na imagem) */}
+                    {/* Active Underline Indicator */}
                     {isSelected && (
-                      <span className="absolute bottom-0 left-1 right-1 h-[2.5px] bg-[#3b82f6] rounded-full" />
+                      <span className="absolute bottom-0 left-1 right-1 h-[2.5px] bg-[#238636] rounded-full" />
                     )}
                   </button>
                 );
@@ -799,7 +799,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   type="button"
                   onClick={handleExecuteInExplorer}
                   disabled={isExecuting}
-                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#3366E6] hover:bg-[#2A58CF] text-white font-semibold text-[12px] transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#238636] hover:bg-[#2ea043] text-white font-semibold text-[12px] transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 shadow-xs cursor-pointer"
                 >
                   <Send size={13} className={isExecuting ? 'animate-spin' : ''} />
                   <span>{isExecuting ? 'Executando...' : 'Enviar Chamada'}</span>

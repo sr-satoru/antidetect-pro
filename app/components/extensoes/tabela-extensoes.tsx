@@ -239,7 +239,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
               <button
                 type="button"
                 onClick={onAddClick}
-                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#3366E6] hover:bg-[#2A58CF] text-white px-4 py-2 text-xs font-semibold shadow-xs transition-all active:scale-[0.98]"
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-4 py-2 text-xs font-semibold shadow-xs transition-all active:scale-[0.98]"
               >
                 <ArrowUpCircle size={16} />
                 <span>Adicionar extensão</span>
@@ -298,7 +298,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           <button
                             type="button"
                             onClick={() => onToggleEnabled(ext.id)}
-                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled ? 'bg-[#3366E6]' : 'bg-slate-300 dark:bg-[#3A3D4D]'
+                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${ext.enabled ? 'bg-[#238636]' : 'bg-slate-300 dark:bg-[#3A3D4D]'
                               }`}
                           >
                             <span
@@ -308,8 +308,8 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                                 }`}
                             />
                           </button>
-                          <span className="flex items-center gap-1 text-[11px] font-medium text-[#3366E6] dark:text-[#5E88F0]">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#3366E6] dark:bg-[#5E88F0]" />
+                          <span className="flex items-center gap-1 text-[11px] font-medium text-[#238636] dark:text-[#2ea043]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#238636] dark:bg-[#2ea043]" />
                             <span>Ativo</span>
                           </span>
                         </div>
@@ -472,7 +472,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
                   className={`rounded-lg px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${selectedCategory === cat
-                    ? 'bg-blue-50 text-[#3366E6] border border-blue-500/30 dark:bg-[#1A1A21] dark:border-[#2E2E38] dark:text-[#5E88F0] font-bold shadow-xs'
+                    ? 'bg-emerald-50 text-[#1b6528] border border-emerald-500/30 dark:bg-[#1A1A21] dark:border-[#2E2E38] dark:text-[#2ea043] font-bold shadow-xs'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:bg-white/[0.04] dark:hover:text-white'
                     }`}
                 >
@@ -487,7 +487,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 type="button"
                 onClick={() => setStoreFilter('all')}
                 className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'all'
-                  ? 'bg-white text-[#3366E6] shadow-2xs dark:bg-[#1A1A21] dark:text-[#5E88F0] border border-slate-200 dark:border-[#2E2E38]'
+                  ? 'bg-white text-[#238636] shadow-2xs dark:bg-[#1A1A21] dark:text-[#2ea043] border border-slate-200 dark:border-[#2E2E38]'
                   : 'text-slate-500 hover:text-slate-900 dark:text-[#7C8092] dark:hover:text-white'
                   }`}
               >
@@ -497,7 +497,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 type="button"
                 onClick={() => setStoreFilter('firefox')}
                 className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'firefox'
-                  ? 'bg-white text-[#3366E6] shadow-2xs dark:bg-[#1A1A21] dark:text-[#5E88F0] border border-slate-200 dark:border-[#2E2E38]'
+                  ? 'bg-white text-[#238636] shadow-2xs dark:bg-[#1A1A21] dark:text-[#2ea043] border border-slate-200 dark:border-[#2E2E38]'
                   : 'text-slate-500 hover:text-slate-900 dark:text-[#7C8092] dark:hover:text-white'
                   }`}
               >
@@ -507,7 +507,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 type="button"
                 onClick={() => setStoreFilter('chrome')}
                 className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-all ${storeFilter === 'chrome'
-                  ? 'bg-white text-[#3366E6] shadow-2xs dark:bg-[#1A1A21] dark:text-[#5E88F0] border border-slate-200 dark:border-[#2E2E38]'
+                  ? 'bg-white text-[#238636] shadow-2xs dark:bg-[#1A1A21] dark:text-[#2ea043] border border-slate-200 dark:border-[#2E2E38]'
                   : 'text-slate-500 hover:text-slate-900 dark:text-[#7C8092] dark:hover:text-white'
                   }`}
               >

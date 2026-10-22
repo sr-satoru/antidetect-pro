@@ -117,7 +117,7 @@ export const LoginPage: React.FC = () => {
       {/* Header superior da página centralizado */}
       <header className="relative z-10 w-full h-16 border-b border-[#232530] bg-[#101116] px-6 flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#3366E6] text-white shadow-xs">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#238636] text-white shadow-xs">
             <Star size={18} className="fill-white stroke-white" />
           </div>
           <div className="flex items-center gap-2.5">
@@ -136,7 +136,7 @@ export const LoginPage: React.FC = () => {
 
           {/* Cabeçalho do Card */}
           <div className="flex items-center gap-3.5 mb-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#3366E6] text-white shadow-xs">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#238636] text-white shadow-xs">
               <Star size={24} className="fill-white stroke-white" />
             </div>
             <div>
@@ -211,7 +211,7 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 disabled={isLoading}
                 onClick={handleConnect}
-                className="w-full flex items-center justify-between rounded-xl bg-[#3366E6] hover:bg-[#2A58CF] text-white active:scale-[0.99] px-5 py-3.5 text-sm font-semibold shadow-xs disabled:opacity-50 transition-all group cursor-pointer"
+                className="w-full flex items-center justify-between rounded-xl bg-[#238636] hover:bg-[#2ea043] text-white active:scale-[0.99] px-5 py-3.5 text-sm font-semibold shadow-xs disabled:opacity-50 transition-all group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   {isLoading ? (

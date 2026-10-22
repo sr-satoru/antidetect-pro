@@ -190,7 +190,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
                   e.stopPropagation();
                   setIsOpen((prev) => !prev);
                 }}
-                className="text-[#1677FF] hover:text-[#0958d9] dark:text-[#3B82F6] dark:hover:text-[#60a5fa] underline underline-offset-2 font-medium text-[12px] cursor-pointer select-none transition-colors shrink-0"
+                className="text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] underline underline-offset-2 font-medium text-[12px] cursor-pointer select-none transition-colors shrink-0"
                 title={`Ver todas as ${totalTags} etiquetas`}
               >
                 +{extraCount}
@@ -206,7 +206,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
             e.stopPropagation();
             onEditTags && onEditTags(profile);
           }}
-          className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-500/10 transition-all active:scale-95"
+          className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:bg-emerald-500/10 transition-all active:scale-95"
           title="Editar etiquetas"
         >
           <EditIcon size={13} />

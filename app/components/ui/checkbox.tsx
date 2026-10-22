@@ -51,10 +51,10 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           checked={checked}
           disabled={disabled}
           onChange={onChange}
-          className={`peer appearance-none cursor-pointer border transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3366E6]/40 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#181920] ${sizeClasses} ${
+          className={`peer appearance-none cursor-pointer border transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#238636]/40 focus-visible:ring-offset-1 focus-visible:ring-offset-white dark:focus-visible:ring-offset-[#181920] ${sizeClasses} ${
             isMarked
-              ? 'bg-[#3366E6] border-[#3366E6] text-white dark:bg-[#3366E6] dark:border-[#3366E6] shadow-xs'
-              : 'bg-white dark:bg-[#1A1A21] border-slate-300 dark:border-[#2E2E38] hover:border-[#3366E6] dark:hover:border-[#4B4B58] hover:bg-slate-50 dark:hover:bg-[#24242C]'
+              ? 'bg-[#238636] border-[#238636] text-white dark:bg-[#238636] dark:border-[#238636] shadow-xs'
+              : 'bg-white dark:bg-[#1A1A21] border-slate-300 dark:border-[#2E2E38] hover:border-[#238636] dark:hover:border-[#4B4B58] hover:bg-slate-50 dark:hover:bg-[#24242C]'
           } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
           {...props}
         />

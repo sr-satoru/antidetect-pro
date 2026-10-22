@@ -11,124 +11,13 @@ import { api } from '@/services/index.api';
 import { Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 
-import { getRandomPreset } from '@/services/navegador-presets';
-
-const getInitialProfileFormData = (suggestedOS: string = 'windows') => {
-  const isAndroid = suggestedOS === 'android';
-  const initialKernel = 'AstroBrowser';
-  const preset = getRandomPreset(suggestedOS, initialKernel);
-
-  return {
-    name: '',
-    group: 'Desagrupado',
-    tags: [] as string[],
-    kernel: initialKernel,
-    kernelVersion: '150',
-    os: preset.os,
-    osVersion: preset.osVersion,
-    platform: preset.platform,
-    userAgent: preset.userAgent,
-    userAgentCategory: 'Todo',
-    cookies: '',
-    notes: '',
-
-    proxyMode: 'custom',
-    proxyType: 'none',
-    proxyHost: '',
-    proxyPort: '',
-    proxyUser: '',
-    proxyPass: '',
-    proxyRotationUrl: '',
-    ipChecker: 'IP2Location',
-    socksRemoteDns: true,
-
-    platformUrl: '',
-    platformAccounts: [] as any[],
-    duplicateCheckRules: {
-      usernamePassword: true,
-      cookie: true,
-      cUser: true,
-    },
-    openTabsUrls: '',
-
-    cpuMode: 'custom',
-    cpuCores: preset.cpuCores,
-    webrtcMode: 'disabled',
-    timezoneMode: 'ip',
-    customTimezone: 'America/Sao_Paulo',
-    locationMode: 'ip',
-    locationPermission: 'ask',
-    customLatitude: '',
-    customLongitude: '',
-    customAccuracy: 1000,
-    displayLanguageMode: 'language',
-    screenResolutionMode: 'default',
-    screenResolution: 'Com base no User-Agent',
-    customScreenWidth: preset.customScreenWidth,
-    customScreenHeight: preset.customScreenHeight,
-    devicePixelRatio: preset.devicePixelRatio,
-    fontsMode: 'default',
-    colorDepth: preset.colorDepth,
-    languageMode: 'ip',
-    customLanguage: 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-    audioSampleRate: 48000,
-    hardwareNoise: {
-      canvas: false,
-      webglImage: false,
-      audioContext: false,
-      mediaDevices: false,
-      clientRects: false,
-      speechVoices: false,
-      fontPack: false,
-      fontMetrics: false,
-    },
-    clientRectsSeed: preset.clientRectsSeed,
-    canvasSeed: preset.canvasSeed,
-    webglSeed: preset.webglSeed,
-    audioSeed: preset.audioSeed,
-    webglMetadataMode: 'custom',
-    webglVendor: preset.webglVendor,
-    webglRenderer: preset.webglRenderer,
-    webgpuMode: 'webgl',
-    ramMode: 'custom',
-    ramGb: 8,
-    deviceNameMode: 'custom',
-    deviceName: '',
-    macAddressMode: 'custom',
-    macAddress: '',
-    doNotTrackMode: 'default',
-    portScanProtection: 'open',
-    portScanAllowedPorts: '',
-    hardwareAcceleration: 'default',
-    disableTlsFeatures: 'close',
-
-    maxTouchPoints: preset.maxTouchPoints,
-    batteryMode: 'desktop',
-    mediaDevicesCount: {
-      micros: preset.media.mics.length,
-      webcams: preset.media.camera ? 1 : 0,
-      speakers: preset.media.outs.length,
-    },
-    mediaDevicesDetails: preset.media,
-    doNotTrack: 'unspecified',
-    globalPrivacyControl: false,
-    memorySaver: false,
-    dnsBlocklist: 'normal',
-    ephemeral: false,
-    enablePassword: false,
-    password: '',
-    launchHook: '',
-    extensionMode: 'team',
-    extensionCategory: 'kit_basico',
-    extensions: [],
-  };
-};
+import { serviceBasePresets } from '@/services/presets/service.base-presets';
 
 export const CriarPerfilPage: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('geral');
   const [formData, setFormData] = useState<any>(() =>
-    getInitialProfileFormData('windows'),
+    serviceBasePresets.createProfileFormData(),
   );
 
   const [isSaving, setIsSaving] = useState(false);

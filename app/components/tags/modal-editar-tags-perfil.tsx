@@ -238,7 +238,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
               Nº de perfil
             </label>
             <div className="flex items-center">
-              <span className="inline-flex items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-[#15233E] dark:border dark:border-[#1E3A6E]/80 dark:text-[#3884FF] px-3 py-1 text-xs font-semibold">
+              <span className="inline-flex items-center justify-center rounded-md bg-emerald-50 text-[#1b6528] dark:bg-emerald-950/40 dark:border dark:border-emerald-800/40 dark:text-[#7ee787] px-3 py-1 text-xs font-semibold">
                 {profileNumber}
               </span>
             </div>
@@ -259,7 +259,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                 }}
                 className={`min-h-[44px] w-full rounded-lg border bg-white dark:bg-[#17181F] px-3 py-2 flex items-center flex-wrap gap-2 cursor-text transition-all ${
                   isDropdownOpen
-                    ? 'border-blue-500 ring-2 ring-blue-500/20 dark:border-[#1677FF] dark:ring-[#1677FF]/25'
+                    ? 'border-[#238636] ring-2 ring-[#238636]/20 dark:border-[#2ea043] dark:ring-[#2ea043]/25'
                     : 'border-slate-300 dark:border-[#383A48] hover:border-slate-400 dark:hover:border-[#4B4E5E]'
                 }`}
               >
@@ -469,7 +469,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
                             key={tag.id}
                             onClick={() => handleToggleTag(tag.name)}
                             className={`flex cursor-pointer items-center justify-between px-3.5 py-2.5 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#252733] ${
-                              isSelected ? 'bg-blue-500/10 dark:bg-[#1677FF]/8' : ''
+                              isSelected ? 'bg-emerald-500/10 dark:bg-emerald-500/15' : ''
                             }`}
                           >
                             {/* Badge da Etiqueta */}
@@ -490,7 +490,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
 
                             {/* Checkmark no lado direito se selecionado */}
                             {isSelected && (
-                              <Check size={14} className="text-blue-500 dark:text-[#1677FF]" />
+                              <Check size={14} className="text-[#238636] dark:text-[#2ea043]" />
                             )}
                           </div>
                         );
@@ -508,7 +508,7 @@ export const ModalEditarTagsPerfil: React.FC<ModalEditarTagsPerfilProps> = ({
               type="button"
               onClick={handleSave}
               disabled={isSaving}
-              className="h-9 min-w-[80px] cursor-pointer rounded-lg bg-[#1677FF] hover:bg-[#1677FF]/90 active:bg-blue-600 text-white px-6 text-xs font-semibold shadow-xs transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+              className="h-9 min-w-[80px] cursor-pointer rounded-lg bg-[#238636] hover:bg-[#2ea043] active:scale-[0.98] text-white px-6 text-xs font-semibold shadow-xs transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
               {isSaving ? (
                 <>

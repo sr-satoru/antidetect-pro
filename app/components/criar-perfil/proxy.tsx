@@ -389,13 +389,13 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                             onClick={() => handleSelectSavedProxy(proxy)}
                             className={`group relative flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2.5 transition-all select-none ${
                               isSelected
-                                ? 'border border-[#3366E6]/40 bg-blue-50 text-blue-950 dark:border-[#3366E6]/40 dark:bg-[#3366E6]/10 shadow-xs'
+                                ? 'border border-[#238636]/40 bg-emerald-50/70 text-emerald-950 dark:border-[#238636]/50 dark:bg-emerald-950/25 shadow-xs'
                                 : 'border border-slate-100 hover:bg-slate-50 dark:border-white/[0.04] dark:bg-white/[0.015] dark:hover:border-white/10 dark:hover:bg-white/[0.04]'
                             }`}
                           >
                             {/* Indicador vertical no item selecionado */}
                             {isSelected && (
-                              <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#3366E6] dark:bg-[#5E88F0]" />
+                              <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#238636] dark:bg-[#2ea043]" />
                             )}
 
                             <div className="flex items-center gap-2.5 min-w-0 flex-1">

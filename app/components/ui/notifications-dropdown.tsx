@@ -273,7 +273,7 @@ export const NotificationsDropdown: React.FC = () => {
                               </span>
                               {!notif.read && (
                                 <span
-                                  className="w-2 h-2 rounded-full bg-blue-500 shadow-xs"
+                                  className="w-2 h-2 rounded-full bg-[#238636] shadow-xs"
                                   title="Não lida"
                                 />
                               )}
@@ -300,7 +300,7 @@ export const NotificationsDropdown: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => serviceNotifications.markAsRead(notif.id)}
-                                  className="text-blue-600 dark:text-blue-400 hover:underline font-medium cursor-pointer"
+                                  className="text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:underline font-medium cursor-pointer"
                                 >
                                   Marcar como lida
                                 </button>

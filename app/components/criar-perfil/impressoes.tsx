@@ -245,7 +245,7 @@ const NoisePill: React.FC<{
     >
       <div
         className={`h-4 w-8 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${checked
-            ? 'bg-[#3366E6]'
+            ? 'bg-[#238636]'
             : 'bg-slate-300 dark:bg-[#333541]'
           }`}
       >

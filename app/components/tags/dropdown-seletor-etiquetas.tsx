@@ -169,7 +169,7 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
     >
       {/* 1. Barra de Busca / Criação */}
       <div className="flex items-center gap-2.5 px-3 py-2.5 border-b border-slate-100 dark:border-[#2C2E3B]">
-        <Search size={15} className="text-blue-500 dark:text-[#1677FF] shrink-0" />
+        <Search size={15} className="text-slate-400 dark:text-[#8E92A2] shrink-0" />
         <input
           ref={inputRef}
           type="text"
@@ -289,7 +289,7 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
                 key={tag.id}
                 onClick={() => onToggleTag(tag.name)}
                 className={`flex cursor-pointer items-center justify-between px-3 py-2 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#252733] ${
-                  isSelected ? 'bg-blue-500/10 dark:bg-[#1677FF]/8' : ''
+                  isSelected ? 'bg-emerald-500/10 dark:bg-emerald-500/15' : ''
                 }`}
               >
                 {/* Badge da Etiqueta com sua cor */}

@@ -71,7 +71,7 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
       case 'primary':
       default:
         return (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 dark:bg-[#3366E6]/15 text-[#3366E6] dark:text-[#5E88F0] border border-blue-500/20 dark:border-[#3366E6]/30 shadow-xs">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 text-[#238636] dark:text-[#2ea043] border border-emerald-500/20 dark:border-emerald-500/30 shadow-xs">
             <HelpCircle size={20} />
           </div>
         );
@@ -87,7 +87,7 @@ export const ConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
       case 'info':
       case 'primary':
       default:
-        return 'bg-[#3366E6] hover:bg-[#2A58CF] text-white shadow-xs';
+        return 'bg-[#238636] hover:bg-[#2ea043] text-white shadow-xs';
     }
   };
 

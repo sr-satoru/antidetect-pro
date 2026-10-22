@@ -179,7 +179,7 @@ export const Tabela: React.FC<TabelaProps> = ({
             <strong className="text-emerald-600 dark:text-[#4ade80]">{runningCount}</strong>
           </span>
           {selectedIds.length > 0 && (
-            <span className="rounded-full border border-blue-200 bg-blue-50 text-blue-700 dark:border-[#2B3F6E] dark:bg-[#151F38] dark:text-[#B3C6F8] px-2.5 py-0.5 text-[11px] font-semibold">
+            <span className="rounded-full border border-emerald-200 bg-emerald-50 text-[#1b6528] dark:border-emerald-800/40 dark:bg-emerald-950/40 dark:text-[#7ee787] px-2.5 py-0.5 text-[11px] font-semibold">
               {selectedIds.length} marcado{selectedIds.length > 1 ? 's' : ''}
             </span>
           )}
@@ -196,7 +196,7 @@ export const Tabela: React.FC<TabelaProps> = ({
               <span>{pageSize} / pág</span>
               <ChevronDown
                 size={12}
-                className={`text-slate-400 dark:text-[#90909D] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#3366E6] dark:text-[#5E88F0]' : ''}`}
+                className={`text-slate-400 dark:text-[#90909D] transition-transform duration-150 ${isPageDropdownOpen ? 'rotate-180 text-[#238636] dark:text-[#2ea043]' : ''}`}
               />
             </button>
 
@@ -211,7 +211,7 @@ export const Tabela: React.FC<TabelaProps> = ({
                       setIsPageDropdownOpen(false);
                     }}
                     className={`flex w-full items-center px-3 py-1 text-[11px] transition-colors cursor-pointer select-none text-left ${pageSize === size
-                        ? 'bg-[#EEF3FF] text-[#284A9E] dark:bg-[#151F38] dark:text-[#B3C6F8] font-medium'
+                        ? 'bg-emerald-50 text-[#1b6528] dark:bg-emerald-950/30 dark:text-[#7ee787] font-medium'
                         : 'text-slate-700 dark:text-[#C9C9D2] hover:bg-[#F3F2EF] dark:hover:bg-[#24242C] hover:text-slate-900 dark:hover:text-[#F1F1F4]'
                       }`}
                   >

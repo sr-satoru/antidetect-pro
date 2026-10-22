@@ -143,15 +143,15 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   const isStriped = index % 2 === 1;
 
-  // Cores do Zebrado e Seleção Estilo AliasMode
+  // Cores do Zebrado e Seleção Verde Harmonizado
   const rowBg = isSelected
-    ? 'bg-[#EEF3FF] dark:bg-[#151F38] border-l-[3px] border-l-[#3366E6] dark:border-l-[#5E88F0]'
+    ? 'bg-emerald-50/60 dark:bg-emerald-950/25 border-l-[3px] border-l-[#238636] dark:border-l-[#2ea043]'
     : isStriped
       ? 'bg-slate-50/50 dark:bg-[#15151A] hover:bg-[#F3F2EF] dark:hover:bg-[#24242C]'
       : 'bg-white dark:bg-[#1A1A21] hover:bg-[#F3F2EF] dark:hover:bg-[#24242C]';
 
   const stickyBg = isSelected
-    ? 'bg-[#EEF3FF] dark:bg-[#151F38]'
+    ? 'bg-emerald-50/80 dark:bg-[#132019]'
     : isStriped
       ? 'bg-slate-50/90 dark:bg-[#15151A] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#24242C]'
       : 'bg-white dark:bg-[#1A1A21] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#24242C]';
@@ -239,7 +239,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEdit(profile);
             }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-500/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:bg-emerald-500/10 transition-all active:scale-95"
             title="Editar nome"
           >
             <EditIcon size={13} />
@@ -304,7 +304,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEditNotes && onEditNotes(profile);
             }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-500/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:bg-emerald-500/10 transition-all active:scale-95"
             title="Editar observação"
           >
             <EditIcon size={13} />

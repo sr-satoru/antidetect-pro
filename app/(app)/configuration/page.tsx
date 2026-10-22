@@ -70,7 +70,7 @@ const Switch: React.FC<{
     onClick={() => !disabled && onChange(!checked)}
     className={`relative inline-flex h-5 w-9.5 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-hidden ${
       checked
-        ? 'bg-[#3366E6] shadow-[0_0_10px_rgba(51,102,230,0.35)]'
+        ? 'bg-[#238636] shadow-[0_0_10px_rgba(35,134,54,0.35)]'
         : 'bg-slate-300 dark:bg-[#323442]'
     } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
   >
@@ -228,7 +228,7 @@ export const ConfigurationPage: React.FC = () => {
               }}
               className={`relative flex items-center gap-2 cursor-pointer pb-3 text-[13.5px] tracking-wide transition-all ${
                 isActive
-                  ? 'font-semibold text-slate-900 dark:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:bg-[#3366E6] dark:after:bg-[#5E88F0] after:content-[""]'
+                  ? 'font-semibold text-slate-900 dark:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:bg-[#238636] dark:after:bg-[#2ea043] after:content-[""]'
                   : 'text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-[#C4C7D5]'
               }`}
             >
@@ -252,7 +252,7 @@ export const ConfigurationPage: React.FC = () => {
             <div className="rounded-xl border border-slate-200/90 dark:border-[#353744] bg-slate-50/70 dark:bg-[#1C1D24] p-5">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#3366E6] to-[#6366F1] text-white text-base font-bold shadow-md shadow-[#3366E6]/25">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#238636] to-[#2ea043] text-white text-base font-bold shadow-md shadow-[#238636]/25">
                     {!user?.is_offline && user?.email
                       ? (user?.username ? user.username.charAt(0).toUpperCase() : 'U')
                       : <User size={22} />}
@@ -288,7 +288,7 @@ export const ConfigurationPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => navigate('/auth/login')}
-                      className="flex h-8.5 items-center gap-1.5 rounded-lg bg-[#3366E6] hover:bg-[#2A58CF] text-white px-3.5 text-xs font-medium shadow-xs transition-all cursor-pointer active:scale-[0.98]"
+                      className="flex h-8.5 items-center gap-1.5 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-3.5 text-xs font-medium shadow-xs transition-all cursor-pointer active:scale-[0.98]"
                     >
                       <Zap size={13} />
                       <span>Conectar Nuvem</span>
@@ -364,11 +364,11 @@ export const ConfigurationPage: React.FC = () => {
                   onClick={() => setBrowserSettings({ ...browserSettings, engine: 'chromium' })}
                   className={`flex items-start gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                     browserSettings.engine === 'chromium'
-                      ? 'border-[#3366E6] dark:border-[#5E88F0] bg-white dark:bg-[#24252D] ring-2 ring-[#3366E6]/20 shadow-xs'
+                      ? 'border-[#238636] dark:border-[#2ea043] bg-white dark:bg-[#24252D] ring-2 ring-[#238636]/20 shadow-xs'
                       : 'border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] hover:border-slate-300 dark:hover:border-[#434555]'
                   }`}
                 >
-                  <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5">
+                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5">
                     <AstroBrowserIcon size={22} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -377,7 +377,7 @@ export const ConfigurationPage: React.FC = () => {
                         Star Chromium
                       </span>
                       {browserSettings.engine === 'chromium' && (
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#3366E6] text-white">
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#238636] text-white">
                           <Check size={10} strokeWidth={3} />
                         </span>
                       )}
@@ -393,7 +393,7 @@ export const ConfigurationPage: React.FC = () => {
                   onClick={() => setBrowserSettings({ ...browserSettings, engine: 'firefox' })}
                   className={`flex items-start gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                     browserSettings.engine === 'firefox'
-                      ? 'border-[#3366E6] dark:border-[#5E88F0] bg-white dark:bg-[#24252D] ring-2 ring-[#3366E6]/20 shadow-xs'
+                      ? 'border-[#238636] dark:border-[#2ea043] bg-white dark:bg-[#24252D] ring-2 ring-[#238636]/20 shadow-xs'
                       : 'border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] hover:border-slate-300 dark:hover:border-[#434555]'
                   }`}
                 >
@@ -406,7 +406,7 @@ export const ConfigurationPage: React.FC = () => {
                         Star Fox
                       </span>
                       {browserSettings.engine === 'firefox' && (
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#3366E6] text-white">
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#238636] text-white">
                           <Check size={10} strokeWidth={3} />
                         </span>
                       )}
@@ -604,7 +604,7 @@ export const ConfigurationPage: React.FC = () => {
                   onClick={() => setTheme('dark')}
                   className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                     theme === 'dark'
-                      ? 'border-[#3366E6] dark:border-[#5E88F0] bg-white dark:bg-[#24252D] ring-2 ring-[#3366E6]/20 shadow-xs'
+                      ? 'border-[#238636] dark:border-[#2ea043] bg-white dark:bg-[#24252D] ring-2 ring-[#238636]/20 shadow-xs'
                       : 'border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] hover:border-slate-300 dark:hover:border-[#434555]'
                   }`}
                 >
@@ -615,7 +615,7 @@ export const ConfigurationPage: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-xs text-slate-900 dark:text-white">Modo Escuro</span>
                       {theme === 'dark' && (
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#3366E6] text-white">
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#238636] text-white">
                           <Check size={10} strokeWidth={3} />
                         </span>
                       )}
@@ -628,7 +628,7 @@ export const ConfigurationPage: React.FC = () => {
                   onClick={() => setTheme('light')}
                   className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                     theme === 'light'
-                      ? 'border-[#3366E6] dark:border-[#5E88F0] bg-white dark:bg-[#24252D] ring-2 ring-[#3366E6]/20 shadow-xs'
+                      ? 'border-[#238636] dark:border-[#2ea043] bg-white dark:bg-[#24252D] ring-2 ring-[#238636]/20 shadow-xs'
                       : 'border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] hover:border-slate-300 dark:hover:border-[#434555]'
                   }`}
                 >
@@ -639,7 +639,7 @@ export const ConfigurationPage: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-xs text-slate-900 dark:text-white">Modo Claro</span>
                       {theme === 'light' && (
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#3366E6] text-white">
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#238636] text-white">
                           <Check size={10} strokeWidth={3} />
                         </span>
                       )}
@@ -714,7 +714,7 @@ export const ConfigurationPage: React.FC = () => {
         <button
           type="button"
           onClick={handleSave}
-          className="flex items-center gap-2 cursor-pointer rounded-md bg-[#3366E6] hover:bg-[#2A58CF] text-white px-7 py-2 text-[13px] font-medium shadow-xs transition-all select-none active:scale-[0.98]"
+          className="flex items-center gap-2 cursor-pointer rounded-md bg-[#238636] hover:bg-[#2ea043] text-white px-7 py-2 text-[13px] font-medium shadow-xs transition-all select-none active:scale-[0.98]"
         >
           <Save size={14} />
           <span>Salvar Alterações</span>
