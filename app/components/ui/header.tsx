@@ -67,14 +67,14 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
   };
 
   return (
-    <header className="relative h-[60px] bg-white dark:bg-[#1A1A21] border-b border-slate-200 dark:border-[#2E2E38] px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 transition-colors shadow-2xs">
+    <header className="relative h-[60px] bg-white dark:bg-[#161B22] border-b border-slate-200 dark:border-[#30363D] px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 transition-colors shadow-2xs">
       {/* Title e indicador de contexto */}
       <div className="flex items-center gap-3">
-        <h1 className="text-base sm:text-[17px] font-bold text-slate-900 dark:text-[#F1F1F4] tracking-tight">
+        <h1 className="text-base sm:text-[17px] font-bold text-slate-900 dark:text-[#E6EDF3] tracking-tight">
           {title || getAutoTitle()}
         </h1>
         {location.pathname.startsWith('/perfis') && (
-          <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#15151A] text-slate-500 dark:text-[#90909D] border border-slate-200 dark:border-[#2E2E38]/80 tabular-nums">
+          <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#21262D] text-slate-500 dark:text-[#848D97] border border-slate-200 dark:border-[#30363D] tabular-nums">
             Painel Principal
           </span>
         )}
@@ -89,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         <button
           type="button"
           onClick={toggleTheme}
-          className="flex items-center justify-center h-8.5 w-8.5 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-[#15151A] dark:hover:bg-[#24242C] text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#2E2E38] transition-all cursor-pointer shadow-2xs"
+          className="flex items-center justify-center h-8.5 w-8.5 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-[#21262D] dark:hover:bg-[#30363D] text-slate-600 dark:text-[#848D97] hover:text-slate-900 dark:hover:text-[#E6EDF3] border border-slate-200 dark:border-[#30363D] transition-all cursor-pointer shadow-2xs"
           title={theme === 'dark' ? 'Mudar para Modo Claro (Day Mode)' : 'Mudar para Modo Escuro (Dark Mode)'}
         >
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}

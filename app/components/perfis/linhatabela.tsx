@@ -148,14 +148,14 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
   const rowBg = isSelected
     ? 'bg-emerald-50/60 dark:bg-emerald-950/25 border-l-[3px] border-l-[#238636] dark:border-l-[#2ea043]'
     : isStriped
-      ? 'bg-slate-50/50 dark:bg-[#15151A] hover:bg-[#F3F2EF] dark:hover:bg-[#24242C]'
-      : 'bg-white dark:bg-[#1A1A21] hover:bg-[#F3F2EF] dark:hover:bg-[#24242C]';
+      ? 'bg-slate-50/50 dark:bg-[#18181b] hover:bg-[#F3F2EF] dark:hover:bg-[#27272a]'
+      : 'bg-white dark:bg-[#09090b] hover:bg-[#F3F2EF] dark:hover:bg-[#27272a]';
 
   const stickyBg = isSelected
     ? 'bg-emerald-50/80 dark:bg-[#132019]'
     : isStriped
-      ? 'bg-slate-50/90 dark:bg-[#15151A] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#24242C]'
-      : 'bg-white dark:bg-[#1A1A21] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#24242C]';
+      ? 'bg-slate-50/90 dark:bg-[#18181b] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#27272a]'
+      : 'bg-white dark:bg-[#09090b] group-hover:bg-[#F3F2EF] dark:group-hover:bg-[#27272a]';
 
   const osKey = (profile.os || 'linux').toLowerCase();
 
@@ -192,7 +192,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
   return (
     <tr
-      className={`group h-[60px] border-b border-slate-200/80 dark:border-[#26262E] transition-colors ${rowBg}`}
+      className={`group h-[60px] border-b border-slate-200/80 dark:border-[#27272a] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td

@@ -50,20 +50,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
 
   const navItemClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] font-medium transition-all duration-150 group relative select-none ${isActive
-      ? 'bg-emerald-50 text-[#1b6528] dark:bg-emerald-950/30 dark:text-[#7ee787] font-semibold shadow-2xs'
-      : 'text-slate-600 hover:bg-[#F3F2EF] hover:text-[#1B1A18] dark:text-[#90909D] dark:hover:bg-[#24242C] dark:hover:text-[#F1F1F4]'
+      ? 'bg-[#238636]/15 text-[#3fb950] dark:bg-[#238636]/20 dark:text-[#3fb950] font-semibold shadow-2xs'
+      : 'text-slate-600 hover:bg-[#F3F2EF] hover:text-[#1B1A18] dark:text-[#848D97] dark:hover:bg-[#21262D] dark:hover:text-[#E6EDF3]'
     } ${isCollapsed ? 'justify-center px-2' : ''}`;
 
   return (
     <aside
-      className={`relative h-screen bg-white dark:bg-[#1A1A21] border-r border-slate-200 dark:border-[#2E2E38] flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[64px]' : 'w-[230px]'
+      className={`relative h-screen bg-white dark:bg-[#161B22] border-r border-slate-200 dark:border-[#30363D] flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[64px]' : 'w-[230px]'
         }`}
     >
-      {/* Botão Flutuante de Recolher/Expandir estilo AliasMode (rail-toggle na borda) */}
+      {/* Botão Flutuante de Recolher/Expandir */}
       <button
         type="button"
         onClick={toggleSidebar}
-        className="absolute top-[14px] -right-[16px] z-50 flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 dark:border-[#424557] bg-white dark:bg-[#252733] text-slate-700 dark:text-[#E2E4EC] hover:text-[#238636] dark:hover:text-[#2ea043] hover:border-[#238636] dark:hover:border-[#2ea043] hover:bg-emerald-50 dark:hover:bg-emerald-950/20 shadow-[0_2px_6px_rgba(0,0,0,0.14)] dark:shadow-[0_3px_12px_rgba(0,0,0,0.8)] transition-all duration-150 cursor-pointer hover:scale-110 active:scale-95"
+        className="absolute top-[14px] -right-[16px] z-50 flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 dark:border-[#30363D] bg-white dark:bg-[#21262D] text-slate-700 dark:text-[#E6EDF3] hover:text-[#238636] dark:hover:text-[#3fb950] hover:border-[#238636] dark:hover:border-[#3fb950] hover:bg-emerald-50 dark:hover:bg-emerald-950/20 shadow-[0_2px_6px_rgba(0,0,0,0.14)] dark:shadow-[0_3px_12px_rgba(0,0,0,0.6)] transition-all duration-150 cursor-pointer hover:scale-110 active:scale-95"
         title={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
         aria-label={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
       >
@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
 
       {/* Header / Brand */}
       <div
-        className={`h-[60px] flex items-center border-b border-slate-200 dark:border-[#2E2E38] shrink-0 transition-all ${isCollapsed ? 'justify-center px-2' : 'px-4'
+        className={`h-[60px] flex items-center border-b border-slate-200 dark:border-[#30363D] shrink-0 transition-all ${isCollapsed ? 'justify-center px-2' : 'px-4'
           }`}
       >
         {!isCollapsed ? (

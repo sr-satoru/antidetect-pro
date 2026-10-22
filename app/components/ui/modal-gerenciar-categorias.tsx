@@ -23,20 +23,19 @@ export const ModalGerenciarCategorias: React.FC<
   const [categoryToEdit, setCategoryToEdit] =
     useState<ExtensionCategory | null>(null);
 
-  if (!isOpen) return null;
-
   // Filtra as categorias criadas pelo usuário (não exibe o kit_basico padrão como "dado criado")
   const filteredCategories = useMemo(() => {
-    const userCategories = categories.filter((c) => !c.isDefault);
+    if (!Array.isArray(categories)) return [];
+    const userCategories = categories.filter((c) => !c?.isDefault);
     const q = searchQuery.trim().toLowerCase();
 
     if (!q) return userCategories;
 
     return userCategories.filter(
       (c) =>
-        c.name.toLowerCase().includes(q) ||
-        (c.description && c.description.toLowerCase().includes(q)) ||
-        c.extensions?.some((ext) => ext.name.toLowerCase().includes(q)),
+        (c?.name && c.name.toLowerCase().includes(q)) ||
+        (c?.description && c.description.toLowerCase().includes(q)) ||
+        c?.extensions?.some((ext) => ext?.name && ext.name.toLowerCase().includes(q)),
     );
   }, [categories, searchQuery]);
 

@@ -25,8 +25,8 @@ const LoadingSpinner: React.FC<{ message?: string; subMessage?: string }> = ({
       <Loader2 size={30} className="animate-spin text-[#388BFD]" />
     </div>
     <div className="flex flex-col items-center gap-1">
-      <p className="text-sm font-medium text-slate-900 dark:text-[#F1F1F4]">{message}</p>
-      {subMessage && <p className="text-xs text-slate-500 dark:text-[#90909D]">{subMessage}</p>}
+      <p className="text-sm font-medium text-slate-900 dark:text-[#E6EDF3]">{message}</p>
+      {subMessage && <p className="text-xs text-slate-500 dark:text-[#848D97]">{subMessage}</p>}
     </div>
   </div>
 );
@@ -275,7 +275,7 @@ const renderExtensionBadge = (
       <img
         src={iconUrl}
         alt={name || 'Extensão'}
-        className={`${sizeClass} shrink-0 rounded-lg object-contain bg-slate-100 dark:bg-[#15151A] p-1 border border-slate-200 dark:border-[#2E2E38]`}
+        className={`${sizeClass} shrink-0 rounded-lg object-contain bg-slate-100 dark:bg-[#21262D] p-1 border border-slate-200 dark:border-[#30363D]`}
       />
     );
   }
@@ -301,7 +301,7 @@ const renderExtensionBadge = (
   if (normalized.includes('share-a-cart') || normalized.includes('sharea-cart')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#202028] border border-slate-200 dark:border-[#2E2E38] select-none`}
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#21262D] border border-slate-200 dark:border-[#30363D] select-none`}
         title="Share-A-Cart"
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -317,10 +317,10 @@ const renderExtensionBadge = (
   if (normalized.includes('vidiq')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-lg flex flex-col items-center justify-center bg-slate-100 dark:bg-[#202028] border border-slate-200 dark:border-[#2E2E38] select-none p-1`}
+        className={`${sizeClass} shrink-0 rounded-lg flex flex-col items-center justify-center bg-slate-100 dark:bg-[#21262D] border border-slate-200 dark:border-[#30363D] select-none p-1`}
         title="vidIQ"
       >
-        <span className="text-[#0D1B2A] dark:text-[#F1F1F4] font-black text-[10px] tracking-tight leading-none">vidIQ</span>
+        <span className="text-[#0D1B2A] dark:text-[#E6EDF3] font-black text-[10px] tracking-tight leading-none">vidIQ</span>
         <div className="h-1 w-2.5 bg-[#FF0000] rounded-xs mt-0.5" />
       </div>
     );
@@ -385,7 +385,7 @@ const renderExtensionBadge = (
   if (normalized.includes('webrtc leak') || normalized === 'webrtc-shield') {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#202028] border border-slate-200 dark:border-[#2E2E38] select-none`}
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#21262D] border border-slate-200 dark:border-[#30363D] select-none`}
         title="WebRTC Leak Shield"
       >
         <Shield className="h-5 w-5 text-[#0284C7] fill-[#0284C7]/20" />
@@ -397,7 +397,7 @@ const renderExtensionBadge = (
   if (normalized.includes('webrtc control')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#202028] border border-slate-200 dark:border-[#2E2E38] select-none`}
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#21262D] border border-slate-200 dark:border-[#30363D] select-none`}
         title="WebRTC Control"
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5 stroke-[#059669] stroke-2 fill-none">
@@ -424,7 +424,7 @@ const renderExtensionBadge = (
   if (normalized.includes('portal dex') || normalized.includes('portal-dex')) {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#14141A] border border-slate-200 dark:border-[#2E2E38] select-none`}
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#21262D] border border-slate-200 dark:border-[#30363D] select-none`}
         title="Portal DEX"
       >
         <span className="text-[#A855F7] font-black text-xs">P</span>
@@ -492,7 +492,7 @@ const renderExtensionBadge = (
   if (normalized.includes('steam') || normalized === 'sih') {
     return (
       <div
-        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#14141A] select-none border border-slate-200 dark:border-[#2E2E38]`}
+        className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-[#21262D] select-none border border-slate-200 dark:border-[#30363D]`}
         title="Steam Inventory Helper"
       >
         <span className="text-[#00E5FF] font-black text-[10px] tracking-tight">[SIH]</span>
@@ -504,9 +504,9 @@ const renderExtensionBadge = (
   const initial = name ? name.trim().charAt(0).toUpperCase() : '';
   return (
     <div
-      className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#15151A] border border-slate-200 dark:border-[#2E2E38] text-slate-800 dark:text-[#F1F1F4] font-bold text-sm select-none`}
+      className={`${sizeClass} shrink-0 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-[#21262D] border border-slate-200 dark:border-[#30363D] text-slate-800 dark:text-[#E6EDF3] font-bold text-sm select-none`}
     >
-      {initial || <Puzzle size={18} className="text-slate-400 dark:text-[#90909D]" />}
+      {initial || <Puzzle size={18} className="text-slate-400 dark:text-[#848D97]" />}
     </div>
   );
 };
@@ -620,36 +620,36 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
   });
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-slate-50 dark:bg-[#15161E] text-slate-800 dark:text-[#C9C9D2]">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-slate-50 dark:bg-[#1E2026] text-slate-800 dark:text-[#FFFFFF]">
       {/* ═══════════════════════════════════════════════════════════════
           TOP BAR DE NAVEGAÇÃO PREMIUM CENTRALIZADA (Capsule Tabs - Estilo Configuration)
       ═══════════════════════════════════════════════════════════════ */}
-      <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-white/[0.07] bg-white/90 dark:bg-[#1A1B24]/90 backdrop-blur-md px-6 py-2.5">
+      <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-[#484A54] bg-white/90 dark:bg-[#28292E]/90 backdrop-blur-md px-6 py-3">
         <div className="max-w-4xl mx-auto w-full flex items-center justify-center">
-          <div className="bg-slate-100/90 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200/60 dark:border-white/[0.06] flex items-center gap-1 border-b-0">
+          <div className="bg-slate-100/90 dark:bg-[#323338] p-1.5 rounded-xl border border-slate-200/60 dark:border-[#484A54] flex items-center gap-1.5 shadow-xs">
             <button
               type="button"
               onClick={() => setActiveTab('team')}
-              className={`rounded-lg px-4 py-2 text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+              className={`rounded-lg px-5 py-2.5 text-[13px] font-medium transition-all flex items-center gap-2.5 cursor-pointer ${
                 activeTab === 'team'
-                  ? 'bg-white dark:bg-[#24252F] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
-                  : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-[#3E4048] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
+                  : 'text-slate-600 dark:text-[#B0B3C2] hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Users size={14} />
+              <Users size={16} />
               <span>Extensões da equipe</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('recommended')}
-              className={`rounded-lg px-4 py-2 text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+              className={`rounded-lg px-5 py-2.5 text-[13px] font-medium transition-all flex items-center gap-2.5 cursor-pointer ${
                 activeTab === 'recommended'
-                  ? 'bg-white dark:bg-[#24252F] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
-                  : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-[#3E4048] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
+                  : 'text-slate-600 dark:text-[#B0B3C2] hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Sparkles size={14} />
+              <Sparkles size={16} />
               <span>Recomendado para você</span>
             </button>
           </div>
@@ -661,28 +661,28 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
         /* ================= ABA EXTENSÕES DA EQUIPE ================= */
         <>
           {/* Barra de Ações da Equipe */}
-          <div className="flex shrink-0 flex-wrap items-center justify-between gap-4 px-6 pt-5 pb-3 select-none">
-            <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex shrink-0 flex-wrap items-center justify-between gap-4 px-6 pt-5 pb-3.5 select-none">
+            <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={onAddClick}
-                className="h-[34px] px-3.5 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white text-[13px] font-medium flex items-center gap-2 transition-all cursor-pointer active:scale-[0.98]"
+                className="h-[38px] px-4 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white text-[13px] font-medium flex items-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.98]"
               >
-                <Plus size={15} />
+                <Plus size={16} />
                 <span>Adicionar extensão</span>
               </button>
 
               <div className="relative w-72 sm:w-80">
                 <Search
-                  size={14}
-                  className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400 dark:text-[#90909D]"
+                  size={15}
+                  className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400 dark:text-[#B0B3C2]"
                 />
                 <input
                   type="text"
                   placeholder="Procurar"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-slate-200/80 dark:border-white/[0.08] bg-white dark:bg-[#1A1B24] pr-3 pl-9 text-xs text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#9EA2B4] transition-colors focus:border-slate-400 dark:focus:border-white/20 focus:outline-hidden"
+                  className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] pr-3.5 pl-10 text-[13px] text-slate-900 dark:text-[#FFFFFF] placeholder-slate-400 dark:placeholder-[#A4A7B6] transition-colors focus:border-slate-400 dark:focus:border-[#72768A] focus:outline-hidden"
                 />
               </div>
             </div>
@@ -690,9 +690,9 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
             <button
               type="button"
               onClick={() => setIsCategoryModalOpen(true)}
-              className="h-[34px] px-3 rounded-lg border border-slate-200/80 dark:border-white/[0.08] bg-white dark:bg-[#1A1B24] text-slate-700 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-100 dark:hover:bg-[#24252F] text-xs font-normal flex items-center gap-2 transition-colors cursor-pointer"
+              className="h-[38px] px-4 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] text-slate-700 dark:text-[#E4E6EE] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#3A3B42] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer"
             >
-              <LayoutGrid size={14} />
+              <LayoutGrid size={15} />
               <span>Categoria</span>
             </button>
           </div>
@@ -704,21 +704,21 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 {teamExtensions.map((ext) => (
                   <div
                     key={ext.id}
-                    className="group relative flex flex-col justify-between rounded-xl border border-slate-200/80 dark:border-white/[0.07] bg-white/80 dark:bg-[#1A1B24]/80 p-4 hover:border-slate-300 dark:hover:border-white/[0.15] dark:hover:bg-[#1E1F2A] transition-all duration-150 backdrop-blur-xs"
+                    className="group relative flex min-h-[200px] flex-col justify-between rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white/80 dark:bg-[#323338] p-5 hover:border-slate-300 dark:hover:border-[#606373] dark:hover:bg-[#3A3B42] transition-all duration-150 backdrop-blur-xs shadow-xs"
                   >
                     <div>
                       {/* Topo: Ícone, Título e Switch de Ativação */}
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3 min-w-0">
+                      <div className="flex items-start justify-between gap-3.5">
+                        <div className="flex items-start gap-3.5 min-w-0">
                           {renderExtensionBadge(
                             ext.iconType,
                             ext.iconUrl,
                             ext.name,
-                            'h-10 w-10',
+                            'h-12 w-12',
                           )}
                           <div className="min-w-0 pt-0.5">
                             <h3
-                              className="line-clamp-2 text-[13.5px] font-medium text-slate-900 dark:text-[#F1F1F4] leading-snug"
+                              className="line-clamp-2 text-[15px] font-semibold text-slate-900 dark:text-[#FFFFFF] leading-snug"
                               title={ext.name}
                             >
                               {ext.name}
@@ -726,27 +726,27 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           </div>
                         </div>
 
-                        {/* Switch Ativar/Desativar */}
+                        {/* Switch Ativar/Desativar Proporcional */}
                         <div className="flex shrink-0 flex-col items-end gap-1.5 pt-0.5">
                           <button
                             type="button"
                             onClick={() => onToggleEnabled(ext.id)}
-                            className={`relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${
+                            className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors duration-200 focus:outline-hidden ${
                               ext.enabled
                                 ? 'bg-[#238636]'
-                                : 'bg-slate-300 dark:bg-[#2E2E38]'
+                                : 'bg-slate-300 dark:bg-[#484A54]'
                             }`}
                           >
                             <span
-                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition duration-200 shadow-xs ${
-                                ext.enabled ? 'translate-x-4.5' : 'translate-x-1'
+                              className={`inline-block h-4.5 w-4.5 transform rounded-full bg-white transition duration-200 shadow-xs ${
+                                ext.enabled ? 'translate-x-5.5' : 'translate-x-1'
                               }`}
                             />
                           </button>
-                          <span className="flex items-center gap-1.5 text-[11px] font-normal text-slate-500 dark:text-[#90909D]">
+                          <span className="flex items-center gap-1.5 text-[11.5px] font-medium text-slate-500 dark:text-[#B0B3C2]">
                             <span
-                              className={`h-1.5 w-1.5 rounded-full ${
-                                ext.enabled ? 'bg-[#238636]' : 'bg-slate-400 dark:bg-[#90909D]'
+                              className={`h-2 w-2 rounded-full ${
+                                ext.enabled ? 'bg-[#238636]' : 'bg-slate-400 dark:bg-[#B0B3C2]'
                               }`}
                             />
                             <span>{ext.enabled ? 'Ativo' : 'Pausado'}</span>
@@ -754,15 +754,15 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                         </div>
                       </div>
 
-                      {/* Descrição limpa */}
-                      <p className="mt-2 mb-3.5 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-[#90909D] min-h-[34px]">
+                      {/* Descrição em escala proporcional */}
+                      <p className="mt-3.5 mb-4 line-clamp-3 text-[13px] leading-relaxed text-slate-500 dark:text-[#C5C8D4] min-h-[56px]">
                         {ext.description || 'Extensão instalada e pronta para uso no perfil.'}
                       </p>
                     </div>
 
                     {/* Rodapé: Provedor e Opções sem divisória pesada */}
-                    <div className="flex items-center justify-between text-xs pt-1">
-                      <div className="flex items-center gap-1.5 text-[11.5px] text-slate-400 dark:text-[#90909D]">
+                    <div className="flex items-center justify-between text-xs pt-2">
+                      <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-[#A4A7B6]">
                         <span>Provedor :</span>
                         <a
                           href={
@@ -772,7 +772,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           }
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[#388BFD] hover:underline font-normal"
+                          className="text-[#58A6FF] hover:underline font-medium"
                         >
                           {ext.provider || 'Chrome Web Store'}
                         </a>
@@ -784,23 +784,23 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           onClick={() =>
                             setOpenMenuId(openMenuId === ext.id ? null : ext.id)
                           }
-                          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#90909D] transition-colors dark:hover:bg-[#24242C] dark:hover:text-[#F1F1F4]"
+                          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-800 dark:text-[#B0B3C2] transition-colors dark:hover:bg-[#40424B] dark:hover:text-white"
                           title="Mais opções"
                         >
-                          <MoreHorizontal size={15} />
+                          <MoreHorizontal size={16} />
                         </button>
 
                         {openMenuId === ext.id && (
-                          <div className="absolute right-0 bottom-8 z-20 w-44 rounded-xl border border-slate-200 dark:border-[#2E2E38] bg-white dark:bg-[#1A1A21] p-1 shadow-xl animate-in fade-in zoom-in-95 duration-150">
+                          <div className="absolute right-0 bottom-8 z-20 w-44 rounded-xl border border-slate-200 dark:border-[#30363D] bg-white dark:bg-[#161B22] p-1 shadow-xl animate-in fade-in zoom-in-95 duration-150">
                             <a
                               href={
                                 ext.providerUrl && ext.providerUrl !== '#'
-                                    ? ext.providerUrl
+                                  ? ext.providerUrl
                                   : 'https://chromewebstore.google.com'
                               }
                               target="_blank"
                               rel="noreferrer"
-                              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-[#C9C9D2] transition-colors hover:bg-slate-100 dark:hover:bg-[#24242C] hover:text-slate-900 dark:hover:text-[#F1F1F4]"
+                              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-[#848D97] transition-colors hover:bg-slate-100 dark:hover:bg-[#21262D] hover:text-slate-900 dark:hover:text-[#E6EDF3]"
                               onClick={() => setOpenMenuId(null)}
                             >
                               <ExternalLink size={13} />
@@ -830,15 +830,15 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 subMessage="Sincronizando com o banco local"
               />
             ) : (
-              <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-slate-500 dark:text-[#90909D]">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 dark:border-[#2E2E38] bg-slate-100 dark:bg-[#15151A] text-slate-400 dark:text-[#90909D]">
+              <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-slate-500 dark:text-[#848D97]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 dark:border-[#30363D] bg-slate-100 dark:bg-[#161B22] text-slate-400 dark:text-[#848D97]">
                   <Puzzle size={22} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-900 dark:text-[#F1F1F4]">
+                  <p className="text-sm font-medium text-slate-900 dark:text-[#E6EDF3]">
                     Nenhuma extensão instalada na equipe
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-[#90909D] mt-1">
+                  <p className="text-xs text-slate-500 dark:text-[#848D97] mt-1">
                     Explore a aba &ldquo;Recomendado para você&rdquo; ou clique em
                     &ldquo;Adicionar extensão&rdquo;.
                   </p>
@@ -854,39 +854,39 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
           <div className="flex shrink-0 flex-wrap items-center justify-between gap-4 px-6 pt-5 pb-3">
             <div className="relative w-72 sm:w-80">
               <Search
-                size={14}
-                className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400 dark:text-[#90909D]"
+                size={15}
+                className="absolute top-1/2 left-3.5 -translate-y-1/2 text-slate-400 dark:text-[#B0B3C2]"
               />
               <input
                 type="text"
                 placeholder="Procurar"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-full rounded-lg border border-slate-200/80 dark:border-white/[0.08] bg-white dark:bg-[#1A1B24] pr-8 pl-9 text-xs text-slate-900 dark:text-[#F1F1F4] placeholder-slate-400 dark:placeholder-[#9EA2B4] transition-colors focus:border-slate-400 dark:focus:border-white/20 focus:outline-hidden"
+                className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] pr-9 pl-10 text-[13px] text-slate-900 dark:text-[#FFFFFF] placeholder-slate-400 dark:placeholder-[#A4A7B6] transition-colors focus:border-slate-400 dark:focus:border-[#72768A] focus:outline-hidden"
               />
               {isLoadingSearch && (
                 <Loader2
-                  size={13}
+                  size={14}
                   className="absolute top-1/2 right-3 -translate-y-1/2 animate-spin text-[#388BFD]"
                 />
               )}
             </div>
 
-            <div className="text-[12.5px] text-slate-500 dark:text-[#90909D]">
+            <div className="text-[13px] text-slate-500 dark:text-[#B0B3C2]">
               Não encontrou as extensões que deseja?{' '}
               <a
                 href="https://chromewebstore.google.com"
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#388BFD] hover:underline font-normal"
+                className="text-[#58A6FF] hover:underline font-medium"
               >
                 Procure na Chrome Web Store.
               </a>
             </div>
           </div>
 
-          {/* Filtros de Categorias (Pills com destaque sutil estilo da imagem) */}
-          <div className="flex shrink-0 items-center gap-2 overflow-x-auto px-6 py-2 no-scrollbar select-none">
+          {/* Filtros de Categorias (Pills com proporção elegante) */}
+          <div className="flex shrink-0 items-center gap-2 overflow-x-auto px-6 py-2.5 no-scrollbar select-none">
             {CATALOG_CATEGORIES.map((cat) => {
               const isSelected = selectedCategory === cat;
               return (
@@ -894,10 +894,10 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   key={cat}
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`rounded-md px-2.5 py-1 text-xs font-normal whitespace-nowrap transition-colors cursor-pointer ${
+                  className={`rounded-lg px-3.5 py-1.5 text-[12.5px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
                     isSelected
-                      ? 'border border-slate-300 dark:border-white/20 bg-slate-200/70 dark:bg-[#24252F] text-slate-900 dark:text-[#F1F1F4]'
-                      : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-[#F1F1F4] border border-transparent'
+                      ? 'border border-slate-300 dark:border-[#585B6A] bg-slate-200/70 dark:bg-[#3E4048] text-slate-900 dark:text-[#FFFFFF] shadow-2xs'
+                      : 'text-slate-600 dark:text-[#B0B3C2] hover:text-slate-900 dark:hover:text-[#FFFFFF] border border-transparent'
                   }`}
                 >
                   {cat}
@@ -921,21 +921,21 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                   return (
                     <div
                       key={recExt.id}
-                      className="group relative flex flex-col justify-between rounded-xl border border-slate-200/80 dark:border-white/[0.07] bg-white/80 dark:bg-[#1A1B24]/80 p-4 hover:border-slate-300 dark:hover:border-white/[0.15] dark:hover:bg-[#1E1F2A] transition-all duration-150 backdrop-blur-xs"
+                      className="group relative flex min-h-[200px] flex-col justify-between rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white/80 dark:bg-[#323338] p-5 hover:border-slate-300 dark:hover:border-[#606373] dark:hover:bg-[#3A3B42] transition-all duration-150 backdrop-blur-xs shadow-xs"
                     >
                       <div>
                         {/* Linha Superior: Ícone, Título e Botão Adicionar sutil */}
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-start gap-3 min-w-0">
+                        <div className="flex items-start justify-between gap-3.5">
+                          <div className="flex items-start gap-3.5 min-w-0">
                             {renderExtensionBadge(
                               recExt.iconType,
                               recExt.iconUrl,
                               recExt.name,
-                              'h-10 w-10',
+                              'h-12 w-12',
                             )}
                             <div className="min-w-0 pt-0.5">
                               <h3
-                                className="line-clamp-2 text-[13.5px] font-medium text-slate-900 dark:text-[#F1F1F4] leading-snug"
+                                className="line-clamp-2 text-[15px] font-semibold text-slate-900 dark:text-[#FFFFFF] leading-snug"
                                 title={recExt.name}
                               >
                                 {recExt.name}
@@ -946,7 +946,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           {/* Botão de Ação: Estilo sutil com borda fina idêntico à imagem */}
                           <div className="shrink-0 pt-0.5">
                             {isAlreadyAdded ? (
-                              <span className="inline-flex select-none items-center rounded-md border border-slate-200 dark:border-[#2E2E38] bg-slate-100 dark:bg-[#15151A] px-2.5 py-1 text-xs font-normal text-slate-400 dark:text-[#90909D]">
+                              <span className="inline-flex select-none items-center rounded-lg border border-slate-200 dark:border-[#484A54] bg-slate-100 dark:bg-[#25262B] px-3.5 py-1.5 text-[12.5px] font-medium text-slate-400 dark:text-[#B0B3C2]">
                                 <span>Adicionado</span>
                               </span>
                             ) : (
@@ -955,7 +955,7 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                                 onClick={() =>
                                   onAddRecommended && onAddRecommended(recExt)
                                 }
-                                className="cursor-pointer rounded-md border border-slate-300 dark:border-[#2E2E38] bg-transparent hover:bg-slate-100 dark:hover:bg-[#24242C] hover:border-slate-400 dark:hover:border-[#41414E] px-2.5 py-1 text-xs font-normal text-slate-700 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] transition-colors"
+                                className="cursor-pointer rounded-lg border border-slate-300 dark:border-[#585B6A] bg-transparent hover:bg-slate-100 dark:hover:bg-[#40424B] hover:border-slate-400 dark:hover:border-[#72768A] px-4 py-1.5 text-[12.5px] font-medium text-slate-700 dark:text-[#E4E6EE] hover:text-slate-900 dark:hover:text-white transition-colors"
                               >
                                 Adicionar
                               </button>
@@ -963,21 +963,21 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                           </div>
                         </div>
 
-                        {/* Descrição em cinza suave e confortável de ler */}
-                        <p className="mt-2 mb-3.5 line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-[#90909D] min-h-[34px]">
+                        {/* Descrição em cinza suave e confortável de ler com 40% mais respiro */}
+                        <p className="mt-3.5 mb-4 line-clamp-3 text-[13px] leading-relaxed text-slate-500 dark:text-[#C5C8D4] min-h-[56px]">
                           {recExt.description}
                         </p>
                       </div>
 
                       {/* Rodapé: Provedor com link azul sem divisória pesada */}
-                      <div className="flex items-center text-xs pt-1">
-                        <div className="flex items-center gap-1.5 text-[11.5px] text-slate-400 dark:text-[#90909D]">
+                      <div className="flex items-center text-xs pt-2">
+                        <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-[#A4A7B6]">
                           <span>Provedor :</span>
                           <a
                             href={recExt.providerUrl || 'https://chromewebstore.google.com'}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-[#388BFD] hover:underline font-normal"
+                            className="text-[#58A6FF] hover:underline font-medium"
                           >
                             {recExt.provider}
                           </a>
@@ -993,15 +993,15 @@ export const TabelaExtensoes: React.FC<TabelaExtensoesProps> = ({
                 subMessage="Buscando catálogo recomendado"
               />
             ) : (
-              <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-slate-500 dark:text-[#90909D]">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 dark:border-[#2E2E38] bg-slate-100 dark:bg-[#15151A] text-slate-400 dark:text-[#90909D]">
+              <div className="flex h-64 flex-col items-center justify-center gap-3 text-center text-slate-500 dark:text-[#848D97]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 dark:border-[#30363D] bg-slate-100 dark:bg-[#161B22] text-slate-400 dark:text-[#848D97]">
                   <Sparkles size={22} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-900 dark:text-[#F1F1F4]">
+                  <p className="text-sm font-medium text-slate-900 dark:text-[#E6EDF3]">
                     Nenhuma extensão encontrada
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-[#90909D] mt-1">
+                  <p className="text-xs text-slate-500 dark:text-[#848D97] mt-1">
                     Tente buscar por outro termo ou selecione a categoria
                     &ldquo;All&rdquo;.
                   </p>

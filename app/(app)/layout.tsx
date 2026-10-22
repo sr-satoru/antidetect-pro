@@ -81,7 +81,7 @@ export const AppLayout: React.FC = () => {
 
   return (
     <TooltipProvider delay={150}>
-      <div className="flex h-screen w-screen overflow-hidden bg-[#ECEBE7] dark:bg-[#0A0A0E] text-[#1B1A18] dark:text-[#F1F1F4] transition-colors duration-150 select-none">
+      <div className="flex h-screen w-screen overflow-hidden bg-[#ECEBE7] dark:bg-[#0D1117] text-[#1B1A18] dark:text-[#E6EDF3] transition-colors duration-150 select-none">
         {/* Sidebar global */}
         <Sidebar />
 
