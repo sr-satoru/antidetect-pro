@@ -28,7 +28,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
   return (
     <div className="flex flex-col gap-2.5">
       {/* Barra de Ações: Verificar proxy, Verificar duplicatas, Badge de contagem */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 dark:border-white/5 pt-3 select-none">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 dark:border-[#484A54] pt-3 select-none">
         <div className="flex items-center gap-3">
           <Button
             type="button"
@@ -36,17 +36,17 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
             size="sm"
             onClick={onTestAll}
             disabled={!hasValidProxies || isChecking}
-            className="gap-2 border-slate-300 dark:border-white/15"
+            className="h-[38px] gap-2 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E4E6EE] hover:bg-slate-50 dark:hover:bg-[#3A3B42]"
           >
             {isChecking ? (
-              <Loader2 size={13} className="animate-spin text-[#238636] dark:text-[#2ea043]" />
+              <Loader2 size={14} className="animate-spin text-[#238636] dark:text-[#2ea043]" />
             ) : (
-              <Search size={13} />
+              <Search size={14} />
             )}
             <span>Verificar Conexões</span>
           </Button>
 
-          <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-[#A6ABB9] dark:hover:text-white transition-colors select-none">
+          <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-[#A6A9B6] dark:hover:text-white transition-colors select-none">
             <Checkbox
               size="sm"
               checked={checkDuplicates}
@@ -63,7 +63,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
           <Badge variant={items.length > 0 ? 'success' : 'secondary'} className="px-2.5 py-1 text-xs gap-1.5">
             <span
               className={`h-1.5 w-1.5 rounded-full ${
-                items.length > 0 ? 'bg-[#238636] dark:bg-[#2ea043]' : 'bg-slate-400 dark:bg-[#6C7082]'
+                items.length > 0 ? 'bg-[#238636] dark:bg-[#2ea043]' : 'bg-slate-400 dark:bg-[#8E92A2]'
               }`}
             />
             <span>
@@ -75,10 +75,10 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
       </div>
 
       {/* Tabela de Visualização dos Proxies Analisados */}
-      <div className="max-h-[260px] min-h-[170px] overflow-x-auto overflow-y-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#16171D] shadow-2xs [scrollbar-width:thin]">
+      <div className="max-h-[260px] min-h-[170px] overflow-x-auto overflow-y-auto rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs [scrollbar-width:thin]">
         <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
-          <thead className="sticky top-0 z-10 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1B1C23] text-[11px] font-semibold tracking-wider text-slate-600 dark:text-[#A6ABB9] uppercase select-none">
-            <tr className="h-9">
+          <thead className="sticky top-0 z-10 border-b border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] text-[11px] font-semibold tracking-wider text-slate-600 dark:text-[#A6A9B6] uppercase select-none">
+            <tr className="h-10">
               <th className="px-3.5 py-2">Tipo</th>
               <th className="px-3.5 py-2">Host / IP</th>
               <th className="px-3.5 py-2">Porta</th>
@@ -90,12 +90,12 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
               <th className="w-9 px-2 py-2 text-center"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+          <tbody className="divide-y divide-slate-100 dark:divide-white/[0.06]">
             {items.length > 0 ? (
               items.map((item, idx) => (
                 <tr
                   key={item.id}
-                  className="group transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.03]"
+                  className="group transition-colors hover:bg-slate-50 dark:hover:bg-[#32343C]"
                 >
                   <td className="px-3.5 py-2.5">
                     <Badge variant="secondary" className="font-mono text-[10px] uppercase font-bold">

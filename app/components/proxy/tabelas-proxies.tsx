@@ -50,7 +50,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
   const errorCount = proxies.filter((p) => p.status === 'error').length;
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] shadow-sm">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
       {isAddingOrEditing ? (
         <CadastroProxies onClose={onCloseCadastro} onSave={onSaveCadastro} />
       ) : (
@@ -58,8 +58,8 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
           <div className="flex-1 overflow-x-auto overflow-y-auto [scrollbar-width:thin]">
             <table className="w-full border-collapse text-left text-xs whitespace-nowrap">
               {/* Header */}
-              <thead className="sticky top-0 z-20 border-b border-slate-200 dark:border-white/10 bg-slate-50/95 dark:bg-[#14151B]/95 backdrop-blur-xs text-[11px] font-semibold tracking-wider text-slate-500 dark:text-[#A6ABB9] uppercase select-none">
-                <tr className="h-10">
+              <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] text-[11.5px] font-semibold tracking-wider text-slate-600 dark:text-[#A6A9B6] uppercase select-none">
+                <tr className="h-12">
                   <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2 text-center">
                     <div className="flex items-center justify-center">
                       <Checkbox
@@ -95,7 +95,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
                   <th className="w-[130px] min-w-[130px] px-3.5 py-2">
                     Última Checagem
                   </th>
-                  <th className="sticky right-0 z-20 w-[120px] max-w-[120px] min-w-[120px] bg-slate-50/95 dark:bg-[#14151B]/95 backdrop-blur-xs px-3 py-2 text-center">
+                  <th className="sticky right-0 z-20 w-[120px] max-w-[120px] min-w-[120px] bg-[#F8F7F5] dark:bg-[#323338] px-3 py-2 text-center">
                     Ações
                   </th>
                 </tr>
@@ -174,7 +174,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
           </div>
 
           {/* Footer com Estatísticas e Seleção */}
-          <div className="flex h-10 shrink-0 items-center justify-between border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] px-4 text-xs text-slate-600 dark:text-[#9EA2AE] select-none">
+          <div className="flex h-12 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-4 text-xs text-slate-600 dark:text-[#A6A9B6] select-none">
             <div className="flex items-center gap-4">
               <span>
                 Total: <strong className="text-slate-900 dark:text-white">{proxies.length}</strong>{' '}
@@ -193,7 +193,7 @@ export const TabelasProxies: React.FC<TabelasProxiesProps> = ({
             </div>
 
             {selectedIds.length > 0 && (
-              <div className="font-semibold text-emerald-600 dark:text-[#00FF66] text-xs">
+              <div className="font-semibold text-slate-900 dark:text-white text-xs">
                 {selectedIds.length} proxy{selectedIds.length > 1 ? 's' : ''}{' '}
                 selecionado{selectedIds.length > 1 ? 's' : ''}
               </div>

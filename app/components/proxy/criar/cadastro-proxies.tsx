@@ -156,18 +156,18 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
   };
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-white dark:bg-[#181920] text-slate-800 dark:text-[#D1D5DB]">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden bg-white dark:bg-[#28292E] text-slate-800 dark:text-[#D1D5DB]">
       {/* Top Header */}
-      <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] px-6 select-none">
+      <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-6 select-none">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-emerald-50 dark:bg-[#1E202A] text-emerald-600 dark:text-[#00FF66]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-emerald-50 dark:bg-emerald-950/30 text-[#238636] dark:text-[#2ea043]">
             <Network size={16} />
           </div>
           <div>
             <h2 className="text-[13.5px] font-semibold text-slate-900 dark:text-white">
               Adicionar Proxies em Lote
             </h2>
-            <p className="text-[11px] text-slate-500 dark:text-[#7E8294]">
+            <p className="text-[11px] text-slate-500 dark:text-[#8E92A2]">
               Importe e valide múltiplos proxies para uso nos seus perfis
             </p>
           </div>
@@ -175,7 +175,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="cursor-pointer rounded-lg p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-[#8E92A2] dark:hover:bg-white/5 dark:hover:text-white transition-colors"
+          className="cursor-pointer rounded-lg p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-[#8E92A2] dark:hover:bg-[#3A3B42] dark:hover:text-white transition-colors"
           title="Fechar"
         >
           <X size={16} />
@@ -207,8 +207,8 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
       </div>
 
       {/* Footer do Modal */}
-      <div className="flex h-16 shrink-0 items-center justify-between border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] px-6 select-none">
-        <div className="text-[12px] text-slate-500 dark:text-[#7E8294]">
+      <div className="flex h-16 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-6 select-none">
+        <div className="text-[12px] text-slate-500 dark:text-[#8E92A2]">
           {hasValidProxies ? (
             <span className="text-slate-700 dark:text-[#C4C7D5]">
               Pronto para salvar{' '}
@@ -225,7 +225,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg border border-slate-300 dark:border-white/10 bg-white dark:bg-[#20222B] px-4 py-2 text-xs font-medium text-slate-700 dark:text-[#A6ABB9] transition-all hover:border-slate-400 hover:bg-slate-100 hover:text-slate-900 dark:hover:border-white/20 dark:hover:bg-[#282B36] dark:hover:text-white shadow-xs"
+            className="cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-4 py-2 text-[13px] font-medium text-slate-700 dark:text-[#E4E6EE] transition-all hover:border-slate-400 hover:bg-slate-50 dark:hover:bg-[#3A3B42] dark:hover:text-white shadow-xs"
           >
             Cancelar
           </button>
@@ -233,9 +233,9 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
             type="button"
             onClick={handleSave}
             disabled={!hasValidProxies}
-            className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-5 py-2 text-xs font-semibold shadow-xs transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-[38px] cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-5 text-[13px] font-medium shadow-xs transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <Check size={14} strokeWidth={2.5} />
+            <Check size={15} strokeWidth={2.5} />
             <span>Salvar Proxies</span>
           </button>
         </div>

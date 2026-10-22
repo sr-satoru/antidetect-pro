@@ -138,12 +138,12 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
       }}
     >
       <div
-        className="w-full max-w-[620px] rounded-2xl border border-slate-200 dark:border-[#303241] bg-white dark:bg-[#1A1C24] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150 mb-12 select-none"
+        className="w-full max-w-[620px] rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150 mb-12 select-none"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E38] px-6 py-4 bg-slate-50 dark:bg-[#14151B]">
+        <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] px-6 py-4 bg-[#F8F7F5] dark:bg-[#323338]">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-[#238636] dark:text-[#2ea043] border border-emerald-500/20">
               <Shield size={18} />
@@ -160,7 +160,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 dark:text-[#8E92A2] dark:hover:bg-white/5 dark:hover:text-white transition-colors"
+            className="cursor-pointer rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 dark:text-[#8E92A2] dark:hover:bg-[#3A3B42] dark:hover:text-white transition-colors"
           >
             <X size={16} />
           </button>
@@ -295,19 +295,19 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
           </div>
 
           {/* Test connection row */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] p-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] p-3">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={handleTest}
               disabled={isTesting || !form.host.trim() || !form.port.trim()}
-              className="gap-1.5 border-slate-300 dark:border-[#3C3F4F]"
+              className="h-[38px] gap-1.5 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E4E6EE] hover:bg-slate-50 dark:hover:bg-[#3A3B42]"
             >
               {isTesting ? (
-                <Loader2 size={13} className="animate-spin text-[#238636] dark:text-[#2ea043]" />
+                <Loader2 size={14} className="animate-spin text-[#238636] dark:text-[#2ea043]" />
               ) : (
-                <RotateCw size={13} />
+                <RotateCw size={14} />
               )}
               <span>Verificar Conexão</span>
             </Button>
@@ -335,12 +335,13 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex h-14 shrink-0 items-center justify-end gap-2.5 border-t border-slate-200 dark:border-[#2C2E38] bg-slate-50 dark:bg-[#14151B] px-6 select-none">
+        <div className="flex h-16 shrink-0 items-center justify-end gap-3 border-t border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-6 select-none">
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={onClose}
+            className="h-[38px] rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-4 text-[13px] font-medium text-slate-700 dark:text-[#E4E6EE] hover:bg-slate-50 dark:hover:bg-[#3A3B42]"
           >
             Cancelar
           </Button>
@@ -350,6 +351,7 @@ export const EditarProxies: React.FC<EditarProxiesProps> = ({
             size="sm"
             onClick={handleSave}
             disabled={!form.host.trim() || !form.port.trim()}
+            className="h-[38px] rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-5 text-[13px] font-medium shadow-xs"
           >
             Salvar Alterações
           </Button>

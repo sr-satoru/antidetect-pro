@@ -84,18 +84,18 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
 
   const isStriped = index % 2 === 1;
 
-  // Background adaptativo para linhas
+  // Background adaptativo para linhas - harmonized dark charcoal
   const rowBg = isSelected
     ? 'bg-emerald-50/70 dark:bg-emerald-950/25 border-l-[3px] border-l-[#238636] dark:border-l-[#2ea043]'
     : isStriped
-      ? 'bg-slate-50/60 dark:bg-[#1A1B23] hover:bg-slate-100/80 dark:hover:bg-white/[0.04]'
-      : 'bg-white dark:bg-[#181920] hover:bg-slate-100/80 dark:hover:bg-white/[0.04]';
+      ? 'bg-slate-50/60 dark:bg-[#28292E] hover:bg-slate-100/80 dark:hover:bg-[#32343C]'
+      : 'bg-white dark:bg-[#24252A] hover:bg-slate-100/80 dark:hover:bg-[#32343C]';
 
   const stickyBg = isSelected
-    ? 'bg-slate-100 dark:bg-[#222430]'
+    ? 'bg-slate-100 dark:bg-[#28292E]'
     : isStriped
-      ? 'bg-slate-50/60 dark:bg-[#1A1B23] group-hover:bg-slate-100 dark:group-hover:bg-[#222430]'
-      : 'bg-white dark:bg-[#181920] group-hover:bg-slate-100 dark:group-hover:bg-[#222430]';
+      ? 'bg-slate-50/60 dark:bg-[#28292E] group-hover:bg-slate-100 dark:group-hover:bg-[#32343C]'
+      : 'bg-white dark:bg-[#24252A] group-hover:bg-slate-100 dark:group-hover:bg-[#32343C]';
 
   const isOnline = proxy.status === 'active';
   const isChecking = proxy.status === 'checking' || isTestingRow;
@@ -130,7 +130,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
 
   return (
     <tr
-      className={`group h-[56px] border-b border-slate-100 dark:border-white/[0.06] transition-colors ${rowBg}`}
+      className={`group h-[60px] border-b border-slate-100 dark:border-white/[0.06] transition-colors ${rowBg}`}
     >
       {/* 1. Checkbox */}
       <td
@@ -309,20 +309,20 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
       <td
         className={`sticky right-0 z-10 w-[120px] max-w-[120px] min-w-[120px] px-3 py-2 transition-colors ${stickyBg}`}
       >
-        <div className="flex items-center justify-center gap-1">
+        <div className="flex items-center justify-center gap-1.5">
           {/* Botão Testar Conexão Direto */}
           <Tooltip content="Testar conexão deste proxy">
             <button
               type="button"
               onClick={handleRowTest}
               disabled={isChecking}
-              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/15 dark:hover:text-[#2ea043] disabled:opacity-50"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/15 dark:hover:text-[#2ea043] disabled:opacity-50"
               aria-label="Testar Proxy"
             >
               {isChecking ? (
-                <Loader2 size={13} className="animate-spin text-emerald-500" />
+                <Loader2 size={14} className="animate-spin text-emerald-500" />
               ) : (
-                <RotateCw size={13} />
+                <RotateCw size={14} />
               )}
             </button>
           </Tooltip>
@@ -332,10 +332,10 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
             <button
               type="button"
               onClick={() => onEdit(proxy)}
-              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-slate-200/80 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-slate-200/80 dark:hover:bg-[#3A3B42] hover:text-slate-900 dark:hover:text-white"
               aria-label="Editar Proxy"
             >
-              <Pencil size={13} />
+              <Pencil size={14} />
             </button>
           </Tooltip>
 
@@ -344,10 +344,10 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
             <button
               type="button"
               onClick={() => onDelete(proxy.id)}
-              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-red-50 hover:text-red-500 dark:hover:bg-[#ef4444]/15 dark:hover:text-[#ef4444]"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-slate-500 dark:text-[#A6ABB9] transition-all hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/15 dark:hover:text-red-400"
               aria-label="Excluir Proxy"
             >
-              <Trash2 size={13} />
+              <Trash2 size={14} />
             </button>
           </Tooltip>
         </div>
