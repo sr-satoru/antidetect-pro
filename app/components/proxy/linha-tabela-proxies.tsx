@@ -157,7 +157,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
         onClick={() => onEdit(proxy)}
       >
         <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-[#9EA2AE]">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-[#9DA2B4]">
             <Globe size={13} />
           </div>
           <span
@@ -188,11 +188,11 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
       {/* 5. Host & Porta com Botão Rápido de Copiar */}
       <td className="w-[210px] min-w-[210px] px-3.5 py-2 whitespace-nowrap">
         <div className="flex items-center gap-1.5 font-mono">
-          <span className="text-[12px] font-semibold text-slate-900 dark:text-white">
+          <span className="text-xs font-semibold text-slate-900 dark:text-white">
             {proxy.host}
           </span>
           <span className="text-slate-400 dark:text-[#9DA2B4]">:</span>
-          <span className="text-[12px] text-slate-600 dark:text-[#C8CBD4]">
+          <span className="text-xs text-slate-600 dark:text-[#E2E4EC]">
             {proxy.port}
           </span>
           <Tooltip>
@@ -201,7 +201,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
                 <button
                   type="button"
                   onClick={handleCopyProxy}
-                  className="flex h-5 w-5 items-center justify-center rounded text-slate-400 hover:text-slate-700 dark:text-[#7A7E90] dark:hover:text-white transition-colors cursor-pointer opacity-0 group-hover:opacity-100 ml-1"
+                  className="flex h-5 w-5 items-center justify-center rounded text-slate-400 hover:text-slate-700 dark:text-[#9DA2B4] dark:hover:text-white transition-colors cursor-pointer opacity-0 group-hover:opacity-100 ml-1"
                 >
                   {copied ? (
                     <Check size={11} className="text-emerald-500" />
@@ -223,20 +223,20 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
         {proxy.user ? (
           <div className="flex items-center gap-1.5 font-mono text-[11px]">
             <span
-              className="max-w-[70px] truncate font-medium text-slate-700 dark:text-[#C8CBD4]"
+              className="max-w-[70px] truncate font-medium text-slate-700 dark:text-[#E2E4EC]"
               title={proxy.user}
             >
               {proxy.user}
             </span>
-            <span className="text-slate-400 dark:text-[#6C6F7E]">:</span>
+            <span className="text-slate-400 dark:text-[#9DA2B4]">:</span>
             <div className="flex items-center gap-1">
-              <span className="text-slate-500 dark:text-[#9EA2AE]">
+              <span className="text-slate-500 dark:text-[#9DA2B4]">
                 {showPassword ? proxy.pass : '••••••'}
               </span>
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="cursor-pointer text-slate-400 dark:text-[#6C6F7E] transition-colors hover:text-slate-700 dark:hover:text-white p-0.5 rounded"
+                className="cursor-pointer text-slate-400 dark:text-[#9DA2B4] transition-colors hover:text-slate-700 dark:hover:text-white p-0.5 rounded"
                 title={showPassword ? 'Ocultar senha' : 'Ver senha'}
               >
                 {showPassword ? <EyeOff size={11} /> : <Eye size={11} />}

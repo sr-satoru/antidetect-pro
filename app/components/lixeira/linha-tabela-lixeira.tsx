@@ -30,7 +30,7 @@ interface LinhaTabelaLixeiraProps {
 }
 
 const renderOsIcon = (os: string) => {
-  return <OsIcon os={os} size={14} className="shrink-0 text-[#9EA2AE]" />;
+  return <OsIcon os={os} size={14} className="shrink-0 text-slate-400 dark:text-[#9DA2B4]" />;
 };
 
 const getDeletedDate = (item: ItemLixeira): Date => {
@@ -131,10 +131,10 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
       {/* 5. IP & País */}
       <td className="w-[180px] min-w-[180px] px-3.5 py-2 whitespace-nowrap">
         <div className="flex flex-col leading-tight">
-          <span className="font-mono text-xs font-semibold text-[#10b981]">
+          <span className="font-mono text-xs font-semibold text-slate-800 dark:text-white">
             {item.ip || 'Sem Proxy'}
           </span>
-          <span className="text-[10.5px] text-slate-500 dark:text-[#9DA2B4]">
+          <span className="text-[11px] text-slate-400 dark:text-[#9DA2B4]">
             {item.country || 'Direto'}
           </span>
         </div>
@@ -152,12 +152,12 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
             {expiration.formattedExpiration}
           </span>
           <span
-            className={`text-[10.5px] font-medium mt-0.5 ${
+            className={`text-[11px] font-medium mt-0.5 ${
               expiration.daysRemaining <= 3
                 ? 'text-red-500 dark:text-red-400'
                 : expiration.daysRemaining <= 7
                   ? 'text-amber-600 dark:text-amber-400'
-                  : 'text-[#10b981]'
+                  : 'text-slate-500 dark:text-[#9DA2B4]'
             }`}
           >
             {expiration.daysRemaining === 0

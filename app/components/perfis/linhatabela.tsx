@@ -216,7 +216,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       </td>
 
       {/* 3. Grupo */}
-      <td className="w-[115px] min-w-[115px] px-3.5 py-2.5 text-[11px] font-medium whitespace-nowrap text-slate-600 dark:text-[#C8CBD4] uppercase">
+      <td className="w-[115px] min-w-[115px] px-3.5 py-2.5 text-xs font-medium whitespace-nowrap text-slate-600 dark:text-[#E2E4EC] uppercase">
         {(profile.group || 'Desagrupado').toUpperCase()}
       </td>
 
@@ -224,7 +224,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       <td className="w-[220px] min-w-[220px] max-w-[220px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
           <div className="flex min-w-0 items-center gap-2 flex-1">
-            <OsIcon os={osKey} size={14} className="shrink-0 text-slate-400 dark:text-[#9EA2AE]" />
+            <OsIcon os={osKey} size={14} className="shrink-0 text-slate-400 dark:text-[#9DA2B4]" />
             <Tooltip content={profile.name || 'Sem nome'} position="top" maxWidth={320} className="min-w-0 flex-1">
               <span className="truncate text-xs font-semibold tracking-wide text-slate-900 dark:text-white uppercase block">
                 {(profile.name || 'Sem nome').toUpperCase()}
@@ -250,16 +250,16 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       {/* 5. Proxy / IP */}
       <td className="w-[220px] min-w-[220px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex items-center gap-2">
-          <ArrowLeftRight size={12} className="shrink-0 text-slate-400 dark:text-[#9EA2AE]" />
+          <ArrowLeftRight size={12} className="shrink-0 text-slate-400 dark:text-[#9DA2B4]" />
           <span
             className={`h-1.5 w-1.5 shrink-0 rounded-full ${isProxyConnected ? 'bg-emerald-500' : 'bg-slate-400 dark:bg-[#52525b]'
               }`}
           />
           <div className="flex flex-col leading-tight">
-            <span className="font-mono text-[11px] font-semibold text-slate-900 dark:text-white">
+            <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white">
               {proxyHost}
             </span>
-            <span className="text-[10px] text-slate-400 dark:text-[#9EA2AE] uppercase">
+            <span className="font-mono text-[11px] text-slate-400 dark:text-[#9DA2B4] uppercase">
               {proxyTypeDesc}
             </span>
           </div>
@@ -270,11 +270,11 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       <td className="w-[120px] min-w-[120px] px-3.5 py-2.5 whitespace-nowrap">
         {lastOpened ? (
           <div className="flex flex-col font-mono leading-tight">
-            <span className="text-[11px] text-slate-700 dark:text-[#C8CBD4]">{lastOpened.date}</span>
-            <span className="text-[10px] text-slate-400 dark:text-[#9EA2AE]">{lastOpened.time}</span>
+            <span className="text-xs text-slate-700 dark:text-[#E2E4EC]">{lastOpened.date}</span>
+            <span className="text-[11px] text-slate-400 dark:text-[#9DA2B4]">{lastOpened.time}</span>
           </div>
         ) : (
-          <span className="text-slate-400 dark:text-[#9EA2AE]">-</span>
+          <span className="text-xs text-slate-400 dark:text-[#9DA2B4]">-</span>
         )}
       </td>
 
@@ -293,12 +293,12 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
         <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
           {profile.notes ? (
             <Tooltip content={profile.notes} position="top" maxWidth={320} className="min-w-0 max-w-[125px] flex-1">
-              <span className="truncate text-xs text-slate-700 dark:text-[#C8CBD4] block cursor-default">
+              <span className="truncate text-xs text-slate-700 dark:text-[#E2E4EC] block cursor-default">
                 {profile.notes}
               </span>
             </Tooltip>
           ) : (
-            <span className="text-xs text-slate-400 dark:text-[#686C7A]">
+            <span className="text-xs text-slate-400 dark:text-[#9DA2B4]">
               -
             </span>
           )}
@@ -321,8 +321,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       {/* 10. Criação */}
       <td className="w-[120px] min-w-[120px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex flex-col font-mono leading-tight">
-          <span className="text-[11px] text-slate-700 dark:text-[#C8CBD4]">{createdAt.date}</span>
-          <span className="text-[10px] text-slate-400 dark:text-[#9EA2AE]">{createdAt.time}</span>
+          <span className="text-xs text-slate-700 dark:text-[#E2E4EC]">{createdAt.date}</span>
+          <span className="text-[11px] text-slate-400 dark:text-[#9DA2B4]">{createdAt.time}</span>
         </div>
       </td>
 

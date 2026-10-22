@@ -56,21 +56,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ onNewProfileClick }) => {
 
   return (
     <aside
-      className={`relative h-screen bg-white dark:bg-[#18191E] border-r border-slate-200 dark:border-[#2D3039] flex flex-col transition-all duration-200 select-none z-30 shrink-0 ${isCollapsed ? 'w-[64px]' : 'w-[230px]'
+      className={`relative h-screen bg-white dark:bg-[#18191E] border-r border-slate-200 dark:border-[#2D3039] flex flex-col transition-all duration-200 select-none z-40 shrink-0 ${isCollapsed ? 'w-[64px]' : 'w-[230px]'
         }`}
     >
       {/* Botão Flutuante de Recolher/Expandir */}
       <button
         type="button"
         onClick={toggleSidebar}
-        className="absolute top-[14px] -right-[16px] z-50 flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] text-slate-700 dark:text-[#E6EDF3] hover:text-[#7C3AED] dark:hover:text-[#A78BFA] hover:border-[#7C3AED] dark:hover:border-[#A78BFA] hover:bg-[#7C3AED]/10 dark:hover:bg-[#7C3AED]/20 shadow-[0_2px_6px_rgba(0,0,0,0.14)] dark:shadow-[0_3px_12px_rgba(0,0,0,0.6)] transition-all duration-150 cursor-pointer hover:scale-110 active:scale-95"
+        className="absolute top-[17px] -right-3.5 z-50 flex h-6.5 w-6.5 items-center justify-center rounded-full border border-slate-200/90 dark:border-[#2D3039] bg-white dark:bg-[#18191E] text-slate-500 hover:text-slate-900 dark:text-[#9DA2B4] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#252733] shadow-sm transition-all duration-150 cursor-pointer hover:scale-105 active:scale-95"
         title={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
         aria-label={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
       >
         {isCollapsed ? (
-          <ChevronRight size={16} strokeWidth={2.5} />
+          <ChevronRight size={13} strokeWidth={2.2} />
         ) : (
-          <ChevronLeft size={16} strokeWidth={2.5} />
+          <ChevronLeft size={13} strokeWidth={2.2} />
         )}
       </button>
 
