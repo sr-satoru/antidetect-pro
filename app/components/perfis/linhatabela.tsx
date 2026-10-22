@@ -18,6 +18,7 @@ import {
 import { Checkbox } from '../ui/checkbox';
 import { PlatformCell } from '../ui/platform-cell';
 import { TagsCell } from './tags-cell';
+import { Tooltip } from '../ui/tooltip';
 export interface LinhaTabelaProps {
   profile: any;
   isSelected: boolean;
@@ -208,11 +209,10 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       </td>
 
       {/* 2. Nº / ID */}
-      <td
-        className="w-[85px] min-w-[85px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-slate-800 dark:text-white"
-        title={idStr}
-      >
-        #{idDisplay}
+      <td className="w-[85px] min-w-[85px] px-3.5 py-2.5 font-mono text-xs font-semibold whitespace-nowrap text-slate-800 dark:text-white">
+        <Tooltip content={idStr} position="top">
+          <span className="cursor-default">#{idDisplay}</span>
+        </Tooltip>
       </td>
 
       {/* 3. Grupo */}
@@ -225,25 +225,25 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
         <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
           <div className="flex min-w-0 items-center gap-2 flex-1">
             <OsIcon os={osKey} size={14} className="shrink-0 text-slate-400 dark:text-[#9EA2AE]" />
-            <span
-              className="truncate text-xs font-semibold tracking-wide text-slate-900 dark:text-white uppercase"
-              title={profile.name || 'Sem nome'}
-            >
-              {(profile.name || 'Sem nome').toUpperCase()}
-            </span>
+            <Tooltip content={profile.name || 'Sem nome'} position="top" maxWidth={320} className="min-w-0 flex-1">
+              <span className="truncate text-xs font-semibold tracking-wide text-slate-900 dark:text-white uppercase block">
+                {(profile.name || 'Sem nome').toUpperCase()}
+              </span>
+            </Tooltip>
           </div>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(profile);
-            }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:bg-emerald-500/10 transition-all active:scale-95"
-            title="Editar nome"
-          >
-            <EditIcon size={13} />
-          </button>
+          <Tooltip content="Editar nome" position="top">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(profile);
+              }}
+              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:bg-emerald-500/10 transition-all active:scale-95"
+            >
+              <EditIcon size={13} />
+            </button>
+          </Tooltip>
         </div>
       </td>
 
@@ -291,24 +291,30 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       {/* 9. Observação */}
       <td className="w-[170px] min-w-[170px] max-w-[170px] px-3.5 py-2.5 whitespace-nowrap">
         <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
-          <span
-            className="truncate text-xs text-slate-700 dark:text-[#C8CBD4] max-w-[125px]"
-            title={profile.notes || undefined}
-          >
-            {profile.notes || '-'}
-          </span>
+          {profile.notes ? (
+            <Tooltip content={profile.notes} position="top" maxWidth={320} className="min-w-0 max-w-[125px] flex-1">
+              <span className="truncate text-xs text-slate-700 dark:text-[#C8CBD4] block cursor-default">
+                {profile.notes}
+              </span>
+            </Tooltip>
+          ) : (
+            <span className="text-xs text-slate-400 dark:text-[#686C7A]">
+              -
+            </span>
+          )}
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditNotes && onEditNotes(profile);
-            }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:bg-emerald-500/10 transition-all active:scale-95"
-            title="Editar observação"
-          >
-            <EditIcon size={13} />
-          </button>
+          <Tooltip content="Editar observação" position="top">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditNotes && onEditNotes(profile);
+              }}
+              className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:bg-emerald-500/10 transition-all active:scale-95"
+            >
+              <EditIcon size={13} />
+            </button>
+          </Tooltip>
         </div>
       </td>
 

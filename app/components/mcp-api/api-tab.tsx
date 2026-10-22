@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   AlertCircle,
   ChevronRight,
-  ExternalLink,
 } from 'lucide-react';
 import { BACKEND_PORT } from '@/services/http';
 import { serviceMcp } from '@/services/mcp/service.mcp';
@@ -539,20 +538,10 @@ export const ApiTab: React.FC<ApiTabProps> = ({
     <div className="bg-white dark:bg-[#13141C] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm dark:shadow-none flex flex-col md:flex-row min-h-[580px]">
       {/* PAINEL ESQUERDO: Lista de Endpoints para Navegação */}
       <div className="w-full md:w-[260px] bg-slate-50 dark:bg-[#101117] border-b md:border-b-0 md:border-r border-slate-200 dark:border-white/10 p-3.5 flex flex-col shrink-0 space-y-3">
-        <div className="flex items-center justify-between px-2">
+        <div className="px-2">
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-[#8E92A2] block">
             Catálogo de Rotas
           </span>
-          <a
-            href={`http://127.0.0.1:${apiPort}/swagger-ui/`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-[#00FF66] hover:underline"
-            title="Abrir Swagger UI Interativo"
-          >
-            <span>Swagger</span>
-            <ExternalLink size={11} />
-          </a>
         </div>
 
         <div className="space-y-1">

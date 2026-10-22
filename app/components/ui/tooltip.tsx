@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 export interface TooltipProps {
@@ -30,17 +30,60 @@ export const Tooltip: React.FC<TooltipProps> = ({
   position = 'top',
   align = 'center',
   className = '',
-  delay = 100,
+  delay = 80,
   maxWidth = 360,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [coords, setCoords] = useState<{
+    top: number;
+    left: number;
+    arrowLeft: number;
+    isAbove: boolean;
+  } | null>(null);
+
+  const triggerRef = useRef<HTMLDivElement | null>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   if (!content) return <>{children}</>;
 
+  const updatePosition = () => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const triggerCenterX = rect.left + rect.width / 2;
+
+    const el = tooltipRef.current;
+    const elWidth = el ? el.offsetWidth : 160;
+    const elHeight = el ? el.offsetHeight : 30;
+    const padding = 10;
+
+    let left = triggerCenterX - elWidth / 2;
+    if (align === 'left') {
+      left = rect.left;
+    } else if (align === 'right') {
+      left = rect.right - elWidth;
+    }
+
+    if (left + elWidth > window.innerWidth - padding) {
+      left = window.innerWidth - elWidth - padding;
+    }
+    if (left < padding) {
+      left = padding;
+    }
+
+    const arrowLeft = Math.max(10, Math.min(elWidth - 10, triggerCenterX - left));
+
+    const spaceAbove = rect.top;
+    const isAbove = position === 'top' ? spaceAbove >= elHeight + 10 : spaceAbove < elHeight + 10;
+    const top = isAbove ? rect.top - elHeight - 6 : rect.bottom + 6;
+
+    setCoords({ top, left, arrowLeft, isAbove });
+  };
+
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
+      updatePosition();
       setIsVisible(true);
     }, delay);
   };
@@ -50,23 +93,29 @@ export const Tooltip: React.FC<TooltipProps> = ({
     setIsVisible(false);
   };
 
-  const alignClass =
-    align === 'left'
-      ? 'left-0'
-      : align === 'right'
-      ? 'right-0'
-      : 'left-1/2 -translate-x-1/2';
+  useEffect(() => {
+    if (isVisible) {
+      updatePosition();
+      const onReposition = () => updatePosition();
+      window.addEventListener('scroll', onReposition, true);
+      window.addEventListener('resize', onReposition);
+      return () => {
+        window.removeEventListener('scroll', onReposition, true);
+        window.removeEventListener('resize', onReposition);
+      };
+    }
+  }, [isVisible]);
 
-  const arrowAlignClass =
-    align === 'left'
-      ? 'left-5'
-      : align === 'right'
-      ? 'right-5'
-      : 'left-1/2 -translate-x-1/2';
+  useLayoutEffect(() => {
+    if (isVisible && tooltipRef.current && triggerRef.current) {
+      updatePosition();
+    }
+  }, [isVisible, content]);
 
   return (
     <div
-      className={`relative inline-flex items-center ${className}`}
+      ref={triggerRef}
+      className={`relative inline-flex items-center min-w-0 ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onFocus={handleMouseEnter}
@@ -74,35 +123,38 @@ export const Tooltip: React.FC<TooltipProps> = ({
     >
       {children}
 
-      {isVisible && (
+      {isVisible && coords && typeof document !== 'undefined' && createPortal(
         <div
+          ref={tooltipRef}
           role="tooltip"
-          className={`absolute z-[9999] pointer-events-none transition-all duration-150 ease-out ${alignClass} ${
-            position === 'top'
-              ? 'bottom-full mb-2 animate-in fade-in-0 slide-in-from-bottom-1'
-              : 'top-full mt-2 animate-in fade-in-0 slide-in-from-top-1'
-          }`}
           style={{
-            width: 'max-content',
+            position: 'fixed',
+            top: `${coords.top}px`,
+            left: `${coords.left}px`,
+            zIndex: 99999,
             maxWidth: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
+            width: 'max-content',
           }}
+          className="pointer-events-none transition-opacity duration-150 ease-out animate-in fade-in-0"
         >
           {/* Balão com acabamento oficial terceirizado e padronizado */}
           <div
-            className={`${TOOLTIP_THEME.container} text-[11.5px] font-normal leading-[1.4] px-3 py-1.5 text-left`}
+            className={`${TOOLTIP_THEME.container} text-[11.5px] font-normal leading-[1.4] px-3 py-1.5 text-left whitespace-pre-wrap break-words`}
           >
             {content}
           </div>
 
           {/* Triângulo indicador apontando exatamente para o botão/gatilho */}
           <div
-            className={`absolute w-0 h-0 border-solid ${arrowAlignClass} ${
-              position === 'top'
+            style={{ left: `${coords.arrowLeft}px` }}
+            className={`absolute -translate-x-1/2 w-0 h-0 border-solid ${
+              coords.isAbove
                 ? `top-full ${TOOLTIP_THEME.arrowTop} border-t-[5px] border-x-[5px] border-x-transparent border-b-0`
                 : `bottom-full ${TOOLTIP_THEME.arrowBottom} border-b-[5px] border-x-[5px] border-x-transparent border-t-0`
             }`}
           />
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
