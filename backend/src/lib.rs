@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use axum::{
     http::{HeaderValue, Method},
     routing::{delete, get, post, put},
@@ -20,7 +22,6 @@ pub mod api_terceiros;
 #[path = "mcp__publicApi/mod.rs"]
 pub mod mcp_public_api;
 
-#[allow(non_snake_case)]
 pub use mcp_public_api as mcp__publicApi;
 
 // Re-exportações e Aliases para 100% de compatibilidade com testes e rotas existentes
