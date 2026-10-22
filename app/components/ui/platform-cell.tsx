@@ -399,7 +399,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
   const updatePosition = () => {
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
-    const popoverWidth = accounts.length > 1 ? 250 : 170;
+    const popoverWidth = 180;
     const padding = 10;
 
     // Alinhamento horizontal baseado no centro do gatilho
@@ -415,7 +415,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
     const arrowLeft = Math.max(14, Math.min(popoverWidth - 14, triggerCenterX - left));
 
     // Exibe acima com seta para baixo se houver espaço na tela
-    const showAbove = rect.top > 90;
+    const showAbove = rect.top > 80;
     const top = showAbove ? rect.top - 7 : rect.bottom + 7;
 
     setPosition(showAbove ? 'top' : 'bottom');
@@ -509,7 +509,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
         </div>
       </div>
 
-      {/* 3. Tooltip Popover Flutuante Minimalista (conforme imagem do usuário) */}
+      {/* 3. Tooltip Popover Flutuante Minimalista: itens um debaixo do outro */}
       {isOpen &&
         coords &&
         typeof document !== 'undefined' &&
@@ -525,24 +525,20 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
               transform: position === 'top' ? 'translateY(-100%)' : 'translateY(0)',
               zIndex: 99999,
             }}
-            className="w-max max-w-[340px] rounded-[10px] bg-[#C0C2C8] shadow-lg shadow-black/25 px-3 py-2 text-left animate-in fade-in zoom-in-95 duration-100 select-none pointer-events-auto"
+            className="w-max min-w-[150px] max-w-[240px] rounded-[10px] bg-[#C0C2C8]/95 dark:bg-[#C0C2C8]/95 backdrop-blur-sm shadow-lg shadow-black/25 px-3 py-2 text-left animate-in fade-in zoom-in-95 duration-100 select-none pointer-events-auto"
           >
             {/* Seta indicadora (caret) apontando diretamente para o elemento */}
             <div
               style={{ left: `${coords.arrowLeft}px` }}
               className={`absolute -translate-x-1/2 w-0 h-0 border-solid pointer-events-none ${
                 position === 'top'
-                  ? 'top-full border-t-[#C0C2C8] border-t-[5px] border-x-[5px] border-x-transparent border-b-0'
-                  : 'bottom-full border-b-[#C0C2C8] border-b-[5px] border-x-[5px] border-x-transparent border-t-0'
+                  ? 'top-full border-t-[#C0C2C8]/95 border-t-[5px] border-x-[5px] border-x-transparent border-b-0'
+                  : 'bottom-full border-b-[#C0C2C8]/95 border-b-[5px] border-x-[5px] border-x-transparent border-t-0'
               }`}
             />
 
-            {/* Grid minimalista de contas (1 ou 2 colunas) */}
-            <div
-              className={`grid ${
-                accounts.length > 1 ? 'grid-cols-2 gap-x-4 gap-y-2' : 'grid-cols-1 gap-y-1.5'
-              }`}
-            >
+            {/* Lista minimalista vertical: uma conta debaixo da outra */}
+            <div className="flex flex-col gap-2.5">
               {accounts.map((acc, idx) => {
                 const username = acc.username;
                 const password = acc.password;
@@ -551,7 +547,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                 return (
                   <div
                     key={acc.id || idx}
-                    className="flex flex-col min-w-[90px] max-w-[155px] leading-tight"
+                    className="flex flex-col leading-tight min-w-0"
                   >
                     {/* Linha 1: Ícone + Usuário */}
                     <div className="flex items-center gap-1.5 min-w-0">
@@ -567,7 +563,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
                       </span>
                     </div>
 
-                    {/* Linha 2: Senha / Código / Domínio alinhado abaixo do texto */}
+                    {/* Linha 2: Senha / Código alinhado abaixo do texto (uma debaixo da outra) */}
                     {subtext && (
                       <span
                         onClick={(e) => (password || acc.twoFactorKey) && handleCopy(subtext, e)}
