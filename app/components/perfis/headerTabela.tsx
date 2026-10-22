@@ -44,6 +44,8 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
   onOpenMoreOptions,
   isSyncing = false,
 }) => {
+  const hasSelected = selectedIds.length > 0;
+
   return (
     <div className="flex flex-col gap-2.5 shrink-0 select-none pb-1">
       {/* ============================================================== */}
@@ -111,7 +113,8 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <button
             type="button"
             onClick={onStopSelected}
-            className="h-[34px] px-3 rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-600 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-2xs"
+            disabled={!hasSelected}
+            className="h-[34px] px-3 rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-600 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-2xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1A1A21] disabled:hover:text-slate-600 dark:disabled:hover:text-[#C9C9D2]"
             title="Fechar"
           >
             <CircleX size={14} />
@@ -121,7 +124,8 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           {/* 4. Exportar */}
           <button
             type="button"
-            className="h-[34px] px-3 rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-600 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-2xs"
+            disabled={!hasSelected}
+            className="h-[34px] px-3 rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-600 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-2xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1A1A21] disabled:hover:text-slate-600 dark:disabled:hover:text-[#C9C9D2]"
             title="Exportar"
           >
             <Upload size={14} />
@@ -131,7 +135,8 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           {/* 5. Mover */}
           <button
             type="button"
-            className="h-[34px] px-3 rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-600 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-2xs"
+            disabled={!hasSelected}
+            className="h-[34px] px-3 rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-600 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-2xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1A1A21] disabled:hover:text-slate-600 dark:disabled:hover:text-[#C9C9D2]"
             title="Mover"
           >
             <FolderInput size={14} />
@@ -141,7 +146,8 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           {/* 6. Partilhar */}
           <button
             type="button"
-            className="h-[34px] px-3 rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-600 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-2xs"
+            disabled={!hasSelected}
+            className="h-[34px] px-3 rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-600 dark:text-[#C9C9D2] hover:text-slate-900 dark:hover:text-[#F1F1F4] text-[13px] font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-2xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1A1A21] disabled:hover:text-slate-600 dark:disabled:hover:text-[#C9C9D2]"
             title="Partilhar"
           >
             <ExternalLink size={14} />
@@ -152,7 +158,8 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <button
             type="button"
             onClick={onDeleteSelected}
-            className="h-[34px] w-[34px] rounded-md bg-white dark:bg-[#1A1A21] hover:bg-red-50 dark:hover:bg-[#2A1615] hover:text-red-600 dark:hover:text-[#FF9A92] border border-slate-200 dark:border-[#2E2E38] hover:border-red-200 dark:hover:border-[#542825] text-slate-500 dark:text-[#90909D] flex items-center justify-center transition-colors cursor-pointer shadow-2xs"
+            disabled={!hasSelected}
+            className="h-[34px] w-[34px] rounded-md bg-white dark:bg-[#1A1A21] hover:bg-red-50 dark:hover:bg-[#2A1615] hover:text-red-600 dark:hover:text-[#FF9A92] border border-slate-200 dark:border-[#2E2E38] hover:border-red-200 dark:hover:border-[#542825] text-slate-500 dark:text-[#90909D] flex items-center justify-center transition-colors cursor-pointer shadow-2xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1A1A21] disabled:hover:text-slate-500 dark:disabled:hover:text-[#90909D] disabled:hover:border-slate-200 dark:disabled:hover:border-[#2E2E38]"
             title="Excluir"
           >
             <Trash2 size={14} />
@@ -162,7 +169,8 @@ export const HeaderTabela: React.FC<HeaderTabelaProps> = ({
           <button
             type="button"
             onClick={onOpenMoreOptions}
-            className="h-[34px] w-[34px] rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-500 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] flex items-center justify-center transition-colors cursor-pointer shadow-2xs"
+            disabled={!hasSelected}
+            className="h-[34px] w-[34px] rounded-md bg-white dark:bg-[#1A1A21] hover:bg-slate-50 dark:hover:bg-[#24242C] border border-slate-200 dark:border-[#2E2E38] text-slate-500 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] flex items-center justify-center transition-colors cursor-pointer shadow-2xs disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white dark:disabled:hover:bg-[#1A1A21] disabled:hover:text-slate-500 dark:disabled:hover:text-[#90909D]"
             title="Mais opções"
           >
             <MoreHorizontal size={14} />
