@@ -33,16 +33,34 @@ export const NavegadorTab: React.FC<NavegadorTabProps> = ({
 
       {/* ─── Seção 2: Proxy ────────────────────────────────────── */}
       <div className="space-y-4">
+        <div className="flex items-center gap-3 pt-2">
+          <span className="text-[12px] font-medium text-slate-500 dark:text-[#7E8294] select-none">
+            Proxy
+          </span>
+          <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10" />
+        </div>
         <ProxyTab formData={formData} onChange={onChange} />
       </div>
 
       {/* ─── Seção 3: Plataforma ────────────────────────────────── */}
       <div className="space-y-4">
+        <div className="flex items-center gap-3 pt-2">
+          <span className="text-[12px] font-medium text-slate-500 dark:text-[#7E8294] select-none">
+            Plataforma
+          </span>
+          <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10" />
+        </div>
         <PlataformaTab formData={formData} onChange={onChange} />
       </div>
 
       {/* ─── Seção 4: Impressão Digital (Fingerprint) ───────────── */}
       <div className="space-y-4">
+        <div className="flex items-center gap-3 pt-2">
+          <span className="text-[12px] font-medium text-slate-500 dark:text-[#7E8294] select-none">
+            Impressão Digital
+          </span>
+          <div className="h-[1px] flex-1 bg-slate-200 dark:bg-white/10" />
+        </div>
         <ImpressaoDigitalTab formData={formData} onChange={onChange} />
       </div>
 

@@ -16,7 +16,11 @@ import {
 } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
 import { Badge } from '../ui/badge';
-import { Tooltip } from '../ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../ui/tooltip';
 import { toast } from '../ui/notification';
 
 export interface LinhaTabelaProxiesProps {
@@ -191,18 +195,25 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
           <span className="text-[12px] text-slate-600 dark:text-[#C8CBD4]">
             {proxy.port}
           </span>
-          <Tooltip content={copied ? 'Copiado!' : 'Copiar URL completa'}>
-            <button
-              type="button"
-              onClick={handleCopyProxy}
-              className="flex h-5 w-5 items-center justify-center rounded text-slate-400 hover:text-slate-700 dark:text-[#7A7E90] dark:hover:text-white transition-colors cursor-pointer opacity-0 group-hover:opacity-100 ml-1"
-            >
-              {copied ? (
-                <Check size={11} className="text-emerald-500" />
-              ) : (
-                <Copy size={11} />
-              )}
-            </button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  type="button"
+                  onClick={handleCopyProxy}
+                  className="flex h-5 w-5 items-center justify-center rounded text-slate-400 hover:text-slate-700 dark:text-[#7A7E90] dark:hover:text-white transition-colors cursor-pointer opacity-0 group-hover:opacity-100 ml-1"
+                >
+                  {copied ? (
+                    <Check size={11} className="text-emerald-500" />
+                  ) : (
+                    <Copy size={11} />
+                  )}
+                </button>
+              }
+            />
+            <TooltipContent side="top">
+              {copied ? 'Copiado!' : 'Copiar URL completa'}
+            </TooltipContent>
           </Tooltip>
         </div>
       </td>

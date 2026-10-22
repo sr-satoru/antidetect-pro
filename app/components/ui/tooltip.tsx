@@ -1,7 +1,9 @@
-import * as React from 'react';
-import { createPortal } from 'react-dom';
-import { Tooltip as BaseTooltip } from '@base-ui/react/tooltip';
-import { cn } from '@/lib/utils';
+"use client";
+
+import * as React from "react";
+import { createPortal } from "react-dom";
+import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
+import { cn } from "@/lib/utils";
 
 /**
  * Padrão oficial de cores e estilização para tooltips do sistema (Design System oficial):
@@ -10,184 +12,156 @@ import { cn } from '@/lib/utils';
  */
 export const TOOLTIP_THEME = {
   container:
-    'rounded-md bg-white dark:bg-[#1A1A21] text-slate-800 dark:text-[#F1F1F4] shadow-md border border-slate-200 dark:border-[#2E2E38] select-none',
-  arrowTop: 'border-t-white dark:border-t-[#1A1A21]',
-  arrowBottom: 'border-b-white dark:border-b-[#1A1A21]',
+    "rounded-md bg-white dark:bg-[#1A1A21] text-slate-800 dark:text-[#F1F1F4] shadow-md border border-slate-200 dark:border-[#2E2E38] select-none",
+  arrowTop: "border-t-white dark:border-t-[#1A1A21]",
+  arrowBottom: "border-b-white dark:border-b-[#1A1A21]",
 };
 
-export function TooltipProvider({
-  delay = 150,
+function TooltipProvider({
+  delay = 0,
   ...props
-}: React.ComponentProps<typeof BaseTooltip.Provider>) {
-  return <BaseTooltip.Provider delay={delay} closeDelay={100} {...props} />;
-}
-
-export interface TooltipTriggerProps
-  extends React.ComponentProps<typeof BaseTooltip.Trigger> {
-  asChild?: boolean;
-}
-
-export const TooltipTrigger = React.forwardRef<
-  HTMLElement,
-  TooltipTriggerProps
->(({ asChild, children, ...props }, ref) => {
-  if (asChild && React.isValidElement(children)) {
-    return (
-      <BaseTooltip.Trigger
-        ref={ref as any}
-        render={children}
-        {...props}
-      />
-    );
-  }
+}: TooltipPrimitive.Provider.Props) {
   return (
-    <BaseTooltip.Trigger ref={ref as any} {...props}>
-      {children}
-    </BaseTooltip.Trigger>
+    <TooltipPrimitive.Provider
+      data-slot="tooltip-provider"
+      delay={delay}
+      {...props}
+    />
   );
-});
-TooltipTrigger.displayName = 'TooltipTrigger';
-
-export interface TooltipContentProps
-  extends React.ComponentProps<typeof BaseTooltip.Popup> {
-  sideOffset?: number;
-  side?: 'top' | 'bottom' | 'left' | 'right';
-  align?: 'start' | 'center' | 'end';
-  showArrow?: boolean;
 }
 
-export const TooltipContent = React.forwardRef<
-  HTMLDivElement,
-  TooltipContentProps
->(
-  (
-    {
-      className,
-      side = 'top',
-      align = 'center',
-      sideOffset = 6,
-      showArrow = true,
-      children,
-      ...props
-    },
-    ref,
-  ) => {
-    return (
-      <BaseTooltip.Portal>
-        <BaseTooltip.Positioner
-          side={side}
-          align={align}
-          sideOffset={sideOffset}
-        >
-          <BaseTooltip.Popup
-            ref={ref}
-            className={cn(
-              'z-50 overflow-hidden rounded-md border border-slate-200 dark:border-[#2E2E38] bg-white dark:bg-[#1A1A21] px-2.5 py-1 text-xs text-slate-800 dark:text-[#F1F1F4] shadow-md select-none transition-all',
-              'animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
-              'data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1',
-              className,
-            )}
-            {...props}
-          >
-            {children}
-            {showArrow && (
-              <BaseTooltip.Arrow className="fill-white dark:fill-[#1A1A21] stroke-slate-200 dark:stroke-[#2E2E38]" />
-            )}
-          </BaseTooltip.Popup>
-        </BaseTooltip.Positioner>
-      </BaseTooltip.Portal>
-    );
-  },
-);
-TooltipContent.displayName = 'TooltipContent';
+function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
+  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
+}
 
-export interface TooltipProps
-  extends React.ComponentProps<typeof BaseTooltip.Root> {
+function TooltipContent({
+  className,
+  side = "top",
+  placement,
+  sideOffset = 4,
+  align = "center",
+  alignOffset = 0,
+  children,
+  ...props
+}: TooltipPrimitive.Popup.Props &
+  Pick<
+    TooltipPrimitive.Positioner.Props,
+    "align" | "alignOffset" | "side" | "sideOffset"
+  > & {
+    placement?: "top" | "bottom" | "left" | "right";
+  }) {
+  const resolvedSide = side || placement || "top";
+
+  return (
+    <TooltipPrimitive.Portal>
+      <TooltipPrimitive.Positioner
+        align={align}
+        alignOffset={alignOffset}
+        side={resolvedSide}
+        sideOffset={sideOffset}
+        className="isolate z-50"
+      >
+        <TooltipPrimitive.Popup
+          data-slot="tooltip-content"
+          className={cn(
+            "z-50 inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md border border-slate-200 dark:border-[#2E2E38] bg-white dark:bg-[#1A1A21] px-3 py-1.5 text-xs text-slate-800 dark:text-[#F1F1F4] shadow-md select-none",
+            "has-data-[slot=kbd]:pr-1.5 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 **:data-[slot=kbd]:relative **:data-[slot=kbd]:isolate **:data-[slot=kbd]:z-50 **:data-[slot=kbd]:rounded-sm data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            className
+          )}
+          {...props}
+        >
+          {children}
+          <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-white dark:bg-[#1A1A21] border-r border-b border-slate-200 dark:border-[#2E2E38] data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
+        </TooltipPrimitive.Popup>
+      </TooltipPrimitive.Positioner>
+    </TooltipPrimitive.Portal>
+  );
+}
+
+export interface LegacyTooltipProps
+  extends Omit<TooltipPrimitive.Root.Props, 'children'> {
+  children?: React.ReactNode;
   content?: React.ReactNode;
-  position?: 'top' | 'bottom' | 'left' | 'right';
-  side?: 'top' | 'bottom' | 'left' | 'right';
-  align?: 'start' | 'center' | 'end';
+  position?: "top" | "bottom" | "left" | "right";
+  side?: "top" | "bottom" | "left" | "right";
+  placement?: "top" | "bottom" | "left" | "right";
+  align?: "start" | "center" | "end";
   maxWidth?: number | string;
   className?: string;
-  delay?: number;
-  showArrow?: boolean;
 }
 
 /**
- * Componente Tooltip Shadcn UI (Base UI).
- * Suporta tanto o padrão declarativo Shadcn:
- *   <Tooltip><TooltipTrigger asChild>...</TooltipTrigger><TooltipContent>...</TooltipContent></Tooltip>
- * Quanto o padrão de conveniência:
- *   <Tooltip content="Meu texto" side="top">...</Tooltip>
+ * Componente oficial Tooltip Shadcn UI (Base UI).
+ * Suporta a sintaxe oficial Shadcn:
+ *   <Tooltip><TooltipTrigger render={<Button ...>} /><TooltipContent>...</TooltipContent></Tooltip>
+ * E mantém compatibilidade automática se receber a prop content:
+ *   <Tooltip content="Dica">...</Tooltip>
  */
-export function Tooltip({
+function Tooltip({
   content,
   position,
   side,
-  align = 'center',
+  placement,
+  align = "center",
   maxWidth,
   className,
-  delay,
-  showArrow = true,
   children,
   ...props
-}: TooltipProps) {
-  // Se content for fornecido, opera no modo adaptador automático sem quebrar chamadas legadas
+}: LegacyTooltipProps) {
   if (content !== undefined && content !== null && content !== false) {
     const resolvedSide =
       side ||
-      (position === 'bottom'
-        ? 'bottom'
-        : position === 'left'
-          ? 'left'
-          : position === 'right'
-            ? 'right'
-            : 'top');
+      placement ||
+      (position === "bottom"
+        ? "bottom"
+        : position === "left"
+          ? "left"
+          : position === "right"
+            ? "right"
+            : "top");
 
     return (
-      <BaseTooltip.Root {...props}>
-        <TooltipTrigger asChild>
-          {React.isValidElement(children) ? (
-            children
-          ) : (
-            <span className="inline-flex">{children}</span>
-          )}
-        </TooltipTrigger>
+      <TooltipPrimitive.Root data-slot="tooltip" {...props}>
+        <TooltipPrimitive.Trigger
+          data-slot="tooltip-trigger"
+          render={
+            React.isValidElement(children) ? (
+              children
+            ) : (
+              <span className="inline-flex cursor-pointer">{children}</span>
+            )
+          }
+        />
         <TooltipContent
           side={resolvedSide}
           align={align}
-          showArrow={showArrow}
           className={className}
           style={maxWidth ? { maxWidth } : undefined}
         >
           {content}
         </TooltipContent>
-      </BaseTooltip.Root>
+      </TooltipPrimitive.Root>
     );
   }
 
-  // Modo padrão Shadcn UI
-  return <BaseTooltip.Root {...props}>{children}</BaseTooltip.Root>;
+  return <TooltipPrimitive.Root data-slot="tooltip" {...props}>{children}</TooltipPrimitive.Root>;
 }
 
 export interface InfoBalloonProps {
   content: React.ReactNode;
-  position?: 'top' | 'bottom' | 'left' | 'right';
-  side?: 'top' | 'bottom' | 'left' | 'right';
-  align?: 'start' | 'center' | 'end';
+  position?: "top" | "bottom" | "left" | "right";
+  side?: "top" | "bottom" | "left" | "right";
+  align?: "start" | "center" | "end";
   className?: string;
   maxWidth?: number | string;
 }
 
-/**
- * Ícone sutil (?) com balão explicativo ao passar o mouse.
- */
 export const InfoBalloon: React.FC<InfoBalloonProps> = ({
   content,
-  position = 'top',
+  position = "top",
   side,
-  align = 'center',
-  className = '',
+  align = "center",
+  className = "",
   maxWidth = 360,
 }) => {
   return (
@@ -221,21 +195,17 @@ export interface TooltipFloatingPortalProps {
   transform?: string;
 }
 
-/**
- * Helper Portal para balões de dados complexos que exigem posicionamento manual
- * preservado para compatibilidade de células especiais (PlatformCell, TagsCell).
- */
 export const TooltipFloatingPortal: React.FC<TooltipFloatingPortalProps> = ({
   isOpen,
   coords,
   children,
-  className = '',
+  className = "",
   popoverRef,
   onMouseEnter,
   onMouseLeave,
   transform,
 }) => {
-  if (!isOpen || !coords || typeof document === 'undefined') return null;
+  if (!isOpen || !coords || typeof document === "undefined") return null;
 
   const isAbove = coords.isAbove !== false;
 
@@ -245,7 +215,7 @@ export const TooltipFloatingPortal: React.FC<TooltipFloatingPortalProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       style={{
-        position: 'fixed',
+        position: "fixed",
         top: `${coords.top}px`,
         left: `${coords.left}px`,
         transform: transform ?? undefined,
@@ -263,8 +233,9 @@ export const TooltipFloatingPortal: React.FC<TooltipFloatingPortalProps> = ({
         }`}
       />
     </div>,
-    document.body,
+    document.body
   );
 };
 
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
 export default Tooltip;
