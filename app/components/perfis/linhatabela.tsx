@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
 import { PlatformCell } from '../ui/platform-cell';
+import { TagsCell } from './tags-cell';
 export interface LinhaTabelaProps {
   profile: any;
   isSelected: boolean;
@@ -187,22 +188,6 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
     profile.created_at || profile.createdAt,
   ) || { date: 'Hoje', time: '' };
 
-  const tagsList: { id?: string | number; name: string; color?: string }[] = Array.isArray(profile.tags)
-    ? (profile.tags as any[]).map((t: any) =>
-      typeof t === 'object' && t !== null && t.name
-        ? t
-        : { id: t, name: String(t), color: serviceTags.getColorByName(String(t)) }
-    )
-    : typeof profile.tags === 'string' && profile.tags
-      ? (profile.tags as string)
-        .split(',')
-        .map((t: string) => ({
-          id: t.trim(),
-          name: t.trim(),
-          color: serviceTags.getColorByName(t.trim()),
-        }))
-        .filter((t) => t.name)
-      : [];
 
   return (
     <tr
@@ -254,7 +239,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEdit(profile);
             }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-[#8E92A2] hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-500/10 transition-all active:scale-95"
             title="Editar nome"
           >
             <EditIcon size={13} />
@@ -300,33 +285,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
 
       {/* 8. Tags */}
       <td className="w-[190px] min-w-[190px] max-w-[190px] px-3.5 py-2.5 whitespace-nowrap">
-        <div className="flex w-full items-center justify-between gap-1.5 overflow-hidden">
-          {tagsList.length > 0 ? (
-            <div className="flex items-center gap-1.5 overflow-hidden max-w-[145px]">
-              {tagsList.map((tag, idx) => (
-                <TagBadge
-                  key={tag.id ?? `${tag.name}-${idx}`}
-                  name={tag.name}
-                  color={tag.color}
-                />
-              ))}
-            </div>
-          ) : (
-            <span className="text-slate-400 dark:text-[#9EA2AE]">-</span>
-          )}
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditTags && onEditTags(profile);
-            }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-[#8E92A2] hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-all active:scale-95"
-            title="Editar etiquetas"
-          >
-            <EditIcon size={13} />
-          </button>
-        </div>
+        <TagsCell profile={profile} onEditTags={onEditTags} />
       </td>
 
       {/* 9. Observação */}
@@ -345,7 +304,7 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
               e.stopPropagation();
               onEditNotes && onEditNotes(profile);
             }}
-            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-slate-400 dark:text-[#8E92A2] hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/10 transition-all active:scale-95"
+            className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-500/10 transition-all active:scale-95"
             title="Editar observação"
           >
             <EditIcon size={13} />

@@ -1,0 +1,246 @@
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import { TagBadge } from '../tags/tag-badge';
+import { serviceTags } from '../../services/tags/service.tags';
+
+interface TagsCellProps {
+  profile: any;
+  onEditTags?: (profile: any) => void;
+  className?: string;
+}
+
+const EditIcon: React.FC<{ size?: number; className?: string }> = ({ size = 11, className = '' }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 494.936 494.936"
+    fill="currentColor"
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M389.844,182.85c-6.743,0-12.21,5.467-12.21,12.21v222.968c0,23.562-19.174,42.735-42.736,42.735H67.157 c-23.562,0-42.736-19.174-42.736-42.735V150.285c0-23.562,19.174-42.735,42.736-42.735h267.741c6.743,0,12.21-5.467,12.21-12.21 s-5.467-12.21-12.21-12.21H67.157C30.126,83.13,0,113.255,0,150.285v267.743c0,37.029,30.126,67.155,67.157,67.155h267.741 c37.03,0,67.156-30.126,67.156-67.155V195.061C402.054,188.318,396.587,182.85,389.844,182.85z" />
+    <path d="M483.876,20.791c-14.72-14.72-38.669-14.714-53.377,0L221.352,229.944c-0.28,0.28-3.434,3.559-4.251,5.396l-28.963,65.069 c-2.057,4.619-1.056,10.027,2.521,13.6c2.337,2.336,5.461,3.576,8.639,3.576c1.675,0,3.362-0.346,4.96-1.057l65.07-28.963 c1.83-0.815,5.114-3.97,5.396-4.25L483.876,74.169c7.131-7.131,11.06-16.61,11.06-26.692 C494.936,37.396,491.007,27.915,483.876,20.791z M466.61,56.897L257.457,266.05c-0.035,0.036-0.055,0.078-0.089,0.107 l-33.989,15.131L238.51,247.3c0.03-0.036,0.071-0.055,0.107-0.09L447.765,38.058c5.038-5.039,13.819-5.033,18.846,0.005 c2.518,2.51,3.905,5.855,3.905,9.414C470.516,51.036,469.127,54.38,466.61,56.897z" />
+  </svg>
+);
+
+export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, className = '' }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [coords, setCoords] = useState<{
+    top: number;
+    left: number;
+    arrowLeft: number;
+    isAbove: boolean;
+  } | null>(null);
+
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const tagsList: { id?: string | number; name: string; color?: string }[] = useMemo(() => {
+    if (!profile) return [];
+    if (Array.isArray(profile.tags)) {
+      return (profile.tags as any[]).map((t: any) =>
+        typeof t === 'object' && t !== null && t.name
+          ? { ...t, color: t.color || serviceTags.getColorByName(t.name) }
+          : { id: t, name: String(t), color: serviceTags.getColorByName(String(t)) },
+      );
+    }
+    if (typeof profile.tags === 'string' && profile.tags) {
+      return (profile.tags as string)
+        .split(',')
+        .map((t: string) => ({
+          id: t.trim(),
+          name: t.trim(),
+          color: serviceTags.getColorByName(t.trim()),
+        }))
+        .filter((t) => t.name);
+    }
+    return [];
+  }, [profile]);
+
+  const updatePosition = () => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const triggerCenterX = rect.left + rect.width / 2;
+
+    const popoverWidth = popoverRef.current ? popoverRef.current.offsetWidth : 280;
+    const popoverHeight = popoverRef.current ? popoverRef.current.offsetHeight : 44;
+    const padding = 12;
+
+    let left = triggerCenterX - popoverWidth / 2;
+    if (left + popoverWidth > window.innerWidth - padding) {
+      left = window.innerWidth - popoverWidth - padding;
+    }
+    if (left < padding) {
+      left = padding;
+    }
+
+    const arrowLeft = Math.max(14, Math.min(popoverWidth - 14, triggerCenterX - left));
+
+    const isAbove = rect.top - popoverHeight - 8 >= 10;
+    const top = isAbove ? rect.top - popoverHeight - 8 : rect.bottom + 8;
+
+    setCoords({ top, left, arrowLeft, isAbove });
+  };
+
+  const handleMouseEnter = () => {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = null;
+    }
+    updatePosition();
+    setIsOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    hideTimeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 150);
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    updatePosition();
+    const handleScrollOrResize = () => updatePosition();
+    window.addEventListener('scroll', handleScrollOrResize, true);
+    window.addEventListener('resize', handleScrollOrResize);
+    return () => {
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+      window.removeEventListener('resize', handleScrollOrResize);
+    };
+  }, [isOpen]);
+
+  const totalTags = tagsList.length;
+  const hasExtra = totalTags > 2;
+  const extraCount = totalTags - 2;
+
+  return (
+    <>
+      <div className={`flex w-full items-center justify-between gap-1.5 overflow-hidden ${className}`}>
+        {totalTags === 0 ? (
+          <span className="text-slate-400 dark:text-[#9EA2AE] select-none text-xs">-</span>
+        ) : totalTags === 1 ? (
+          <div className="flex flex-col gap-1 items-start justify-center min-w-0 max-w-[145px]">
+            <TagBadge
+              name={tagsList[0].name}
+              color={tagsList[0].color}
+              variant="solid-pastel"
+              showDot={false}
+              className="max-w-[135px]"
+            />
+          </div>
+        ) : totalTags === 2 ? (
+          <div className="flex flex-col gap-1 items-start justify-center min-w-0 max-w-[145px]">
+            <TagBadge
+              name={tagsList[0].name}
+              color={tagsList[0].color}
+              variant="solid-pastel"
+              showDot={false}
+              className="max-w-[135px]"
+            />
+            <TagBadge
+              name={tagsList[1].name}
+              color={tagsList[1].color}
+              variant="solid-pastel"
+              showDot={false}
+              className="max-w-[135px]"
+            />
+          </div>
+        ) : (
+          /* Mais de 2 tags: Tag 1 na linha superior, Tag 2 + contador (+N) na linha inferior */
+          <div className="flex flex-col gap-1 items-start justify-center min-w-0 max-w-[145px]">
+            <TagBadge
+              name={tagsList[0].name}
+              color={tagsList[0].color}
+              variant="solid-pastel"
+              showDot={false}
+              className="max-w-[135px]"
+            />
+            <div className="flex items-center gap-1.5 min-w-0">
+              <TagBadge
+                name={tagsList[1].name}
+                color={tagsList[1].color}
+                variant="solid-pastel"
+                showDot={false}
+                className="max-w-[90px]"
+              />
+              <button
+                ref={triggerRef}
+                type="button"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen((prev) => !prev);
+                }}
+                className="text-[#1677FF] hover:text-[#0958d9] dark:text-[#3B82F6] dark:hover:text-[#60a5fa] underline underline-offset-2 font-medium text-[12px] cursor-pointer select-none transition-colors shrink-0"
+                title={`Ver todas as ${totalTags} etiquetas`}
+              >
+                +{extraCount}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Botão de Editar Etiquetas (visível ao passar o mouse na linha) */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditTags && onEditTags(profile);
+          }}
+          className="opacity-0 group-hover:opacity-100 ml-auto flex h-[22px] w-[22px] shrink-0 cursor-pointer items-center justify-center rounded-md text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-500/10 transition-all active:scale-95"
+          title="Editar etiquetas"
+        >
+          <EditIcon size={13} />
+        </button>
+      </div>
+
+      {/* Tooltip flutuante exibindo todas as tags (estilo Dolphin Anty) */}
+      {isOpen &&
+        coords &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            ref={popoverRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            style={{
+              position: 'fixed',
+              top: `${coords.top}px`,
+              left: `${coords.left}px`,
+              zIndex: 99999,
+            }}
+            className="rounded-lg border border-[#B8BCC8] bg-[#D4D6DC] dark:bg-[#D4D6DC] text-slate-800 shadow-xl shadow-black/30 px-2.5 py-2 select-none animate-in fade-in zoom-in-95 duration-100 flex items-center gap-1.5 flex-wrap max-w-[420px] max-h-[160px] overflow-y-auto custom-scrollbar"
+          >
+            {tagsList.map((tag, idx) => (
+              <TagBadge
+                key={tag.id ?? `${tag.name}-${idx}`}
+                name={tag.name}
+                color={tag.color}
+                variant="solid-pastel"
+                showDot={false}
+                className="shadow-2xs text-[11px]"
+              />
+            ))}
+
+            {/* Seta indicadora apontando diretamente para o botão +N */}
+            {coords.isAbove ? (
+              <div
+                style={{ left: `${coords.arrowLeft}px` }}
+                className="absolute top-full -translate-x-1/2 w-0 h-0 border-solid border-t-[#D4D6DC] border-t-[7px] border-x-[7px] border-x-transparent border-b-0 drop-shadow-xs pointer-events-none"
+              />
+            ) : (
+              <div
+                style={{ left: `${coords.arrowLeft}px` }}
+                className="absolute bottom-full -translate-x-1/2 w-0 h-0 border-solid border-b-[#D4D6DC] border-b-[7px] border-x-[7px] border-x-transparent border-t-0 drop-shadow-xs pointer-events-none"
+              />
+            )}
+          </div>,
+          document.body,
+        )}
+    </>
+  );
+};
+
+export default TagsCell;

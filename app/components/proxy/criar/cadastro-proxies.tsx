@@ -233,7 +233,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
             type="button"
             onClick={handleSave}
             disabled={!hasValidProxies}
-            className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white dark:bg-[#00FF66] dark:text-[#090A0F] dark:hover:bg-[#00FF66]/90 px-5 py-2 text-xs font-bold shadow-md shadow-emerald-600/20 dark:shadow-[0_0_12px_rgba(0,255,102,0.22)] transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+            className="flex cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#3366E6] hover:bg-[#2A58CF] text-white px-5 py-2 text-xs font-semibold shadow-xs transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Check size={14} strokeWidth={2.5} />
             <span>Salvar Proxies</span>

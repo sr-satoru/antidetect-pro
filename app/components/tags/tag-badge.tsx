@@ -1,11 +1,13 @@
 import React from 'react';
-import { getTagColorStyle } from './tag-palette';
+import { getTagColorStyle, getPastelTagStyle } from './tag-palette';
 import { X } from 'lucide-react';
 
-interface TagBadgeProps {
+export interface TagBadgeProps {
   name: string;
   color?: string;
   className?: string;
+  variant?: 'default' | 'solid-pastel';
+  showDot?: boolean;
   onRemove?: () => void;
   onClick?: () => void;
 }
@@ -14,10 +16,14 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
   name,
   color,
   className = '',
+  variant = 'default',
+  showDot,
   onRemove,
   onClick,
 }) => {
-  const styles = getTagColorStyle(color);
+  const isPastel = variant === 'solid-pastel';
+  const styles = isPastel ? getPastelTagStyle(color) : getTagColorStyle(color);
+  const shouldShowDot = showDot !== undefined ? showDot : !isPastel;
 
   return (
     <span
@@ -27,14 +33,21 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
         borderColor: styles.borderColor,
         color: styles.color,
       }}
-      className={`inline-flex items-center gap-1.5 shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-medium transition-all select-none ${
-        onClick ? 'cursor-pointer hover:brightness-110 active:scale-95' : ''
+      className={`inline-flex items-center gap-1.5 shrink-0 ${
+        isPastel
+          ? 'rounded-[4px] border px-2 py-[2.5px] text-[11px] font-medium leading-tight shadow-2xs'
+          : 'rounded-md border px-2 py-0.5 text-[11px] font-medium'
+      } transition-all select-none ${
+        onClick ? 'cursor-pointer hover:brightness-105 active:scale-95' : ''
       } ${className}`}
+      title={name}
     >
-      <span
-        className="h-1.5 w-1.5 rounded-full shrink-0"
-        style={{ backgroundColor: styles.color }}
-      />
+      {shouldShowDot && (
+        <span
+          className="h-1.5 w-1.5 rounded-full shrink-0"
+          style={{ backgroundColor: styles.color }}
+        />
+      )}
       <span className="truncate max-w-[120px]">{name}</span>
       {onRemove && (
         <button
