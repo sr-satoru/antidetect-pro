@@ -277,10 +277,8 @@ export const impressaoDigitalService = {
     const proxyPort = formData.proxyPort ? Number(formData.proxyPort) : undefined;
 
     return {
-      // 1. Identificador Semântico (Base62 prf_) atribuído pelo backend e Marcadores Temporais (LWW)
+      // 1. Identificador Semântico (Base62 prf_) opcional ou atribuído pelo backend
       id: profileId,
-      created_at: nowSecs,
-      updated_at: nowSecs,
 
       // 2. Dados cadastrais do Perfil
       name: (formData.name && formData.name.trim()) || 'NOVO PERFIL',

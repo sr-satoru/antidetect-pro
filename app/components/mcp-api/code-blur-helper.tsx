@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip } from '@/components/ui/tooltip';
 
 /**
  * Renderiza um código ou texto substituindo as ocorrências da chave secreta
@@ -22,13 +23,17 @@ export const renderCodeWithKeyBlur = (
         <React.Fragment key={index}>
           {part}
           {index < parts.length - 1 && (
-            <span
-              onClick={onReveal}
-              className="inline-block filter blur-[5px] select-none text-emerald-400 bg-emerald-500/15 px-1.5 py-0.2 rounded transition-all cursor-pointer hover:bg-emerald-500/25"
-              title="Chave oculta por privacidade (Modo Seguro). Clique no ícone de Visualizar no topo ou aqui para revelar."
+            <Tooltip
+              content="Chave protegida por privacidade. Clique para revelar."
+              position="top"
             >
-              {token}
-            </span>
+              <span
+                onClick={onReveal}
+                className="inline-block filter blur-[5px] select-none text-slate-400 dark:text-[#A7AAB9] bg-slate-200/50 dark:bg-white/5 px-1.5 py-0.5 rounded transition-all cursor-pointer hover:bg-slate-200 dark:hover:bg-white/10"
+              >
+                {token}
+              </span>
+            </Tooltip>
           )}
         </React.Fragment>
       ))}

@@ -43,11 +43,11 @@ export function profileToFormData(profile: any): any {
 
   // Dados do proxy estruturados
   const proxy = profile.proxy || {};
-  const proxyType = proxy.proxy_type || profile.proxy_type || fp.proxy_type || 'none';
+  const proxyType = proxy.type || proxy.proxy_type || profile.proxy_type || fp.proxy_type || 'none';
   const proxyHost = proxy.host || profile.proxy_host || fp.proxy_host || '';
   const proxyPort = proxy.port || profile.proxy_port || fp.proxy_port || '';
-  const proxyUser = proxy.username || profile.proxy_username || fp.proxy_username || '';
-  const proxyPass = proxy.password || profile.proxy_password || fp.proxy_password || '';
+  const proxyUser = proxy.username || proxy.user || profile.proxy_username || fp.proxy_username || '';
+  const proxyPass = proxy.password || proxy.pass || profile.proxy_password || fp.proxy_password || '';
 
   let defaultOsVer = 'Windows NT 10.0; Win64; x64';
   if (osKey === 'macos') defaultOsVer = 'Macintosh; Intel Mac OS X 10_15_7';
@@ -115,23 +115,27 @@ export function profileToFormData(profile: any): any {
     displayLanguageMode: fp.display_language_mode || activePreset.displayLanguageMode || 'language',
     screenResolutionMode: fp.screen_resolution_mode || activePreset.screenResolutionMode || 'default',
     screenResolution: fp.screen_resolution || activePreset.screenResolution || 'Com base no User-Agent',
-    customScreenWidth: fp.screen_width ?? activePreset.customScreenWidth ?? 1920,
-    customScreenHeight: fp.screen_height ?? activePreset.customScreenHeight ?? 1080,
+    customScreenWidth: fp.custom_screen_width ?? fp.screen_width ?? activePreset.customScreenWidth ?? 1920,
+    customScreenHeight: fp.custom_screen_height ?? fp.screen_height ?? activePreset.customScreenHeight ?? 1080,
     fontsMode: fp.fonts_mode || activePreset.fontsMode || 'default',
     colorDepth: fp.color_depth ?? activePreset.colorDepth ?? 24,
     languageMode: fp.language_mode || activePreset.languageMode || 'ip',
     customLanguage: fp.custom_language || '',
     audioSampleRate: fp.audio_sample_rate ?? activePreset.audioSampleRate ?? 48000,
-    hardwareNoise: fp.hardware_noise || activePreset.hardwareNoise || {
-      canvas: false,
-      webglImage: false,
-      audioContext: false,
-      mediaDevices: false,
-      clientRects: false,
-      speechVoices: false,
-      fontPack: false,
-      fontMetrics: false,
-    },
+    hardwareNoise: (() => {
+      const rawNoise = fp.hardware_noise || {};
+      const baseNoise = activePreset.hardwareNoise || {};
+      return {
+        canvas: rawNoise.canvas ?? baseNoise.canvas ?? false,
+        webglImage: rawNoise.webglImage ?? rawNoise.webgl_image ?? baseNoise.webglImage ?? false,
+        audioContext: rawNoise.audioContext ?? rawNoise.audio_context ?? baseNoise.audioContext ?? false,
+        mediaDevices: rawNoise.mediaDevices ?? rawNoise.media_devices ?? baseNoise.mediaDevices ?? false,
+        clientRects: rawNoise.clientRects ?? rawNoise.client_rects ?? baseNoise.clientRects ?? false,
+        speechVoices: rawNoise.speechVoices ?? rawNoise.speech_voices ?? baseNoise.speechVoices ?? false,
+        fontPack: rawNoise.fontPack ?? rawNoise.font_pack ?? baseNoise.fontPack ?? false,
+        fontMetrics: rawNoise.fontMetrics ?? rawNoise.font_metrics ?? baseNoise.fontMetrics ?? false,
+      };
+    })(),
     clientRectsSeed: fp.client_rects_seed || generateRandomHexSeed(),
     canvasSeed: fp.canvas_seed || generateRandomHexSeed(),
     webglSeed: fp.webgl_seed || generateRandomHexSeed(),

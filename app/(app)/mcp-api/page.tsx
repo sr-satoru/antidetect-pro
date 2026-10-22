@@ -38,9 +38,9 @@ export const McpApiPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('mcp')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[12.5px] font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               activeTab === 'mcp'
-                ? 'text-[#238636] dark:text-[#2ea043] bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
+                ? 'text-slate-900 dark:text-white bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
                 : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-200/50 dark:hover:bg-[#1E1F27]'
             }`}
           >
@@ -51,9 +51,9 @@ export const McpApiPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('automation')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[12.5px] font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               activeTab === 'automation'
-                ? 'text-[#238636] dark:text-[#2ea043] bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
+                ? 'text-slate-900 dark:text-white bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
                 : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-200/50 dark:hover:bg-[#1E1F27]'
             }`}
           >
@@ -64,9 +64,9 @@ export const McpApiPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('api')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[12.5px] font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
               activeTab === 'api'
-                ? 'text-[#238636] dark:text-[#2ea043] bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
+                ? 'text-slate-900 dark:text-white bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
                 : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-200/50 dark:hover:bg-[#1E1F27]'
             }`}
           >

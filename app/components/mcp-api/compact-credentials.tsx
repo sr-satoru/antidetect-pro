@@ -71,25 +71,25 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-2 select-none">
-      {/* Secret Token Pill */}
-      <div className="flex items-center gap-2 bg-white dark:bg-[#1A1A21] border border-slate-200 dark:border-[#2E2E38] rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-xs">
-        <Key size={13} className="text-amber-500 dark:text-amber-400 shrink-0" />
+    <div className="flex items-center gap-2.5 select-none">
+      {/* Secret Token Pill com fonte e padding confortáveis */}
+      <div className="flex items-center gap-3 bg-white dark:bg-[#24252D] border border-slate-200 dark:border-[#353744] rounded-xl px-4 py-2 text-[14px] font-mono transition-all shadow-xs">
+        <Key size={16} className="text-amber-500 dark:text-amber-400 shrink-0" />
         <span
-          className={`text-slate-800 dark:text-[#E2E4EC] font-mono transition-all duration-200 ${
+          className={`text-slate-800 dark:text-[#E2E4EC] font-mono font-medium transition-all duration-200 ${
             !isTokenVisible ? 'filter blur-[4px] select-none opacity-80' : 'select-all'
           }`}
         >
           {activeToken || 'Carregando chave...'}
         </span>
-        <div className="flex items-center gap-1 border-l border-slate-200 dark:border-[#2E2E38] pl-1.5 ml-0.5">
+        <div className="flex items-center gap-2 border-l border-slate-200 dark:border-[#353744] pl-2.5 ml-1">
           <Tooltip content={isTokenVisible ? 'Ocultar token' : 'Revelar token'} position="top">
             <button
               type="button"
               onClick={handleToggle}
-              className="text-slate-400 hover:text-slate-700 dark:text-[#90909D] dark:hover:text-white p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+              className="text-slate-400 hover:text-slate-700 dark:text-[#90909D] dark:hover:text-white p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
             >
-              {isTokenVisible ? <EyeOff size={13} /> : <Eye size={13} />}
+              {isTokenVisible ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </Tooltip>
 
@@ -97,9 +97,9 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
             <button
               type="button"
               onClick={handleCopyToken}
-              className="text-slate-400 hover:text-[#238636] dark:text-[#90909D] dark:hover:text-[#2ea043] p-1 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors cursor-pointer"
+              className="text-slate-400 hover:text-[#238636] dark:text-[#90909D] dark:hover:text-[#2ea043] p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors cursor-pointer"
             >
-              {copiedToken ? <Check size={13} className="text-[#238636] dark:text-[#2ea043]" /> : <Copy size={13} />}
+              {copiedToken ? <Check size={16} className="text-[#238636] dark:text-[#2ea043]" /> : <Copy size={16} />}
             </button>
           </Tooltip>
 
@@ -108,9 +108,9 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
               type="button"
               onClick={handleRotateToken}
               disabled={isRotating}
-              className="text-slate-400 hover:text-amber-600 dark:text-[#90909D] dark:hover:text-amber-400 p-1 rounded-md hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors cursor-pointer disabled:opacity-50"
+              className="text-slate-400 hover:text-amber-600 dark:text-[#90909D] dark:hover:text-amber-400 p-1.5 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors cursor-pointer disabled:opacity-50"
             >
-              <RefreshCw size={13} className={isRotating ? 'animate-spin text-amber-500' : ''} />
+              <RefreshCw size={16} className={isRotating ? 'animate-spin text-amber-500' : ''} />
             </button>
           </Tooltip>
         </div>

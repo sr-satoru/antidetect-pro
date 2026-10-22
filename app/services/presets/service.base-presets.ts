@@ -93,16 +93,21 @@ export const serviceBasePresets = {
    */
   getActivePreset(): BaseBrowserPreset {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          ...(defaultBasePresetData as unknown as BaseBrowserPreset),
-          ...parsed,
-        };
+      const storage = typeof window !== 'undefined' && window.localStorage
+        ? window.localStorage
+        : (typeof globalThis !== 'undefined' && (globalThis as any).localStorage ? (globalThis as any).localStorage : null);
+      if (storage) {
+        const saved = storage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return {
+            ...(defaultBasePresetData as unknown as BaseBrowserPreset),
+            ...parsed,
+          };
+        }
       }
-    } catch (e) {
-      console.warn('[serviceBasePresets] Falha ao ler preset do localStorage:', e);
+    } catch {
+      // Falha silenciosa em ambientes sem localStorage
     }
     return defaultBasePresetData as unknown as BaseBrowserPreset;
   },
@@ -111,14 +116,28 @@ export const serviceBasePresets = {
    * Salva o preset base ativo modificado no localStorage
    */
   saveActivePreset(preset: BaseBrowserPreset): void {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(preset, null, 2));
+    try {
+      const storage = typeof window !== 'undefined' && window.localStorage
+        ? window.localStorage
+        : (typeof globalThis !== 'undefined' && (globalThis as any).localStorage ? (globalThis as any).localStorage : null);
+      if (storage) {
+        storage.setItem(STORAGE_KEY, JSON.stringify(preset, null, 2));
+      }
+    } catch {}
   },
 
   /**
    * Restaura o preset base ativo para os padrões oficiais de fábrica
    */
   resetToDefaults(): BaseBrowserPreset {
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      const storage = typeof window !== 'undefined' && window.localStorage
+        ? window.localStorage
+        : (typeof globalThis !== 'undefined' && (globalThis as any).localStorage ? (globalThis as any).localStorage : null);
+      if (storage) {
+        storage.removeItem(STORAGE_KEY);
+      }
+    } catch {}
     return defaultBasePresetData as unknown as BaseBrowserPreset;
   },
 
