@@ -76,8 +76,20 @@ export interface PastelTagStyle {
   borderColor: string;
 }
 
-export function getPastelTagStyle(colorHex?: string): PastelTagStyle {
-  const norm = (colorHex || '').toLowerCase().trim();
+export function getPastelTagStyle(colorHex?: string, fallbackName?: string): PastelTagStyle {
+  let norm = (colorHex || '').toLowerCase().trim();
+
+  // Se não foi informada cor mas temos o nome da tag, seleciona uma cor vibrante consistente
+  if (!norm && fallbackName) {
+    let hash = 0;
+    const cleanName = fallbackName.trim().toLowerCase();
+    for (let i = 0; i < cleanName.length; i++) {
+      hash = (hash << 5) - hash + cleanName.charCodeAt(i);
+      hash |= 0;
+    }
+    const colorItem = TAG_COLORS[Math.abs(hash) % TAG_COLORS.length];
+    norm = colorItem.hex.toLowerCase();
+  }
 
   // 1. Vermelho / Rosa (ex: #FF4D4F, red, pink, etc.)
   if (
@@ -240,6 +252,78 @@ export function getPastelTagStyle(colorHex?: string): PastelTagStyle {
 
 export const DEFAULT_TAG_COLOR = TAG_COLORS[0].hex;
 
+// Estilo Vívido e Marcante (cores saturadas, ricas e nítidas)
+export interface VividTagStyle {
+  color: string;
+  backgroundColor: string;
+  borderColor: string;
+}
+
+export function getVividTagStyle(colorHex?: string, fallbackName?: string): VividTagStyle {
+  let hex = (colorHex || '').trim();
+
+  // Se não foi informada cor mas temos o nome da tag, seleciona uma cor vibrante consistente do catálogo
+  if (!hex && fallbackName) {
+    let hash = 0;
+    const cleanName = fallbackName.trim().toLowerCase();
+    for (let i = 0; i < cleanName.length; i++) {
+      hash = (hash << 5) - hash + cleanName.charCodeAt(i);
+      hash |= 0;
+    }
+    const colorItem = TAG_COLORS[Math.abs(hash) % TAG_COLORS.length];
+    hex = colorItem.hex;
+  }
+
+  // Se for nome de cor mapeado (ex: "blue", "red", "azul", etc.)
+  const norm = hex.toLowerCase();
+  const matched = TAG_COLORS.find(
+    (c) => c.id.toLowerCase() === norm || c.name.toLowerCase() === norm || c.hex.toLowerCase() === norm,
+  );
+  if (matched) {
+    hex = matched.hex;
+  } else if (!hex.startsWith('#')) {
+    if (norm.includes('red') || norm.includes('vermelho') || norm.includes('pink') || norm.includes('rosa')) {
+      hex = '#FF4D4F';
+    } else if (norm.includes('orange') || norm.includes('laranja')) {
+      hex = '#FF7728';
+    } else if (norm.includes('green') || norm.includes('verde') || norm.includes('lime')) {
+      hex = '#10B981';
+    } else if (norm.includes('purple') || norm.includes('roxo')) {
+      hex = '#7B4DFF';
+    } else if (norm.includes('cyan') || norm.includes('sky') || norm.includes('ciano')) {
+      hex = '#00A3FF';
+    } else if (norm.includes('yellow') || norm.includes('amarelo') || norm.includes('amber')) {
+      hex = '#FFB020';
+    } else {
+      hex = '#1677FF';
+    }
+  }
+
+  // Calcula luminância para garantir contraste perfeito no texto
+  let text = '#FFFFFF';
+  let cleanHex = hex.replace('#', '');
+  if (cleanHex.length === 3) {
+    cleanHex = cleanHex.split('').map((c) => c + c).join('');
+  }
+  if (cleanHex.length === 6) {
+    const r = parseInt(cleanHex.slice(0, 2), 16);
+    const g = parseInt(cleanHex.slice(2, 4), 16);
+    const b = parseInt(cleanHex.slice(4, 6), 16);
+    if (!isNaN(r) && !isNaN(g) && !isNaN(b)) {
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      if (luminance > 0.65) {
+        text = '#0F172A';
+      }
+    }
+  }
+
+  return {
+    color: text,
+    backgroundColor: hex,
+    borderColor: 'rgba(0, 0, 0, 0.15)',
+  };
+}
+
 export function getTagColorStyle(colorHex?: string): {
   color: string;
   backgroundColor: string;
@@ -263,5 +347,6 @@ export function getTagColorStyle(colorHex?: string): {
     borderColor: 'rgba(255, 255, 255, 0.15)',
   };
 }
+
 
 

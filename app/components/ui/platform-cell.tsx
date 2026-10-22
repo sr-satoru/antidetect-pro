@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { toast } from 'sonner';
+import { Copy, Check } from 'lucide-react';
 
 export interface PlatformAccount {
   id?: string;
@@ -392,8 +392,18 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
   const triggerRef = useRef<HTMLDivElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const copiedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const accounts = useMemo(() => extractProfilePlatforms(profile), [profile]);
+
+  // Limpeza de timers no unmount
+  useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    };
+  }, []);
 
   // Atualiza coordenadas exatas para criar o portal flutuante sem ser cortado pelo overflow da tabela
   const updatePosition = () => {
@@ -449,11 +459,17 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
     };
   }, [isOpen, accounts]);
 
-  const handleCopy = (text?: string, e?: React.MouseEvent) => {
+  const handleCopy = (text?: string, e?: React.MouseEvent, id?: string) => {
     if (!text) return;
     if (e) e.stopPropagation();
     navigator.clipboard.writeText(text);
-    toast.success(`Copiado: ${text}`);
+    if (id) {
+      if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current);
+      setCopiedId(id);
+      copiedTimeoutRef.current = setTimeout(() => {
+        setCopiedId(null);
+      }, 1500);
+    }
   };
 
   // 1. Estado Vazio: perfil sem contas de plataforma
@@ -525,7 +541,7 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
               transform: position === 'top' ? 'translateY(-100%)' : 'translateY(0)',
               zIndex: 99999,
             }}
-            className="w-max min-w-[150px] max-w-[240px] rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-md px-3 py-2 text-left select-none pointer-events-auto"
+            className="w-max min-w-[150px] max-w-[260px] rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-md px-3 py-2 text-left select-none pointer-events-auto"
           >
             {/* Seta indicadora (caret) apontando diretamente para o elemento */}
             <div
@@ -540,50 +556,94 @@ export const PlatformCell: React.FC<PlatformCellProps> = ({ profile, className =
             {/* Lista minimalista vertical: uma conta debaixo da outra */}
             <div className="flex flex-col gap-2.5">
               {accounts.map((acc, idx) => {
-                const username = acc.username;
-                const password = acc.password;
+                const username = acc.username?.trim() || '';
+                const password = acc.password?.trim() || '';
                 const subtext = password || acc.twoFactorKey || acc.customDomain;
+                const accountCopyId = `acc-${acc.id || idx}`;
+                const combinedCredentials =
+                  username && password
+                    ? `${username}:${password}`
+                    : username || password || acc.customDomain || acc.platform;
 
                 return (
                   <div
                     key={acc.id || idx}
                     className="flex flex-col leading-tight min-w-0"
                   >
-                    {/* Linha 1: Ícone + Usuário */}
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      {acc.platform ? (
-                        <PlatformBrandIcon platform={acc.platform} size="xs" />
-                      ) : null}
-                      <span
-                        onClick={(e) => handleCopy(username || acc.platform, e)}
-                        className="text-sm font-semibold text-gray-800 dark:text-gray-200 tracking-tight truncate cursor-pointer hover:opacity-75 transition-opacity"
-                        title={username ? `Usuário: ${username} (clique para copiar)` : undefined}
+                    {/* Linha 1: Ícone + Usuário + Botão ÚNICO de Copiar (User + Senha) */}
+                    <div className="flex items-center justify-between gap-2 min-w-0">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                        {acc.platform ? (
+                          <PlatformBrandIcon platform={acc.platform} size="xs" />
+                        ) : null}
+                        <span
+                          onClick={(e) =>
+                            handleCopy(username || acc.platform, e, `user-${acc.id || idx}`)
+                          }
+                          className="text-sm font-semibold text-gray-800 dark:text-gray-200 tracking-tight truncate cursor-pointer hover:opacity-75 transition-opacity"
+                          title={
+                            username
+                              ? `Usuário: ${username} (clique para copiar apenas o usuário)`
+                              : undefined
+                          }
+                        >
+                          {username || acc.platform || 'Conta'}
+                        </span>
+                      </div>
+
+                      {/* Botão ÚNICO da plataforma: Copia Usuário e Senha juntos */}
+                      <button
+                        type="button"
+                        onClick={(e) =>
+                          handleCopy(combinedCredentials, e, accountCopyId)
+                        }
+                        className="shrink-0 p-1 rounded text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                        title={
+                          username && password
+                            ? `Copiar usuário e senha (${combinedCredentials})`
+                            : `Copiar credencial (${combinedCredentials})`
+                        }
+                        aria-label="Copiar usuário e senha"
                       >
-                        {username || acc.platform || 'Conta'}
-                      </span>
+                        {copiedId === accountCopyId ? (
+                          <Check
+                            size={12}
+                            className="text-emerald-600 dark:text-emerald-400 stroke-[2.5]"
+                          />
+                        ) : (
+                          <Copy size={12} className="stroke-[1.8]" />
+                        )}
+                      </button>
                     </div>
 
-                    {/* Linha 2: Senha / Código alinhado abaixo do texto (uma debaixo da outra) */}
+                    {/* Linha 2: Senha / Código alinhado abaixo do texto */}
                     {subtext && (
-                      <span
-                        onClick={(e) => (password || acc.twoFactorKey) && handleCopy(subtext, e)}
-                        className={`text-[10.5px] font-mono text-[#52525b] truncate ${
+                      <div
+                        className={`min-w-0 ${
                           acc.platform ? 'pl-[22px]' : ''
-                        } ${
-                          password || acc.twoFactorKey
-                            ? 'cursor-pointer hover:opacity-75 transition-opacity'
-                            : ''
                         }`}
-                        title={
-                          password
-                            ? `Senha: ${password} (clique para copiar)`
-                            : acc.twoFactorKey
-                            ? `2FA: ${acc.twoFactorKey} (clique para copiar)`
-                            : subtext
-                        }
                       >
-                        {subtext}
-                      </span>
+                        <span
+                          onClick={(e) =>
+                            (password || acc.twoFactorKey) &&
+                            handleCopy(subtext, e, `sub-${acc.id || idx}`)
+                          }
+                          className={`text-[10.5px] font-mono text-[#52525b] dark:text-gray-400 truncate block ${
+                            password || acc.twoFactorKey
+                              ? 'cursor-pointer hover:opacity-75 transition-opacity'
+                              : ''
+                          }`}
+                          title={
+                            password
+                              ? `Senha: ${password} (clique para copiar apenas a senha)`
+                              : acc.twoFactorKey
+                              ? `2FA: ${acc.twoFactorKey} (clique para copiar apenas o 2FA)`
+                              : subtext
+                          }
+                        >
+                          {subtext}
+                        </span>
+                      </div>
                     )}
                   </div>
                 );

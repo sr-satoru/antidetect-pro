@@ -47,8 +47,7 @@ export const PerfisPage: React.FC = () => {
       if (forceLoader || !hasLoadedOnce.current) {
         setIsLoading(true);
       }
-      setError(null);
-      serviceTags.list().catch(() => { });
+      await serviceTags.list().catch(() => { });
       const data = await api.profiles.list(searchQuery, selectedGroup);
       const list = Array.isArray(data) ? data : [];
       setProfiles(list);

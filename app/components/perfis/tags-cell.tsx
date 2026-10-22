@@ -35,28 +35,40 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [cacheVersion, setCacheVersion] = useState(0);
+
+  // Escuta atualizações do catálogo oficial de tags (/api/tags)
+  useEffect(() => {
+    serviceTags.list().catch(() => {});
+    return serviceTags.subscribe(() => {
+      setCacheVersion((v) => v + 1);
+    });
+  }, []);
 
   const tagsList: { id?: string | number; name: string; color?: string }[] = useMemo(() => {
     if (!profile) return [];
-    if (Array.isArray(profile.tags)) {
-      return (profile.tags as any[]).map((t: any) =>
-        typeof t === 'object' && t !== null && t.name
-          ? { ...t, color: t.color || serviceTags.getColorByName(t.name) }
-          : { id: t, name: String(t), color: serviceTags.getColorByName(String(t)) },
-      );
-    }
-    if (typeof profile.tags === 'string' && profile.tags) {
-      return (profile.tags as string)
-        .split(',')
-        .map((t: string) => ({
-          id: t.trim(),
-          name: t.trim(),
-          color: serviceTags.getColorByName(t.trim()),
-        }))
-        .filter((t) => t.name);
-    }
-    return [];
-  }, [profile]);
+    const raw: any[] = Array.isArray(profile.tags)
+      ? profile.tags
+      : typeof profile.tags === 'string' && profile.tags
+        ? profile.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
+        : [];
+
+    return raw.map((t: any, idx: number) => {
+      const name = typeof t === 'object' && t !== null && t.name ? String(t.name) : String(t);
+      const id = typeof t === 'object' && t !== null && t.id ? t.id : `tag-${idx}`;
+
+      // Prioridade: Cor do catálogo oficial (/api/tags) sempre tem precedência
+      const catalogColor = serviceTags.getColorByName(name);
+      const profileColor = typeof t === 'object' && t !== null && t.color ? t.color : undefined;
+      const color = catalogColor || profileColor;
+
+      return {
+        id,
+        name,
+        color,
+      };
+    });
+  }, [profile, cacheVersion]);
 
   const updatePosition = () => {
     if (!triggerRef.current) return;
@@ -129,7 +141,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
             <TagBadge
               name={tagsList[0].name}
               color={tagsList[0].color}
-              variant="solid-pastel"
+              variant="vivid"
               showDot={false}
               className="max-w-[130px]"
             />
@@ -139,14 +151,14 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
             <TagBadge
               name={tagsList[0].name}
               color={tagsList[0].color}
-              variant="solid-pastel"
+              variant="vivid"
               showDot={false}
               className="max-w-[130px]"
             />
             <TagBadge
               name={tagsList[1].name}
               color={tagsList[1].color}
-              variant="solid-pastel"
+              variant="vivid"
               showDot={false}
               className="max-w-[130px]"
             />
@@ -157,7 +169,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
             <TagBadge
               name={tagsList[0].name}
               color={tagsList[0].color}
-              variant="solid-pastel"
+              variant="vivid"
               showDot={false}
               className="max-w-[130px]"
             />
@@ -165,7 +177,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
               <TagBadge
                 name={tagsList[1].name}
                 color={tagsList[1].color}
-                variant="solid-pastel"
+                variant="vivid"
                 showDot={false}
                 className="max-w-[85px]"
               />
@@ -223,7 +235,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
                 key={tag.id ?? `${tag.name}-${idx}`}
                 name={tag.name}
                 color={tag.color}
-                variant="solid-pastel"
+                variant="vivid"
                 showDot={false}
                 className="shadow-2xs text-[11px] leading-tight"
               />
