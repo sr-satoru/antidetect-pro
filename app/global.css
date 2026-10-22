@@ -113,6 +113,16 @@
     color: var(--color-text-primary);
   }
 
+  /* Padronização estrita de UI: 11px uniforme para todas as tabelas (menos é mais) */
+  table,
+  table th,
+  table th *,
+  table td,
+  table td *,
+  table [class*="text-"] {
+    font-size: 10px !important;
+  }
+
   ::selection {
     background-color: var(--selection-bg);
     color: var(--selection-color);

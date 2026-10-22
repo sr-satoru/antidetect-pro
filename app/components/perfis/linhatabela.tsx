@@ -216,8 +216,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
       </td>
 
       {/* 3. Grupo */}
-      <td className="w-[115px] min-w-[115px] px-3.5 py-2.5 text-xs font-medium whitespace-nowrap text-slate-600 dark:text-[#E2E4EC] uppercase">
-        {(profile.group || 'Desagrupado').toUpperCase()}
+      <td className="w-[115px] min-w-[115px] px-3.5 py-2.5 text-xs font-medium whitespace-nowrap text-slate-600 dark:text-[#E2E4EC]">
+        {profile.group || 'Desagrupado'}
       </td>
 
       {/* 4. Nome + OS */}
@@ -226,8 +226,8 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
           <div className="flex min-w-0 items-center gap-2 flex-1">
             <OsIcon os={osKey} size={14} className="shrink-0 text-slate-400 dark:text-[#9DA2B4]" />
             <Tooltip content={profile.name || 'Sem nome'} position="top" maxWidth={320} className="min-w-0 flex-1">
-              <span className="truncate text-xs font-semibold tracking-wide text-slate-900 dark:text-white uppercase block">
-                {(profile.name || 'Sem nome').toUpperCase()}
+              <span className="truncate text-xs font-semibold tracking-wide text-slate-900 dark:text-white block">
+                {profile.name || 'Sem nome'}
               </span>
             </Tooltip>
           </div>
