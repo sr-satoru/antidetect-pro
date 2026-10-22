@@ -94,7 +94,7 @@ export const HeaderLixeira: React.FC<HeaderLixeiraProps> = ({
             disabled={selectedCount === 0}
             className={`flex h-[38px] items-center gap-2 rounded-lg px-3.5 text-[13px] font-medium transition-all ${
               selectedCount > 0
-                ? 'bg-[#238636] hover:bg-[#2ea043] text-white shadow-xs cursor-pointer active:scale-[0.98]'
+                ? 'bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-xs cursor-pointer active:scale-[0.98]'
                 : 'border border-slate-200/80 dark:border-[#484A54]/50 bg-slate-100 dark:bg-[#323338]/50 text-slate-400 dark:text-[#6C7082] opacity-50 cursor-not-allowed'
             }`}
           >

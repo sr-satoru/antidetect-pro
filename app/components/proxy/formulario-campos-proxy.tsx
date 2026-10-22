@@ -155,7 +155,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
                 }}
                 className={`cursor-pointer rounded-xl border p-3 text-left transition-all select-none ${
                   isSelected
-                    ? 'border-[#238636] bg-emerald-50/80 text-emerald-900 dark:border-[#2ea043] dark:bg-emerald-950/30 dark:text-white shadow-xs ring-1 ring-[#238636]/30 dark:ring-[#2ea043]/30'
+                    ? 'border-[#7C3AED] bg-[#7C3AED]/10 text-slate-900 dark:border-[#A78BFA] dark:bg-[#7C3AED]/20 dark:text-white shadow-xs ring-1 ring-[#7C3AED]/30'
                     : 'border-slate-200 bg-white dark:border-white/10 dark:bg-[#181920] text-slate-600 dark:text-[#8E92A2] hover:border-slate-300 hover:text-slate-900 dark:hover:border-white/20 dark:hover:text-white'
                 }`}
               >
@@ -167,7 +167,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
                     size={14}
                     className={
                       isSelected
-                        ? 'text-[#238636] dark:text-[#2ea043]'
+                        ? 'text-[#7C3AED] dark:text-[#A78BFA]'
                         : 'text-slate-400 dark:text-[#6E7282]'
                     }
                   />
@@ -303,7 +303,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
         <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] p-4 shadow-xs">
           <div className="mb-2 flex items-center justify-between">
             <Label className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
-              <RefreshCw size={13} className="text-[#238636] dark:text-[#2ea043]" />
+              <RefreshCw size={13} className="text-[#7C3AED] dark:text-[#A78BFA]" />
               <span>Link de Rotação de IP (Webhook / URL de Troca)</span>
             </Label>
             <Badge variant="success" className="text-[10px] font-bold">
@@ -315,7 +315,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
             placeholder="https://api.proxymobile.net/change-ip?key=seutoken123"
             value={values.rotationLink}
             onChange={(e) => onChange('rotationLink', e.target.value)}
-            className="font-mono text-emerald-600 dark:text-[#00FF66]"
+            className="font-mono text-[#7C3AED] dark:text-[#A78BFA]"
           />
           <p className="mt-2 text-[11px] leading-relaxed text-slate-500 dark:text-[#9EA2AE]">
             Insira a URL que o modem móvel ou provedor 4G/5G disponibiliza para forçar a rotação para um novo IP público.
@@ -335,7 +335,7 @@ export const FormularioCamposProxy: React.FC<FormularioCamposProxyProps> = ({
             className="gap-1.5 border-slate-300 dark:border-[#353744]"
           >
             {isTesting ? (
-              <Loader2 size={13} className="animate-spin text-[#238636] dark:text-[#2ea043]" />
+              <Loader2 size={13} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
             ) : (
               <RefreshCw size={13} />
             )}

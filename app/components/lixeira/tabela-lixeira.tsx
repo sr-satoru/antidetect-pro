@@ -94,7 +94,7 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
             Total na lixeira: <strong className="text-slate-900 dark:text-white">{items.length}</strong> perfis
           </span>
           <span className="hidden items-center gap-1.5 sm:inline-flex text-[11px] text-slate-500 dark:text-[#8E92A2]">
-            <AlertCircle size={13} className="text-[#238636] dark:text-[#2ea043]" />
+            <AlertCircle size={13} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             <span>Itens excluídos são removidos automaticamente após 30 dias de retenção.</span>
           </span>
         </div>

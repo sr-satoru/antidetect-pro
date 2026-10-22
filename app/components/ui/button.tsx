@@ -4,12 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-xs font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#238636]/40 disabled:pointer-events-none disabled:opacity-50 select-none cursor-pointer active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-xs font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3AED]/40 disabled:pointer-events-none disabled:opacity-50 select-none cursor-pointer active:scale-[0.98]",
   {
     variants: {
       variant: {
         default:
-          "bg-[#238636] text-white hover:bg-[#2ea043] shadow-xs shadow-[#238636]/20 font-semibold",
+          "bg-[#7C3AED] text-white hover:bg-[#6D28D9] shadow-xs shadow-[#7C3AED]/20 font-semibold",
         destructive:
           "border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20",
         outline:
@@ -19,9 +19,9 @@ const buttonVariants = cva(
         ghost:
           "text-slate-600 dark:text-[#8E92A2] hover:bg-slate-100 dark:hover:bg-[#2B2D3A] hover:text-slate-900 dark:hover:text-white",
         link:
-          "text-[#238636] dark:text-[#2ea043] underline-offset-4 hover:underline p-0 h-auto",
+          "text-[#7C3AED] dark:text-[#A78BFA] underline-offset-4 hover:underline p-0 h-auto",
         accent:
-          "border border-[#238636]/40 bg-[#238636]/10 text-[#2ea043] hover:bg-[#238636]/20",
+          "border border-[#7C3AED]/40 bg-[#7C3AED]/10 text-[#7C3AED] dark:text-[#A78BFA] hover:bg-[#7C3AED]/20",
       },
       size: {
         default: "h-9 px-4 py-2",

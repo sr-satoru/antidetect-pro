@@ -90,9 +90,9 @@ export const NotificationCard: React.FC<NotificationCardProps> = ({
     },
     loading: {
       cardBg:
-        'bg-slate-900 dark:bg-[#1A1A21] border border-[#238636]/40 text-white shadow-xl',
-      iconBg: 'bg-[#238636]/20 text-[#2ea043]',
-      defaultIcon: <Loader2 size={16} className="animate-spin text-[#2ea043]" />,
+        'bg-slate-900 dark:bg-[#1A1A21] border border-[#7C3AED]/40 text-white shadow-xl',
+      iconBg: 'bg-[#7C3AED]/20 text-[#A78BFA]',
+      defaultIcon: <Loader2 size={16} className="animate-spin text-[#A78BFA]" />,
     },
     default: {
       cardBg:

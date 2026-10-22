@@ -86,7 +86,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
 
   // Background adaptativo para linhas - harmonized dark charcoal
   const rowBg = isSelected
-    ? 'bg-emerald-50/70 dark:bg-emerald-950/25 border-l-[3px] border-l-[#238636] dark:border-l-[#2ea043]'
+    ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/15 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
     : isStriped
       ? 'bg-slate-50/60 dark:bg-[#28292E] hover:bg-slate-100/80 dark:hover:bg-[#32343C]'
       : 'bg-white dark:bg-[#24252A] hover:bg-slate-100/80 dark:hover:bg-[#32343C]';
@@ -161,7 +161,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
             <Globe size={13} />
           </div>
           <span
-            className="max-w-[140px] truncate text-xs font-semibold tracking-wide text-slate-900 dark:text-white hover:text-[#238636] dark:hover:text-[#2ea043] transition-colors"
+            className="max-w-[140px] truncate text-xs font-semibold tracking-wide text-slate-900 dark:text-white hover:text-[#7C3AED] dark:hover:text-[#A78BFA] transition-colors"
             title={proxy.name || `Proxy ${proxy.host}`}
           >
             {proxy.name || `Proxy ${proxy.host}`}
@@ -267,7 +267,7 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
       <td className="w-[130px] min-w-[130px] px-3.5 py-2 whitespace-nowrap">
         {isChecking ? (
           <div className="flex items-center gap-1.5 text-slate-600 dark:text-[#A6ABB9]">
-            <Loader2 size={12} className="animate-spin text-[#238636] dark:text-[#2ea043]" />
+            <Loader2 size={12} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
             <span className="text-[11px] font-medium">Testando...</span>
           </div>
         ) : isOnline ? (

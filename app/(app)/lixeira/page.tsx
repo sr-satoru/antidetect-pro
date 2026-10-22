@@ -229,7 +229,7 @@ export const LixeiraPage: React.FC = () => {
       {loading ? (
         <div className="flex flex-1 items-center justify-center rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
           <div className="flex flex-col items-center gap-2 text-xs text-slate-400 dark:text-[#A6A9B6]">
-            <Loader2 className="animate-spin text-[#238636] dark:text-[#2ea043]" size={26} />
+            <Loader2 className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" size={26} />
             <span>Carregando itens da lixeira...</span>
           </div>
         </div>

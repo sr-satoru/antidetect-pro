@@ -39,7 +39,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
             className="h-[38px] gap-2 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-3.5 text-[13px] font-medium text-slate-700 dark:text-[#E4E6EE] hover:bg-slate-50 dark:hover:bg-[#3A3B42]"
           >
             {isChecking ? (
-              <Loader2 size={14} className="animate-spin text-[#238636] dark:text-[#2ea043]" />
+              <Loader2 size={14} className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]" />
             ) : (
               <Search size={14} />
             )}
@@ -53,7 +53,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
               onChange={(e) => setCheckDuplicates(e.target.checked)}
             />
             <span className="flex items-center gap-1.5">
-              <ShieldCheck size={13} className="text-[#238636] dark:text-[#2ea043]" />
+              <ShieldCheck size={13} className="text-[#7C3AED] dark:text-[#A78BFA]" />
               <span>Ignorar duplicatas</span>
             </span>
           </label>
@@ -63,7 +63,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
           <Badge variant={items.length > 0 ? 'success' : 'secondary'} className="px-2.5 py-1 text-xs gap-1.5">
             <span
               className={`h-1.5 w-1.5 rounded-full ${
-                items.length > 0 ? 'bg-[#238636] dark:bg-[#2ea043]' : 'bg-slate-400 dark:bg-[#8E92A2]'
+                items.length > 0 ? 'bg-[#7C3AED] dark:bg-[#A78BFA]' : 'bg-slate-400 dark:bg-[#8E92A2]'
               }`}
             />
             <span>
@@ -129,7 +129,7 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
                       <span className="flex items-center gap-1.5 font-mono text-[11.5px] text-slate-600 dark:text-[#A6ABB9]">
                         <Loader2
                           size={12}
-                          className="animate-spin text-[#238636] dark:text-[#2ea043]"
+                          className="animate-spin text-[#7C3AED] dark:text-[#A78BFA]"
                         />
                         <span>Testando...</span>
                       </span>

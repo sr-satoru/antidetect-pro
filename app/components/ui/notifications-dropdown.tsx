@@ -147,7 +147,7 @@ export const NotificationsDropdown: React.FC = () => {
       >
         <Bell size={15} />
         {unreadCount > 0 && (
-          <span className="flex items-center justify-center min-w-[15px] h-[15px] px-1 rounded-full bg-emerald-500 text-[9.5px] font-black text-white absolute -top-1 -right-1 shadow-xs animate-pulse">
+          <span className="flex items-center justify-center min-w-[15px] h-[15px] px-1 rounded-full bg-[#7C3AED] text-[9.5px] font-black text-white absolute -top-1 -right-1 shadow-xs animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -273,7 +273,7 @@ export const NotificationsDropdown: React.FC = () => {
                               </span>
                               {!notif.read && (
                                 <span
-                                  className="w-2 h-2 rounded-full bg-[#238636] shadow-xs"
+                                  className="w-2 h-2 rounded-full bg-[#7C3AED] shadow-xs"
                                   title="Não lida"
                                 />
                               )}
@@ -300,7 +300,7 @@ export const NotificationsDropdown: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => serviceNotifications.markAsRead(notif.id)}
-                                  className="text-[#238636] hover:text-[#2ea043] dark:text-[#2ea043] dark:hover:text-[#3fb950] hover:underline font-medium cursor-pointer"
+                                  className="text-[#7C3AED] hover:text-[#6D28D9] dark:text-[#A78BFA] dark:hover:text-[#C4B5FD] hover:underline font-medium cursor-pointer"
                                 >
                                   Marcar como lida
                                 </button>

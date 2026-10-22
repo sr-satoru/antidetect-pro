@@ -14,7 +14,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 py-2 text-xs font-medium text-slate-800 dark:text-white shadow-xs ring-offset-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#238636]/30 focus:border-[#238636] dark:focus:border-[#2ea043] disabled:cursor-not-allowed disabled:opacity-50 transition-all cursor-pointer hover:border-slate-300 dark:hover:border-[#484A54]",
+      "flex h-10 w-full items-center justify-between rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 py-2 text-xs font-medium text-slate-800 dark:text-white shadow-xs ring-offset-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED] dark:focus:border-[#A78BFA] disabled:cursor-not-allowed disabled:opacity-50 transition-all cursor-pointer hover:border-slate-300 dark:hover:border-[#484A54]",
       className
     )}
     {...props}
@@ -111,7 +111,7 @@ const SelectItem = React.forwardRef<
     )}
     {...props}
   >
-    <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center text-[#238636] dark:text-[#2ea043]">
+    <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center text-[#7C3AED] dark:text-[#A78BFA]">
       <SelectPrimitive.ItemIndicator>
         <Check size={14} strokeWidth={2.5} />
       </SelectPrimitive.ItemIndicator>
@@ -157,7 +157,7 @@ const NativeSelect = React.forwardRef<HTMLSelectElement, NativeSelectProps>(
           ref={ref}
           disabled={disabled}
           className={cn(
-            "w-full h-10 cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 pr-9 text-xs text-slate-800 dark:text-white transition-all hover:border-slate-300 dark:hover:border-[#484A54] focus:border-[#238636] dark:focus:border-[#2ea043] focus:ring-1 focus:ring-[#238636]/20 focus:outline-none shadow-xs disabled:cursor-not-allowed disabled:opacity-50 font-medium",
+            "w-full h-10 cursor-pointer appearance-none rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 pr-9 text-xs text-slate-800 dark:text-white transition-all hover:border-slate-300 dark:hover:border-[#484A54] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs disabled:cursor-not-allowed disabled:opacity-50 font-medium",
             className
           )}
           {...props}

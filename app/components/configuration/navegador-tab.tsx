@@ -62,7 +62,7 @@ export const NavegadorTab: React.FC<NavegadorTabProps> = ({
         <button
           type="button"
           onClick={onSave}
-          className="h-[38px] px-6 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-[13px] font-medium text-white shadow-xs transition-all cursor-pointer active:scale-[0.98]"
+          className="h-[38px] px-6 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-[13px] font-semibold text-white shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all cursor-pointer active:scale-[0.98]"
         >
           Gravar a Configuração
         </button>

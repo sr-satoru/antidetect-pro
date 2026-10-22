@@ -121,12 +121,12 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
           aria-label="Abrir Conta e Configurações"
           className={`group flex items-center gap-2.5 h-[38px] max-w-[230px] pl-1.5 pr-2.5 py-1 rounded-full border transition-all duration-150 cursor-pointer text-left select-none active:scale-[0.98] shadow-2xs ${
             location.pathname === '/configuration' || location.pathname === '/configuracoes'
-              ? 'border-[#238636] bg-emerald-50 dark:bg-emerald-950/25 dark:border-[#2ea043] ring-2 ring-[#238636]/20'
+              ? 'border-[#7C3AED] bg-[#7C3AED]/10 dark:bg-[#7C3AED]/15 dark:border-[#A78BFA] ring-2 ring-[#7C3AED]/20'
               : 'border-slate-200 dark:border-[#2E2E38] bg-slate-50 dark:bg-[#15151A] hover:bg-slate-100 dark:hover:bg-[#24242C] hover:border-slate-300 dark:hover:border-[#3E4150]'
           }`}
         >
-          {/* Avatar com gradiente verde harmonizado */}
-          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white shadow-xs font-bold text-xs transition-transform group-hover:scale-105 bg-gradient-to-tr from-[#238636] to-[#2ea043]">
+          {/* Avatar com gradiente violeta harmonizado */}
+          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white shadow-xs font-bold text-xs transition-transform group-hover:scale-105 bg-gradient-to-tr from-[#7C3AED] to-[#A78BFA]">
             {!user?.is_offline && user?.email ? (
               user?.username ? user.username.charAt(0).toUpperCase() : 'U'
             ) : (

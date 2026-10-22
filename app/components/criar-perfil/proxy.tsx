@@ -35,7 +35,7 @@ const PasswordInput: React.FC<{
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 pr-10 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs"
+        className="w-full h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 pr-10 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs"
       />
       <button
         type="button"
@@ -279,7 +279,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                 onClick={() => setShowProxyDropdown(!showProxyDropdown)}
                 className={`flex w-full h-10 cursor-pointer items-center justify-between rounded-lg bg-white dark:bg-[#24252A] px-3.5 transition-all select-none shadow-xs ${
                   showProxyDropdown
-                    ? 'border border-emerald-500 dark:border-white/40 ring-1 ring-emerald-500/20 dark:ring-white/10'
+                    ? 'border border-[#7C3AED] dark:border-[#A78BFA] ring-1 ring-[#7C3AED]/20'
                     : 'border border-slate-200/80 dark:border-[#484A54] hover:border-slate-300 dark:hover:border-[#484A54]'
                 }`}
               >
@@ -287,7 +287,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                   <Globe
                     size={15}
                     className={`shrink-0 transition-colors ${
-                      selectedSavedProxy ? 'text-emerald-600 dark:text-[#2ea043]' : 'text-slate-400 dark:text-[#A6A9B6]'
+                      selectedSavedProxy ? 'text-[#7C3AED] dark:text-[#A78BFA]' : 'text-slate-400 dark:text-[#A6A9B6]'
                     }`}
                   />
                   <span
@@ -302,7 +302,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                       : 'Selecione um proxy do banco...'}
                   </span>
                   {selectedSavedProxy && (
-                    <span className="rounded bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[10px] font-bold dark:text-[#2ea043] border border-emerald-200 dark:border-emerald-500/30 shrink-0 uppercase">
+                    <span className="rounded bg-[#7C3AED]/10 text-[#7C3AED] dark:bg-[#7C3AED]/20 px-1.5 py-0.5 font-mono text-[10px] font-bold dark:text-[#A78BFA] border border-[#7C3AED]/30 shrink-0 uppercase">
                       {(selectedSavedProxy.type || selectedSavedProxy.proxy_type || 'HTTP').toUpperCase()}
                     </span>
                   )}
@@ -312,7 +312,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                   <button
                     type="button"
                     onClick={handleShuffleSavedProxy}
-                    className="cursor-pointer rounded p-1 text-emerald-600 dark:text-[#2ea043] transition-colors hover:bg-slate-100 dark:hover:bg-[#454750]/50"
+                    className="cursor-pointer rounded p-1 text-[#7C3AED] dark:text-[#A78BFA] transition-colors hover:bg-slate-100 dark:hover:bg-[#454750]/50"
                     title="Sortear aleatoriamente um proxy salvo"
                   >
                     <Shuffle size={14} />
@@ -389,13 +389,13 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                             onClick={() => handleSelectSavedProxy(proxy)}
                             className={`group relative flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2.5 transition-all select-none ${
                               isSelected
-                                ? 'border border-[#238636]/40 bg-emerald-50/70 text-emerald-950 dark:border-[#484A54] dark:bg-[#454750] shadow-xs'
+                                ? 'border border-[#7C3AED]/40 bg-[#7C3AED]/10 text-slate-900 dark:border-[#484A54] dark:bg-[#454750] shadow-xs'
                                 : 'border border-transparent hover:bg-slate-50 dark:hover:bg-[#454750]/40'
                             }`}
                           >
                             {/* Indicador vertical no item selecionado */}
                             {isSelected && (
-                              <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#238636] dark:bg-[#2ea043]" />
+                              <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-r-full bg-[#7C3AED] dark:bg-[#A78BFA]" />
                             )}
 
                             <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -403,7 +403,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                               <span
                                 className={`flex shrink-0 items-center justify-center rounded px-1.5 py-0.5 font-mono text-[10px] font-bold tracking-wider uppercase transition-colors ${
                                   isSelected
-                                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-[#2ea043] border border-emerald-300 dark:border-emerald-500/30'
+                                    ? 'bg-[#7C3AED]/20 text-[#7C3AED] dark:bg-[#7C3AED]/30 dark:text-[#A78BFA] border border-[#7C3AED]/40'
                                     : 'bg-slate-100 text-slate-700 border border-slate-200 dark:bg-white/[0.06] dark:text-[#A6A9B6] dark:border-white/10 group-hover:text-slate-900 dark:group-hover:text-white'
                                 }`}
                               >
@@ -442,7 +442,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                             {/* Lado Direito: Badge Selecionado ou Ping */}
                             <div className="flex shrink-0 items-center gap-2 pl-2">
                               {isSelected ? (
-                                <span className="flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-100 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/20 px-2 py-0.5 font-mono text-[11px] font-semibold dark:text-[#2ea043] shadow-xs">
+                                <span className="flex items-center gap-1 rounded-full border border-[#7C3AED]/30 bg-[#7C3AED]/10 text-[#7C3AED] dark:border-[#7C3AED]/40 dark:bg-[#7C3AED]/20 px-2 py-0.5 font-mono text-[11px] font-semibold dark:text-[#A78BFA] shadow-xs">
                                   <Check size={11} strokeWidth={3} />
                                   <span>Selecionado</span>
                                 </span>
@@ -508,7 +508,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         }}
                         className={`cursor-pointer px-3.5 py-2 text-[12px] transition-colors ${
                           formData.proxyType === item.id
-                            ? 'bg-emerald-50 text-emerald-700 font-semibold dark:bg-[#454750] dark:text-white'
+                            ? 'bg-[#7C3AED]/10 text-[#7C3AED] font-semibold dark:bg-[#454750] dark:text-white'
                             : 'text-slate-700 dark:text-[#A6A9B6] hover:bg-slate-100 dark:hover:bg-[#454750]/50 hover:text-slate-900 dark:hover:text-white'
                         }`}
                       >
@@ -547,7 +547,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         ? 'ex: rotating.proxyprovider.com'
                         : 'ex: 151.245.245.179'
                     }
-                    className="flex-1 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs"
+                    className="flex-1 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs"
                   />
                   <input
                     type="text"
@@ -558,7 +558,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         ? 'Porta (ex: 8080)'
                         : 'Porta (ex: 50101)'
                     }
-                    className="w-32 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs"
+                    className="w-32 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs"
                   />
                   {formData.proxyMode === 'rotating' && (
                     <button
@@ -584,7 +584,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                     value={formData.proxyUser}
                     onChange={(e) => onChange('proxyUser', e.target.value)}
                     placeholder="Usuário (opcional)"
-                    className="flex-1 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs"
+                    className="flex-1 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs"
                   />
                   <PasswordInput
                     value={formData.proxyPass}
@@ -607,7 +607,7 @@ export const ProxyTab: React.FC<ProxyTabProps> = ({ formData, onChange }) => {
                         onChange('proxyRotationUrl', e.target.value)
                       }
                       placeholder="https://api.proxyprovider.com/rotate?key=xyz..."
-                      className="flex-1 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 font-mono text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs"
+                      className="flex-1 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 font-mono text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs"
                     />
                     <button
                       type="button"

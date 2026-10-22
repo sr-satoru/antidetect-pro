@@ -33,7 +33,7 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] px-6 py-4 bg-[#F8F7F5] dark:bg-[#323338]">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#238636]/15 text-[#2ea043] border border-[#238636]/30">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#7C3AED]/15 text-[#A78BFA] border border-[#7C3AED]/30">
               <FileCode size={18} />
             </div>
             <div>
@@ -80,7 +80,7 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
             value={rawJsonText}
             onChange={(e) => onChangeText(e.target.value)}
             spellCheck={false}
-            className="w-full flex-1 resize-none bg-transparent font-mono text-[12.5px] leading-relaxed text-emerald-400 focus:outline-hidden custom-scrollbar"
+            className="w-full flex-1 resize-none bg-transparent font-mono text-[12.5px] leading-relaxed text-violet-300 focus:outline-hidden custom-scrollbar"
             placeholder="Insira o JSON do preset..."
           />
           {rawJsonError && (
@@ -113,7 +113,7 @@ export const ModalEditorJson: React.FC<ModalEditorJsonProps> = ({
             <button
               type="button"
               onClick={onApply}
-              className="h-[38px] px-5 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white text-[13px] font-medium flex items-center gap-1.5 shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+              className="h-[38px] px-5 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all active:scale-[0.98] cursor-pointer"
             >
               <Check size={14} strokeWidth={2.5} />
               <span>Aplicar & Salvar</span>

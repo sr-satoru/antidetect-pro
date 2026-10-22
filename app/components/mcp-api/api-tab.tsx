@@ -574,7 +574,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   </span>
                   <span className="truncate">{ep.name}</span>
                 </div>
-                {isSelected && <ChevronRight size={13} className="text-[#238636] dark:text-[#2ea043] shrink-0" />}
+                {isSelected && <ChevronRight size={13} className="text-[#7C3AED] dark:text-[#A78BFA] shrink-0" />}
               </button>
             );
           })}
@@ -668,7 +668,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
 
                     {/* Active Underline Indicator */}
                     {isSelected && (
-                      <span className="absolute bottom-0 left-1 right-1 h-[2.5px] bg-[#238636] dark:bg-[#2ea043] rounded-full" />
+                      <span className="absolute bottom-0 left-1 right-1 h-[2.5px] bg-[#7C3AED] dark:bg-[#A78BFA] rounded-full" />
                     )}
                   </button>
                 );
@@ -804,7 +804,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   type="text"
                   value={testParamId}
                   onChange={(e) => setTestParamId(e.target.value)}
-                  className="w-full h-10 bg-slate-50 dark:bg-[#24252A] border border-slate-200/80 dark:border-[#484A54] rounded-lg px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-[#238636] dark:focus:border-[#2ea043]"
+                  className="w-full h-10 bg-slate-50 dark:bg-[#24252A] border border-slate-200/80 dark:border-[#484A54] rounded-lg px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-[#7C3AED] dark:focus:border-[#A78BFA]"
                 />
               </div>
 
@@ -813,7 +813,7 @@ export const ApiTab: React.FC<ApiTabProps> = ({
                   type="button"
                   onClick={handleExecuteInExplorer}
                   disabled={isExecuting}
-                  className="flex h-[38px] items-center gap-1.5 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-4 text-xs font-medium shadow-xs transition-all cursor-pointer disabled:opacity-50 active:scale-[0.98]"
+                  className="flex h-[38px] items-center gap-1.5 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-4 text-xs font-medium shadow-xs transition-all cursor-pointer disabled:opacity-50 active:scale-[0.98]"
                 >
                   <Send size={13} className={isExecuting ? 'animate-spin' : ''} />
                   <span>{isExecuting ? 'Executando...' : 'Enviar Chamada'}</span>

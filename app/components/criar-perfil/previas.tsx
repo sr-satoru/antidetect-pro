@@ -221,7 +221,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
           <button
             type="button"
             onClick={handleRegenerateFingerprint}
-            className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-semibold text-emerald-600 hover:text-emerald-700 dark:text-[#2ea043] transition-colors dark:hover:text-[#3fb950]"
+            className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-semibold text-[#7C3AED] hover:text-[#6D28D9] dark:text-[#A78BFA] transition-colors dark:hover:text-[#C4B5FD]"
             title="Sorteia uma máquina real completa do catálogo oficial"
           >
             {/* Ícone Shuffle */}
@@ -272,7 +272,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
         <button
           type="button"
           onClick={() => navigate('/configuration?tab=browser')}
-          className="font-medium text-emerald-600 hover:text-emerald-700 dark:text-[#2ea043] dark:hover:text-[#3fb950] underline decoration-emerald-500/40 hover:decoration-emerald-500 cursor-pointer transition-colors"
+          className="font-medium text-[#7C3AED] hover:text-[#6D28D9] dark:text-[#A78BFA] dark:hover:text-[#C4B5FD] underline decoration-[#7C3AED]/40 hover:decoration-[#7C3AED] cursor-pointer transition-colors"
           title="Abrir configurações de Navegador & Antidetect"
         >
           backend/presets

@@ -284,7 +284,7 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
                 key={tag.id}
                 onClick={() => onToggleTag(tag.name)}
                 className={`flex cursor-pointer items-center justify-between px-3 py-2 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#252733] ${
-                  isSelected ? 'bg-emerald-500/10 dark:bg-emerald-500/15' : ''
+                  isSelected ? 'bg-violet-500/10 dark:bg-violet-500/15' : ''
                 }`}
               >
                 {/* Badge da Etiqueta padronizado */}
@@ -292,7 +292,7 @@ export const DropdownSeletorEtiquetas: React.FC<DropdownSeletorEtiquetasProps> =
 
                 {/* Checkmark no lado direito se selecionado */}
                 {isSelected && (
-                  <Check size={14} className="text-slate-500 dark:text-[#8E92A2]" />
+                  <Check size={14} className="text-[#7C3AED] dark:text-[#A78BFA]" />
                 )}
               </div>
             );

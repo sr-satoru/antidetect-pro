@@ -277,7 +277,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                               }}
                               className={`flex cursor-pointer items-center gap-2 px-3 py-2 text-[12px] transition-colors ${
                                 acc.platform === preset.id
-                                  ? 'bg-emerald-50 text-emerald-700 dark:bg-[#454750] font-medium dark:text-white'
+                                  ? 'bg-[#7C3AED]/10 text-[#7C3AED] dark:bg-[#454750] font-medium dark:text-white'
                                   : 'text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-100 dark:hover:bg-[#454750]/50 hover:text-slate-900 dark:hover:text-white'
                               }`}
                             >
@@ -307,7 +307,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           className={`h-10 w-full rounded-lg border bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:outline-none shadow-xs ${
                             isDomainEmpty
                               ? 'border-[#EF4444] focus:border-[#EF4444]'
-                              : 'border-slate-200/80 dark:border-[#484A54] focus:border-emerald-500 dark:focus:border-[#484A54]'
+                              : 'border-slate-200/80 dark:border-[#484A54] focus:border-[#7C3AED] dark:focus:border-[#A78BFA]'
                           }`}
                         />
                         {isDomainEmpty && (
@@ -332,7 +332,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           handleUpdateAccount(idx, { username: e.target.value })
                         }
                         placeholder="Indique por favor o nome do utilizador"
-                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-emerald-500 dark:focus:border-[#484A54] focus:outline-none shadow-xs"
+                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
                       />
                     </div>
                   </div>
@@ -350,7 +350,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           handleUpdateAccount(idx, { password: e.target.value })
                         }
                         placeholder="Digite a senha"
-                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 font-mono text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-emerald-500 dark:focus:border-[#484A54] focus:outline-none shadow-xs"
+                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 font-mono text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
                       />
                     </div>
                   </div>
@@ -370,7 +370,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                           })
                         }
                         placeholder="Por favor, digite a chave."
-                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 pr-9 font-mono text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-emerald-500 dark:focus:border-[#484A54] focus:outline-none shadow-xs"
+                        className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 pr-9 font-mono text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
                       />
                       <Tooltip
                         content="Chave secreta TOTP para geração automática do código de dois fatores ao fazer login."
@@ -422,7 +422,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
               onClick={() => setIsAddDropdownOpen(!isAddDropdownOpen)}
               className="flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 dark:border-[#484A54] bg-slate-100/70 hover:bg-slate-200/70 dark:bg-[#24252A] dark:hover:bg-[#323338] px-4 text-[13px] font-medium text-slate-600 dark:text-[#A6A9B6] transition-all select-none hover:text-slate-900 dark:hover:text-white"
             >
-              <div className="flex h-4 w-4 items-center justify-center rounded-full border-2 border-emerald-600 dark:border-[#2ea043] text-[13px] leading-none font-bold text-emerald-600 dark:text-[#2ea043]">
+              <div className="flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#7C3AED] dark:border-[#A78BFA] text-[13px] leading-none font-bold text-[#7C3AED] dark:text-[#A78BFA]">
                 +
               </div>
               <span>Adicionar conta da plataforma</span>
@@ -467,7 +467,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   type="checkbox"
                   checked={duplicateRules.usernamePassword}
                   onChange={() => handleToggleRule('usernamePassword')}
-                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#484A54] bg-white dark:bg-[#24252A] accent-[#238636]"
+                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#484A54] bg-white dark:bg-[#24252A] accent-[#7C3AED]"
                 />
                 <span className="text-[12.5px] text-slate-700 dark:text-[#C4C7D5] underline decoration-slate-300 dark:decoration-[#484A54] decoration-dotted underline-offset-4 group-hover:text-slate-900 dark:group-hover:text-white">
                   Nome de utilizador e senha
@@ -479,7 +479,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   type="checkbox"
                   checked={duplicateRules.cookie}
                   onChange={() => handleToggleRule('cookie')}
-                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#484A54] bg-white dark:bg-[#24252A] accent-[#238636]"
+                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#484A54] bg-white dark:bg-[#24252A] accent-[#7C3AED]"
                 />
                 <span className="text-[12.5px] text-slate-700 dark:text-[#C4C7D5] underline decoration-slate-300 dark:decoration-[#484A54] decoration-dotted underline-offset-4 group-hover:text-slate-900 dark:group-hover:text-white">
                   Cookie
@@ -491,7 +491,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
                   type="checkbox"
                   checked={duplicateRules.cUser}
                   onChange={() => handleToggleRule('cUser')}
-                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#484A54] bg-white dark:bg-[#24252A] accent-[#238636]"
+                  className="h-4 w-4 cursor-pointer rounded border border-slate-300 dark:border-[#484A54] bg-white dark:bg-[#24252A] accent-[#7C3AED]"
                 />
                 <span className="text-[12.5px] text-slate-700 dark:text-[#C4C7D5] underline decoration-slate-300 dark:decoration-[#484A54] decoration-dotted underline-offset-4 group-hover:text-slate-900 dark:group-hover:text-white">
                   c_user
@@ -515,7 +515,7 @@ export const PlataformaTab: React.FC<PlataformaTabProps> = ({
             value={formData.openTabsUrls || ''}
             onChange={(e) => onChange('openTabsUrls', e.target.value)}
             placeholder={`Digite URLs (uma URL por linha)\nwww.google.com\nwww.facebook.com`}
-            className="w-full rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] p-3 font-mono text-[12.5px] leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-emerald-500 dark:focus:border-[#484A54] focus:outline-none shadow-xs"
+            className="w-full rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] p-3 font-mono text-[12.5px] leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
           />
         </div>
       </div>

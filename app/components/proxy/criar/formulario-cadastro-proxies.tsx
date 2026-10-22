@@ -51,7 +51,7 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
       <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#24252A] p-4.5 text-[12px] select-text shadow-xs lg:col-span-5">
         <div>
           <div className="mb-3 flex items-center gap-2 border-b border-slate-200/80 dark:border-[#484A54] pb-2.5">
-            <Info size={15} className="text-[#238636] dark:text-[#2ea043]" />
+            <Info size={15} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             <span className="text-[13px] font-semibold tracking-wide text-slate-900 dark:text-white">
               Guia de Preenchimento
             </span>
@@ -102,7 +102,7 @@ export const FormularioCadastroProxies: React.FC<FormularioCadastroProxiesProps>
         {/* Exemplos em Cards Minimalistas */}
         <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-[#484A54]">
           <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold tracking-wider text-slate-600 dark:text-[#A6A9B6] uppercase">
-            <Terminal size={12} className="text-[#238636] dark:text-[#2ea043]" />
+            <Terminal size={12} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             <span>Formatos Aceitos</span>
           </div>
 

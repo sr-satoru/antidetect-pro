@@ -103,9 +103,9 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
             <button
               type="button"
               onClick={handleCopyToken}
-              className="text-slate-400 hover:text-[#238636] dark:text-[#90909D] dark:hover:text-[#2ea043] p-1 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors cursor-pointer"
+              className="text-slate-400 hover:text-[#7C3AED] dark:text-[#90909D] dark:hover:text-[#A78BFA] p-1 rounded-md hover:bg-[#7C3AED]/10 dark:hover:bg-[#7C3AED]/20 transition-colors cursor-pointer"
             >
-              {copiedToken ? <Check size={13} className="text-[#238636] dark:text-[#2ea043]" /> : <Copy size={13} />}
+              {copiedToken ? <Check size={13} className="text-[#7C3AED] dark:text-[#A78BFA]" /> : <Copy size={13} />}
             </button>
           </Tooltip>
 

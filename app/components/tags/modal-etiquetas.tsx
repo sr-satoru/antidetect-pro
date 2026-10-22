@@ -226,7 +226,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
                 setTagEmEdicao(null);
                 setIsSubmodalOpen(true);
               }}
-              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-[#1677FF] hover:bg-[#1677FF]/90 text-white px-4 text-xs font-semibold shadow-xs transition-all active:scale-[0.98]"
+              className="flex h-9 cursor-pointer items-center gap-2 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-white px-4 text-xs font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.3)] transition-all active:scale-[0.98]"
             >
               <TagIcon size={14} className="stroke-[2.5]" />
               <span>Nova Etiqueta</span>
@@ -386,7 +386,7 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
 
                       {/* Badge de filtro ativo se aplicável */}
                       {isFilteringThis && (
-                        <span className="flex items-center gap-1 rounded-md bg-emerald-500/15 dark:bg-emerald-500/20 px-2 py-0.5 text-[10px] text-[#238636] dark:text-[#2ea043] font-medium border border-emerald-500/25 dark:border-emerald-500/30 ml-2">
+                        <span className="flex items-center gap-1 rounded-md bg-violet-500/15 dark:bg-violet-500/20 px-2 py-0.5 text-[10px] text-[#7C3AED] dark:text-[#A78BFA] font-medium border border-violet-500/25 dark:border-violet-500/30 ml-2">
                           <Check size={10} /> Filtro Ativo
                         </span>
                       )}

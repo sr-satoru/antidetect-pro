@@ -46,7 +46,7 @@ export const ContaTab: React.FC = () => {
       <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 shadow-xs">
         <div className="flex flex-wrap items-center justify-between gap-5 relative z-10">
           <div className="flex items-center gap-4">
-            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#238636] to-[#34d399] text-white text-lg font-bold shadow-md shadow-[#238636]/20">
+            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#7C3AED] to-[#A78BFA] text-white text-lg font-bold shadow-md shadow-[#7C3AED]/20">
               {!user?.is_offline && user?.email ? (
                 user?.username ? (
                   user.username.charAt(0).toUpperCase()
@@ -72,7 +72,7 @@ export const ContaTab: React.FC = () => {
                     ? user.email
                     : 'Workspace Local Isolado'}
                 </h3>
-                <span className="rounded-full bg-[#238636]/15 border border-[#238636]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#2ea043] uppercase tracking-wider">
+                <span className="rounded-full bg-[#7C3AED]/15 border border-[#7C3AED]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#A78BFA] uppercase tracking-wider">
                   {!user?.is_offline
                     ? (user?.plan || 'PRO LIFETIME').toUpperCase()
                     : 'OFFLINE MODE'}
@@ -102,7 +102,7 @@ export const ContaTab: React.FC = () => {
                 variant="default"
                 size="sm"
                 onClick={() => navigate('/auth/login')}
-                className="h-[38px] px-4 rounded-lg gap-2 bg-[#238636] hover:bg-[#2ea043] text-white text-[13px] font-medium shadow-xs"
+                className="h-[38px] px-4 rounded-lg gap-2 bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-[13px] font-medium shadow-xs"
               >
                 <Zap size={14} />
                 <span>Conectar à Nuvem</span>
@@ -116,7 +116,7 @@ export const ContaTab: React.FC = () => {
       <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#238636]/10 text-[#2ea043]">
+            <div className="p-2 rounded-xl bg-[#7C3AED]/10 text-[#A78BFA]">
               <Server size={18} />
             </div>
             <div>
@@ -155,7 +155,7 @@ export const ContaTab: React.FC = () => {
               Criptografia Local
             </span>
             <div className="flex items-center gap-2 mt-1.5 text-xs font-semibold text-slate-900 dark:text-white">
-              <Lock size={13} className="text-[#2ea043]" />
+              <Lock size={13} className="text-[#A78BFA]" />
               <span>AES-256-GCM Nativo</span>
             </div>
           </div>

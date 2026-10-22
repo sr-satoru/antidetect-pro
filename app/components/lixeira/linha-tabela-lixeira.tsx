@@ -79,7 +79,7 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
 
   // Cores do Zebrado e Seleção Harmonizados
   const rowBg = isSelected
-    ? 'bg-emerald-50/60 dark:bg-emerald-950/25 border-l-[3px] border-l-[#238636] dark:border-l-[#2ea043]'
+    ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/15 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
     : isStriped
       ? 'bg-slate-50/70 dark:bg-[#28292E] hover:bg-slate-100/80 dark:hover:bg-[#32343C]'
       : 'bg-white dark:bg-[#24252A] hover:bg-slate-100/80 dark:hover:bg-[#32343C]';

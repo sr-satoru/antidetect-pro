@@ -219,13 +219,13 @@ const ShuffleInput: React.FC<{
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`flex-1 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs ${mono ? 'font-mono' : ''
+        className={`flex-1 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs ${mono ? 'font-mono' : ''
           }`}
       />
       <button
         type="button"
         onClick={onShuffle}
-        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-slate-100 hover:bg-slate-200 text-emerald-600 dark:bg-[#323338] dark:text-[#2ea043] shadow-2xs transition-all dark:hover:border-[#484A54] dark:hover:bg-[#454750] active:scale-95"
+        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-slate-100 hover:bg-slate-200 text-[#7C3AED] dark:bg-[#323338] dark:text-[#A78BFA] shadow-2xs transition-all dark:hover:border-[#484A54] dark:hover:bg-[#454750] active:scale-95"
         title={title}
       >
         <Shuffle size={14} />
@@ -246,7 +246,7 @@ const NoisePill: React.FC<{
     >
       <div
         className={`h-4 w-8 rounded-full p-0.5 transition-colors duration-200 ease-in-out ${checked
-            ? 'bg-[#238636] dark:bg-[#2ea043]'
+            ? 'bg-[#7C3AED] dark:bg-[#A78BFA]'
             : 'bg-slate-300 dark:bg-[#484A54]'
           }`}
       >
@@ -370,12 +370,12 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                       setIsOpen(false);
                     }}
                     className={`flex items-center justify-between px-2.5 py-1.5 text-[12px] rounded-lg cursor-pointer transition-colors ${isSelected
-                        ? 'bg-emerald-50 dark:bg-[#454750] text-emerald-700 dark:text-white font-medium'
+                        ? 'bg-[#7C3AED]/10 dark:bg-[#454750] text-[#7C3AED] dark:text-white font-medium'
                         : 'text-slate-700 dark:text-[#A6A9B6] hover:bg-slate-100 dark:hover:bg-[#454750]/50 hover:text-slate-900 dark:hover:text-white'
                       }`}
                   >
                     <span className="truncate">{opt}</span>
-                    {isSelected && <Check size={12} className="shrink-0 text-emerald-600 dark:text-[#2ea043] ml-2" />}
+                    {isSelected && <Check size={12} className="shrink-0 text-[#7C3AED] dark:text-[#A78BFA] ml-2" />}
                   </div>
                 );
               })
@@ -525,7 +525,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                       name="locationPermission"
                       checked={formData.locationPermission === perm.id}
                       onChange={() => { }}
-                      className="cursor-pointer accent-[#00FF66]"
+                      className="cursor-pointer accent-[#7C3AED]"
                     />
                     <span>{perm.text}</span>
                   </label>
@@ -552,7 +552,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         }
                         className={`w-full h-10 rounded-lg bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:outline-none ${isLatInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
-                            : 'border border-slate-200/80 dark:border-[#484A54] focus:border-emerald-500 dark:focus:border-white/40'
+                            : 'border border-slate-200/80 dark:border-[#484A54] focus:border-[#7C3AED] dark:focus:border-[#A78BFA]'
                           }`}
                       />
                       {isLatInvalid && (
@@ -572,7 +572,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                         }
                         className={`w-full h-10 rounded-lg bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:outline-none ${isLngInvalid
                             ? 'border border-[#F87171] ring-1 ring-[#F87171]/20 focus:border-[#F87171]'
-                            : 'border border-slate-200/80 dark:border-[#484A54] focus:border-emerald-500 dark:focus:border-white/40'
+                            : 'border border-slate-200/80 dark:border-[#484A54] focus:border-[#7C3AED] dark:focus:border-[#A78BFA]'
                           }`}
                       />
                       {isLngInvalid && (
@@ -596,7 +596,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                     onChange={(e) =>
                       onChange('customAccuracy', Number(e.target.value) || 0)
                     }
-                    className="w-36 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:outline-none"
+                    className="w-36 h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none"
                   />
                 </div>
               </div>
@@ -675,7 +675,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
               onChange={(e) =>
                 onChange('customScreenWidth', e.target.value.replace(/\D/g, ''))
               }
-              className="w-24 rounded-md border border-slate-300 dark:border-white/10 bg-white dark:bg-[#14151B] px-3 py-2 text-center text-[12px] text-slate-900 dark:text-white transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs"
+              className="w-24 rounded-md border border-slate-300 dark:border-white/10 bg-white dark:bg-[#14151B] px-3 py-2 text-center text-[12px] text-slate-900 dark:text-white transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs"
             />
             <span className="text-slate-400 dark:text-[#8E92A2]">×</span>
             <input
@@ -688,7 +688,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                   e.target.value.replace(/\D/g, '')
                 )
               }
-              className="w-24 rounded-md border border-slate-300 dark:border-white/10 bg-white dark:bg-[#14151B] px-3 py-2 text-center text-[12px] text-slate-900 dark:text-white transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/10 focus:outline-none shadow-xs"
+              className="w-24 rounded-md border border-slate-300 dark:border-white/10 bg-white dark:bg-[#14151B] px-3 py-2 text-center text-[12px] text-slate-900 dark:text-white transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 focus:outline-none shadow-xs"
             />
           </div>
         )}
@@ -757,7 +757,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                 value={formData.webglVendor || ''}
                 onChange={(e) => onChange('webglVendor', e.target.value)}
                 placeholder="Ex: Google Inc. (NVIDIA)"
-                className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-[#484A54] focus:outline-none shadow-xs"
+                className="h-10 w-full rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
               />
             </div>
 
@@ -795,7 +795,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
                   title={`Sortear Renderizador autêntico para ${currentOs}`}
                   className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-slate-100 hover:bg-slate-200 dark:bg-[#24252A] dark:hover:bg-[#323338] transition-colors"
                 >
-                  <Shuffle className="h-4 w-4 text-emerald-600 dark:text-[#00FF66]" />
+                  <Shuffle className="h-4 w-4 text-[#7C3AED] dark:text-[#A78BFA]" />
                 </button>
               </div>
             </div>
@@ -935,7 +935,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           placeholder="Opcional: Portas autorizadas (ex: 80, 443, 8080)"
           value={formData.portScanAllowedPorts || ''}
           onChange={(e) => onChange('portScanAllowedPorts', e.target.value)}
-          className="h-10 w-full max-w-md rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-[#484A54] focus:outline-none shadow-xs"
+          className="h-10 w-full max-w-md rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
         />
       </FormRow>
 
@@ -964,7 +964,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
           value={formData.launchHook || ''}
           onChange={(e) => onChange('launchHook', e.target.value)}
           placeholder={`--disable-notifications\n--blink-settings=imagesEnabled=false`}
-          className="w-full max-w-lg rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 py-2.5 font-mono text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-[#484A54] focus:outline-none shadow-xs"
+          className="w-full max-w-lg rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 py-2.5 font-mono text-[12px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none shadow-xs"
         />
       </FormRow>
     </div>

@@ -51,7 +51,7 @@ const renderIcon = (variant: ConfirmVariant = 'danger', customIcon?: React.React
       case 'primary':
       default:
         return (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 text-[#238636] dark:text-[#2ea043] border border-emerald-500/20 dark:border-emerald-500/30 shadow-xs">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#7C3AED]/10 dark:bg-[#7C3AED]/15 text-[#7C3AED] dark:text-[#A78BFA] border border-[#7C3AED]/20 dark:border-[#7C3AED]/30 shadow-xs">
             {customIcon}
           </div>
         );
@@ -80,7 +80,7 @@ const renderIcon = (variant: ConfirmVariant = 'danger', customIcon?: React.React
     case 'primary':
     default:
       return (
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 dark:bg-emerald-500/15 text-[#238636] dark:text-[#2ea043] border border-emerald-500/20 dark:border-emerald-500/30 shadow-xs">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#7C3AED]/10 dark:bg-[#7C3AED]/15 text-[#7C3AED] dark:text-[#A78BFA] border border-[#7C3AED]/20 dark:border-[#7C3AED]/30 shadow-xs">
           <HelpCircle size={20} />
         </div>
       );
@@ -97,7 +97,7 @@ const getConfirmButtonClasses = (variant: ConfirmVariant = 'danger') => {
       return 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs';
     case 'primary':
     default:
-      return 'bg-[#238636] hover:bg-[#2ea043] text-white shadow-xs';
+      return 'bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-xs';
   }
 };
 

@@ -447,14 +447,14 @@ warmUp();
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] shadow-xs">
-              <Zap size={18} className="text-[#238636] dark:text-[#2ea043]" />
+              <Zap size={18} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white">
                   SDK Star Driver: AstroFox (Firefox) & AstroBrowser (Chromium)
                 </h4>
-                <span className="rounded-full bg-[#238636]/10 text-[#2ea043] border border-[#238636]/30 px-2.5 py-0.5 text-[10px] font-semibold">
+                <span className="rounded-full bg-[#7C3AED]/10 text-[#7C3AED] dark:text-[#A78BFA] border border-[#7C3AED]/30 px-2.5 py-0.5 text-[10px] font-semibold">
                   Driver Oficial
                 </span>
               </div>
@@ -473,7 +473,7 @@ warmUp();
                 onClick={handleCopyPip}
                 className="text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white p-1 rounded-md transition-colors cursor-pointer"
               >
-                {copiedPip ? <Check size={13} className="text-[#238636] dark:text-[#2ea043]" /> : <Copy size={13} />}
+                {copiedPip ? <Check size={13} className="text-[#7C3AED] dark:text-[#A78BFA]" /> : <Copy size={13} />}
               </button>
             </Tooltip>
           </div>
@@ -485,7 +485,7 @@ warmUp();
         {/* Coluna Esquerda: Cenários de Automação */}
         <div className="lg:col-span-4 rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-            <Boxes size={15} className="text-[#238636] dark:text-[#2ea043]" />
+            <Boxes size={15} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             Cenários de Automação
           </h4>
 
@@ -498,7 +498,7 @@ warmUp();
                   onClick={() => setSelectedRecipe(r.id)}
                   className={`p-3.5 rounded-xl border cursor-pointer select-none transition-all ${
                     isSelected
-                      ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/10 dark:bg-[#238636]/10 ring-2 ring-[#238636]/20 shadow-xs'
+                      ? 'border-[#7C3AED] dark:border-[#A78BFA] bg-[#7C3AED]/10 dark:bg-[#7C3AED]/15 ring-2 ring-[#7C3AED]/20 shadow-xs'
                       : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/70 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
                   }`}
                 >
@@ -524,7 +524,7 @@ warmUp();
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-[#484A54]">
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                <FileCode size={15} className="text-[#238636] dark:text-[#2ea043]" />
+                <FileCode size={15} className="text-[#7C3AED] dark:text-[#A78BFA]" />
                 {recipes.find((r) => r.id === selectedRecipe)?.title}
               </h4>
               <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
@@ -584,7 +584,7 @@ warmUp();
                   className="flex h-7 items-center gap-1.5 rounded-lg border border-slate-700 dark:border-[#484A54] bg-slate-800 dark:bg-[#28292E] px-2.5 text-xs font-medium text-slate-200 dark:text-[#EDEDED] hover:bg-slate-700 dark:hover:bg-[#3A3B42] transition-all cursor-pointer shadow-xs"
                 >
                   {copiedCode ? (
-                    <Check size={12} className="text-[#238636] dark:text-[#2ea043]" />
+                    <Check size={12} className="text-[#7C3AED] dark:text-[#A78BFA]" />
                   ) : (
                     <Copy size={12} className="text-slate-400" />
                   )}
@@ -601,7 +601,7 @@ warmUp();
           {/* Rodapé com Endereço e Status */}
           <div className="flex items-center justify-between pt-2 border-t border-slate-200/80 dark:border-[#484A54] text-xs text-slate-500 dark:text-[#8E92A2]">
             <span>Endereço da API: <strong className="text-slate-900 dark:text-white font-mono">{baseUrl}</strong></span>
-            <span className="text-[#238636] dark:text-[#2ea043] flex items-center gap-1.5 font-medium">
+            <span className="text-[#7C3AED] dark:text-[#A78BFA] flex items-center gap-1.5 font-medium">
               <ShieldCheck size={14} />
               Isolamento Anti-Origin Ativo
             </span>

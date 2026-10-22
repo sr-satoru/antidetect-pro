@@ -72,7 +72,7 @@ export const RedeTab: React.FC<RedeTabProps> = ({ settings, onChange }) => {
                 onClick={() => onChange({ ...settings, dnsProvider: dns.id })}
                 className={`p-4 rounded-xl border transition-all cursor-pointer select-none ${
                   isSelected
-                    ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/20 dark:bg-[#238636]/10 ring-2 ring-[#238636]/25 shadow-xs'
+                    ? 'border-[#7C3AED] dark:border-[#A78BFA] bg-violet-50/20 dark:bg-[#7C3AED]/10 ring-2 ring-[#7C3AED]/25 shadow-xs'
                     : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
                 }`}
               >
@@ -83,7 +83,7 @@ export const RedeTab: React.FC<RedeTabProps> = ({ settings, onChange }) => {
                   {isSelected && (
                     <Check
                       size={14}
-                      className="text-[#238636] dark:text-[#2ea043]"
+                      className="text-[#7C3AED] dark:text-[#A78BFA]"
                       strokeWidth={2.5}
                     />
                   )}
@@ -123,7 +123,7 @@ export const RedeTab: React.FC<RedeTabProps> = ({ settings, onChange }) => {
                 onClick={() => onChange({ ...settings, proxyTimeout: item.sec })}
                 className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                   isSelected
-                    ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/20 dark:bg-[#238636]/10 ring-2 ring-[#238636]/25 shadow-xs'
+                    ? 'border-[#7C3AED] dark:border-[#A78BFA] bg-violet-50/20 dark:bg-[#7C3AED]/10 ring-2 ring-[#7C3AED]/25 shadow-xs'
                     : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
                 }`}
               >

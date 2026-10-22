@@ -160,7 +160,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
       {/* Top Header */}
       <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-6 select-none">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-emerald-50 dark:bg-emerald-950/30 text-[#238636] dark:text-[#2ea043]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-[#7C3AED]/10 dark:bg-[#7C3AED]/20 text-[#7C3AED] dark:text-[#A78BFA]">
             <Network size={16} />
           </div>
           <div>
@@ -233,7 +233,7 @@ export const CadastroProxies: React.FC<CadastroProxiesProps> = ({
             type="button"
             onClick={handleSave}
             disabled={!hasValidProxies}
-            className="flex h-[38px] cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-5 text-[13px] font-medium shadow-xs transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-[38px] cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-5 text-[13px] font-medium shadow-xs transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Check size={15} strokeWidth={2.5} />
             <span>Salvar Proxies</span>

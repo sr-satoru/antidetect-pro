@@ -93,7 +93,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
                   onClick={() => setSelectedColor(c.hex)}
                   style={{ backgroundColor: c.hex }}
                   className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full transition-all hover:scale-110 active:scale-95 shadow-sm ${
-                    isSelected ? 'ring-2 ring-emerald-500/70 dark:ring-white/50 ring-offset-2 ring-offset-white dark:ring-offset-[#1A1C24]' : ''
+                    isSelected ? 'ring-2 ring-[#7C3AED]/70 dark:ring-white/50 ring-offset-2 ring-offset-white dark:ring-offset-[#1A1C24]' : ''
                   }`}
                   title={c.name}
                 >
@@ -122,7 +122,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
                   className={`w-full rounded-lg border bg-slate-50 dark:bg-[#14151B] px-3.5 py-2.5 pr-14 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#585B6A] focus:outline-hidden transition-all ${
                     erro
                       ? 'border-red-500 focus:ring-1 focus:ring-red-500'
-                      : 'border-slate-200 dark:border-[#303241]/80 focus:border-emerald-500 dark:focus:border-white/50 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/20'
+                      : 'border-slate-200 dark:border-[#303241]/80 focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:ring-1 focus:ring-[#7C3AED]/20 dark:focus:ring-[#A78BFA]/20'
                   }`}
                   autoFocus
                 />
@@ -143,7 +143,7 @@ export const ModalNovaEtiqueta: React.FC<ModalNovaEtiquetaProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-8.5 min-w-[80px] cursor-pointer rounded-lg bg-slate-900 hover:bg-slate-800 text-white dark:bg-[#1C1D24] dark:border dark:border-white/30 dark:hover:border-white dark:text-white px-4 text-xs font-semibold shadow-xs dark:shadow-md transition-all dark:hover:bg-[#252834] active:scale-[0.98] disabled:opacity-50"
+              className="h-8.5 min-w-[80px] cursor-pointer rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] active:bg-[#5B21B6] text-white px-4 text-xs font-semibold shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.3)] transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {isSubmitting ? 'Salvando...' : 'OK'}
             </button>

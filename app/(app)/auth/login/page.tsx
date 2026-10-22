@@ -117,7 +117,7 @@ export const LoginPage: React.FC = () => {
       {/* Header superior da página centralizado */}
       <header className="relative z-10 w-full h-16 border-b border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] px-6 flex items-center justify-center">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#238636] text-white shadow-xs">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#7C3AED] text-white shadow-xs hover:shadow-[0_0_12px_rgba(124,58,237,0.3)]">
             <Star size={18} className="fill-white stroke-white" />
           </div>
           <div className="flex items-center gap-2.5">
@@ -136,7 +136,7 @@ export const LoginPage: React.FC = () => {
 
           {/* Cabeçalho do Card */}
           <div className="flex items-center gap-3.5 mb-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#238636] text-white shadow-xs">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#7C3AED] text-white shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)]">
               <Star size={24} className="fill-white stroke-white" />
             </div>
             <div>
@@ -153,9 +153,9 @@ export const LoginPage: React.FC = () => {
             /* Estado Ativo: Aguardando autorização no navegador */
             <div className="space-y-6 text-center animate-in fade-in zoom-in-95 duration-200">
               <div className="relative mx-auto flex h-20 w-20 items-center justify-center">
-                <div className="absolute inset-0 rounded-full bg-[#2ea043]/20 animate-ping opacity-60" />
-                <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-[#2ea043]/10 border border-[#2ea043]/30 text-[#2ea043]">
-                  <Loader2 size={30} className="animate-spin text-[#2ea043]" />
+                <div className="absolute inset-0 rounded-full bg-[#7C3AED]/20 animate-ping opacity-60" />
+                <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-[#7C3AED]/10 border border-[#7C3AED]/30 text-[#A78BFA]">
+                  <Loader2 size={30} className="animate-spin text-[#A78BFA]" />
                 </div>
               </div>
 
@@ -174,7 +174,7 @@ export const LoginPage: React.FC = () => {
                   onClick={() => window.open(waitingSession.authUrl, '_blank', 'noopener,noreferrer')}
                   className="w-full h-10 flex items-center justify-center gap-2 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] hover:bg-slate-100 dark:hover:bg-[#323338] px-4 text-[13px] font-semibold text-slate-900 dark:text-white transition-all shadow-xs cursor-pointer"
                 >
-                  <ExternalLink size={14} className="text-[#2ea043]" />
+                  <ExternalLink size={14} className="text-[#A78BFA]" />
                   <span>Reabrir Página no Navegador</span>
                 </button>
 
@@ -211,7 +211,7 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 disabled={isLoading}
                 onClick={handleConnect}
-                className="w-full h-11 flex items-center justify-between rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white active:scale-[0.99] px-5 text-sm font-semibold shadow-xs disabled:opacity-50 transition-all group cursor-pointer"
+                className="w-full h-11 flex items-center justify-between rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white active:scale-[0.99] px-5 text-sm font-semibold shadow-xs hover:shadow-[0_0_15px_rgba(124,58,237,0.3)] disabled:opacity-50 transition-all group cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   {isLoading ? (
@@ -241,7 +241,7 @@ export const LoginPage: React.FC = () => {
         {/* Coluna 2 (Direita): Apresentação de Apoio / Benefícios da Nuvem */}
         <div className="flex-1 max-w-xl space-y-6">
           <div className="space-y-2.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2ea043]/10 border border-[#2ea043]/20 text-[#2ea043] text-xs font-medium">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7C3AED]/10 border border-[#7C3AED]/20 text-[#A78BFA] text-xs font-medium">
               <Cloud size={13} />
               <span>Infraestrutura Nuvem & Sincronização</span>
             </div>
@@ -266,7 +266,7 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div className="rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] p-4 space-y-1.5 shadow-xs">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2ea043]/10 border border-[#2ea043]/20 text-[#2ea043]">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C3AED]/10 border border-[#7C3AED]/20 text-[#A78BFA]">
                 <ShieldCheck size={16} />
               </div>
               <h3 className="text-xs font-semibold text-slate-900 dark:text-white">Zero Detecção</h3>

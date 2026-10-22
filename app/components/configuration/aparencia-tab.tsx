@@ -40,7 +40,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
       <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-            <Palette size={16} className="text-[#238636]" />
+            <Palette size={16} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             <span>Tema da Interface do Aplicativo</span>
           </h4>
           <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
@@ -54,7 +54,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
             onClick={() => setTheme('dark')}
             className={`group relative flex flex-col p-4 rounded-2xl border transition-all cursor-pointer select-none ${
               theme === 'dark'
-                ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/10 dark:bg-[#238636]/10 ring-2 ring-[#238636]/30 shadow-md'
+                ? 'border-[#7C3AED] dark:border-[#A78BFA] bg-violet-50/15 dark:bg-[#7C3AED]/15 ring-2 ring-[#7C3AED]/30 shadow-md'
                 : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
             }`}
           >
@@ -68,7 +68,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
                 </span>
               </div>
               {theme === 'dark' && (
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#238636] text-white shadow-xs">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#7C3AED] text-white shadow-xs">
                   <Check size={10} strokeWidth={3} />
                 </span>
               )}
@@ -80,7 +80,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
                 <div className="flex items-center gap-1.5">
                   <div className="h-2 w-2 rounded-full bg-red-500/80" />
                   <div className="h-2 w-2 rounded-full bg-amber-500/80" />
-                  <div className="h-2 w-2 rounded-full bg-emerald-500/80" />
+                  <div className="h-2 w-2 rounded-full bg-[#7C3AED]/80" />
                 </div>
                 <div className="h-2 w-16 rounded bg-white/[0.06]" />
               </div>
@@ -88,7 +88,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
                 <div className="w-8 h-10 rounded-md bg-white/[0.04]" />
                 <div className="flex-1 space-y-1.5">
                   <div className="h-2 w-3/4 rounded bg-white/10" />
-                  <div className="h-2 w-1/2 rounded bg-[#238636]/70" />
+                  <div className="h-2 w-1/2 rounded bg-[#7C3AED]/70" />
                 </div>
               </div>
             </div>
@@ -102,7 +102,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
             onClick={() => setTheme('light')}
             className={`group relative flex flex-col p-4 rounded-2xl border transition-all cursor-pointer select-none ${
               theme === 'light'
-                ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/20 dark:bg-[#238636]/10 ring-2 ring-[#238636]/30 shadow-md'
+                ? 'border-[#7C3AED] dark:border-[#A78BFA] bg-violet-50/20 dark:bg-[#7C3AED]/15 ring-2 ring-[#7C3AED]/30 shadow-md'
                 : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/50 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
             }`}
           >
@@ -116,7 +116,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
                 </span>
               </div>
               {theme === 'light' && (
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#238636] text-white shadow-xs">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[#7C3AED] text-white shadow-xs">
                   <Check size={10} strokeWidth={3} />
                 </span>
               )}
@@ -128,7 +128,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
                 <div className="flex items-center gap-1.5">
                   <div className="h-2 w-2 rounded-full bg-red-400" />
                   <div className="h-2 w-2 rounded-full bg-amber-400" />
-                  <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                  <div className="h-2 w-2 rounded-full bg-[#7C3AED]/80" />
                 </div>
                 <div className="h-2 w-16 rounded bg-slate-100" />
               </div>
@@ -136,7 +136,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
                 <div className="w-8 h-10 rounded-md bg-slate-100" />
                 <div className="flex-1 space-y-1.5">
                   <div className="h-2 w-3/4 rounded bg-slate-200" />
-                  <div className="h-2 w-1/2 rounded bg-[#238636]/70" />
+                  <div className="h-2 w-1/2 rounded bg-[#7C3AED]/70" />
                 </div>
               </div>
             </div>
@@ -151,7 +151,7 @@ export const AparenciaTab: React.FC<AparenciaTabProps> = ({
       <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div>
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-            <Volume2 size={16} className="text-[#238636]" />
+            <Volume2 size={16} className="text-[#7C3AED] dark:text-[#A78BFA]" />
             <span>Sons & Versão do Software</span>
           </h4>
           <p className="text-xs text-slate-500 dark:text-[#8E92A2] mt-0.5">
