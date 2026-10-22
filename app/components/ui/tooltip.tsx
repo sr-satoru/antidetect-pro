@@ -7,14 +7,14 @@ import { cn } from "@/lib/utils";
 
 /**
  * Padrão oficial de cores e estilização para tooltips do sistema (Design System oficial):
- * - Modo Claro: Fundo branco, borda slate-200, texto slate-800
- * - Modo Escuro: Fundo #1A1A21, borda #2E2E38, texto #F1F1F4
+ * - Modo Claro: Fundo branco/95, borda slate-200/80, texto slate-800
+ * - Modo Escuro: Fundo #1A1B24/95, borda white/[0.08], texto #F1F1F4, backdrop-blur-md
  */
 export const TOOLTIP_THEME = {
   container:
-    "rounded-md bg-white dark:bg-[#1A1A21] text-slate-800 dark:text-[#F1F1F4] shadow-md border border-slate-200 dark:border-[#2E2E38] select-none",
-  arrowTop: "border-t-white dark:border-t-[#1A1A21]",
-  arrowBottom: "border-b-white dark:border-b-[#1A1A21]",
+    "rounded-md bg-white/95 dark:bg-[#1A1B24]/95 text-slate-800 dark:text-[#F1F1F4] shadow-xl border border-slate-200/80 dark:border-white/[0.08] backdrop-blur-md select-none",
+  arrowTop: "border-t-white dark:border-t-[#1A1B24]",
+  arrowBottom: "border-b-white dark:border-b-[#1A1B24]",
 };
 
 function TooltipProvider({
@@ -64,14 +64,14 @@ function TooltipContent({
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
           className={cn(
-            "z-50 inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md border border-slate-200 dark:border-[#2E2E38] bg-white dark:bg-[#1A1A21] px-3 py-1.5 text-xs text-slate-800 dark:text-[#F1F1F4] shadow-md select-none",
+            "z-50 inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md border border-slate-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#1A1B24]/95 backdrop-blur-md px-3 py-1.5 text-xs text-slate-800 dark:text-[#F1F1F4] shadow-xl select-none",
             "has-data-[slot=kbd]:pr-1.5 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 **:data-[slot=kbd]:relative **:data-[slot=kbd]:isolate **:data-[slot=kbd]:z-50 **:data-[slot=kbd]:rounded-sm data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
             className
           )}
           {...props}
         >
           {children}
-          <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-white dark:bg-[#1A1A21] border-r border-b border-slate-200 dark:border-[#2E2E38] data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
+          <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-white dark:bg-[#1A1B24] border-r border-b border-slate-200/80 dark:border-white/[0.08] data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
         </TooltipPrimitive.Popup>
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>

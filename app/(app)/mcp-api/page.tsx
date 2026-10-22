@@ -40,32 +40,42 @@ export const McpApiPage: React.FC = () => {
   return (
     <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 dark:border-white/[0.08] bg-slate-50 dark:bg-[#15161E] shadow-2xl select-none">
       {/* ═══════════════════════════════════════════════════════════════
-          MENU SUPERIOR DE ABAS (Estilo Oficial Configuration)
+          MENU SUPERIOR DE ABAS CENTRALIZADO (Estilo Oficial Configuration)
       ═══════════════════════════════════════════════════════════════ */}
-      <header className="flex shrink-0 items-center justify-between border-b border-slate-200/80 dark:border-white/[0.07] bg-white/90 dark:bg-[#1A1B24]/90 backdrop-blur-md px-6 py-2.5 select-none">
-        <div className="bg-slate-100/90 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200/60 dark:border-white/[0.06] flex items-center gap-1 border-b-0">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            const IconComponent = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id as TabKey)}
-                className={`rounded-lg px-4 py-2 text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
-                  isActive
-                    ? 'bg-white dark:bg-[#24252F] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
-                    : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                <IconComponent size={14} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
+      <header className="flex shrink-0 items-center border-b border-slate-200/80 dark:border-white/[0.07] bg-white/90 dark:bg-[#1A1B24]/90 backdrop-blur-md px-6 py-2.5 select-none">
+        <div className="max-w-4xl mx-auto w-full flex items-center justify-center">
+          <div className="bg-slate-100/90 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200/60 dark:border-white/[0.06] flex items-center gap-1 border-b-0">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              const IconComponent = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id as TabKey)}
+                  className={`rounded-lg px-4 py-2 text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                    isActive
+                      ? 'bg-white dark:bg-[#24252F] text-[#2ea043] dark:text-[#3fb950] font-semibold shadow-xs'
+                      : 'text-slate-600 dark:text-[#9EA2B4] hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <IconComponent size={14} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+      </header>
 
-        {/* Credenciais compactas alinhadas à direita */}
+      {/* ═══════════════════════════════════════════════════════════════
+          SUB-BARRA DE CREDENCIAIS (Abaixo do menu de abas)
+      ═══════════════════════════════════════════════════════════════ */}
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-200/70 dark:border-white/[0.06] bg-slate-100/60 dark:bg-white/[0.02] px-6 py-2.5 backdrop-blur-xs select-none">
+        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-[#9EA2B4]">
+          <span className="font-medium text-slate-700 dark:text-[#E2E4EC]">Chave de Acesso da API:</span>
+          <span className="hidden sm:inline">Utilizada para autenticar requisições de agentes MCP, Playwright e REST.</span>
+        </div>
         <div className="shrink-0">
           <CompactCredentials
             token={token}
