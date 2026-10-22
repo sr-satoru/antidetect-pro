@@ -34,43 +34,43 @@ export const McpApiPage: React.FC = () => {
       {/* Top Bar with Navigation Tabs and Compact Credentials */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
         {/* Modern Segmented Navigation Pill (3 Tabs) */}
-        <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-[#13141B] border border-slate-200 dark:border-white/10 rounded-2xl w-fit shrink-0 shadow-sm dark:shadow-none">
+        <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-[#15151A] border border-slate-200 dark:border-[#2E2E38] rounded-xl w-fit shrink-0 shadow-2xs">
           <button
             type="button"
             onClick={() => setActiveTab('mcp')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[12.5px] font-semibold transition-all cursor-pointer ${
               activeTab === 'mcp'
-                ? 'text-emerald-700 dark:text-[#00FF66] bg-emerald-50 dark:bg-[#222430] border border-emerald-200 dark:border-white/15 shadow-xs'
-                : 'text-slate-600 dark:text-[#9EA2AE] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]'
+                ? 'text-[#238636] dark:text-[#2ea043] bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
+                : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-200/50 dark:hover:bg-[#1E1F27]'
             }`}
           >
-            <Bot size={15} className={activeTab === 'mcp' ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#7E8294]'} />
+            <Bot size={15} className={activeTab === 'mcp' ? 'text-[#238636] dark:text-[#2ea043]' : 'text-slate-400 dark:text-[#7E8294]'} />
             <span>Agentes de IA (MCP)</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('automation')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[12.5px] font-semibold transition-all cursor-pointer ${
               activeTab === 'automation'
-                ? 'text-emerald-700 dark:text-[#00FF66] bg-emerald-50 dark:bg-[#222430] border border-emerald-200 dark:border-white/15 shadow-xs'
-                : 'text-slate-600 dark:text-[#9EA2AE] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]'
+                ? 'text-[#238636] dark:text-[#2ea043] bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
+                : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-200/50 dark:hover:bg-[#1E1F27]'
             }`}
           >
-            <Code2 size={15} className={activeTab === 'automation' ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#7E8294]'} />
-            <span>Playwright Nativo (Zero BiDi)</span>
+            <Code2 size={15} className={activeTab === 'automation' ? 'text-[#238636] dark:text-[#2ea043]' : 'text-slate-400 dark:text-[#7E8294]'} />
+            <span>Playwright Nativo</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('api')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-[12px] font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[12.5px] font-semibold transition-all cursor-pointer ${
               activeTab === 'api'
-                ? 'text-emerald-700 dark:text-[#00FF66] bg-emerald-50 dark:bg-[#222430] border border-emerald-200 dark:border-white/15 shadow-xs'
-                : 'text-slate-600 dark:text-[#9EA2AE] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]'
+                ? 'text-[#238636] dark:text-[#2ea043] bg-white dark:bg-[#24252D] border border-slate-200/80 dark:border-[#383A48] shadow-xs'
+                : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4] hover:bg-slate-200/50 dark:hover:bg-[#1E1F27]'
             }`}
           >
-            <Terminal size={15} className={activeTab === 'api' ? 'text-emerald-600 dark:text-[#00FF66]' : 'text-slate-400 dark:text-[#7E8294]'} />
+            <Terminal size={15} className={activeTab === 'api' ? 'text-[#238636] dark:text-[#2ea043]' : 'text-slate-400 dark:text-[#7E8294]'} />
             <span>API REST</span>
           </button>
         </div>

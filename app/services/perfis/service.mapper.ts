@@ -1,5 +1,7 @@
 import config from '@/config/perfil.json';
-import { getUserAgents, getGpuOptions, isChromiumKernel } from '@/services/navegador-presets';
+import { getUserAgents, getGpuOptions, isChromiumKernel, generateRandomHexSeed } from '@/services/navegador-presets';
+import { serviceBasePresets } from '@/services/presets/service.base-presets';
+import { generateDeviceName, generateMacAddress } from '@/components/criar-perfil/impressoes';
 
 /**
  * Mapeia os dados do Perfil vindos da API do backend Rust
@@ -7,6 +9,8 @@ import { getUserAgents, getGpuOptions, isChromiumKernel } from '@/services/naveg
  */
 export function profileToFormData(profile: any): any {
   if (!profile) return null;
+
+  const activePreset = serviceBasePresets.getActivePreset();
 
   // Extrai o objeto de impressão digital bruto (pode vir como string JSON ou objeto)
   let fp: any = {};
@@ -20,9 +24,9 @@ export function profileToFormData(profile: any): any {
     fp = profile.fingerprint_json;
   }
 
-  const osKey = (profile.os || fp.os || 'linux').toLowerCase();
+  const osKey = (profile.os || fp.os || activePreset.defaultOS || 'windows').toLowerCase();
   const isAndroid = osKey === 'android';
-  const rawKernel = profile.kernel || fp.kernel;
+  const rawKernel = profile.kernel || fp.kernel || activePreset.defaultKernel;
   const kernel = isAndroid || isChromiumKernel(rawKernel)
     ? 'AstroBrowser'
     : 'AstroFox';
@@ -45,30 +49,35 @@ export function profileToFormData(profile: any): any {
   const proxyUser = proxy.username || profile.proxy_username || fp.proxy_username || '';
   const proxyPass = proxy.password || profile.proxy_password || fp.proxy_password || '';
 
+  let defaultOsVer = 'Windows NT 10.0; Win64; x64';
+  if (osKey === 'macos') defaultOsVer = 'Macintosh; Intel Mac OS X 10_15_7';
+  else if (osKey === 'linux') defaultOsVer = 'Linux x86_64';
+  else if (osKey === 'android') defaultOsVer = 'Linux armv8l (Android 14)';
+
   return {
     id: profile.id,
     name: profile.name || '',
-    group: profile.group || 'Desagrupado',
+    group: profile.group || activePreset.group || 'Desagrupado',
     tags: tagsList,
     kernel,
-    kernelVersion: isAndroid ? '150' : (profile.browser_version || fp.kernel_version || '150'),
+    kernelVersion: isAndroid ? '150' : (profile.browser_version || fp.kernel_version || activePreset.kernelVersion || '150'),
     os: osKey,
-    osVersion: fp.os_version || 'Linux x86_64',
+    osVersion: fp.os_version || defaultOsVer,
     userAgent: fp.user_agent || uas[0] || '',
     userAgentCategory: fp.user_agent_category || 'Todo',
     cookies: fp.cookies || '',
     notes: profile.notes || '',
 
     // Proxy
-    proxyMode: proxy.mode || fp.proxy_mode || 'custom',
+    proxyMode: proxy.mode || fp.proxy_mode || activePreset.proxyMode || 'custom',
     proxyType,
     proxyHost,
     proxyPort: String(proxyPort || ''),
     proxyUser,
     proxyPass,
     proxyRotationUrl: proxy.rotation_url || fp.proxy_rotation_url || '',
-    ipChecker: proxy.ip_checker || fp.ip_checker || 'IP2Location',
-    socksRemoteDns: proxy.socks_remote_dns ?? fp.socks_remote_dns ?? true,
+    ipChecker: proxy.ip_checker || fp.ip_checker || activePreset.ipChecker || 'IP2Location',
+    socksRemoteDns: proxy.socks_remote_dns ?? fp.socks_remote_dns ?? activePreset.socksRemoteDns ?? true,
 
     // Plataforma
     platformUrl: fp.platform_url || '',
@@ -93,27 +102,27 @@ export function profileToFormData(profile: any): any {
     openTabsUrls: fp.open_tabs_urls || '',
 
     // Hardware & Impressão Digital
-    cpuMode: fp.cpu_mode || 'custom',
-    cpuCores: fp.cpu_cores ?? 10,
-    webrtcMode: fp.webrtc_mode || 'disabled',
-    timezoneMode: fp.timezone_mode || 'ip',
-    customTimezone: fp.custom_timezone || 'America/Sao_Paulo',
-    locationMode: fp.location_mode || 'ip',
-    locationPermission: fp.location_permission || 'ask',
+    cpuMode: fp.cpu_mode || activePreset.cpuMode || 'custom',
+    cpuCores: fp.cpu_cores ?? activePreset.cpuCores ?? 8,
+    webrtcMode: fp.webrtc_mode || activePreset.webrtcMode || 'disabled',
+    timezoneMode: fp.timezone_mode || activePreset.timezoneMode || 'ip',
+    customTimezone: fp.custom_timezone || '',
+    locationMode: fp.location_mode || activePreset.locationMode || 'ip',
+    locationPermission: fp.location_permission || activePreset.locationPermission || 'ask',
     customLatitude: fp.custom_latitude || '',
     customLongitude: fp.custom_longitude || '',
-    customAccuracy: fp.custom_accuracy ?? 1000,
-    displayLanguageMode: fp.display_language_mode || 'language',
-    screenResolutionMode: fp.screen_resolution_mode || 'default',
-    screenResolution: fp.screen_resolution || 'Com base no User-Agent',
-    customScreenWidth: fp.screen_width ?? 1920,
-    customScreenHeight: fp.screen_height ?? 1080,
-    fontsMode: fp.fonts_mode || 'default',
-    colorDepth: fp.color_depth ?? 24,
-    languageMode: fp.language_mode || 'ip',
-    customLanguage: fp.custom_language || 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-    audioSampleRate: fp.audio_sample_rate ?? 48000,
-    hardwareNoise: fp.hardware_noise || {
+    customAccuracy: fp.custom_accuracy ?? activePreset.customAccuracy ?? 1000,
+    displayLanguageMode: fp.display_language_mode || activePreset.displayLanguageMode || 'language',
+    screenResolutionMode: fp.screen_resolution_mode || activePreset.screenResolutionMode || 'default',
+    screenResolution: fp.screen_resolution || activePreset.screenResolution || 'Com base no User-Agent',
+    customScreenWidth: fp.screen_width ?? activePreset.customScreenWidth ?? 1920,
+    customScreenHeight: fp.screen_height ?? activePreset.customScreenHeight ?? 1080,
+    fontsMode: fp.fonts_mode || activePreset.fontsMode || 'default',
+    colorDepth: fp.color_depth ?? activePreset.colorDepth ?? 24,
+    languageMode: fp.language_mode || activePreset.languageMode || 'ip',
+    customLanguage: fp.custom_language || '',
+    audioSampleRate: fp.audio_sample_rate ?? activePreset.audioSampleRate ?? 48000,
+    hardwareNoise: fp.hardware_noise || activePreset.hardwareNoise || {
       canvas: false,
       webglImage: false,
       audioContext: false,
@@ -123,25 +132,25 @@ export function profileToFormData(profile: any): any {
       fontPack: false,
       fontMetrics: false,
     },
-    clientRectsSeed: fp.client_rects_seed || '12345',
-    canvasSeed: fp.canvas_seed || '12345',
-    webglSeed: fp.webgl_seed || '12345',
-    audioSeed: fp.audio_seed || '12345',
-    webglMetadataMode: fp.webgl_metadata_mode || 'custom',
+    clientRectsSeed: fp.client_rects_seed || generateRandomHexSeed(),
+    canvasSeed: fp.canvas_seed || generateRandomHexSeed(),
+    webglSeed: fp.webgl_seed || generateRandomHexSeed(),
+    audioSeed: fp.audio_seed || generateRandomHexSeed(),
+    webglMetadataMode: fp.webgl_metadata_mode || activePreset.webglMetadataMode || 'custom',
     webglVendor: fp.webgl_vendor || webgl.vendor,
     webglRenderer: fp.webgl_renderer || webgl.renderer,
-    webgpuMode: fp.webgpu_mode || 'webgl',
-    ramMode: fp.ram_mode || 'custom',
-    ramGb: fp.ram_gb ?? 8,
-    deviceNameMode: fp.device_name_mode || 'custom',
-    deviceName: fp.device_name || 'PC-Laptop',
-    macAddressMode: fp.mac_address_mode || 'custom',
-    macAddress: fp.mac_address || '00:1B:44:11:3A:B7',
-    doNotTrackMode: fp.do_not_track_mode || 'default',
-    portScanProtection: fp.port_scan_protection || 'open',
+    webgpuMode: fp.webgpu_mode || activePreset.webgpuMode || 'webgl',
+    ramMode: fp.ram_mode || activePreset.ramMode || 'custom',
+    ramGb: fp.ram_gb ?? activePreset.ramGb ?? 8,
+    deviceNameMode: fp.device_name_mode || activePreset.deviceNameMode || 'custom',
+    deviceName: fp.device_name || generateDeviceName(osKey),
+    macAddressMode: fp.mac_address_mode || activePreset.macAddressMode || 'custom',
+    macAddress: fp.mac_address || generateMacAddress(osKey),
+    doNotTrackMode: fp.do_not_track_mode || activePreset.doNotTrackMode || 'default',
+    portScanProtection: fp.port_scan_protection || activePreset.portScanProtection || 'open',
     portScanAllowedPorts: fp.port_scan_allowed_ports || '',
-    hardwareAcceleration: fp.hardware_acceleration || 'default',
-    disableTlsFeatures: fp.disable_tls_features || 'close',
+    hardwareAcceleration: fp.hardware_acceleration || activePreset.hardwareAcceleration || 'default',
+    disableTlsFeatures: fp.disable_tls_features || activePreset.disableTlsFeatures || 'close',
 
     devicePixelRatio: fp.device_pixel_ratio ?? 1,
     maxTouchPoints: fp.max_touch_points ?? 0,

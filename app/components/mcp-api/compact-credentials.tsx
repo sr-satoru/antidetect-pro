@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Key, Copy, Check, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { serviceMcp } from '@/services/mcp/service.mcp';
+import { Tooltip } from '@/components/ui/tooltip';
 
 interface CompactCredentialsProps {
   apiPort?: number;
@@ -70,44 +71,48 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 select-none">
       {/* Secret Token Pill */}
-      <div className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 dark:bg-[#13141B] dark:hover:bg-[#181922] dark:border-white/10 rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-xs dark:shadow-none">
+      <div className="flex items-center gap-2 bg-white dark:bg-[#1A1A21] border border-slate-200 dark:border-[#2E2E38] rounded-xl px-3 py-1.5 text-[12px] font-mono transition-all shadow-xs">
         <Key size={13} className="text-amber-500 dark:text-amber-400 shrink-0" />
         <span
-          className={`text-slate-800 dark:text-[#D4D4D8] font-mono transition-all duration-200 ${
+          className={`text-slate-800 dark:text-[#E2E4EC] font-mono transition-all duration-200 ${
             !isTokenVisible ? 'filter blur-[4px] select-none opacity-80' : 'select-all'
           }`}
-          title={!isTokenVisible ? 'Chave oculta na tela por segurança. O botão copiar copia o token completo normalmente.' : undefined}
         >
           {activeToken || 'Carregando chave...'}
         </span>
-        <div className="flex items-center gap-1 border-l border-slate-200 dark:border-white/[0.08] pl-1.5 ml-0.5">
-          <button
-            type="button"
-            onClick={handleToggle}
-            className="text-slate-400 hover:text-slate-700 dark:text-[#8E92A2] dark:hover:text-white p-0.5 transition-colors cursor-pointer"
-            title={isTokenVisible ? 'Ocultar' : 'Visualizar'}
-          >
-            {isTokenVisible ? <EyeOff size={13} /> : <Eye size={13} />}
-          </button>
-          <button
-            type="button"
-            onClick={handleCopyToken}
-            className="text-slate-400 hover:text-emerald-600 dark:text-[#8E8E93] dark:hover:text-[#00FF66] p-0.5 transition-colors cursor-pointer"
-            title="Copiar Token de Autenticação"
-          >
-            {copiedToken ? <Check size={13} className="text-emerald-600 dark:text-emerald-400" /> : <Copy size={13} />}
-          </button>
-          <button
-            type="button"
-            onClick={handleRotateToken}
-            disabled={isRotating}
-            className="text-slate-400 hover:text-amber-600 dark:text-[#8E8E93] dark:hover:text-amber-400 p-0.5 transition-colors cursor-pointer"
-            title="Rotacionar Chave Secreta (Gera um novo token)"
-          >
-            <RefreshCw size={13} className={isRotating ? 'animate-spin text-amber-500' : ''} />
-          </button>
+        <div className="flex items-center gap-1 border-l border-slate-200 dark:border-[#2E2E38] pl-1.5 ml-0.5">
+          <Tooltip content={isTokenVisible ? 'Ocultar token' : 'Revelar token'} position="top">
+            <button
+              type="button"
+              onClick={handleToggle}
+              className="text-slate-400 hover:text-slate-700 dark:text-[#90909D] dark:hover:text-white p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+            >
+              {isTokenVisible ? <EyeOff size={13} /> : <Eye size={13} />}
+            </button>
+          </Tooltip>
+
+          <Tooltip content={copiedToken ? 'Copiado!' : 'Copiar token de autenticação'} position="top">
+            <button
+              type="button"
+              onClick={handleCopyToken}
+              className="text-slate-400 hover:text-[#238636] dark:text-[#90909D] dark:hover:text-[#2ea043] p-1 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors cursor-pointer"
+            >
+              {copiedToken ? <Check size={13} className="text-[#238636] dark:text-[#2ea043]" /> : <Copy size={13} />}
+            </button>
+          </Tooltip>
+
+          <Tooltip content="Rotacionar chave (gera novo token)" position="top">
+            <button
+              type="button"
+              onClick={handleRotateToken}
+              disabled={isRotating}
+              className="text-slate-400 hover:text-amber-600 dark:text-[#90909D] dark:hover:text-amber-400 p-1 rounded-md hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw size={13} className={isRotating ? 'animate-spin text-amber-500' : ''} />
+            </button>
+          </Tooltip>
         </div>
       </div>
     </div>

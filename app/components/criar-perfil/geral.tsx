@@ -20,6 +20,7 @@ const renderOSIcon = (os: string): React.ReactNode => {
 };
 
 import { getUserAgents, getRandomPreset } from '@/services/navegador-presets';
+import { serviceBasePresets } from '@/services/presets/service.base-presets';
 import { generateDeviceName, generateMacAddress } from './impressoes';
 
 export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditing = false }) => {
@@ -55,7 +56,8 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
 
   React.useEffect(() => {
     if (formData.os === 'ios') {
-      handleSelectOS('windows');
+      const activePreset = serviceBasePresets.getActivePreset();
+      handleSelectOS(activePreset.defaultOS);
     }
     if (formData.os === 'android' && formData.kernel !== 'AstroBrowser') {
       onChange('kernel', 'AstroBrowser');
@@ -68,15 +70,17 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
     if (isAndroid && newKernel === 'AstroFox') {
       return; // Android suporta exclusivamente Chromium (AstroBrowser)
     }
+    const activePreset = serviceBasePresets.getActivePreset();
     onChange('kernel', newKernel);
     onChange('kernelVersion', '150');
-    handleSelectOS(formData.os || 'windows', newKernel);
+    handleSelectOS(formData.os || activePreset.defaultOS, newKernel);
   };
 
   const handleSelectOS = (selectedOS: string, selectedKernel?: string) => {
     if (selectedOS === 'ios') return;
     const isTargetAndroid = selectedOS === 'android';
-    const effectiveKernel = isTargetAndroid ? 'AstroBrowser' : (selectedKernel || formData.kernel || 'AstroBrowser');
+    const activePreset = serviceBasePresets.getActivePreset();
+    const effectiveKernel = isTargetAndroid ? 'AstroBrowser' : (selectedKernel || formData.kernel || activePreset.defaultKernel);
     onChange('os', selectedOS);
     if (isTargetAndroid) {
       onChange('kernel', 'AstroBrowser');

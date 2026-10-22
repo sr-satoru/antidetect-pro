@@ -220,7 +220,7 @@ export const TagsCell: React.FC<TagsCellProps> = ({ profile, onEditTags, classNa
         popoverRef={popoverRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="px-3 py-2 flex items-center gap-1.5 flex-wrap w-max max-w-[485px] animate-in fade-in zoom-in-95 duration-100"
+        className="px-3 py-2 flex items-center gap-1.5 flex-wrap w-max max-w-[485px] animate-in fade-in-0 duration-150"
       >
         {tagsList.map((tag, idx) => (
           <TagBadge

@@ -19,9 +19,9 @@ export interface TooltipProps {
  */
 export const TOOLTIP_THEME = {
   container:
-    'rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-md border border-slate-200/80 dark:border-white/10 select-none',
-  arrowTop: 'border-t-gray-100 dark:border-t-gray-800',
-  arrowBottom: 'border-b-gray-100 dark:border-b-gray-800',
+    'rounded-md bg-white dark:bg-[#1A1A21] text-slate-800 dark:text-[#F1F1F4] shadow-md dark:shadow-[0_8px_24px_rgba(0,0,0,0.6)] border border-slate-200 dark:border-[#2E2E38] select-none',
+  arrowTop: 'border-t-white dark:border-t-[#1A1A21]',
+  arrowBottom: 'border-b-white dark:border-b-[#1A1A21]',
 };
 
 export const Tooltip: React.FC<TooltipProps> = ({

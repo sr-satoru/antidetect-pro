@@ -47,7 +47,6 @@ export const TagBadge: React.FC<TagBadgeProps> = ({
       } transition-all select-none ${
         onClick ? 'cursor-pointer hover:brightness-110 active:scale-95' : ''
       } ${className}`}
-      title={name}
     >
       {shouldShowDot && (
         <span

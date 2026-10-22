@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getRandomPreset } from '@/services/navegador-presets';
+import { serviceBasePresets } from '@/services/presets/service.base-presets';
 import { generateDeviceName, generateMacAddress } from './impressoes';
 
 interface PreviasProps {
@@ -11,8 +12,9 @@ interface PreviasProps {
 export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   const navigate = useNavigate();
   const handleRegenerateFingerprint = () => {
-    const currentOs = formData.os || 'windows';
-    const currentKernel = formData.kernel || 'AstroFox';
+    const activePreset = serviceBasePresets.getActivePreset();
+    const currentOs = formData.os || activePreset.defaultOS;
+    const currentKernel = formData.kernel || activePreset.defaultKernel;
     const preset = getRandomPreset(currentOs, currentKernel);
 
     onChange('userAgent', preset.userAgent);
@@ -78,12 +80,12 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
     {
       label: 'Browser Kernel',
       value: formData.kernel === 'AstroBrowser'
-        ? `AstroBrowser [Chromium ${formData.kernelVersion || '150'}]`
-        : `AstroFox [Firefox ${formData.kernelVersion || '150'}]`,
+        ? `AstroBrowser [Chromium ${formData.kernelVersion}]`
+        : `AstroFox [Firefox ${formData.kernelVersion}]`,
     },
     {
       label: 'Sistema / Arquitetura',
-      value: `${formData.platform || (formData.os === 'windows' ? 'Win32' : formData.os === 'macos' ? 'MacIntel' : 'Linux x86_64')}`,
+      value: formData.platform,
     },
     {
       label: 'User-Agent',
@@ -119,55 +121,55 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
     },
     {
       label: 'Resolução do Ecrã',
-      value: `${formData.customScreenWidth || 1920} × ${formData.customScreenHeight || 1080} (DPR ${formData.devicePixelRatio || 1}) • ${formData.screenResolution || 'Com base no User-Agent'}`,
+      value: `${formData.customScreenWidth} × ${formData.customScreenHeight} (DPR ${formData.devicePixelRatio}) • ${formData.screenResolution}`,
     },
     {
       label: 'Metadados WebGL',
       value: formData.webglMetadataMode === 'default'
         ? 'Predefinição'
-        : `${formData.webglRenderer || 'Nativo'} (${formData.webglVendor || 'Nativo'})`,
+        : `${formData.webglRenderer} (${formData.webglVendor})`,
     },
     {
       label: 'CPU / Processador',
-      value: `${formData.cpuCores || 8} núcleos`,
+      value: `${formData.cpuCores} núcleos`,
     },
     {
       label: 'Touch Points',
-      value: `${formData.maxTouchPoints || 0} pontos`,
+      value: `${formData.maxTouchPoints} pontos`,
     },
     {
       label: 'Dispositivos de Mídia',
-      value: `${formData.mediaDevicesCount?.micros || 1} Mic, ${formData.mediaDevicesCount?.speakers || 2} Saídas, ${formData.mediaDevicesCount?.webcams || 1} Câmera`,
+      value: `${formData.mediaDevicesCount?.micros} Mic, ${formData.mediaDevicesCount?.speakers} Saídas, ${formData.mediaDevicesCount?.webcams} Câmera`,
     },
     {
       label: 'RAM',
-      value: `${formData.ramGb || 8} GB`,
+      value: `${formData.ramGb} GB`,
     },
     {
       label: 'Nome do dispositivo',
-      value: formData.deviceNameMode === 'default' ? 'Predefinição' : formData.deviceName || 'Gerado automaticamente',
+      value: formData.deviceNameMode === 'default' ? 'Predefinição' : (formData.deviceName || 'Gerado automaticamente'),
     },
     {
       label: 'MAC Address',
-      value: formData.macAddressMode === 'default' ? 'Predefinição' : formData.macAddress || 'Gerado automaticamente',
+      value: formData.macAddressMode === 'default' ? 'Predefinição' : (formData.macAddress || 'Gerado automaticamente'),
       isMono: true,
     },
     {
       label: 'Canvas',
       value: formData.hardwareNoise?.canvas
-        ? `Ruído Ativo (${formData.canvasSeed || 'Seed'})`
+        ? `Ruído Ativo (${formData.canvasSeed})`
         : 'Nativo',
     },
     {
       label: 'Imagem WebGL',
       value: formData.hardwareNoise?.webglImage
-        ? `Ruído Ativo (${formData.webglSeed || 'Seed'})`
+        ? `Ruído Ativo (${formData.webglSeed})`
         : 'Nativo',
     },
     {
       label: 'AudioContext',
       value: formData.hardwareNoise?.audioContext
-        ? `Ruído Ativo (${formData.audioSeed || 'Seed'})`
+        ? `Ruído Ativo (${formData.audioSeed})`
         : 'Nativo',
     },
     {

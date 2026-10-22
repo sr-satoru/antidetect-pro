@@ -18,6 +18,7 @@ import {
   getRandomPreset,
   GpuOption,
 } from '@/services/navegador-presets';
+import { serviceBasePresets } from '@/services/presets/service.base-presets';
 
 
 function randomAlphanumeric(length: number): string {
@@ -394,8 +395,9 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
   formData,
   onChange,
 }) => {
-  const currentOs = (formData.os || 'windows').toLowerCase();
-  const currentKernel = formData.kernel || 'AstroFox';
+  const activePreset = serviceBasePresets.getActivePreset();
+  const currentOs = (formData.os || activePreset.defaultOS).toLowerCase();
+  const currentKernel = formData.kernel || (currentOs === 'android' ? 'AstroBrowser' : activePreset.defaultKernel);
   const gpuList = getGpuOptions(currentOs, currentKernel);
   const screenOptions = getScreenResolutions(currentOs, currentKernel);
   const cpuCoresList = getCpuCoreOptions(currentOs, currentKernel);
@@ -843,7 +845,7 @@ export const ImpressaoDigitalTab: React.FC<ImpressaoDigitalTabProps> = ({
         {(formData.ramMode || 'custom') === 'custom' && (
           <div className="w-48">
             <Select
-              value={formData.ramGb || 8}
+              value={formData.ramGb}
               onChange={(e) => onChange('ramGb', Number(e.target.value))}
             >
               {config.ramOptions.map((ram) => (
