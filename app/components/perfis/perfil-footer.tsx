@@ -13,13 +13,13 @@ export const PerfilFooter: React.FC<PerfilFooterProps> = ({
   onCancel,
 }) => {
   return (
-    <div className="flex shrink-0 items-center justify-between border-t border-slate-200 dark:border-[#30323E] bg-slate-100/90 dark:bg-[#1F2027] px-6 py-3.5">
+    <div className="flex shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-6 py-3">
       <div className="flex items-center gap-3">
         <button
           type="button"
           disabled={isSaving}
           onClick={onSave}
-          className="flex items-center gap-2 cursor-pointer rounded-md bg-emerald-600 hover:bg-emerald-500 text-white dark:bg-[#1C1D24] dark:border dark:border-white/30 dark:hover:border-white px-7 py-2 text-[13px] font-medium shadow-md shadow-emerald-600/20 dark:shadow-md transition-all select-none dark:hover:bg-[#252834] active:scale-[0.98] disabled:opacity-50"
+          className="flex h-[38px] items-center gap-2 cursor-pointer rounded-lg bg-[#238636] hover:bg-[#2ea043] text-white px-6 text-[13px] font-semibold shadow-xs transition-all select-none active:scale-[0.98] disabled:opacity-50"
         >
           {isSaving && <Loader2 size={14} className="animate-spin text-white" />}
           <span>{isSaving ? 'Salvando...' : 'OK'}</span>
@@ -28,7 +28,7 @@ export const PerfilFooter: React.FC<PerfilFooterProps> = ({
           type="button"
           disabled={isSaving}
           onClick={onCancel}
-          className="cursor-pointer rounded-md bg-slate-200 hover:bg-slate-300 text-slate-700 dark:bg-[#2B2D38] dark:text-[#C4C7D5] dark:hover:bg-[#363847] dark:hover:text-white px-6 py-2 text-[13px] font-medium transition-all select-none active:scale-[0.98] disabled:opacity-50"
+          className="flex h-[38px] items-center cursor-pointer rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] hover:bg-slate-100 dark:hover:bg-[#28292E] text-slate-700 dark:text-[#A6A9B6] dark:hover:text-white px-5 text-[13px] font-medium transition-all select-none active:scale-[0.98] disabled:opacity-50"
         >
           Cancelar
         </button>
@@ -36,7 +36,7 @@ export const PerfilFooter: React.FC<PerfilFooterProps> = ({
 
       {/* Ícone flutuante de suporte */}
       <div
-        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white dark:bg-[#1C1D24] border border-slate-300 dark:border-white/20 hover:border-slate-400 dark:hover:border-white text-slate-700 dark:text-white shadow-md transition-all hover:scale-105 hover:bg-slate-50 dark:hover:bg-[#252834]"
+        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-white dark:bg-[#24252A] border border-slate-200/80 dark:border-[#484A54] hover:bg-slate-100 dark:hover:bg-[#28292E] text-slate-600 dark:text-[#A6A9B6] dark:hover:text-white shadow-xs transition-all active:scale-[0.98]"
         title="Suporte"
       >
         <svg

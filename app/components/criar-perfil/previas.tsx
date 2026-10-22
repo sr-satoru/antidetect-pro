@@ -211,17 +211,17 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   ];
 
   return (
-    <div className="flex h-[calc(100vh-215px)] max-h-[850px] min-h-[500px] w-full flex-col justify-between rounded-xl border border-slate-200 dark:border-[#333540] bg-slate-50 dark:bg-[#212228] p-5 shadow-sm dark:shadow-none overflow-hidden">
+    <div className="flex h-[calc(100vh-215px)] max-h-[850px] min-h-[500px] w-full flex-col justify-between rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] p-5 shadow-xs overflow-hidden">
       <div className="flex flex-1 min-h-0 flex-col">
         {/* Header do card com título e botão New fingerprint */}
-        <div className="mb-3.5 shrink-0 flex items-center justify-between border-b border-slate-200 dark:border-[#2C2E38] pb-3.5">
-          <h3 className="text-[14px] font-semibold tracking-wide text-slate-900 dark:text-[#E5E7EB]">
+        <div className="mb-3.5 shrink-0 flex items-center justify-between border-b border-slate-200/80 dark:border-[#484A54] pb-3.5">
+          <h3 className="text-[14px] font-semibold tracking-wide text-slate-900 dark:text-white">
             Visão Geral ({formData.kernel === 'AstroBrowser' ? 'AstroBrowser' : 'AstroFox'})
           </h3>
           <button
             type="button"
             onClick={handleRegenerateFingerprint}
-            className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-medium text-emerald-600 hover:text-emerald-700 dark:text-[#00FF66] transition-colors dark:hover:text-[#00FF66]/80"
+            className="group flex cursor-pointer items-center gap-1.5 text-[12px] font-semibold text-emerald-600 hover:text-emerald-700 dark:text-[#2ea043] transition-colors dark:hover:text-[#3fb950]"
             title="Sorteia uma máquina real completa do catálogo oficial"
           >
             {/* Ícone Shuffle */}
@@ -251,11 +251,11 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
               key={idx}
               className="grid grid-cols-[130px_minmax(0,1fr)] items-start gap-2.5 leading-snug"
             >
-              <span className="shrink-0 font-normal text-slate-500 dark:text-[#8E92A2] select-none text-[12px]">
+              <span className="shrink-0 font-normal text-slate-500 dark:text-[#A6A9B6] select-none text-[12px]">
                 {row.label}
               </span>
               <span
-                className={`min-w-0 text-right leading-snug font-normal break-words [overflow-wrap:anywhere] text-slate-800 dark:text-[#D3D6E0] ${
+                className={`min-w-0 text-right leading-snug font-normal break-words [overflow-wrap:anywhere] text-slate-800 dark:text-white ${
                   row.isMono ? 'font-mono text-[11.5px] opacity-90' : 'text-[12.5px]'
                 }`}
               >
@@ -267,12 +267,12 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       </div>
 
       {/* Rodapé da prévia */}
-      <div className="mt-4 shrink-0 border-t border-slate-200 dark:border-[#2C2E38] pt-3 text-[11px] text-slate-500 dark:text-[#8E92A2] select-none text-center">
+      <div className="mt-4 shrink-0 border-t border-slate-200/80 dark:border-[#484A54] pt-3 text-[11px] text-slate-500 dark:text-[#A6A9B6] select-none text-center">
         Presets oficiais carregados de{' '}
         <button
           type="button"
           onClick={() => navigate('/configuration?tab=browser')}
-          className="font-medium text-emerald-600 hover:text-emerald-700 dark:text-[#00FF66] dark:hover:text-[#00FF66]/80 underline decoration-emerald-500/40 hover:decoration-emerald-500 cursor-pointer transition-colors"
+          className="font-medium text-emerald-600 hover:text-emerald-700 dark:text-[#2ea043] dark:hover:text-[#3fb950] underline decoration-emerald-500/40 hover:decoration-emerald-500 cursor-pointer transition-colors"
           title="Abrir configurações de Navegador & Antidetect"
         >
           backend/presets

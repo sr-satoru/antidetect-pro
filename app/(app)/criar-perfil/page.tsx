@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import config from '@/config/perfil.json';
 import { GeralTab } from '@/components/criar-perfil/geral';
 import { ProxyTab } from '@/components/criar-perfil/proxy';
 import { ImpressaoDigitalTab } from '@/components/criar-perfil/impressoes';
 import { PlataformaTab } from '@/components/criar-perfil/plataforma';
 import { AvancadoTab } from '@/components/criar-perfil/avancado';
 import { Previas } from '@/components/criar-perfil/previas';
+import { PerfilTabsHeader } from '@/components/perfis/perfil-tabs-header';
+import { PerfilFooter } from '@/components/perfis/perfil-footer';
 import { api } from '@/services/index.api';
-import { Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/notification';
 
 import { serviceBasePresets } from '@/services/presets/service.base-presets';
@@ -32,7 +32,7 @@ export const CriarPerfilPage: React.FC = () => {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      const created = await api.profiles.create(formData);
+      await api.profiles.create(formData);
       toast.success('Perfil criado com sucesso');
 
       navigate('/perfis');
@@ -44,26 +44,9 @@ export const CriarPerfilPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] shadow-xl shadow-slate-900/5 dark:shadow-2xl">
-      {/* Barra superior de Abas configurável via JSON */}
-      <div className="flex shrink-0 items-center gap-8 overflow-x-auto border-b border-slate-200 dark:border-[#30323E] bg-slate-50/80 dark:bg-[#24252D] px-6 pt-4 select-none">
-        {config.tabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`relative cursor-pointer pb-3 text-[13.5px] tracking-wide transition-all ${isActive
-                ? 'font-semibold text-slate-900 dark:text-white after:absolute after:right-0 after:bottom-0 after:left-0 after:h-[2.5px] after:rounded-t-sm after:bg-emerald-600 dark:after:bg-white after:content-[""]'
-                : 'text-slate-500 hover:text-slate-900 dark:text-[#8E92A2] dark:hover:text-[#C4C7D5]'
-                }`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
+      {/* Barra superior de Abas */}
+      <PerfilTabsHeader activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Corpo Principal com Scroll à direita do Previas */}
       <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-thin p-5 lg:p-7">
@@ -99,43 +82,11 @@ export const CriarPerfilPage: React.FC = () => {
       </div>
 
       {/* Rodapé fixado na base com botões OK e Cancelar e suporte */}
-      <div className="flex shrink-0 items-center justify-between border-t border-slate-200 dark:border-[#30323E] bg-slate-50 dark:bg-[#1F2027] px-6 py-3.5">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            disabled={isSaving}
-            onClick={handleSave}
-            className="flex items-center gap-2 cursor-pointer rounded-md bg-slate-900 hover:bg-slate-800 text-white dark:bg-[#1C1D24] dark:border dark:border-white/30 dark:hover:border-white dark:text-white px-7 py-2 text-[13px] font-medium shadow-xs dark:shadow-md transition-all select-none dark:hover:bg-[#252834] active:scale-[0.98] disabled:opacity-50"
-          >
-            {isSaving && <Loader2 size={14} className="animate-spin text-white" />}
-            <span>{isSaving ? 'Salvando...' : 'OK'}</span>
-          </button>
-          <button
-            type="button"
-            disabled={isSaving}
-            onClick={() => navigate('/perfis')}
-            className="cursor-pointer rounded-md bg-slate-200/80 hover:bg-slate-300 text-slate-700 dark:bg-[#2B2D38] px-6 py-2 text-[13px] font-medium dark:text-[#C4C7D5] transition-all select-none dark:hover:bg-[#363847] dark:hover:text-white active:scale-[0.98] disabled:opacity-50"
-          >
-            Cancelar
-          </button>
-        </div>
-
-        {/* Ícone flutuante de atendimento / suporte no canto inferior direito */}
-        <div
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white border border-slate-200 hover:border-slate-400 text-slate-700 shadow-sm dark:bg-[#1C1D24] dark:border-white/20 dark:hover:border-white dark:text-white dark:shadow-lg transition-all hover:scale-105 dark:hover:bg-[#252834]"
-          title="Suporte"
-        >
-          <svg
-            className="h-4 w-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-        </div>
-      </div>
+      <PerfilFooter
+        isSaving={isSaving}
+        onSave={handleSave}
+        onCancel={() => navigate('/perfis')}
+      />
     </div>
   );
 };

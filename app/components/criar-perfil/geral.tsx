@@ -150,10 +150,10 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
   const activeCategoryUas = getUserAgents(formData.os, formData.kernel, formData.userAgentCategory);
 
   return (
-    <div className="flex-1 space-y-4 pr-1 text-slate-800 dark:text-[#D2D5DF]">
+    <div className="flex-1 space-y-4 pr-1 text-slate-800 dark:text-white">
       {/* 1. Nome */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-        <label className="shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[130px] sm:text-right">
+        <label className="shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px] sm:text-right">
           Nome
         </label>
         <div className="relative flex-1">
@@ -162,9 +162,9 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
             value={formData.name}
             onChange={(e) => onChange('name', e.target.value.slice(0, 100))}
             placeholder="Opcional: nome do perfil"
-            className="w-full rounded-md border border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-2 pr-16 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5C6070] transition-colors focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-none shadow-xs"
+            className="w-full h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 pr-16 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-none shadow-xs"
           />
-          <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[11px] text-slate-400 dark:text-[#6B7082] select-none">
+          <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[11px] text-slate-400 dark:text-[#A6A9B6] select-none">
             {formData.name.length} / 100
           </span>
         </div>
@@ -172,8 +172,8 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
 
       {/* 2. Browser Kernel */}
       <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-start sm:gap-4">
-        <div className="flex shrink-0 items-center justify-start gap-1.5 pt-2.5 sm:w-[130px] sm:justify-end">
-          <label className="text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none">
+        <div className="flex shrink-0 items-center justify-start gap-1.5 pt-2 sm:w-[130px] sm:justify-end">
+          <label className="text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none">
             Browser Kernel
           </label>
           {isEditing && (
@@ -203,14 +203,14 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
               <div className="flex flex-col">
                 <div
                   onClick={() => !isEditing && handleSelectKernel('AstroBrowser')}
-                  className={`flex items-center gap-2.5 rounded-md border px-4 py-2.5 shadow-xs transition-all select-none ${
+                  className={`flex items-center gap-2.5 rounded-lg border px-4 py-2.5 shadow-xs transition-all select-none ${
                     isEditing
                       ? isChromium
-                        ? 'cursor-default border-emerald-500/50 dark:border-white/30 bg-emerald-50/50 dark:bg-[#262835] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
-                        : 'cursor-not-allowed opacity-35 border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] text-slate-400 dark:text-slate-500 pointer-events-none'
+                        ? 'cursor-default border-emerald-500/50 dark:border-[#484A54] bg-emerald-50/50 dark:bg-[#454750] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
+                        : 'cursor-not-allowed opacity-35 border-dashed border-slate-300 dark:border-[#484A54]/40 bg-slate-50 dark:bg-[#24252A]/40 text-slate-400 dark:text-[#A6A9B6] pointer-events-none'
                       : isChromium
-                        ? 'cursor-pointer border-emerald-500/50 dark:border-white/30 bg-emerald-50/50 dark:bg-[#262835] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
-                        : 'cursor-pointer border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] text-slate-600 dark:text-[#8E93A5] hover:border-slate-300 dark:hover:border-[#474A5B] hover:text-slate-900 dark:hover:text-[#C5C9D7]'
+                        ? 'cursor-pointer border-emerald-500/50 dark:border-[#484A54] bg-emerald-50/50 dark:bg-[#454750] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
+                        : 'cursor-pointer border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] text-slate-600 dark:text-[#A6A9B6] hover:border-slate-300 dark:hover:border-[#484A54] hover:text-slate-900 dark:hover:text-white dark:hover:bg-[#323338]'
                   }`}
                 >
                   <div className="flex h-5 w-5 items-center justify-center shrink-0">
@@ -243,7 +243,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                     </svg>
                   ) : null}
                 </div>
-                <span className="pt-1.5 pl-1 text-[11px] text-slate-500 dark:text-[#787D90]">
+                <span className="pt-1.5 pl-1 text-[11px] text-slate-500 dark:text-[#A6A9B6]">
                   Base Blink / Chrome 150 · AstroBrowser engine
                 </span>
               </div>
@@ -265,16 +265,16 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
               <div className="flex flex-col">
                 <div
                   onClick={() => !isEditing && !isAndroid && handleSelectKernel('AstroFox')}
-                  className={`flex items-center gap-2.5 rounded-md border px-4 py-2.5 shadow-xs transition-all select-none ${
+                  className={`flex items-center gap-2.5 rounded-lg border px-4 py-2.5 shadow-xs transition-all select-none ${
                     isEditing
                       ? isFirefox
-                        ? 'cursor-default border-emerald-500/50 dark:border-white/30 bg-emerald-50/50 dark:bg-[#262835] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
-                        : 'cursor-not-allowed opacity-35 border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] text-slate-400 dark:text-slate-500 pointer-events-none'
+                        ? 'cursor-default border-emerald-500/50 dark:border-[#484A54] bg-emerald-50/50 dark:bg-[#454750] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
+                        : 'cursor-not-allowed opacity-35 border-dashed border-slate-300 dark:border-[#484A54]/40 bg-slate-50 dark:bg-[#24252A]/40 text-slate-400 dark:text-[#A6A9B6] pointer-events-none'
                       : isAndroid
-                        ? 'cursor-not-allowed opacity-40 border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] text-slate-400 dark:text-slate-500'
+                        ? 'cursor-not-allowed opacity-40 border-dashed border-slate-300 dark:border-[#484A54]/40 bg-slate-50 dark:bg-[#24252A]/40 text-slate-400 dark:text-[#A6A9B6]'
                         : isFirefox
-                          ? 'cursor-pointer border-emerald-500/50 dark:border-white/30 bg-emerald-50/50 dark:bg-[#262835] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
-                          : 'cursor-pointer border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] text-slate-600 dark:text-[#8E93A5] hover:border-slate-300 dark:hover:border-[#474A5B] hover:text-slate-900 dark:hover:text-[#C5C9D7]'
+                          ? 'cursor-pointer border-emerald-500/50 dark:border-[#484A54] bg-emerald-50/50 dark:bg-[#454750] text-slate-900 dark:text-white ring-1 ring-emerald-500/20 dark:ring-white/10'
+                          : 'cursor-pointer border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] text-slate-600 dark:text-[#A6A9B6] hover:border-slate-300 dark:hover:border-[#484A54] hover:text-slate-900 dark:hover:text-white dark:hover:bg-[#323338]'
                   }`}
                 >
                   <div className="flex h-5 w-5 items-center justify-center shrink-0">
@@ -313,7 +313,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                     </svg>
                   ) : null}
                 </div>
-                <span className="pt-1.5 pl-1 text-[11px] text-slate-500 dark:text-[#787D90]">
+                <span className="pt-1.5 pl-1 text-[11px] text-slate-500 dark:text-[#A6A9B6]">
                   {isAndroid
                     ? 'Indisponível em perfil mobile (use AstroBrowser)'
                     : 'Base Gecko / Firefox 150 · AstroFox engine'}
@@ -323,7 +323,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
           </div>
 
           {isEditing && (
-            <div className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-500 dark:text-[#8E93A5]">
+            <div className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-500 dark:text-[#A6A9B6]">
               <Lock size={11} className="shrink-0 text-amber-500" />
               <span>O motor do navegador é fixado na criação para proteger os cookies e a coerência de fingerprint. Para utilizar outro motor, clone ou crie um novo perfil.</span>
             </div>
@@ -333,7 +333,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
 
       {/* 3. Sistema Operacional */}
       <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:gap-4">
-        <label className="shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[130px] sm:text-right">
+        <label className="shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px] sm:text-right">
           Sistema Operacional
         </label>
         <div className="flex flex-wrap items-center gap-2">
@@ -350,11 +350,11 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                   type="button"
                   disabled={isComingSoon}
                   onClick={() => !isComingSoon && handleSelectOS(osItem.id)}
-                  className={`flex items-center gap-2 rounded-md border px-3 py-1.5 text-[12.5px] font-medium transition-all select-none ${isComingSoon
-                      ? 'cursor-not-allowed opacity-50 border-dashed border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-400 dark:text-slate-500'
+                  className={`flex items-center gap-2 rounded-lg border px-3.5 h-9 text-[12.5px] font-medium transition-all select-none ${isComingSoon
+                      ? 'cursor-not-allowed opacity-50 border-dashed border-slate-300 dark:border-[#484A54]/40 bg-slate-50 dark:bg-[#24252A]/40 text-slate-400 dark:text-[#A6A9B6]'
                       : isSelected
-                        ? 'cursor-pointer border-emerald-500 bg-emerald-50 text-emerald-800 dark:border-white/30 dark:bg-[#323440] dark:text-white shadow-xs ring-1 ring-emerald-500/20 dark:ring-white/10'
-                        : 'cursor-pointer border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-[#333541] dark:bg-[#1C1D24] dark:text-[#8E93A5] dark:hover:border-[#474A5B] dark:hover:text-[#C5C9D7]'
+                        ? 'cursor-pointer border-emerald-500 bg-emerald-50 text-emerald-800 dark:border-[#484A54] dark:bg-[#454750] dark:text-white shadow-xs'
+                        : 'cursor-pointer border-slate-200/80 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-[#484A54] dark:bg-[#24252A] dark:text-[#A6A9B6] dark:hover:bg-[#323338] dark:hover:text-white'
                     }`}
                 >
                   {isSelected && (
@@ -363,7 +363,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                     </span>
                   )}
                   <span
-                    className={isSelected ? 'text-emerald-700 dark:text-white' : 'text-slate-500 dark:text-[#8E93A5]'}
+                    className={isSelected ? 'text-emerald-700 dark:text-white' : 'text-slate-500 dark:text-[#A6A9B6]'}
                   >
                     {osItem.icon}
                   </span>
@@ -392,7 +392,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
 
       {/* 4. User-Agent */}
       <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:gap-4">
-        <label className="shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[130px] sm:text-right">
+        <label className="shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px] sm:text-right">
           User-Agent
         </label>
         <div className="flex flex-1 items-center gap-2">
@@ -400,7 +400,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
             <button
               type="button"
               onClick={() => setShowUaDropdown(!showUaDropdown)}
-              className="flex min-w-[88px] cursor-pointer items-center justify-between gap-2 rounded-md border border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-2 text-[12.5px] text-slate-700 dark:text-[#C4C7D5] hover:border-slate-300 dark:hover:border-[#444756] shadow-xs"
+              className="flex min-w-[88px] h-10 cursor-pointer items-center justify-between gap-2 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3 text-[12.5px] text-slate-700 dark:text-[#A6A9B6] hover:border-slate-300 dark:hover:border-[#484A54] shadow-xs"
             >
               <span>{(formData.userAgentCategory === 'Todo' || !formData.userAgentCategory) ? 'Todos' : formData.userAgentCategory}</span>
               <svg
@@ -414,14 +414,14 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
               </svg>
             </button>
             {showUaDropdown && (
-              <div className="absolute top-full left-0 z-20 mt-1 w-28 rounded-md border border-slate-200 dark:border-[#363845] bg-white dark:bg-[#212229] py-1 shadow-xl">
+              <div className="absolute top-full left-0 z-20 mt-1 w-28 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] py-1 shadow-xl">
                 {config.userAgentCategories.map((item) => (
                   <div
                     key={item}
                     onClick={() => handleSelectCategory(item)}
                     className={`cursor-pointer px-3 py-1.5 text-[12px] transition-colors ${(formData.userAgentCategory || 'Todo') === item
-                        ? 'bg-emerald-50 text-emerald-700 font-semibold dark:bg-[#323440] dark:text-white'
-                        : 'text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-100 dark:hover:bg-[#2C2E38] hover:text-slate-900 dark:hover:text-white'
+                        ? 'bg-emerald-50 text-emerald-700 font-semibold dark:bg-[#454750] dark:text-white'
+                        : 'text-slate-700 dark:text-[#A6A9B6] hover:bg-slate-100 dark:hover:bg-[#454750]/50 hover:text-slate-900 dark:hover:text-white'
                       }`}
                   >
                     {item === 'Todo' ? 'Todos' : item}
@@ -431,18 +431,18 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
             )}
           </div>
 
-          <div className="flex flex-1 items-center overflow-hidden rounded-md border border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-1.5 transition-colors focus-within:border-emerald-500 dark:focus-within:border-white/60 focus-within:ring-1 focus-within:ring-emerald-500/20 dark:focus-within:ring-white/15 shadow-xs">
+          <div className="flex flex-1 h-10 items-center overflow-hidden rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3 transition-colors focus-within:border-emerald-500 dark:focus-within:border-white/60 focus-within:ring-1 focus-within:ring-emerald-500/20 dark:focus-within:ring-white/15 shadow-xs">
             <input
               type="text"
               value={formData.userAgent}
               onChange={(e) => onChange('userAgent', e.target.value)}
-              className="mr-2 flex-1 truncate bg-transparent font-mono text-[12px] text-slate-800 dark:text-[#D8DAE5] focus:outline-none"
+              className="mr-2 flex-1 truncate bg-transparent font-mono text-[12px] text-slate-800 dark:text-white focus:outline-none"
             />
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setShowUaListModal(!showUaListModal)}
-                className="cursor-pointer select-none rounded bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-[#00FF66] border border-emerald-300 dark:border-emerald-500/30 transition-colors mr-2 flex items-center gap-1"
+                className="cursor-pointer select-none rounded bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-[#2ea043] border border-emerald-300 dark:border-emerald-500/30 transition-colors mr-2 flex items-center gap-1"
                 title="Clique para ver e escolher entre todas as opções de User-Agent"
               >
                 <span>{activeCategoryUas.length} opções</span>
@@ -452,10 +452,10 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
               </button>
 
               {showUaListModal && (
-                <div className="absolute right-0 top-full z-30 mt-1.5 w-80 md:w-96 max-h-64 overflow-y-auto rounded-lg border border-slate-200 dark:border-[#3A3D4C] bg-white dark:bg-[#1E1F27] p-1.5 shadow-2xl">
-                  <div className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 dark:text-[#7E8294] border-b border-slate-100 dark:border-white/5 mb-1 flex items-center justify-between">
+                <div className="absolute right-0 top-full z-30 mt-1.5 w-80 md:w-96 max-h-64 overflow-y-auto rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] p-1.5 shadow-2xl">
+                  <div className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 dark:text-[#A6A9B6] border-b border-slate-100 dark:border-white/5 mb-1 flex items-center justify-between">
                     <span>User-Agents Disponíveis ({activeCategoryUas.length})</span>
-                    <span className="text-[10px] text-emerald-600 dark:text-[#00FF66]">Clique para aplicar</span>
+                    <span className="text-[10px] text-emerald-600 dark:text-[#2ea043]">Clique para aplicar</span>
                   </div>
                   {activeCategoryUas.map((ua, idx) => {
                     const isSelected = formData.userAgent === ua;
@@ -468,8 +468,8 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                           setShowUaListModal(false);
                         }}
                         className={`w-full text-left p-2 rounded-md font-mono text-[11px] transition-colors leading-tight mb-1 cursor-pointer break-all ${isSelected
-                            ? 'bg-emerald-50 dark:bg-[#00FF66]/10 text-emerald-700 dark:text-[#00FF66] font-semibold border border-emerald-300 dark:border-[#00FF66]/30'
-                            : 'text-slate-700 dark:text-[#C5C8D6] hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                            ? 'bg-emerald-50 dark:bg-[#454750] text-emerald-700 dark:text-white font-semibold border border-emerald-300 dark:border-[#484A54]'
+                            : 'text-slate-700 dark:text-[#A6A9B6] hover:bg-slate-100 dark:hover:bg-[#454750]/40 hover:text-slate-900 dark:hover:text-white'
                           }`}
                       >
                         {ua}
@@ -482,7 +482,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
             <button
               type="button"
               onClick={handleShuffleUserAgent}
-              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-slate-500 dark:text-white/80 transition-colors hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white"
+              className="flex h-7 w-7 cursor-pointer items-center justify-center rounded text-slate-500 dark:text-[#A6A9B6] transition-colors hover:bg-slate-100 dark:hover:bg-[#323338] hover:text-slate-900 dark:hover:text-white"
               title={`Sortear outro User-Agent (${activeCategoryUas.length} disponíveis)`}
             >
               <svg
@@ -505,7 +505,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
 
       {/* 5. * Grupo & Tags */}
       <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:gap-4">
-        <label className="shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[130px] sm:text-right">
+        <label className="shrink-0 text-left text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px] sm:text-right">
           <span className="mr-1 font-semibold text-red-500">*</span>Grupo
         </label>
         <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
@@ -514,7 +514,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
             <button
               type="button"
               onClick={() => setShowGroupDropdown(!showGroupDropdown)}
-              className="flex w-full cursor-pointer items-center justify-between rounded-md border border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-2 text-[13px] text-slate-700 dark:text-[#C4C7D5] hover:border-slate-300 dark:hover:border-[#444756] shadow-xs"
+              className="flex w-full h-10 cursor-pointer items-center justify-between rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[13px] text-slate-700 dark:text-[#A6A9B6] hover:border-slate-300 dark:hover:border-[#484A54] shadow-xs"
             >
               <span className="truncate">{formData.group || 'Desagrupado'}</span>
               <svg
@@ -528,7 +528,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
               </svg>
             </button>
             {showGroupDropdown && (
-              <div className="absolute top-full right-0 left-0 z-20 mt-1 max-h-48 overflow-y-auto rounded-md border border-slate-200 dark:border-[#363845] bg-white dark:bg-[#212229] py-1 shadow-xl">
+              <div className="absolute top-full right-0 left-0 z-20 mt-1 max-h-48 overflow-y-auto rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] py-1 shadow-xl">
                 {config.groups.map((grp) => (
                   <div
                     key={grp.id}
@@ -536,9 +536,9 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
                       onChange('group', grp.name);
                       setShowGroupDropdown(false);
                     }}
-                    className={`cursor-pointer px-3 py-2 text-[12.5px] ${formData.group === grp.name
-                        ? 'bg-emerald-50 font-medium text-[#1b6528] dark:bg-emerald-950/40 dark:text-[#7ee787]'
-                        : 'text-slate-700 dark:text-[#C4C7D5] hover:bg-slate-100 dark:hover:bg-[#2C2E38] hover:text-slate-900 dark:hover:text-white'
+                    className={`cursor-pointer px-3.5 py-2 text-[12.5px] ${formData.group === grp.name
+                        ? 'bg-emerald-50 font-medium text-[#1b6528] dark:bg-[#454750] dark:text-white'
+                        : 'text-slate-700 dark:text-[#A6A9B6] hover:bg-slate-100 dark:hover:bg-[#454750]/50 hover:text-slate-900 dark:hover:text-white'
                       }`}
                   >
                     {grp.name}
@@ -553,9 +553,9 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
             <button
               type="button"
               onClick={() => setShowTagInput(!showTagInput)}
-              className={`flex w-full cursor-pointer items-center justify-between rounded-md border px-3 py-2 text-[13px] transition-colors select-none shadow-xs ${showTagInput || currentTags.length > 0
-                  ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:border-white/30 dark:bg-[#282935] dark:text-white'
-                  : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 dark:border-[#333541] dark:bg-[#1C1D24] dark:text-[#C4C7D5] dark:hover:border-white/20'
+              className={`flex w-full h-10 cursor-pointer items-center justify-between rounded-lg border px-3.5 text-[13px] transition-colors select-none shadow-xs ${showTagInput || currentTags.length > 0
+                  ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:border-[#484A54] dark:bg-[#454750] dark:text-white'
+                  : 'border-slate-200/80 bg-white text-slate-700 hover:border-slate-300 dark:border-[#484A54] dark:bg-[#24252A] dark:text-[#A6A9B6] dark:hover:border-white/20'
                 }`}
             >
               <div className="flex items-center gap-2 truncate">
@@ -616,7 +616,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
 
       {/* 6. Cookie */}
       <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-start sm:gap-4">
-        <label className="shrink-0 pt-2 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[130px] sm:text-right">
+        <label className="shrink-0 pt-2 text-left text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px] sm:text-right">
           Cookie
         </label>
         <div className="flex-1 space-y-1.5">
@@ -625,12 +625,12 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
             value={formData.cookies}
             onChange={(e) => onChange('cookies', e.target.value)}
             placeholder="Formatos: JSON, Netscape, Name=Value"
-            className="w-full rounded-md border border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-2 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5C6070] transition-colors focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-none shadow-xs"
+            className="w-full h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-none shadow-xs"
           />
           <div className="flex justify-end">
             <button
               type="button"
-              className="flex cursor-pointer items-center gap-1 text-[12px] text-emerald-600 dark:text-[#00FF66] transition-colors select-none hover:text-emerald-700 dark:hover:text-[#00FF66]/80 font-medium"
+              className="flex cursor-pointer items-center gap-1 text-[12px] text-emerald-600 dark:text-[#2ea043] transition-colors select-none hover:text-emerald-700 dark:hover:text-[#3fb950] font-medium"
             >
               <span>+</span>
               <span>Mesclar cookie</span>
@@ -641,7 +641,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
 
       {/* 7. Observação */}
       <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-start sm:gap-4">
-        <label className="shrink-0 pt-2 text-left text-[13px] text-slate-600 dark:text-[#A6ABB9] select-none sm:w-[130px] sm:text-right">
+        <label className="shrink-0 pt-2 text-left text-[13px] text-slate-600 dark:text-[#A6A9B6] select-none sm:w-[130px] sm:text-right">
           Observação
         </label>
         <div className="relative flex-1">
@@ -650,9 +650,9 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
             value={formData.notes}
             onChange={(e) => onChange('notes', e.target.value.slice(0, 2000))}
             placeholder="Indique as notas"
-            className="w-full rounded-md border border-slate-200 dark:border-[#333541] bg-white dark:bg-[#1C1D24] px-3 py-2 pr-16 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5C6070] transition-colors focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-none shadow-xs"
+            className="w-full h-10 rounded-lg border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] px-3.5 pr-16 text-[12.5px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-white/60 focus:ring-1 focus:ring-emerald-500/20 dark:focus:ring-white/15 focus:outline-none shadow-xs"
           />
-          <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[11px] text-slate-400 dark:text-[#6B7082] select-none">
+          <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[11px] text-slate-400 dark:text-[#A6A9B6] select-none">
             {formData.notes.length} / 2000
           </span>
         </div>

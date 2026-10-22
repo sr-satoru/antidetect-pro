@@ -49,10 +49,10 @@ export const ModalEditarObservacao: React.FC<ModalEditarObservacaoProps> = ({
       maxWidth="max-w-[620px]"
     >
       <div className="mb-2 flex items-center justify-between">
-        <label className="text-sm font-semibold text-slate-800 dark:text-[#B0B4C3]">
-          Observação do perfil: <span className="font-bold text-emerald-600 dark:text-[#00FF66]">{profile?.name}</span>
+        <label className="text-[13px] font-semibold text-slate-800 dark:text-[#A6A9B6]">
+          Observação do perfil: <span className="font-bold text-emerald-600 dark:text-[#2ea043]">{profile?.name}</span>
         </label>
-        <span className="text-xs text-slate-400 dark:text-[#7C8092]">
+        <span className="text-xs text-slate-400 dark:text-[#A6A9B6]">
           {notesInput.length} caracteres
         </span>
       </div>
@@ -69,7 +69,7 @@ export const ModalEditarObservacao: React.FC<ModalEditarObservacaoProps> = ({
         disabled={isSaving}
         rows={4}
         placeholder="Escreva uma observação, anotação ou nota para este perfil..."
-        className="w-full rounded-xl border border-slate-200 dark:border-[#363948] bg-slate-50 dark:bg-[#14151C] p-4 text-sm text-slate-900 dark:text-[#F0F2F8] placeholder-slate-400 dark:placeholder-[#5E6274] transition-all hover:border-slate-300 dark:hover:border-[#4B5065] focus:border-emerald-500 dark:focus:border-white/60 focus:ring-2 focus:ring-emerald-500/15 dark:focus:ring-white/15 focus:outline-hidden resize-none leading-relaxed disabled:opacity-50"
+        className="w-full rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#24252A] p-3 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#A6A9B6] transition-colors focus:border-emerald-500 dark:focus:border-[#484A54] focus:outline-none shadow-xs resize-none leading-relaxed disabled:opacity-50"
       />
     </ModalBase>
   );
