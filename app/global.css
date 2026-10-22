@@ -11,6 +11,11 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --color-primary: #7C3AED;
+  --color-primary-hover: #6D28D9;
+  --color-primary-active: #5B21B6;
+  --color-primary-subtle: rgba(124, 58, 237, 0.12);
+  --color-primary-light: #A78BFA;
   --color-kinetic: #FF334B;
   --color-kinetic-hover: #E0243C;
   --color-kinetic-dark: #38080E;

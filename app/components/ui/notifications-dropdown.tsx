@@ -143,7 +143,7 @@ export const NotificationsDropdown: React.FC = () => {
         type="button"
         onClick={() => setIsOpen(true)}
         title="Notificações"
-        className="relative flex items-center justify-center h-8.5 w-8.5 rounded-lg border border-slate-200 dark:border-[#2D3039] bg-slate-50 hover:bg-slate-100 dark:bg-[#141519] dark:hover:bg-[#24242C] text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-2xs"
+        className="relative flex items-center justify-center h-9 w-9 rounded-lg border border-slate-200 dark:border-[#2D3039] bg-slate-50 hover:bg-slate-100 dark:bg-[#1F2026] dark:hover:bg-[#282A33] text-slate-600 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer shadow-2xs"
       >
         <Bell size={15} />
         {unreadCount > 0 && (

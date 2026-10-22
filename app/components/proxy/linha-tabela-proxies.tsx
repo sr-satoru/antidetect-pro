@@ -82,20 +82,20 @@ export const LinhaTabelaProxies: React.FC<LinhaTabelaProxiesProps> = ({
   const [copied, setCopied] = useState(false);
   const [isTestingRow, setIsTestingRow] = useState(false);
 
-  const isStriped = index % 2 === 1;
+  const isDarkRow = index % 2 === 0;
 
-  // Background adaptativo para linhas - harmonized dark charcoal
+  // Background adaptativo para linhas: sempre começando com a primeira escura (index 0), depois intercalando
   const rowBg = isSelected
-    ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/15 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
-    : isStriped
-      ? 'bg-slate-50/60 dark:bg-[#18191E] hover:bg-slate-100/80 dark:hover:bg-[#32343C]'
-      : 'bg-white dark:bg-[#1F2026] hover:bg-slate-100/80 dark:hover:bg-[#32343C]';
+    ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/20 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
+    : isDarkRow
+      ? 'bg-[#F4F3EF] dark:bg-[#141519] hover:bg-slate-200/50 dark:hover:bg-[#252733]'
+      : 'bg-white dark:bg-[#1C1D24] hover:bg-slate-200/50 dark:hover:bg-[#252733]';
 
   const stickyBg = isSelected
-    ? 'bg-slate-100 dark:bg-[#18191E]'
-    : isStriped
-      ? 'bg-slate-50/60 dark:bg-[#18191E] group-hover:bg-slate-100 dark:group-hover:bg-[#32343C]'
-      : 'bg-white dark:bg-[#1F2026] group-hover:bg-slate-100 dark:group-hover:bg-[#32343C]';
+    ? 'bg-[#F3EEFF] dark:bg-[#261D36]'
+    : isDarkRow
+      ? 'bg-[#F4F3EF] dark:bg-[#141519] group-hover:bg-slate-200/50 dark:group-hover:bg-[#252733]'
+      : 'bg-white dark:bg-[#1C1D24] group-hover:bg-slate-200/50 dark:group-hover:bg-[#252733]';
 
   const isOnline = proxy.status === 'active';
   const isChecking = proxy.status === 'checking' || isTestingRow;

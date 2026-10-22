@@ -75,14 +75,14 @@ export const LinhaTabelaLixeira: React.FC<LinhaTabelaLixeiraProps> = ({
   index = 0,
   onSelect,
 }) => {
-  const isStriped = index % 2 === 1;
+  const isDarkRow = index % 2 === 0;
 
-  // Cores do Zebrado e Seleção Harmonizados
+  // Cores do Zebrado: Sempre começando com a primeira escura (index 0), depois intercalando
   const rowBg = isSelected
     ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/15 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
-    : isStriped
-      ? 'bg-slate-50/70 dark:bg-[#18191E] hover:bg-slate-100/80 dark:hover:bg-[#32343C]'
-      : 'bg-white dark:bg-[#1F2026] hover:bg-slate-100/80 dark:hover:bg-[#32343C]';
+    : isDarkRow
+      ? 'bg-[#F4F3EF] dark:bg-[#141519] hover:bg-slate-200/50 dark:hover:bg-[#252733]'
+      : 'bg-white dark:bg-[#1C1D24] hover:bg-slate-200/50 dark:hover:bg-[#252733]';
 
   const deletedDate = getDeletedDate(item);
   const expiration = getExpirationDetails(deletedDate);

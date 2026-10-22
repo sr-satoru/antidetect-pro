@@ -92,11 +92,17 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-white/[0.06]">
             {items.length > 0 ? (
-              items.map((item, idx) => (
-                <tr
-                  key={item.id}
-                  className="group transition-colors hover:bg-slate-50 dark:hover:bg-[#32343C]"
-                >
+              items.map((item, idx) => {
+                const isDarkRow = idx % 2 === 0;
+                const rowBg = isDarkRow
+                  ? 'bg-[#F4F3EF] dark:bg-[#141519] hover:bg-slate-200/50 dark:hover:bg-[#252733]'
+                  : 'bg-white dark:bg-[#1C1D24] hover:bg-slate-200/50 dark:hover:bg-[#252733]';
+
+                return (
+                  <tr
+                    key={item.id}
+                    className={`group transition-colors ${rowBg}`}
+                  >
                   <td className="px-3.5 py-2.5">
                     <Badge variant="secondary" className="font-mono text-[10px] uppercase font-bold">
                       {item.type}
@@ -170,7 +176,8 @@ export const TabelaPreviaProxies: React.FC<TabelaPreviaProxiesProps> = ({
                     </Tooltip>
                   </td>
                 </tr>
-              ))
+              );
+            })
             ) : (
               <tr>
                 <td colSpan={9} className="py-12 text-center select-none">

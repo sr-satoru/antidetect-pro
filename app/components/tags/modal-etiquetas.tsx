@@ -297,19 +297,22 @@ export const ModalEtiquetas: React.FC<ModalEtiquetasProps> = ({
             </div>
           ) : (
             <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-              {paginatedTags.map((tag) => {
+              {paginatedTags.map((tag, idx) => {
                 const isSelected = selectedIds.includes(tag.id);
                 const isFilteringThis = selectedTagFilter === tag.name;
+                const isDarkRow = idx % 2 === 0;
 
                 return (
                   <div
                     key={tag.id}
                     className={`flex items-center px-4 py-3 text-xs rounded-lg transition-colors group relative ${
                       isSelected
-                        ? 'bg-blue-500/5 dark:bg-[#1677FF]/8'
+                        ? 'bg-[#7C3AED]/10 dark:bg-[#7C3AED]/20 border-l-[3px] border-l-[#7C3AED]'
                         : isFilteringThis
-                        ? 'bg-slate-100/70 dark:bg-[#1D2436]'
-                        : 'hover:bg-slate-50 dark:hover:bg-white/[0.03]'
+                        ? 'bg-slate-200/70 dark:bg-[#252834]'
+                        : isDarkRow
+                        ? 'bg-[#F4F3EF] dark:bg-[#141519] hover:bg-slate-200/50 dark:hover:bg-[#252733]'
+                        : 'bg-white dark:bg-[#1C1D24] hover:bg-slate-200/50 dark:hover:bg-[#252733]'
                     }`}
                   >
                     {/* Checkbox */}

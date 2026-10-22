@@ -142,20 +142,20 @@ export const LinhaTabela: React.FC<LinhaTabelaProps> = ({
     }
   };
 
-  const isStriped = index % 2 === 1;
+  const isDarkRow = index % 2 === 0;
 
-  // Cores do Zebrado e Seleção Harmonizados com a paleta Roxo Elétrico
+  // Cores do Zebrado: Sempre começando com a primeira escura (index 0), depois intercalando
   const rowBg = isSelected
     ? 'bg-[#7C3AED]/[0.08] dark:bg-[#7C3AED]/20 border-l-[3px] border-l-[#7C3AED] dark:border-l-[#A78BFA]'
-    : isStriped
-      ? 'bg-slate-50/50 dark:bg-[#18191E] hover:bg-slate-100/60 dark:hover:bg-[#282930]'
-      : 'bg-white dark:bg-[#18191E] hover:bg-slate-100/60 dark:hover:bg-[#282930]';
+    : isDarkRow
+      ? 'bg-[#F4F3EF] dark:bg-[#141519] hover:bg-slate-200/50 dark:hover:bg-[#252733]'
+      : 'bg-white dark:bg-[#1C1D24] hover:bg-slate-200/50 dark:hover:bg-[#252733]';
 
   const stickyBg = isSelected
-    ? 'bg-[#7C3AED]/15 dark:bg-[#2E1F4A]'
-    : isStriped
-      ? 'bg-slate-50/90 dark:bg-[#18191E] group-hover:bg-slate-100/80 dark:group-hover:bg-[#282930]'
-      : 'bg-white dark:bg-[#18191E] group-hover:bg-slate-100/80 dark:group-hover:bg-[#282930]';
+    ? 'bg-[#F3EEFF] dark:bg-[#261D36]'
+    : isDarkRow
+      ? 'bg-[#F4F3EF] dark:bg-[#141519] group-hover:bg-slate-200/50 dark:group-hover:bg-[#252733]'
+      : 'bg-white dark:bg-[#1C1D24] group-hover:bg-slate-200/50 dark:group-hover:bg-[#252733]';
 
   const osKey = (profile.os || 'linux').toLowerCase();
 

@@ -89,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         <button
           type="button"
           onClick={toggleTheme}
-          className="flex items-center justify-center h-8.5 w-8.5 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-[#1F2026] dark:hover:bg-[#282A33] text-slate-600 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#2D3039] transition-all cursor-pointer shadow-2xs"
+          className="flex items-center justify-center h-9 w-9 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-[#1F2026] dark:hover:bg-[#282A33] text-slate-600 dark:text-[#9DA2B4] hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#2D3039] transition-all cursor-pointer shadow-2xs"
           title={theme === 'dark' ? 'Mudar para Modo Claro (Day Mode)' : 'Mudar para Modo Escuro (Dark Mode)'}
         >
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
@@ -98,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         {/* Status de Rede & Nuvem se estiver conectada */}
         {cloudOnline === true && (
           <div
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-medium select-none shadow-2xs"
+            className="flex items-center gap-1.5 h-9 px-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-medium select-none shadow-2xs"
             title="Servidor de Nuvem Conectado e Operacional"
           >
             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
@@ -113,24 +113,24 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
         {/* Separador sutil */}
         <div className="w-px h-5 bg-slate-200 dark:bg-[#2D3039] mx-1" />
 
-        {/* Botão de Conta estilo AliasMode (.account-button) que direciona para Configurações */}
+        {/* Botão de Conta estilizado e harmonizado em h-9 */}
         <button
           type="button"
           onClick={() => navigate('/configuration')}
           title="Abrir Conta & Configurações"
           aria-label="Abrir Conta e Configurações"
-          className={`group flex items-center gap-2.5 h-[38px] max-w-[230px] pl-1.5 pr-2.5 py-1 rounded-full border transition-all duration-150 cursor-pointer text-left select-none active:scale-[0.98] shadow-2xs ${
+          className={`group flex items-center gap-2 h-9 max-w-[230px] pl-1.5 pr-2.5 rounded-lg border transition-all duration-150 cursor-pointer text-left select-none active:scale-[0.98] shadow-2xs ${
             location.pathname === '/configuration' || location.pathname === '/configuracoes'
               ? 'border-[#7C3AED] bg-[#7C3AED]/10 dark:bg-[#7C3AED]/15 dark:border-[#A78BFA] ring-2 ring-[#7C3AED]/20'
-              : 'border-slate-200 dark:border-[#2D3039] bg-slate-50 dark:bg-[#141519] hover:bg-slate-100 dark:hover:bg-[#252730] hover:border-slate-300 dark:hover:border-[#4B5063]'
+              : 'border-slate-200 dark:border-[#2D3039] bg-slate-50 dark:bg-[#1F2026] hover:bg-slate-100 dark:hover:bg-[#282A33] hover:border-slate-300 dark:hover:border-[#4B5063]'
           }`}
         >
           {/* Avatar com gradiente violeta harmonizado */}
-          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white shadow-xs font-bold text-xs transition-transform group-hover:scale-105 bg-gradient-to-tr from-[#7C3AED] to-[#A78BFA]">
+          <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-white shadow-xs font-bold text-xs transition-transform group-hover:scale-105 bg-gradient-to-tr from-[#7C3AED] to-[#A78BFA]">
             {!user?.is_offline && user?.email ? (
               user?.username ? user.username.charAt(0).toUpperCase() : 'U'
             ) : (
-              <User size={14} className="text-white" />
+              <User size={13} className="text-white" />
             )}
           </div>
 
@@ -156,7 +156,7 @@ export const Header: React.FC<HeaderProps> = ({ title }) => {
 
           {/* Seta Chevron Right para indicar navegação */}
           <ChevronRight
-            size={14}
+            size={13}
             className="ml-auto text-slate-400 dark:text-[#76736D] group-hover:text-slate-700 dark:group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0"
           />
         </button>

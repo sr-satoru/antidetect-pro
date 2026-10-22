@@ -207,7 +207,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                 maxLength={50}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Por favor, insira o nome da categoria."
-                className="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E2028] px-3.5 py-2.5 pr-16 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5A5E70] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:outline-none"
+                className="w-full rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 py-2 pr-16 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]/30"
               />
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 dark:text-[#6E7385] select-none">
                 {nome.length} / 50
@@ -227,7 +227,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
                 rows={2}
                 onChange={(e) => setObservacao(e.target.value)}
                 placeholder="Por favor, insira uma observação."
-                className="w-full resize-none rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E2028] px-3.5 py-2.5 pb-6 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#5A5E70] transition-colors focus:border-emerald-500 dark:focus:border-white/40 focus:outline-none"
+                className="w-full resize-none rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] px-3.5 py-2 pb-6 text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-[#6C7284] transition-colors focus:border-[#7C3AED] dark:focus:border-[#A78BFA] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]/30"
               />
               <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] text-slate-400 dark:text-[#6E7385] select-none">
                 {observacao.length} / 500
@@ -384,11 +384,11 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
         </div>
 
         {/* Footer fixo e sempre visível */}
-        <div className="flex h-16 shrink-0 items-center justify-end gap-3 border-t border-slate-200 dark:border-[#2F3240] bg-slate-50 dark:bg-[#1C1D24] px-6 select-none rounded-b-2xl">
+        <div className="flex h-14 shrink-0 items-center justify-end gap-2.5 border-t border-slate-200/80 dark:border-[#2D3039] bg-slate-50/80 dark:bg-[#141519] px-6 select-none rounded-b-2xl">
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-lg px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-[#9DA2B4] transition-colors dark:hover:bg-[#2C2E38] dark:hover:text-white"
+            className="h-9 px-4 rounded-lg border border-slate-200/80 dark:border-[#2D3039] bg-white dark:bg-[#1F2026] text-xs font-medium text-slate-700 dark:text-[#E2E4EC] hover:bg-slate-100 dark:hover:bg-[#282A33] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer shadow-2xs"
           >
             Cancelar
           </button>
@@ -396,7 +396,7 @@ export const ModalCriarCategoria: React.FC<ModalCriarCategoriaProps> = ({
             type="button"
             onClick={handleConfirm}
             disabled={!nome.trim()}
-            className="flex cursor-pointer items-center justify-center rounded-lg bg-slate-900 hover:bg-slate-800 text-white dark:bg-[#1C1D24] dark:border dark:border-white/30 dark:hover:border-white dark:text-white px-6 py-2 text-xs font-semibold shadow-xs transition-all dark:hover:bg-[#252834] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-9 items-center justify-center rounded-lg bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-5 text-xs font-semibold shadow-xs shadow-[#7C3AED]/20 transition-all active:scale-[0.98] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
             Confirmar
           </button>

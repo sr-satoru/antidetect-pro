@@ -139,7 +139,7 @@ export const UpdateCenterDropdown: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`relative flex items-center gap-1.5 h-8.5 px-3 rounded-lg border text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98] shadow-2xs ${
+        className={`relative flex items-center gap-1.5 h-9 px-3 rounded-lg border text-xs font-medium transition-all duration-150 cursor-pointer select-none active:scale-[0.98] shadow-2xs ${
           isUpdating
             ? 'bg-[#7C3AED]/10 text-[#7C3AED] dark:text-[#A78BFA] border-[#7C3AED]/30 dark:border-[#7C3AED]/40'
             : isAppReady
