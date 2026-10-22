@@ -443,10 +443,10 @@ warmUp();
   return (
     <div className="space-y-4">
       {/* 1. Banner Superior: SDK Star Driver */}
-      <div className="rounded-xl border border-slate-200/90 dark:border-[#353744] bg-slate-50/70 dark:bg-[#1C1D24] p-5 space-y-3.5">
+      <div className="rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#24252D] border border-slate-200 dark:border-[#353744] shadow-xs">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] shadow-xs">
               <Zap size={18} className="text-[#238636] dark:text-[#2ea043]" />
             </div>
             <div>
@@ -454,7 +454,7 @@ warmUp();
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white">
                   SDK Star Driver: AstroFox (Firefox) & AstroBrowser (Chromium)
                 </h4>
-                <span className="rounded-full bg-[#238636]/10 text-[#2ea043] border border-[#238636]/30 px-2 py-0.5 text-[10px] font-semibold">
+                <span className="rounded-full bg-[#238636]/10 text-[#2ea043] border border-[#238636]/30 px-2.5 py-0.5 text-[10px] font-semibold">
                   Driver Oficial
                 </span>
               </div>
@@ -464,9 +464,9 @@ warmUp();
             </div>
           </div>
 
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-[#24252D] border border-slate-200 dark:border-[#353744] text-xs font-mono shrink-0">
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] text-xs font-mono shrink-0">
             <span className="text-slate-500 dark:text-[#8E92A2] select-none text-[11px]">pip:</span>
-            <code className="text-slate-800 dark:text-[#E2E4EC]">pip install star-driver astrobrowser clearcote requests</code>
+            <code className="text-slate-800 dark:text-[#E4E6EE]">pip install star-driver astrobrowser clearcote requests</code>
             <Tooltip content={copiedPip ? 'Copiado!' : 'Copiar comando pip'} position="top">
               <button
                 type="button"
@@ -483,7 +483,7 @@ warmUp();
       {/* 2. Grid Principal: Cenários à esquerda e Código à direita */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
         {/* Coluna Esquerda: Cenários de Automação */}
-        <div className="lg:col-span-4 rounded-xl border border-slate-200/90 dark:border-[#353744] bg-slate-50/70 dark:bg-[#1C1D24] p-5 space-y-3.5">
+        <div className="lg:col-span-4 rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
             <Boxes size={15} className="text-[#238636] dark:text-[#2ea043]" />
             Cenários de Automação
@@ -496,17 +496,17 @@ warmUp();
                 <div
                   key={r.id}
                   onClick={() => setSelectedRecipe(r.id)}
-                  className={`p-3.5 rounded-lg border cursor-pointer select-none transition-all ${
+                  className={`p-3.5 rounded-xl border cursor-pointer select-none transition-all ${
                     isSelected
-                      ? 'border-[#238636] dark:border-[#2ea043] bg-white dark:bg-[#24252D] ring-2 ring-[#238636]/20 shadow-xs'
-                      : 'border-slate-200 dark:border-[#353744] bg-white dark:bg-[#24252D] hover:border-slate-300 dark:hover:border-[#434555]'
+                      ? 'border-[#238636] dark:border-[#2ea043] bg-emerald-50/10 dark:bg-[#238636]/10 ring-2 ring-[#238636]/20 shadow-xs'
+                      : 'border-slate-200/80 dark:border-[#484A54] bg-slate-50/70 dark:bg-[#323338] hover:border-slate-300 dark:hover:border-[#606373]'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-semibold text-slate-900 dark:text-white">
                       {r.title}
                     </span>
-                    <span className="rounded-full bg-slate-100 dark:bg-[#1C1D24] text-slate-700 dark:text-[#A7AAB9] border border-slate-200 dark:border-[#353744] px-2 py-0.5 text-[10px] font-semibold shrink-0">
+                    <span className="rounded-full bg-slate-100 dark:bg-[#28292E] text-slate-700 dark:text-[#E4E6EE] border border-slate-200/80 dark:border-[#484A54] px-2 py-0.5 text-[10px] font-semibold shrink-0">
                       {r.tag}
                     </span>
                   </div>
@@ -520,8 +520,8 @@ warmUp();
         </div>
 
         {/* Coluna Direita: Código de Automação */}
-        <div className="lg:col-span-8 rounded-xl border border-slate-200/90 dark:border-[#353744] bg-slate-50/70 dark:bg-[#1C1D24] p-5 space-y-3.5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#353744]">
+        <div className="lg:col-span-8 rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] p-6 space-y-4 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200/80 dark:border-[#484A54]">
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
                 <FileCode size={15} className="text-[#238636] dark:text-[#2ea043]" />
@@ -533,14 +533,14 @@ warmUp();
             </div>
 
             {/* Seletor de Linguagem */}
-            <div className="flex items-center gap-1 p-1 bg-white dark:bg-[#24252D] border border-slate-200 dark:border-[#353744] rounded-lg">
+            <div className="flex items-center gap-1 p-1 bg-slate-50 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] rounded-lg">
               <button
                 type="button"
                 onClick={() => setSelectedLang('python')}
                 className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   selectedLang === 'python'
-                    ? 'bg-slate-100 dark:bg-[#1C1D24] text-slate-900 dark:text-white border border-slate-200 dark:border-[#383A48] shadow-xs'
-                    : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4]'
+                    ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white border border-slate-200/50 dark:border-white/10 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Python (Playwright)
@@ -550,8 +550,8 @@ warmUp();
                 onClick={() => setSelectedLang('node')}
                 className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
                   selectedLang === 'node'
-                    ? 'bg-slate-100 dark:bg-[#1C1D24] text-slate-900 dark:text-white border border-slate-200 dark:border-[#383A48] shadow-xs'
-                    : 'text-slate-600 dark:text-[#90909D] hover:text-slate-900 dark:hover:text-[#F1F1F4]'
+                    ? 'bg-white dark:bg-[#454750] text-slate-900 dark:text-white border border-slate-200/50 dark:border-white/10 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-[#A6A9B6] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Node.js
@@ -560,8 +560,8 @@ warmUp();
           </div>
 
           {/* Janela de Código */}
-          <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-[#353744] bg-slate-900 dark:bg-[#14151B]">
-            <div className="flex items-center justify-between px-3.5 py-2 bg-slate-800/80 dark:bg-[#1C1D24] border-b border-slate-800 dark:border-[#2C2E38]">
+          <div className="rounded-xl overflow-hidden border border-slate-200/80 dark:border-[#484A54] bg-slate-900 dark:bg-[#202126]">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-slate-800/80 dark:bg-[#323338] border-b border-slate-800 dark:border-[#484A54]">
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-[#EC6A5E]" />
@@ -581,7 +581,7 @@ warmUp();
                 <button
                   type="button"
                   onClick={handleCopyCode}
-                  className="flex h-7 items-center gap-1.5 rounded-md border border-slate-700 dark:border-[#353744] bg-slate-800 dark:bg-[#24252D] px-2.5 text-xs font-medium text-slate-200 dark:text-[#EDEDED] hover:bg-slate-700 dark:hover:bg-[#2C2E38] transition-all cursor-pointer shadow-2xs"
+                  className="flex h-7 items-center gap-1.5 rounded-lg border border-slate-700 dark:border-[#484A54] bg-slate-800 dark:bg-[#28292E] px-2.5 text-xs font-medium text-slate-200 dark:text-[#EDEDED] hover:bg-slate-700 dark:hover:bg-[#3A3B42] transition-all cursor-pointer shadow-xs"
                 >
                   {copiedCode ? (
                     <Check size={12} className="text-[#238636] dark:text-[#2ea043]" />
@@ -599,7 +599,7 @@ warmUp();
           </div>
 
           {/* Rodapé com Endereço e Status */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-[#353744] text-xs text-slate-500 dark:text-[#8E92A2]">
+          <div className="flex items-center justify-between pt-2 border-t border-slate-200/80 dark:border-[#484A54] text-xs text-slate-500 dark:text-[#8E92A2]">
             <span>Endereço da API: <strong className="text-slate-900 dark:text-white font-mono">{baseUrl}</strong></span>
             <span className="text-[#238636] dark:text-[#2ea043] flex items-center gap-1.5 font-medium">
               <ShieldCheck size={14} />

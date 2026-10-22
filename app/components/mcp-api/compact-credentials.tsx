@@ -79,16 +79,16 @@ export const CompactCredentials: React.FC<CompactCredentialsProps> = ({
   return (
     <div className="flex items-center gap-2 select-none">
       {/* Secret Token Pill integrado perfeitamente ao header */}
-      <div className="flex items-center gap-2 bg-white dark:bg-[#1A1B24] border border-slate-200/80 dark:border-white/[0.08] rounded-lg px-3 py-1.5 text-xs font-mono transition-all shadow-xs">
+      <div className="flex items-center gap-2 bg-white dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] rounded-lg px-3 py-1.5 text-xs font-mono transition-all shadow-xs">
         <Key size={13} className="text-amber-500 dark:text-amber-400 shrink-0" />
         <span
-          className={`text-slate-800 dark:text-[#E2E4EC] font-mono transition-all duration-200 ${
+          className={`text-slate-800 dark:text-[#E4E6EE] font-mono transition-all duration-200 ${
             !isTokenVisible ? 'filter blur-[4px] select-none opacity-80' : 'select-all'
           }`}
         >
           {activeToken || 'Carregando chave...'}
         </span>
-        <div className="flex items-center gap-1 border-l border-slate-200/80 dark:border-white/[0.08] pl-1.5 ml-0.5">
+        <div className="flex items-center gap-1 border-l border-slate-200/80 dark:border-[#484A54] pl-1.5 ml-0.5">
           <Tooltip content={isTokenVisible ? 'Ocultar token' : 'Revelar token'} position="top">
             <button
               type="button"
