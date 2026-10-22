@@ -174,7 +174,7 @@ export const LixeiraPage: React.FC = () => {
       {/* Cabeçalho da Página */}
       <div className="flex items-center justify-between shrink-0 select-none">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#14151B] text-emerald-600 dark:text-[#00FF66] shadow-xs">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#323338] text-slate-700 dark:text-[#E4E6EE] shadow-xs">
             <Trash2 size={20} />
           </div>
           <div>
@@ -182,7 +182,7 @@ export const LixeiraPage: React.FC = () => {
               <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
                 Lixeira de Perfis
               </h1>
-              <span className="rounded-full bg-slate-100 dark:bg-[#14151B] border border-slate-200 dark:border-white/10 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:text-[#A9ACB9]">
+              <span className="rounded-full bg-slate-100 dark:bg-[#323338] border border-slate-200/80 dark:border-[#484A54] px-2.5 py-0.5 text-[11px] font-semibold text-slate-600 dark:text-[#A6A9B6]">
                 {items.length} {items.length === 1 ? 'item' : 'itens'}
               </span>
             </div>
@@ -227,9 +227,9 @@ export const LixeiraPage: React.FC = () => {
 
       {/* Tabela de Itens Excluídos ou Loader */}
       {loading ? (
-        <div className="flex flex-1 items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920]">
-          <div className="flex flex-col items-center gap-2 text-xs text-slate-400 dark:text-[#8E92A2]">
-            <Loader2 className="animate-spin text-emerald-500 dark:text-[#00FF66]" size={24} />
+        <div className="flex flex-1 items-center justify-center rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
+          <div className="flex flex-col items-center gap-2 text-xs text-slate-400 dark:text-[#A6A9B6]">
+            <Loader2 className="animate-spin text-[#238636] dark:text-[#2ea043]" size={26} />
             <span>Carregando itens da lixeira...</span>
           </div>
         </div>

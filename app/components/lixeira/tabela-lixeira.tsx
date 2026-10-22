@@ -27,13 +27,13 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
   const isSomeSelected = selectedIds.length > 0 && selectedIds.length < items.length;
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#181920] shadow-sm shadow-slate-200/50 dark:shadow-none">
+    <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-white dark:bg-[#28292E] shadow-xs">
       <div className="flex-1 custom-scrollbar overflow-auto relative">
         <table className="min-w-full w-full border-collapse text-left text-xs whitespace-nowrap">
           {/* Header */}
-          <thead className="sticky top-0 z-20 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] text-[11px] font-semibold tracking-wider text-slate-500 dark:text-[#A6ABB9] uppercase select-none">
-            <tr className="h-11">
-              <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2.5 text-center">
+          <thead className="sticky top-0 z-20 border-b border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] text-[11.5px] font-semibold tracking-wider text-slate-600 dark:text-[#A6A9B6] uppercase select-none">
+            <tr className="h-12">
+              <th className="w-[44px] min-w-[44px] max-w-[44px] px-2 py-2 text-center">
                 <div className="flex items-center justify-center">
                   <Checkbox
                     checked={isAllSelected}
@@ -43,12 +43,12 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
                   />
                 </div>
               </th>
-              <th className="w-[75px] min-w-[75px] px-3.5 py-2.5">ID Original</th>
-              <th className="w-[230px] min-w-[230px] px-3.5 py-2.5">Perfil</th>
-              <th className="w-[150px] min-w-[150px] px-3.5 py-2.5">Grupo</th>
-              <th className="w-[180px] min-w-[180px] px-3.5 py-2.5">IP & Proxy</th>
-              <th className="w-[180px] min-w-[180px] px-3.5 py-2.5">Data e Hora de Exclusão</th>
-              <th className="w-[190px] min-w-[190px] px-3.5 py-2.5">Exclusão Definitiva (30 dias)</th>
+              <th className="w-[75px] min-w-[75px] px-3.5 py-2">ID Original</th>
+              <th className="w-[230px] min-w-[230px] px-3.5 py-2">Perfil</th>
+              <th className="w-[150px] min-w-[150px] px-3.5 py-2">Grupo</th>
+              <th className="w-[180px] min-w-[180px] px-3.5 py-2">IP & Proxy</th>
+              <th className="w-[180px] min-w-[180px] px-3.5 py-2">Data e Hora de Exclusão</th>
+              <th className="w-[190px] min-w-[190px] px-3.5 py-2">Exclusão Definitiva (30 dias)</th>
             </tr>
           </thead>
 
@@ -68,14 +68,14 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
               <tr>
                 <td colSpan={7} className="py-20 text-center text-slate-500 dark:text-[#8E92A2]">
                   <div className="flex flex-col items-center justify-center gap-3">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-[#14151B] text-slate-400 dark:text-[#7E8294]">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] text-slate-400 dark:text-[#8E92A2]">
                       <Trash2 size={24} />
                     </div>
                     <div>
                       <span className="mb-0.5 block text-sm font-semibold text-slate-900 dark:text-white">
                         A lixeira está vazia
                       </span>
-                      <p className="text-xs text-slate-500 dark:text-[#6C6F7E]">
+                      <p className="text-xs text-slate-500 dark:text-[#8E92A2]">
                         Nenhum perfil removido no momento. Perfis excluídos aparecerão aqui.
                       </p>
                     </div>
@@ -88,19 +88,19 @@ export const TabelaLixeira: React.FC<TabelaLixeiraProps> = ({
       </div>
 
       {/* Footer com Políticas de Retenção */}
-      <div className="flex h-11 shrink-0 items-center justify-between border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#14151B] px-4 text-xs text-slate-600 dark:text-[#9EA2AE] select-none">
+      <div className="flex h-12 shrink-0 items-center justify-between border-t border-slate-200/80 dark:border-[#484A54] bg-[#F8F7F5] dark:bg-[#323338] px-4 text-xs text-slate-600 dark:text-[#A6A9B6] select-none">
         <div className="flex items-center gap-4">
           <span>
             Total na lixeira: <strong className="text-slate-900 dark:text-white">{items.length}</strong> perfis
           </span>
-          <span className="hidden items-center gap-1.5 sm:inline-flex text-[11px] text-slate-500 dark:text-[#7E8294]">
-            <AlertCircle size={13} className="text-emerald-600 dark:text-[#00FF66]" />
+          <span className="hidden items-center gap-1.5 sm:inline-flex text-[11px] text-slate-500 dark:text-[#8E92A2]">
+            <AlertCircle size={13} className="text-[#238636] dark:text-[#2ea043]" />
             <span>Itens excluídos são removidos automaticamente após 30 dias de retenção.</span>
           </span>
         </div>
 
         {selectedIds.length > 0 && (
-          <div className="font-semibold text-emerald-600 dark:text-[#00FF66]">
+          <div className="font-semibold text-slate-900 dark:text-white">
             {selectedIds.length} selecionado{selectedIds.length > 1 ? 's' : ''}
           </div>
         )}
