@@ -76,13 +76,13 @@ pub fn build_clearcote_flags(
     let quota_mb = 100_000 + (seed as u64 % 400_000);
     flags.push(format!("--fingerprint-storage-quota={}", quota_mb));
 
-    // Desativação de ruído destrutivo de canvas/WebGL (Turnstile / Cloudflare Proof-of-Work)
-    // O patch 060-canvas e patch 070 do Clearcote invertem bits menos significativos em readPixels e toDataURL.
-    // O Turnstile executa provas matemáticas criptográficas em shaders offscreen e calcula hashes dos pixels.
-    // As flags nativas preservam 100% da persona (GPU, TLS, telas, hardware), mantendo a fidelidade das operações matemáticas.
-    flags.push("--cc-no-farble".to_string());
-    flags.push("--disable-fingerprint-noise".to_string());
-    flags.push("--disable-canvas-noise".to_string());
+    // Ruído determinístico nativo por perfil derivado de --fingerprint={seed}
+    // Preserva unicidade de Canvas, WebGL e AudioContext por site sem vincular perfis entre si
+    let noise_obj = fp.get("hardware_noise");
+    let noise_canvas = noise_obj.and_then(|o| o.get("canvas")).and_then(|b| b.as_bool()).unwrap_or(true);
+    if !noise_canvas {
+        flags.push("--disable-canvas-noise".to_string());
+    }
 
     // 4. Plataforma, Marca e Versão Coerentes
     let platform = match os.as_str() {
@@ -107,15 +107,15 @@ pub fn build_clearcote_flags(
         flags.push("--enable-features=WebBluetooth".to_string());
     }
 
-    // Extrai versão maior do Chrome do perfil/UA ou assume versão estável 135 (nunca futuro Chrome 150)
+    // Extrai versão maior do Chrome do perfil/UA ou assume a versão real do binário compilado (150)
     let raw_ua = fp.get("user_agent").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty());
-    let mut major_version: u32 = 135;
+    let mut major_version: u32 = 150;
     if let Some(ua_str) = raw_ua {
         if let Some(pos) = ua_str.find("Chrome/") {
             let slice = &ua_str[pos + 7..];
             let ver_str: String = slice.chars().take_while(|c| c.is_ascii_digit()).collect();
             if let Ok(num) = ver_str.parse::<u32>() {
-                if num >= 120 && num <= 140 {
+                if num >= 120 {
                     major_version = num;
                 }
             }

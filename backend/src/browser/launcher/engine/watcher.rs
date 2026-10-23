@@ -36,6 +36,7 @@ pub fn spawn_lifecycle_watcher(
         if let Some(port) = cdp_port {
             let pid_clone = profile_id.clone();
             let vault_clone = vault.clone();
+            let is_chromium = engine.kernel_name() == "AstroBrowser";
             tokio::spawn(async move {
                 let client = reqwest::Client::new();
                 let mut interval = tokio::time::interval(std::time::Duration::from_secs(4));
@@ -47,7 +48,7 @@ pub fn spawn_lifecycle_watcher(
                             break;
                         }
                         _ = interval.tick() => {
-                            if let Some(ws_url) = crate::launcher::engine::cdp::wait_for_devtools_endpoint(port, &client, false).await {
+                            if let Some(ws_url) = crate::launcher::engine::cdp::wait_for_devtools_endpoint(port, &client, is_chromium).await {
                                 if let Ok(live_cookies) = crate::launcher::engine::cdp::fetch_cookies_via_cdp(&ws_url).await {
                                     if !live_cookies.is_empty() {
                                         let vault_opt = vault_clone.lock().unwrap().clone();
