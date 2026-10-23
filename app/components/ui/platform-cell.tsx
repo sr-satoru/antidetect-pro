@@ -344,6 +344,19 @@ export function extractProfilePlatforms(profile: any): PlatformAccount[] {
         ];
       }
     }
+
+    // Fallback para campos isolados no fingerprint (platform, username, password)
+    if (fp.platform || fp.username || fp.password) {
+      return [
+        {
+          platform: fp.platform || 'other',
+          customDomain: fp.platform_url || (typeof fp.platform === 'string' && fp.platform.includes('.') ? fp.platform : `${fp.platform || 'other'}.com`),
+          username: fp.username || profile.username || '',
+          password: fp.password || profile.password || '',
+          twoFactorKey: fp.twoFactorKey || fp.twofa || profile.twofa || profile.twoFactorKey || '',
+        },
+      ];
+    }
   }
 
   // 3. Fallback legado em `profile.platform`

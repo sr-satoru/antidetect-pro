@@ -304,7 +304,8 @@ ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chr
     assert_eq!(fx.kernel.as_deref(), Some("AstroFox"));
     assert_eq!(fx.os.as_deref(), Some("macos"));
     assert_eq!(fx.browser_version.as_deref(), Some("150"));
-    assert_eq!(fx.name.as_deref(), Some("Instagram: rebeccahawley3"));
+    assert_eq!(fx.name.as_deref(), Some("rebeccahawley3"));
+    assert_eq!(fx.platform.as_deref(), Some("instagram"));
     assert_eq!(fx.password.as_deref(), Some("ESz3cYP5"));
     assert!(fx.initial_urls.as_ref().unwrap().contains(&"https://www.instagram.com/".to_string()));
 
@@ -315,7 +316,8 @@ ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chr
     assert_eq!(cr.kernel.as_deref(), Some("AstroBrowser"));
     assert_eq!(cr.os.as_deref(), Some("linux"));
     assert_eq!(cr.browser_version.as_deref(), Some("151"));
-    assert_eq!(cr.name.as_deref(), Some("Instagram: elfordamyt"));
+    assert_eq!(cr.name.as_deref(), Some("elfordamyt"));
+    assert_eq!(cr.platform.as_deref(), Some("instagram"));
     assert_eq!(cr.password.as_deref(), Some("T5gXsFLW"));
     assert!(cr.initial_urls.as_ref().unwrap().contains(&"https://www.instagram.com/elfordamyt/".to_string()));
 }

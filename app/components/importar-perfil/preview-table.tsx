@@ -128,14 +128,34 @@ export const PreviewTable: React.FC<PreviewTableProps> = ({
                       {p.platform ? (
                         <div className="flex items-center gap-1.5">
                           <PlatformBrandIcon platform={p.platform} size="xs" />
-                          <span className="text-slate-700 dark:text-slate-300 font-medium">
-                            {p.username || p.platform}
-                          </span>
+                          <div className="flex flex-col leading-none">
+                            <span className="text-slate-800 dark:text-slate-200 font-semibold text-xs">
+                              {p.username || p.platform}
+                            </span>
+                            {p.password && (
+                              <span
+                                className="text-[10px] font-mono text-slate-400 dark:text-[#9DA2B4] mt-0.5 cursor-default"
+                                title="Senha capturada do arquivo txt"
+                              >
+                                {p.password.replace(/./g, '•')}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       ) : p.username ? (
-                        <span className="text-slate-700 dark:text-slate-300 font-medium font-mono text-[11px]">
-                          {p.username}
-                        </span>
+                        <div className="flex flex-col leading-none">
+                          <span className="text-slate-800 dark:text-slate-200 font-semibold font-mono text-xs">
+                            {p.username}
+                          </span>
+                          {p.password && (
+                            <span
+                              className="text-[10px] font-mono text-slate-400 dark:text-[#9DA2B4] mt-0.5 cursor-default"
+                              title="Senha capturada do arquivo txt"
+                            >
+                              {p.password.replace(/./g, '•')}
+                            </span>
+                          )}
+                        </div>
                       ) : (
                         <span className="text-slate-400 dark:text-[#6C7284]">-</span>
                       )}

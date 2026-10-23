@@ -5,7 +5,7 @@ use serde_json::Value;
 use crate::core::models::CreateProfileDto;
 use crate::extraction_session::UnifiedSession;
 use crate::service_database::{ProfileStorage, SessionService};
-use super::adspower_parser::parse_adspower_text;
+use super::adspower_parser::{parse_adspower_text, resolve_platform};
 use super::models::{ImportBatchDto, ImportBatchResult};
 
 pub struct ImportExportService;
@@ -34,7 +34,27 @@ impl ImportExportService {
         let session_svc = SessionService::new(storage.vault().clone());
 
         for item in items {
-            let name = item.name.unwrap_or_else(|| "Perfil Importado".to_string());
+            let username = item.username.unwrap_or_default().trim().to_string();
+            let password = item.password.unwrap_or_default().trim().to_string();
+            let twofa = item.twofa.unwrap_or_default().trim().to_string();
+
+            let raw_platform = item.platform.as_deref().or(dto.default_platform.as_deref());
+            let tab_combined = item.initial_urls.as_ref().map(|urls| urls.join(" "));
+            let (plat_key, plat_domain) = resolve_platform(raw_platform, tab_combined.as_deref());
+
+            let name = item
+                .name
+                .filter(|s| !s.trim().is_empty())
+                .unwrap_or_else(|| {
+                    if !username.is_empty() {
+                        username.clone()
+                    } else if let Some(ref id) = item.id {
+                        id.clone()
+                    } else {
+                        "Perfil AdsPower".to_string()
+                    }
+                });
+
             let group = item
                 .group
                 .or_else(|| dto.default_group.clone())
@@ -69,7 +89,43 @@ impl ImportExportService {
                 ),
             };
 
+            // Monta as contas de plataforma para preencher o campo de plataforma
+            let mut platform_accounts = Vec::new();
+            if !plat_key.is_empty() || !username.is_empty() || !password.is_empty() {
+                let effective_platform = if plat_key.is_empty() { "other".to_string() } else { plat_key.clone() };
+                let effective_domain = if plat_domain.is_empty() { effective_platform.clone() } else { plat_domain.clone() };
+                platform_accounts.push(serde_json::json!({
+                    "platform": effective_platform,
+                    "customDomain": effective_domain,
+                    "username": username,
+                    "password": password,
+                    "twoFactorKey": twofa,
+                }));
+            }
+
             let mut fp_map = serde_json::Map::new();
+            if !platform_accounts.is_empty() {
+                fp_map.insert("platform_accounts".to_string(), serde_json::json!(platform_accounts));
+            }
+            if !plat_domain.is_empty() {
+                fp_map.insert("platform_url".to_string(), serde_json::json!(plat_domain));
+            } else if !plat_key.is_empty() {
+                fp_map.insert("platform_url".to_string(), serde_json::json!(plat_key));
+            }
+            if !plat_key.is_empty() {
+                fp_map.insert("platform".to_string(), serde_json::json!(plat_key));
+            }
+            if !username.is_empty() {
+                fp_map.insert("username".to_string(), serde_json::json!(username));
+            }
+            if !password.is_empty() {
+                fp_map.insert("password".to_string(), serde_json::json!(password));
+            }
+            if !twofa.is_empty() {
+                fp_map.insert("twoFactorKey".to_string(), serde_json::json!(twofa));
+                fp_map.insert("twofa".to_string(), serde_json::json!(twofa));
+            }
+
             if let Some(w) = item.screen_width {
                 fp_map.insert("custom_screen_width".to_string(), serde_json::json!(w));
             }
@@ -81,9 +137,6 @@ impl ImportExportService {
             }
             if let Some(ref urls) = item.initial_urls {
                 fp_map.insert("open_tabs_urls".to_string(), serde_json::json!(urls.join("\n")));
-            }
-            if let Some(ref plat) = item.platform {
-                fp_map.insert("platform".to_string(), serde_json::json!(plat));
             }
             fp_map.insert("webrtc_mode".to_string(), serde_json::json!("substitute"));
             fp_map.insert("port_scan_protection".to_string(), serde_json::json!("close"));

@@ -270,40 +270,82 @@ export function formatPlatformName(raw: string): string {
 }
 
 /**
- * Identifica a plataforma / rede social
+ * Resolve a chave canônica da plataforma e o domínio correspondente
  */
-export function detectPlatform(record: Record<string, string>): string | undefined {
-  if (record.platform && record.platform.trim()) {
-    return formatPlatformName(record.platform);
+export function resolvePlatformKeyAndDomain(raw?: string, tab?: string): { platform: string; customDomain: string; displayName: string } {
+  const p = (raw || '').trim().toLowerCase();
+  const t = (tab || '').trim().toLowerCase();
+  const combined = `${p} ${t}`;
+
+  if (combined.includes('instagram')) {
+    return { platform: 'instagram', customDomain: 'instagram.com', displayName: 'Instagram' };
   }
-  if (record.tab && record.tab.trim()) {
-    const urls = record.tab.split(',');
-    for (const u of urls) {
-      const clean = u.trim().toLowerCase();
-      if (clean.includes('instagram.com')) return 'Instagram';
-      if (clean.includes('facebook.com')) return 'Facebook';
-      if (clean.includes('tiktok.com')) return 'TikTok';
-      if (clean.includes('twitter.com') || clean.includes('x.com')) return 'X (Twitter)';
-      if (clean.includes('google.com')) return 'Google';
-      if (clean.includes('amazon.com')) return 'Amazon';
-    }
+  if (combined.includes('facebook') || combined.includes('fb.com') || combined.includes('meta')) {
+    return { platform: 'facebook', customDomain: 'facebook.com', displayName: 'Facebook' };
   }
-  return undefined;
+  if (combined.includes('tiktok')) {
+    return { platform: 'tiktok', customDomain: 'tiktok.com', displayName: 'TikTok' };
+  }
+  if (combined.includes('twitter') || combined.includes('x.com') || p === 'x') {
+    return { platform: 'x', customDomain: 'x.com', displayName: 'X (Twitter)' };
+  }
+  if (combined.includes('google') || combined.includes('gmail')) {
+    return { platform: 'google', customDomain: 'accounts.google.com', displayName: 'Google' };
+  }
+  if (combined.includes('amazon')) {
+    return { platform: 'amazon', customDomain: 'amazon.com', displayName: 'Amazon' };
+  }
+  if (combined.includes('linkedin')) {
+    return { platform: 'linkedin', customDomain: 'linkedin.com', displayName: 'LinkedIn' };
+  }
+  if (combined.includes('paypal')) {
+    return { platform: 'paypal', customDomain: 'paypal.com', displayName: 'PayPal' };
+  }
+  if (combined.includes('outlook') || combined.includes('hotmail')) {
+    return { platform: 'outlook', customDomain: 'outlook.com', displayName: 'Outlook' };
+  }
+  if (combined.includes('vinted')) {
+    return { platform: 'vinted', customDomain: 'vinted.fr', displayName: 'Vinted' };
+  }
+  if (combined.includes('ebay')) {
+    return { platform: 'ebay', customDomain: 'ebay.com', displayName: 'eBay' };
+  }
+  if (combined.includes('discord')) {
+    return { platform: 'discord', customDomain: 'discord.com', displayName: 'Discord' };
+  }
+  if (combined.includes('telegram')) {
+    return { platform: 'telegram', customDomain: 'telegram.org', displayName: 'Telegram' };
+  }
+  if (combined.includes('shopee')) {
+    return { platform: 'shopee', customDomain: 'shopee.com', displayName: 'Shopee' };
+  }
+  if (combined.includes('mercado')) {
+    return { platform: 'mercadolivre', customDomain: 'mercadolivre.com.br', displayName: 'Mercado Livre' };
+  }
+  if (p) {
+    const domain = p.includes('.') ? p : `${p}.com`;
+    return { platform: p, customDomain: domain, displayName: formatPlatformName(p) };
+  }
+  return { platform: '', customDomain: '', displayName: '' };
 }
 
 /**
- * Gera um nome amigável para o perfil
+ * Identifica a plataforma / rede social
  */
-export function detectProfileName(record: Record<string, string>, detectedPlatform?: string): string {
+export function detectPlatform(record: Record<string, string>): string | undefined {
+  const resolved = resolvePlatformKeyAndDomain(record.platform, record.tab);
+  return resolved.platform || undefined;
+}
+
+/**
+ * Capta o nome do perfil do txt; se name= estiver vazio, adota o username do txt
+ */
+export function detectProfileName(record: Record<string, string>, _detectedPlatform?: string): string {
   if (record.name && record.name.trim()) return record.name.trim();
-  if (record.username && record.username.trim()) {
-    const cleanUser = record.username.trim();
-    return detectedPlatform ? `${detectedPlatform}: ${cleanUser}` : cleanUser;
-  }
-  if (record.id && record.id.trim()) {
-    return `AdsPower - ${record.id.trim()}`;
-  }
-  return 'Perfil Importado';
+  if (record.username && record.username.trim()) return record.username.trim();
+  if (record.id && record.id.trim()) return record.id.trim();
+  if (record.acc_id && record.acc_id.trim()) return `Perfil #${record.acc_id.trim()}`;
+  return 'Perfil AdsPower';
 }
 
 /**

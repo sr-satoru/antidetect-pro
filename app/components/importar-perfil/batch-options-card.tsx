@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Folder, Globe, Settings2, Shield, Network, Sparkles } from 'lucide-react';
+import { Folder, Globe, Settings2, Shield, Network, Sparkles, Share2 } from 'lucide-react';
 import { AstroBrowserIcon, AstroFoxIcon } from '../icons';
 import { serviceGrupos } from '@/services/grupos/service.grupos';
 
@@ -101,7 +101,7 @@ export const BatchOptionsCard: React.FC<BatchOptionsCardProps> = ({
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Motor do Navegador (Kernel) */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-semibold text-slate-700 dark:text-[#E2E4EC] flex items-center justify-between">
@@ -270,6 +270,39 @@ export const BatchOptionsCard: React.FC<BatchOptionsCardProps> = ({
             />
             <span>Forçar este grupo em todos os perfis importados</span>
           </label>
+        </div>
+
+        {/* 4. Plataforma de Destino */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold text-slate-700 dark:text-[#E2E4EC] flex items-center justify-between">
+            <span className="flex items-center gap-1.5">
+              <Share2 size={13} className="text-slate-400 dark:text-[#9DA2B4]" />
+              <span>Plataforma</span>
+            </span>
+            {!selectedPlatform && (
+              <span className="text-[10px] text-[#7C3AED] dark:text-[#A78BFA] font-medium">
+                Auto
+              </span>
+            )}
+          </label>
+
+          <select
+            value={selectedPlatform}
+            onChange={(e) => onPlatformChange(e.target.value)}
+            className="w-full h-9 bg-white dark:bg-[#1F2026] border border-slate-200/80 dark:border-[#2D3039] focus:border-[#7C3AED] dark:focus:border-[#A78BFA] text-slate-900 dark:text-white text-xs px-3 rounded-lg focus:outline-hidden cursor-pointer"
+          >
+            {PLATFORMS.map((p) => (
+              <option key={p.value} value={p.value}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+
+          <span className="text-[11px] text-slate-400 dark:text-[#6C7284]">
+            {selectedPlatform
+              ? `Aplica '${selectedPlatform}' a todos os perfis do lote.`
+              : 'Detecta automaticamente Instagram, Facebook, TikTok, X, etc.'}
+          </span>
         </div>
       </div>
 

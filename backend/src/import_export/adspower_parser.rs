@@ -352,48 +352,81 @@ pub fn format_platform_name(raw: &str) -> String {
     }
 }
 
-/// Identifica a plataforma / rede social a partir do campo platform ou das abas abertas
-pub fn detect_platform(record: &HashMap<String, String>) -> Option<String> {
-    if let Some(plat) = record.get("platform").filter(|s| !s.trim().is_empty()) {
-        return Some(format_platform_name(plat));
+/// Resolve a chave canônica da plataforma e o domínio correspondente
+pub fn resolve_platform(raw_platform: Option<&str>, tab: Option<&str>) -> (String, String) {
+    let p = raw_platform.unwrap_or("").trim().to_lowercase();
+    let t = tab.unwrap_or("").trim().to_lowercase();
+    let combined = format!("{} {}", p, t);
+
+    if combined.contains("instagram") {
+        ("instagram".to_string(), "instagram.com".to_string())
+    } else if combined.contains("facebook") || combined.contains("fb.com") || combined.contains("meta") {
+        ("facebook".to_string(), "facebook.com".to_string())
+    } else if combined.contains("tiktok") {
+        ("tiktok".to_string(), "tiktok.com".to_string())
+    } else if combined.contains("twitter") || combined.contains("x.com") || p == "x" {
+        ("x".to_string(), "x.com".to_string())
+    } else if combined.contains("google") || combined.contains("gmail") {
+        ("google".to_string(), "accounts.google.com".to_string())
+    } else if combined.contains("amazon") {
+        ("amazon".to_string(), "amazon.com".to_string())
+    } else if combined.contains("linkedin") {
+        ("linkedin".to_string(), "linkedin.com".to_string())
+    } else if combined.contains("paypal") {
+        ("paypal".to_string(), "paypal.com".to_string())
+    } else if combined.contains("outlook") || combined.contains("hotmail") {
+        ("outlook".to_string(), "outlook.com".to_string())
+    } else if combined.contains("vinted") {
+        ("vinted".to_string(), "vinted.fr".to_string())
+    } else if combined.contains("ebay") {
+        ("ebay".to_string(), "ebay.com".to_string())
+    } else if combined.contains("discord") {
+        ("discord".to_string(), "discord.com".to_string())
+    } else if combined.contains("telegram") {
+        ("telegram".to_string(), "telegram.org".to_string())
+    } else if combined.contains("shopee") {
+        ("shopee".to_string(), "shopee.com".to_string())
+    } else if combined.contains("mercado") {
+        ("mercadolivre".to_string(), "mercadolivre.com.br".to_string())
+    } else if !p.is_empty() {
+        let domain = if p.contains('.') { p.clone() } else { format!("{}.com", p) };
+        (p, domain)
+    } else {
+        ("".to_string(), "".to_string())
     }
-    if let Some(tab) = record.get("tab").filter(|s| !s.trim().is_empty()) {
-        for u in tab.split(',') {
-            let clean = u.trim();
-            if clean.contains("instagram.com") {
-                return Some("Instagram".to_string());
-            } else if clean.contains("facebook.com") {
-                return Some("Facebook".to_string());
-            } else if clean.contains("tiktok.com") {
-                return Some("TikTok".to_string());
-            } else if clean.contains("twitter.com") || clean.contains("x.com") {
-                return Some("X (Twitter)".to_string());
-            } else if clean.contains("google.com") {
-                return Some("Google".to_string());
-            } else if clean.contains("amazon.com") {
-                return Some("Amazon".to_string());
-            }
-        }
-    }
-    None
 }
 
-/// Gera um nome amigável e legível para o perfil caso `name` esteja vazio no export do AdsPower
-pub fn detect_profile_name(record: &HashMap<String, String>, detected_platform: Option<&str>) -> String {
+/// Identifica a plataforma a partir do campo platform ou das abas abertas
+pub fn detect_platform(record: &HashMap<String, String>) -> Option<String> {
+    let (plat_key, _) = resolve_platform(
+        record.get("platform").map(|s| s.as_str()),
+        record.get("tab").map(|s| s.as_str()),
+    );
+    if !plat_key.is_empty() {
+        Some(plat_key)
+    } else {
+        None
+    }
+}
+
+/// Capta o nome do perfil do txt; se name= estiver vazio, adota o username do txt
+pub fn detect_profile_name(record: &HashMap<String, String>, _detected_platform: Option<&str>) -> String {
+    // 1. Campo `name` explícito no arquivo txt
     if let Some(n) = record.get("name").filter(|s| !s.trim().is_empty()) {
         return n.trim().to_string();
     }
+    // 2. Se name estiver vazio, usa o `username` do txt diretamente (ex: "elfordamyt")
     if let Some(u) = record.get("username").filter(|s| !s.trim().is_empty()) {
-        let clean_user = u.trim();
-        if let Some(p) = detected_platform {
-            return format!("{}: {}", p, clean_user);
-        }
-        return clean_user.to_string();
+        return u.trim().to_string();
     }
+    // 3. Fallback para id ou acc_id
     if let Some(id) = record.get("id").filter(|s| !s.trim().is_empty()) {
-        return format!("AdsPower - {}", id.trim());
+        return id.trim().to_string();
     }
-    "Perfil Importado".to_string()
+    if let Some(acc_id) = record.get("acc_id").filter(|s| !s.trim().is_empty()) {
+        return format!("Perfil #{}", acc_id.trim());
+    }
+    "Perfil AdsPower".to_string()
 }
 
 /// Remove aspas envoltórias de senhas (ex: `"ESz3cYP5"` -> `ESz3cYP5`)
