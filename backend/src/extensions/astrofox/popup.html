@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fury Vault & 2FA</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="vault-container">
+    <!-- Top Header -->
+    <header class="vault-header">
+      <div class="brand">
+        <div class="brand-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <span class="brand-name">Fury Vault</span>
+          <span class="live-dot"><span class="dot"></span> 2FA Ativo</span>
+        </div>
+      </div>
+      <div id="profile-pill" class="profile-pill" title="Perfil em execução">Carregando...</div>
+    </header>
+
+    <!-- Main Content: Accounts List -->
+    <main id="accounts-container" class="accounts-container">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <span>Carregando dados da conta...</span>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="vault-footer">
+      <span>🔒 Local & Isolado do Navegador</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

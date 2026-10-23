@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "Fury Vault & 2FA",
+  "version": "1.0.0",
+  "description": "Cofre de credenciais e autenticador 2FA ao vivo do perfil",
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon.png"
+    }
+  },
+  "icons": {
+    "48": "icon.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "fury-vault@antidetect.pro",
+      "strict_min_version": "100.0"
+    }
+  }
+}
