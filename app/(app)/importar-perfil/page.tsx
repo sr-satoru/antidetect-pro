@@ -22,9 +22,17 @@ export const ImportarPerfilPage: React.FC = () => {
 
   // Opções do lote
   const [selectedGroup, setSelectedGroup] = useState<string>('');
-  const [selectedKernel, setSelectedKernel] = useState<string>('AstroFox');
+  const [selectedKernel, setSelectedKernel] = useState<string>('auto');
   const [selectedPlatform, setSelectedPlatform] = useState<string>('');
   const [overrideGroup, setOverrideGroup] = useState<boolean>(false);
+
+  // Estratégia de proxy do lote: 'none' (Conexão direta), 'keep' (Do arquivo), 'override' (Customizado)
+  const [proxyStrategy, setProxyStrategy] = useState<string>('none');
+  const [customProxyType, setCustomProxyType] = useState<string>('http');
+  const [customProxyHost, setCustomProxyHost] = useState<string>('');
+  const [customProxyPort, setCustomProxyPort] = useState<string>('');
+  const [customProxyUser, setCustomProxyUser] = useState<string>('');
+  const [customProxyPass, setCustomProxyPass] = useState<string>('');
 
   const [isImporting, setIsImporting] = useState<boolean>(false);
 
@@ -75,26 +83,36 @@ export const ImportarPerfilPage: React.FC = () => {
     try {
       setIsImporting(true);
 
-      const payloadProfiles = parsedProfiles.map((p) => ({
-        id: p.id,
-        name: p.name,
-        group: overrideGroup && selectedGroup ? selectedGroup : p.group || selectedGroup || undefined,
-        notes: p.notes,
-        username: p.username,
-        password: p.password,
-        twofa: p.twofa,
-        kernel: selectedKernel,
-        os: p.os || 'windows',
-        proxy_type: p.proxy_type,
-        proxy_host: p.proxy_host,
-        proxy_port: p.proxy_port,
-        proxy_username: p.proxy_username,
-        proxy_password: p.proxy_password,
-        screen_width: p.screen_width,
-        screen_height: p.screen_height,
-        user_agent: p.user_agent,
-        cookies: p.cookies || [],
-      }));
+      const payloadProfiles = parsedProfiles.map((p) => {
+        const itemKernel =
+          selectedKernel === 'auto'
+            ? p.kernel || 'AstroBrowser'
+            : selectedKernel;
+
+        return {
+          id: p.id,
+          name: p.name,
+          group: overrideGroup && selectedGroup ? selectedGroup : p.group || selectedGroup || undefined,
+          notes: p.notes,
+          username: p.username,
+          password: p.password,
+          twofa: p.twofa,
+          kernel: itemKernel,
+          os: p.os || 'windows',
+          platform: p.platform || selectedPlatform || undefined,
+          browser_version: p.browser_version,
+          initial_urls: p.initial_urls,
+          proxy_type: p.proxy_type,
+          proxy_host: p.proxy_host,
+          proxy_port: p.proxy_port,
+          proxy_username: p.proxy_username,
+          proxy_password: p.proxy_password,
+          screen_width: p.screen_width,
+          screen_height: p.screen_height,
+          user_agent: p.user_agent,
+          cookies: p.cookies || [],
+        };
+      });
 
       const res = await serviceImportarPerfil.importBatch({
         profiles: payloadProfiles,
@@ -102,6 +120,13 @@ export const ImportarPerfilPage: React.FC = () => {
         default_group: selectedGroup || undefined,
         default_kernel: selectedKernel,
         default_platform: selectedPlatform || undefined,
+        proxy_strategy: proxyStrategy,
+        default_proxy_type: proxyStrategy === 'override' ? customProxyType : undefined,
+        default_proxy_host: proxyStrategy === 'override' ? customProxyHost : undefined,
+        default_proxy_port:
+          proxyStrategy === 'override' && customProxyPort ? Number(customProxyPort) : undefined,
+        default_proxy_username: proxyStrategy === 'override' ? customProxyUser : undefined,
+        default_proxy_password: proxyStrategy === 'override' ? customProxyPass : undefined,
       });
 
       if (res.imported > 0) {
@@ -160,6 +185,18 @@ export const ImportarPerfilPage: React.FC = () => {
           onPlatformChange={setSelectedPlatform}
           overrideGroup={overrideGroup}
           onOverrideGroupChange={setOverrideGroup}
+          proxyStrategy={proxyStrategy}
+          onProxyStrategyChange={setProxyStrategy}
+          customProxyType={customProxyType}
+          onCustomProxyTypeChange={setCustomProxyType}
+          customProxyHost={customProxyHost}
+          onCustomProxyHostChange={setCustomProxyHost}
+          customProxyPort={customProxyPort}
+          onCustomProxyPortChange={setCustomProxyPort}
+          customProxyUser={customProxyUser}
+          onCustomProxyUserChange={setCustomProxyUser}
+          customProxyPass={customProxyPass}
+          onCustomProxyPassChange={setCustomProxyPass}
         />
 
         {/* Tabela de Pré-visualização ao Vivo */}
@@ -168,6 +205,11 @@ export const ImportarPerfilPage: React.FC = () => {
           onRemoveItem={handleRemovePreviewItem}
           defaultGroup={selectedGroup}
           overrideGroup={overrideGroup}
+          selectedKernel={selectedKernel}
+          proxyStrategy={proxyStrategy}
+          customProxyType={customProxyType}
+          customProxyHost={customProxyHost}
+          customProxyPort={customProxyPort}
         />
       </div>
 

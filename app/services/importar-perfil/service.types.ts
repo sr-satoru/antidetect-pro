@@ -8,6 +8,9 @@ export interface ImportPreviewItem {
   twofa?: string;
   kernel?: string;
   os?: string;
+  platform?: string;
+  browser_version?: string;
+  initial_urls?: string[];
   proxy_type?: string;
   proxy_host?: string;
   proxy_port?: number;
@@ -34,6 +37,9 @@ export interface BatchImportPayload {
     twofa?: string;
     kernel?: string;
     os?: string;
+    platform?: string;
+    browser_version?: string;
+    initial_urls?: string[];
     proxy_type?: string;
     proxy_host?: string;
     proxy_port?: number;
@@ -48,6 +54,12 @@ export interface BatchImportPayload {
   default_group?: string;
   default_kernel?: string;
   default_platform?: string;
+  proxy_strategy?: string;
+  default_proxy_type?: string;
+  default_proxy_host?: string;
+  default_proxy_port?: number;
+  default_proxy_username?: string;
+  default_proxy_password?: string;
 }
 
 export interface BatchImportResponse {

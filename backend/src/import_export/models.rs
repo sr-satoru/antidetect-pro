@@ -19,6 +19,9 @@ pub struct ImportProfileItem {
     pub screen_width: Option<u32>,
     pub screen_height: Option<u32>,
     pub user_agent: Option<String>,
+    pub browser_version: Option<String>,
+    pub platform: Option<String>,
+    pub initial_urls: Option<Vec<String>>,
     #[serde(default)]
     pub cookies: Vec<serde_json::Value>,
 }
@@ -31,6 +34,12 @@ pub struct ImportBatchDto {
     pub default_group: Option<String>,
     pub default_kernel: Option<String>,
     pub default_platform: Option<String>,
+    pub proxy_strategy: Option<String>,
+    pub default_proxy_type: Option<String>,
+    pub default_proxy_host: Option<String>,
+    pub default_proxy_port: Option<u16>,
+    pub default_proxy_username: Option<String>,
+    pub default_proxy_password: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -187,20 +187,180 @@ export function parseResolution(resStr?: string): { width?: number; height?: num
 }
 
 /**
- * Mapeia um registro em Item de Pré-visualização
+ * Detecta o motor de navegação correspondente (AstroBrowser / AstroFox)
+ */
+export function detectKernel(record: Record<string, string>): string {
+  for (const key of ['kernel', 'engine', 'browsertype', 'core']) {
+    const val = record[key];
+    if (val && val.trim()) {
+      const lower = val.toLowerCase();
+      if (lower.includes('flower') || lower.includes('fox') || lower.includes('gecko')) {
+        return 'AstroFox';
+      }
+      if (lower.includes('sun') || lower.includes('chrom') || lower.includes('blink') || lower.includes('clear')) {
+        return 'AstroBrowser';
+      }
+    }
+  }
+
+  const ua = (record.ua || record.useragent || '').toLowerCase();
+  if (ua.includes('firefox') || ua.includes('fxios') || (ua.includes('gecko/') && !ua.includes('like gecko'))) {
+    return 'AstroFox';
+  }
+  if (ua.includes('chrome') || ua.includes('chromium') || ua.includes('crios') || ua.includes('edg') || ua.includes('opr')) {
+    return 'AstroBrowser';
+  }
+
+  return 'AstroBrowser';
+}
+
+/**
+ * Detecta o sistema operacional do perfil
+ */
+export function detectOs(record: Record<string, string>): string {
+  for (const key of ['platform_os', 'os', 'operatingsystem', 'platformos']) {
+    const val = record[key];
+    if (val && val.trim()) {
+      const lower = val.toLowerCase();
+      if (lower.includes('win')) return 'windows';
+      if (lower.includes('mac') || lower.includes('darwin') || lower.includes('ios') || lower.includes('iphone') || lower.includes('ipad')) return 'macos';
+      if (lower.includes('linux') || lower.includes('android')) return 'linux';
+    }
+  }
+
+  const ua = (record.ua || record.useragent || '').toLowerCase();
+  if (ua.includes('windows') || ua.includes('win32') || ua.includes('win64')) return 'windows';
+  if (ua.includes('mac os') || ua.includes('macintosh') || ua.includes('iphone') || ua.includes('ipad') || ua.includes('darwin')) return 'macos';
+  if (ua.includes('linux') || ua.includes('android') || ua.includes('x11')) return 'linux';
+
+  return 'windows';
+}
+
+/**
+ * Extrai a versão principal do navegador do User-Agent
+ */
+export function detectBrowserVersion(record: Record<string, string>): string {
+  const ua = record.ua || record.useragent || '';
+  for (const prefix of ['Chrome/', 'Chromium/', 'Firefox/', 'FxiOS/', 'Version/']) {
+    const pos = ua.indexOf(prefix);
+    if (pos !== -1) {
+      const rest = ua.slice(pos + prefix.length);
+      const digits = rest.match(/^\d+/)?.[0];
+      if (digits) return digits;
+    }
+  }
+  return '150';
+}
+
+/**
+ * Formata o nome de exibição de uma plataforma
+ */
+export function formatPlatformName(raw: string): string {
+  const lower = raw.trim().toLowerCase();
+  if (lower.includes('instagram')) return 'Instagram';
+  if (lower.includes('facebook')) return 'Facebook';
+  if (lower.includes('tiktok')) return 'TikTok';
+  if (lower.includes('twitter') || lower.includes('x.com')) return 'X (Twitter)';
+  if (lower.includes('google') || lower.includes('gmail')) return 'Google';
+  if (lower.includes('amazon')) return 'Amazon';
+  if (lower.includes('shopee')) return 'Shopee';
+  if (lower.includes('mercado')) return 'Mercado Livre';
+  if (lower.includes('discord')) return 'Discord';
+  return raw.charAt(0).toUpperCase() + raw.slice(1);
+}
+
+/**
+ * Identifica a plataforma / rede social
+ */
+export function detectPlatform(record: Record<string, string>): string | undefined {
+  if (record.platform && record.platform.trim()) {
+    return formatPlatformName(record.platform);
+  }
+  if (record.tab && record.tab.trim()) {
+    const urls = record.tab.split(',');
+    for (const u of urls) {
+      const clean = u.trim().toLowerCase();
+      if (clean.includes('instagram.com')) return 'Instagram';
+      if (clean.includes('facebook.com')) return 'Facebook';
+      if (clean.includes('tiktok.com')) return 'TikTok';
+      if (clean.includes('twitter.com') || clean.includes('x.com')) return 'X (Twitter)';
+      if (clean.includes('google.com')) return 'Google';
+      if (clean.includes('amazon.com')) return 'Amazon';
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Gera um nome amigável para o perfil
+ */
+export function detectProfileName(record: Record<string, string>, detectedPlatform?: string): string {
+  if (record.name && record.name.trim()) return record.name.trim();
+  if (record.username && record.username.trim()) {
+    const cleanUser = record.username.trim();
+    return detectedPlatform ? `${detectedPlatform}: ${cleanUser}` : cleanUser;
+  }
+  if (record.id && record.id.trim()) {
+    return `AdsPower - ${record.id.trim()}`;
+  }
+  return 'Perfil Importado';
+}
+
+/**
+ * Remove aspas envoltórias de senhas
+ */
+export function cleanPassword(raw?: string): string | undefined {
+  if (!raw) return undefined;
+  const trimmed = raw.trim();
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2)
+      || (trimmed.startsWith("'") && trimmed.endsWith("'") && trimmed.length >= 2)) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+}
+
+/**
+ * Extrai abas de sessão / URLs iniciais
+ */
+export function extractInitialUrls(record: Record<string, string>): string[] {
+  const urls: string[] = [];
+  if (record.tab && record.tab.trim()) {
+    for (const item of record.tab.split(',')) {
+      const trimmed = item.trim();
+      if (!trimmed || trimmed.startsWith('about:sessionrestore') || trimmed === 'about:blank') {
+        continue;
+      }
+      if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        if (!urls.includes(trimmed)) {
+          urls.push(trimmed);
+        }
+      }
+    }
+  }
+  return urls;
+}
+
+/**
+ * Mapeia um registro em Item de Pré-visualização com auto-detecção rica
  */
 export function mapRecordToPreviewItem(record: Record<string, string>): ImportPreviewItem {
-  const name = record.name || record.id || 'Perfil Sem Nome';
+  const detectedKernel = detectKernel(record);
+  const detectedOs = detectOs(record);
+  const detectedVersion = detectBrowserVersion(record);
+  const detectedPlatform = detectPlatform(record);
+  const name = detectProfileName(record, detectedPlatform);
+
   const group = record.group && record.group !== '0' ? record.group : undefined;
   const notes = record.remark || record.notes || undefined;
   const username = record.username || undefined;
-  const password = record.password || undefined;
+  const password = cleanPassword(record.password);
   const twofa = record.fakey || record.twofa || undefined;
   const userAgent = record.ua || record.useragent || undefined;
 
   const proxy = parseProxyString(record.proxytype, record.proxy);
   const cookies = normalizeCookies(record.cookie);
   const res = parseResolution(record.resolution);
+  const initialUrls = extractInitialUrls(record);
 
   return {
     id: record.id,
@@ -210,6 +370,11 @@ export function mapRecordToPreviewItem(record: Record<string, string>): ImportPr
     username,
     password,
     twofa,
+    kernel: detectedKernel,
+    os: detectedOs,
+    platform: detectedPlatform,
+    browser_version: detectedVersion,
+    initial_urls: initialUrls.length > 0 ? initialUrls : undefined,
     user_agent: userAgent,
     proxy_type: proxy.type,
     proxy_host: proxy.host,
@@ -226,9 +391,39 @@ export function mapRecordToPreviewItem(record: Record<string, string>): ImportPr
 }
 
 /**
- * Parser central de texto AdsPower
+ * Parser de texto com suporte automático a AdsPower (linhas ***), JSON e CSV
  */
 export function parseAdsPowerText(text: string): ImportPreviewItem[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+
+  // 1. Tenta parse como JSON (array de perfis ou objeto contendo lista)
+  if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      const items = Array.isArray(parsed) ? parsed : parsed.list || parsed.profiles || parsed.data || [parsed];
+      if (Array.isArray(items) && items.length > 0) {
+        return items.map((item: any) => {
+          const flatMap: Record<string, string> = {};
+          for (const [k, v] of Object.entries(item)) {
+            if (v !== null && v !== undefined) {
+              flatMap[k.toLowerCase()] = typeof v === 'object' ? JSON.stringify(v) : String(v);
+            }
+          }
+          return mapRecordToPreviewItem(flatMap);
+        });
+      }
+    } catch {
+      // Segue para outros formatos se JSON falhar
+    }
+  }
+
+  // 2. Parser padrão AdsPower delimitado por asteriscos (***)
   const records = splitRecords(text);
-  return records.map(mapRecordToPreviewItem);
+  if (records.length > 0) {
+    return records.map(mapRecordToPreviewItem);
+  }
+
+  return [];
 }
+

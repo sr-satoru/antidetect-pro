@@ -242,14 +242,204 @@ pub fn parse_resolution(res_str: &str) -> (Option<u32>, Option<u32>) {
     (None, None)
 }
 
-/// Converte um bloco de chave-valor em um `ImportProfileItem`
+/// Identifica o motor de navegação correspondente (AstroBrowser / AstroFox)
+pub fn detect_kernel(record: &HashMap<String, String>) -> String {
+    // 1. Verificação explícita em campos conhecidos do AdsPower
+    for key in &["kernel", "engine", "browsertype", "core"] {
+        if let Some(val) = record.get(*key).filter(|s| !s.trim().is_empty()) {
+            let lower = val.to_lowercase();
+            if lower.contains("flower") || lower.contains("fox") || lower.contains("gecko") {
+                return "AstroFox".to_string();
+            }
+            if lower.contains("sun") || lower.contains("chrom") || lower.contains("blink") || lower.contains("clear") {
+                return "AstroBrowser".to_string();
+            }
+        }
+    }
+
+    // 2. Heurística via User-Agent
+    if let Some(ua) = record.get("ua").or_else(|| record.get("useragent")) {
+        let ua_lower = ua.to_lowercase();
+        // Firefox no iOS (FxiOS) ou Firefox desktop/Android
+        if ua_lower.contains("firefox") || ua_lower.contains("fxios") || (ua_lower.contains("gecko/") && !ua_lower.contains("like gecko")) {
+            return "AstroFox".to_string();
+        }
+        // Chromium, Chrome, Edge, Brave, Opera
+        if ua_lower.contains("chrome") || ua_lower.contains("chromium") || ua_lower.contains("crios") || ua_lower.contains("edg") || ua_lower.contains("opr") {
+            return "AstroBrowser".to_string();
+        }
+    }
+
+    "AstroBrowser".to_string()
+}
+
+/// Identifica o sistema operacional do perfil
+pub fn detect_os(record: &HashMap<String, String>) -> String {
+    for key in &["platform_os", "os", "operatingsystem", "platformos"] {
+        if let Some(val) = record.get(*key).filter(|s| !s.trim().is_empty()) {
+            let lower = val.to_lowercase();
+            if lower.contains("win") {
+                return "windows".to_string();
+            }
+            if lower.contains("mac") || lower.contains("darwin") || lower.contains("ios") || lower.contains("iphone") || lower.contains("ipad") {
+                return "macos".to_string();
+            }
+            if lower.contains("linux") || lower.contains("android") {
+                return "linux".to_string();
+            }
+        }
+    }
+
+    if let Some(ua) = record.get("ua").or_else(|| record.get("useragent")) {
+        let ua_lower = ua.to_lowercase();
+        if ua_lower.contains("windows") || ua_lower.contains("win32") || ua_lower.contains("win64") {
+            return "windows".to_string();
+        }
+        if ua_lower.contains("mac os") || ua_lower.contains("macintosh") || ua_lower.contains("iphone") || ua_lower.contains("ipad") || ua_lower.contains("darwin") {
+            return "macos".to_string();
+        }
+        if ua_lower.contains("linux") || ua_lower.contains("android") || ua_lower.contains("x11") {
+            return "linux".to_string();
+        }
+    }
+
+    "windows".to_string()
+}
+
+/// Extrai a versão principal do navegador presente no User-Agent
+pub fn detect_browser_version(record: &HashMap<String, String>) -> String {
+    if let Some(ua) = record.get("ua").or_else(|| record.get("useragent")) {
+        for prefix in &["Chrome/", "Chromium/", "Firefox/", "FxiOS/", "Version/"] {
+            if let Some(pos) = ua.find(prefix) {
+                let rest = &ua[pos + prefix.len()..];
+                let version_digits: String = rest.chars().take_while(|c| c.is_ascii_digit()).collect();
+                if !version_digits.is_empty() {
+                    return version_digits;
+                }
+            }
+        }
+    }
+    "150".to_string()
+}
+
+/// Formata o nome de exibição de uma plataforma detectada
+pub fn format_platform_name(raw: &str) -> String {
+    let lower = raw.trim().to_lowercase();
+    if lower.contains("instagram") {
+        "Instagram".to_string()
+    } else if lower.contains("facebook") {
+        "Facebook".to_string()
+    } else if lower.contains("tiktok") {
+        "TikTok".to_string()
+    } else if lower.contains("twitter") || lower.contains("x.com") {
+        "X (Twitter)".to_string()
+    } else if lower.contains("google") || lower.contains("gmail") {
+        "Google".to_string()
+    } else if lower.contains("amazon") {
+        "Amazon".to_string()
+    } else if lower.contains("shopee") {
+        "Shopee".to_string()
+    } else if lower.contains("mercado") {
+        "Mercado Livre".to_string()
+    } else if lower.contains("discord") {
+        "Discord".to_string()
+    } else {
+        let mut chars = raw.trim().chars();
+        match chars.next() {
+            Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
+            None => "".to_string(),
+        }
+    }
+}
+
+/// Identifica a plataforma / rede social a partir do campo platform ou das abas abertas
+pub fn detect_platform(record: &HashMap<String, String>) -> Option<String> {
+    if let Some(plat) = record.get("platform").filter(|s| !s.trim().is_empty()) {
+        return Some(format_platform_name(plat));
+    }
+    if let Some(tab) = record.get("tab").filter(|s| !s.trim().is_empty()) {
+        for u in tab.split(',') {
+            let clean = u.trim();
+            if clean.contains("instagram.com") {
+                return Some("Instagram".to_string());
+            } else if clean.contains("facebook.com") {
+                return Some("Facebook".to_string());
+            } else if clean.contains("tiktok.com") {
+                return Some("TikTok".to_string());
+            } else if clean.contains("twitter.com") || clean.contains("x.com") {
+                return Some("X (Twitter)".to_string());
+            } else if clean.contains("google.com") {
+                return Some("Google".to_string());
+            } else if clean.contains("amazon.com") {
+                return Some("Amazon".to_string());
+            }
+        }
+    }
+    None
+}
+
+/// Gera um nome amigável e legível para o perfil caso `name` esteja vazio no export do AdsPower
+pub fn detect_profile_name(record: &HashMap<String, String>, detected_platform: Option<&str>) -> String {
+    if let Some(n) = record.get("name").filter(|s| !s.trim().is_empty()) {
+        return n.trim().to_string();
+    }
+    if let Some(u) = record.get("username").filter(|s| !s.trim().is_empty()) {
+        let clean_user = u.trim();
+        if let Some(p) = detected_platform {
+            return format!("{}: {}", p, clean_user);
+        }
+        return clean_user.to_string();
+    }
+    if let Some(id) = record.get("id").filter(|s| !s.trim().is_empty()) {
+        return format!("AdsPower - {}", id.trim());
+    }
+    "Perfil Importado".to_string()
+}
+
+/// Remove aspas envoltórias de senhas (ex: `"ESz3cYP5"` -> `ESz3cYP5`)
+pub fn clean_password(raw: &str) -> String {
+    let trimmed = raw.trim();
+    if (trimmed.starts_with('"') && trimmed.ends_with('"') && trimmed.len() >= 2)
+        || (trimmed.starts_with('\'') && trimmed.ends_with('\'') && trimmed.len() >= 2)
+    {
+        trimmed[1..trimmed.len() - 1].to_string()
+    } else {
+        trimmed.to_string()
+    }
+}
+
+/// Extrai URLs válidas a partir do campo `tab` do AdsPower
+pub fn extract_initial_urls(record: &HashMap<String, String>) -> Vec<String> {
+    let mut urls = Vec::new();
+    if let Some(tab) = record.get("tab").filter(|s| !s.trim().is_empty()) {
+        for item in tab.split(',') {
+            let trimmed = item.trim();
+            if trimmed.is_empty() || trimmed.starts_with("about:sessionrestore") || trimmed == "about:blank" {
+                continue;
+            }
+            if trimmed.starts_with("http://") || trimmed.starts_with("https://") {
+                if !urls.contains(&trimmed.to_string()) {
+                    urls.push(trimmed.to_string());
+                }
+            }
+        }
+    }
+    urls
+}
+
+/// Converte um bloco de chave-valor em um `ImportProfileItem` com detecção automática rica
 pub fn map_record_to_item(record: &HashMap<String, String>) -> ImportProfileItem {
     let id = record.get("id").filter(|s| !s.is_empty()).cloned();
-    let name = record.get("name").filter(|s| !s.is_empty()).cloned();
+    let detected_kernel = detect_kernel(record);
+    let detected_os = detect_os(record);
+    let detected_version = detect_browser_version(record);
+    let detected_platform = detect_platform(record);
+    let name = detect_profile_name(record, detected_platform.as_deref());
+
     let group = record.get("group").filter(|s| !s.is_empty() && *s != "0").cloned();
     let notes = record.get("remark").or_else(|| record.get("notes")).cloned();
     let username = record.get("username").filter(|s| !s.is_empty()).cloned();
-    let password = record.get("password").filter(|s| !s.is_empty()).cloned();
+    let password = record.get("password").filter(|s| !s.is_empty()).map(|p| clean_password(p));
     let twofa = record.get("fakey").or_else(|| record.get("twofa")).filter(|s| !s.is_empty()).cloned();
     let user_agent = record.get("ua").or_else(|| record.get("useragent")).cloned();
 
@@ -268,16 +458,18 @@ pub fn map_record_to_item(record: &HashMap<String, String>) -> ImportProfileItem
         .map(|c| normalize_cookies(c))
         .unwrap_or_default();
 
+    let initial_urls = extract_initial_urls(record);
+
     ImportProfileItem {
         id,
-        name,
+        name: Some(name),
         group,
         notes,
         username,
         password,
         twofa,
-        kernel: None,
-        os: None,
+        kernel: Some(detected_kernel),
+        os: Some(detected_os),
         proxy_type,
         proxy_host,
         proxy_port,
@@ -286,6 +478,9 @@ pub fn map_record_to_item(record: &HashMap<String, String>) -> ImportProfileItem
         screen_width,
         screen_height,
         user_agent,
+        browser_version: Some(detected_version),
+        platform: detected_platform,
+        initial_urls: if initial_urls.is_empty() { None } else { Some(initial_urls) },
         cookies,
     }
 }

@@ -89,6 +89,10 @@ pub fn build_clearcote_flags(
     // Alinha key shares pós-quânticos (ML-KEM/Kyber) e ALPS do ClientHello ao Chrome 150
     flags.push("--fingerprint-tls-profile=chrome-150".to_string());
 
+    if let Some(ua) = fp.get("user_agent").and_then(|v| v.as_str()).filter(|s| !s.trim().is_empty()) {
+        flags.push(format!("--user-agent={}", ua.trim()));
+    }
+
     // 5. Hardware e Concorrência
     let cpu_cores = parse_opt_u32(fp.get("cpu_cores")).unwrap_or(8);
     flags.push(format!("--fingerprint-hardware-concurrency={}", cpu_cores));

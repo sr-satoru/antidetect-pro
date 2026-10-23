@@ -157,7 +157,7 @@ async fn handle_client(mut client: TcpStream, config: Arc<RelayConfig>) -> Resul
     let mut upstream = match dial_upstream(&config.upstream, &host, port).await {
         Ok(s) => s,
         Err(e) => {
-            warn!("⚠️ Upstream proxy falhou para {}:{} ({}) - Acionando Kill-Switch (502)", host, port, e);
+            warn!("⚠️ [ProxyRelay] Conexão com upstream proxy falhou ao acessar {}:{} ({}) - Acionando Kill-Switch (502)", host, port, e);
             let _ = client
                 .write_all(b"HTTP/1.1 502 Bad Gateway\r\nContent-Type: text/plain\r\nX-Kill-Switch: active\r\nConnection: close\r\n\r\nUpstream proxy connection failed (Kill-Switch Active)\r\n")
                 .await;
@@ -169,6 +169,9 @@ async fn handle_client(mut client: TcpStream, config: Arc<RelayConfig>) -> Resul
         client
             .write_all(b"HTTP/1.1 200 Connection Established\r\n\r\n")
             .await?;
+        if !leftover.is_empty() {
+            upstream.write_all(&leftover).await?;
+        }
     } else {
         let cleaned = strip_proxy_headers(&head);
         upstream.write_all(cleaned.as_bytes()).await?;

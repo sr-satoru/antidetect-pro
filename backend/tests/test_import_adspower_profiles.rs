@@ -258,3 +258,101 @@ async fn test_batch_import_endpoint_full_lifecycle() {
     assert_eq!(session.cookies[0].name, "auth_token");
     assert_eq!(session.cookies[0].domain, ".x.com");
 }
+
+#[test]
+fn test_user_import_files_auto_detection() {
+    use star_multlogin_backend::import_export::adspower_parser::parse_adspower_text;
+
+    let sample_fx = r#"acc_id=8
+id=k1gyjp8y
+group=
+name=
+remark=
+tags=
+tab=about:sessionrestore,https://www.instagram.com/,https://help.instagram.com/347751748650214?ref=igweb
+platform=instagram.com
+username=rebeccahawley3
+password="ESz3cYP5"
+fakey=
+cookie=[]
+proxytype=socks5
+proxy=79.127.168.43:50101:7FcArukp_1:M34hq76BEC
+ua=Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/150.0 Mobile/15E148 Safari/605.1.15
+******************"#;
+
+    let sample_cr = r#"acc_id=7
+id=k1gyjk48
+group=
+name=
+remark=
+tags=
+tab=https://www.instagram.com/elfordamyt/
+platform=instagram.com
+username=elfordamyt
+password="T5gXsFLW"
+fakey=
+cookie=[]
+proxytype=socks5
+proxy=79.127.168.43:50101:7FcArukp_1:M34hq76BEC
+ua=Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.7922.83 Mobile Safari/537.36
+******************"#;
+
+    let items_fx = parse_adspower_text(sample_fx);
+    assert_eq!(items_fx.len(), 1);
+    let fx = &items_fx[0];
+    assert_eq!(fx.id.as_deref(), Some("k1gyjp8y"));
+    assert_eq!(fx.kernel.as_deref(), Some("AstroFox"));
+    assert_eq!(fx.os.as_deref(), Some("macos"));
+    assert_eq!(fx.browser_version.as_deref(), Some("150"));
+    assert_eq!(fx.name.as_deref(), Some("Instagram: rebeccahawley3"));
+    assert_eq!(fx.password.as_deref(), Some("ESz3cYP5"));
+    assert!(fx.initial_urls.as_ref().unwrap().contains(&"https://www.instagram.com/".to_string()));
+
+    let items_cr = parse_adspower_text(sample_cr);
+    assert_eq!(items_cr.len(), 1);
+    let cr = &items_cr[0];
+    assert_eq!(cr.id.as_deref(), Some("k1gyjk48"));
+    assert_eq!(cr.kernel.as_deref(), Some("AstroBrowser"));
+    assert_eq!(cr.os.as_deref(), Some("linux"));
+    assert_eq!(cr.browser_version.as_deref(), Some("151"));
+    assert_eq!(cr.name.as_deref(), Some("Instagram: elfordamyt"));
+    assert_eq!(cr.password.as_deref(), Some("T5gXsFLW"));
+    assert!(cr.initial_urls.as_ref().unwrap().contains(&"https://www.instagram.com/elfordamyt/".to_string()));
+}
+
+#[tokio::test]
+async fn test_batch_import_proxy_strategy_none_and_override() {
+    let (base_url, storage, _vault, _guard) = spawn_test_server().await;
+    let client = reqwest::Client::new();
+
+    let hs_res = client
+        .post(format!("{}/api/local-auth/dev-handshake", base_url))
+        .send()
+        .await
+        .unwrap();
+    let hs_json: Value = hs_res.json().await.unwrap();
+    let session_token = hs_json["session_token"].as_str().unwrap();
+
+    let sample_raw = r#"id=prof_direct
+proxytype=socks5
+proxy=10.0.0.1:1080:u:p
+ua=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36
+******************"#;
+
+    // Importa com proxy_strategy = "none" (Conexão direta, ignora proxy expirado do arquivo)
+    let resp = client
+        .post(format!("{}/api/profiles/import", base_url))
+        .header("X-Session-Token", session_token)
+        .json(&serde_json::json!({
+            "raw_text": sample_raw,
+            "proxy_strategy": "none"
+        }))
+        .send()
+        .await
+        .unwrap();
+
+    assert_eq!(resp.status(), StatusCode::OK);
+    let p = storage.get("prof_direct").expect("Perfil deve existir");
+    assert_eq!(p.proxy.proxy_type, "none");
+    assert_eq!(p.proxy.host, None);
+}

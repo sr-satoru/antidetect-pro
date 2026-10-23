@@ -39,11 +39,35 @@ impl ImportExportService {
                 .group
                 .or_else(|| dto.default_group.clone())
                 .filter(|s| !s.trim().is_empty() && s != "0");
-            let kernel = item
-                .kernel
-                .or_else(|| dto.default_kernel.clone())
-                .unwrap_or_else(|| "AstroFox".to_string());
+
+            // Se o usuário selecionou 'auto' ou não especificou, usa o motor auto-detectado do perfil
+            let kernel = match dto.default_kernel.as_deref() {
+                Some("AstroFox") => "AstroFox".to_string(),
+                Some("AstroBrowser") => "AstroBrowser".to_string(),
+                _ => item.kernel.unwrap_or_else(|| "AstroBrowser".to_string()),
+            };
+
             let os = item.os.unwrap_or_else(|| "windows".to_string());
+
+            // Estratégia de proxy do lote (keep, none/direct, override)
+            let strategy = dto.proxy_strategy.as_deref().unwrap_or("keep");
+            let (proxy_type, proxy_host, proxy_port, proxy_username, proxy_password) = match strategy {
+                "none" | "direct" => (Some("none".to_string()), None, None, None, None),
+                "override" => (
+                    dto.default_proxy_type.clone().or_else(|| Some("http".to_string())),
+                    dto.default_proxy_host.clone(),
+                    dto.default_proxy_port,
+                    dto.default_proxy_username.clone(),
+                    dto.default_proxy_password.clone(),
+                ),
+                _ => (
+                    item.proxy_type,
+                    item.proxy_host,
+                    item.proxy_port,
+                    item.proxy_username,
+                    item.proxy_password,
+                ),
+            };
 
             let mut fp_map = serde_json::Map::new();
             if let Some(w) = item.screen_width {
@@ -52,9 +76,19 @@ impl ImportExportService {
             if let Some(h) = item.screen_height {
                 fp_map.insert("custom_screen_height".to_string(), serde_json::json!(h));
             }
-            if let Some(ua) = item.user_agent {
+            if let Some(ref ua) = item.user_agent {
                 fp_map.insert("user_agent".to_string(), serde_json::json!(ua));
             }
+            if let Some(ref urls) = item.initial_urls {
+                fp_map.insert("open_tabs_urls".to_string(), serde_json::json!(urls.join("\n")));
+            }
+            if let Some(ref plat) = item.platform {
+                fp_map.insert("platform".to_string(), serde_json::json!(plat));
+            }
+            fp_map.insert("webrtc_mode".to_string(), serde_json::json!("substitute"));
+            fp_map.insert("port_scan_protection".to_string(), serde_json::json!("close"));
+
+            let browser_version = item.browser_version.unwrap_or_else(|| "150".to_string());
 
             let create_dto = CreateProfileDto {
                 id: item.id.clone(),
@@ -62,16 +96,16 @@ impl ImportExportService {
                 group,
                 tags: None,
                 tag_ids: None,
-                notes: item.notes.or_else(|| dto.default_platform.clone()),
+                notes: item.notes.or_else(|| item.platform.clone()).or_else(|| dto.default_platform.clone()),
                 status: Some("ready".to_string()),
                 kernel: Some(kernel),
-                browser_version: Some("150".to_string()),
+                browser_version: Some(browser_version),
                 os: Some(os),
-                proxy_type: item.proxy_type,
-                proxy_host: item.proxy_host,
-                proxy_port: item.proxy_port,
-                proxy_username: item.proxy_username,
-                proxy_password: item.proxy_password,
+                proxy_type,
+                proxy_host,
+                proxy_port,
+                proxy_username,
+                proxy_password,
                 fingerprint_json: Some(Value::Object(fp_map)),
                 extension_mode: None,
                 extension_category: None,
