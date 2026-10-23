@@ -77,17 +77,7 @@ fn resolve_data_dir(data_dir_override: Option<String>) -> String {
         }
     }
 
-    // 3. Verifica se o diretório de dados oficial do sistema operacional já existe (app instalado/banco real)
-    let canonical_dir = browser_downloader::platform::get_canonical_app_dir();
-    if canonical_dir.exists() {
-        tracing::info!(
-            "📂 [DataDir] Utilizando banco e diretório oficial do sistema operacional: {:?}",
-            canonical_dir
-        );
-        return canonical_dir.to_string_lossy().to_string();
-    }
-
-    // 4. Modo desenvolvimento (cargo run) -> fallback para ./app-data se o app real não estiver instalado
+    // 3. Modo desenvolvimento (cargo run) -> pasta local ./app-data no diretório do backend
     if cfg!(debug_assertions) {
         let dev_dir = if let Some(manifest_dir) = option_env!("CARGO_MANIFEST_DIR") {
             std::path::PathBuf::from(manifest_dir).join("app-data")
@@ -95,16 +85,13 @@ fn resolve_data_dir(data_dir_override: Option<String>) -> String {
             std::path::PathBuf::from("./app-data")
         };
         let _ = std::fs::create_dir_all(&dev_dir);
-        tracing::info!(
-            "🛠️ [DataDir] Diretório oficial não encontrado. Utilizando app-data local: {:?}",
-            dev_dir
-        );
         return dev_dir.to_string_lossy().to_string();
     }
 
-    // 5. Modo produção (Release) -> cria e retorna o diretório canônico oficial do SO
-    let _ = std::fs::create_dir_all(&canonical_dir);
-    canonical_dir.to_string_lossy().to_string()
+    // 4. Modo produção (Release) -> diretório canônico oficial do SO
+    browser_downloader::platform::get_canonical_app_dir()
+        .to_string_lossy()
+        .to_string()
 }
 
 static GLOBAL_NONCE_MANAGER: OnceLock<Arc<NonceManager>> = OnceLock::new();

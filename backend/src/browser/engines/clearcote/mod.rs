@@ -65,15 +65,6 @@ impl BrowserEngine for ClearcoteEngine {
         let mut all_addon_paths = net_setup.addon_paths.clone();
         all_addon_paths.extend(ext_paths);
 
-        // 3.1. Injeta extensão isolada de Credenciais e 2FA se houver contas cadastradas
-        if let Ok(Some(cred_ext_path)) = crate::extensions::CredentialsExtensionManager::prepare_extension(
-            profile_dir,
-            profile,
-            "AstroBrowser",
-        ) {
-            all_addon_paths.push(cred_ext_path.to_string_lossy().to_string());
-        }
-
         // 4. Injeta Preferences nativas do Chromium em Default/Preferences
         preferences::setup_chromium_preferences(profile_dir, profile)?;
 
@@ -85,31 +76,27 @@ impl BrowserEngine for ClearcoteEngine {
             let proxy_scheme = format!("http://127.0.0.1:{}", relay.port);
             if let Ok(proxy_client) = reqwest::Client::builder()
                 .proxy(reqwest::Proxy::all(&proxy_scheme).map_err(|e| e.to_string())?)
-                .timeout(std::time::Duration::from_millis(6000))
+                .timeout(std::time::Duration::from_millis(2500))
                 .build()
             {
-                let mut detected_ip = None;
-                for check_url in &["https://api.ipify.org", "https://icanhazip.com", "https://checkip.amazonaws.com"] {
-                    if let Ok(resp) = proxy_client.get(*check_url).send().await {
-                        if let Ok(t) = resp.text().await {
-                            let trimmed = t.trim().to_string();
-                            if trimmed.parse::<std::net::IpAddr>().is_ok() {
-                                detected_ip = Some(trimmed);
-                                break;
-                            }
+                match proxy_client.get("https://api.ipify.org").send().await {
+                    Ok(resp) => resp.text().await.ok().and_then(|t| {
+                        let trimmed = t.trim().to_string();
+                        if trimmed.parse::<std::net::IpAddr>().is_ok() {
+                            Some(trimmed)
+                        } else {
+                            None
                         }
-                    }
-                }
-                detected_ip.or_else(|| {
-                    profile.proxy.host.as_deref().and_then(|h| {
+                    }),
+                    Err(_) => profile.proxy.host.as_deref().and_then(|h| {
                         let clean = h.trim();
                         if clean.parse::<std::net::IpAddr>().is_ok() {
                             Some(clean.to_string())
                         } else {
                             None
                         }
-                    })
-                })
+                    }),
+                }
             } else {
                 profile.proxy.host.as_deref().and_then(|h| {
                     let clean = h.trim();

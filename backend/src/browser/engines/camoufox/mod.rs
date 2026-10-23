@@ -81,15 +81,6 @@ impl BrowserEngine for CamoufoxEngine {
         let mut all_addon_paths = net_setup.addon_paths.clone();
         all_addon_paths.extend(ext_paths);
 
-        // 5.1. Injeta extensão isolada de Credenciais e 2FA se houver contas cadastradas
-        if let Ok(Some(cred_ext_path)) = crate::extensions::CredentialsExtensionManager::prepare_extension(
-            profile_dir,
-            profile,
-            "AstroFox",
-        ) {
-            all_addon_paths.push(cred_ext_path.to_string_lossy().to_string());
-        }
-
         // 6. Resolução de IPv4 para WebRTC
         let proxy_ip: Option<String> = if profile.proxy.proxy_type != "none" {
             if let Some(host) = profile.proxy.host.as_deref().filter(|h| !h.trim().is_empty()) {
