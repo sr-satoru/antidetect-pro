@@ -54,21 +54,29 @@ export function profileToFormData(profile: any): any {
   else if (osKey === 'linux') defaultOsVer = 'Linux x86_64';
   else if (osKey === 'android') defaultOsVer = 'Linux armv8l (Android 14)';
 
+  const defaultPlatform =
+    osKey === 'windows' ? 'Win32' :
+    osKey === 'macos' ? 'MacIntel' :
+    osKey === 'android' ? 'Linux armv8l' : 'Linux x86_64';
+
   return {
     id: profile.id,
     name: profile.name || '',
     group: profile.group || activePreset.group || 'Desagrupado',
     tags: tagsList,
+    kernel: kernel,
     kernelVersion: (() => {
       const v = isAndroid ? '135' : (profile.browser_version || fp.kernel_version || activePreset.kernelVersion || '135');
       return (v === '150' || parseInt(v, 10) >= 145) ? '135' : v;
     })(),
     os: osKey,
     osVersion: fp.os_version || defaultOsVer,
+    platform: fp.platform || profile.platform || defaultPlatform,
     userAgent: fp.user_agent || uas[0] || '',
     userAgentCategory: fp.user_agent_category || 'Todo',
     cookies: fp.cookies || '',
     notes: profile.notes || '',
+    deviceMemory: fp.device_memory ?? fp.ram_gb ?? activePreset.ramGb ?? 8,
 
     // Proxy
     proxyMode: proxy.mode || fp.proxy_mode || activePreset.proxyMode || 'custom',
@@ -147,7 +155,7 @@ export function profileToFormData(profile: any): any {
     webglRenderer: fp.webgl_renderer || webgl.renderer,
     webgpuMode: fp.webgpu_mode || activePreset.webgpuMode || 'webgl',
     ramMode: fp.ram_mode || activePreset.ramMode || 'custom',
-    ramGb: fp.ram_gb ?? activePreset.ramGb ?? 8,
+    ramGb: fp.ram_gb ?? fp.device_memory ?? activePreset.ramGb ?? 8,
     deviceNameMode: fp.device_name_mode || activePreset.deviceNameMode || 'custom',
     deviceName: fp.device_name || generateDeviceName(osKey),
     macAddressMode: fp.mac_address_mode || activePreset.macAddressMode || 'custom',

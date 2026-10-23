@@ -11,10 +11,16 @@ interface PreviasProps {
 
 export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
   const navigate = useNavigate();
+  const activePreset = serviceBasePresets.getActivePreset();
+
+  const isAndroid = formData.os === 'android';
+  const isChromium = isAndroid || formData.kernel === 'AstroBrowser' || (!formData.kernel && (activePreset.defaultKernel === 'AstroBrowser' || (formData.userAgent && formData.userAgent.includes('Chrome'))));
+  const displayKernel = isChromium ? 'AstroBrowser' : 'AstroFox';
+  const displayKernelVersion = formData.kernelVersion || (isChromium ? '135' : '150');
+
   const handleRegenerateFingerprint = () => {
-    const activePreset = serviceBasePresets.getActivePreset();
     const currentOs = formData.os || activePreset.defaultOS;
-    const currentKernel = formData.kernel || activePreset.defaultKernel;
+    const currentKernel = isChromium ? 'AstroBrowser' : 'AstroFox';
     const preset = getRandomPreset(currentOs, currentKernel);
 
     onChange('userAgent', preset.userAgent);
@@ -79,13 +85,13 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
       : []),
     {
       label: 'Browser Kernel',
-      value: formData.kernel === 'AstroBrowser'
-        ? `AstroBrowser [Chromium ${formData.kernelVersion}]`
-        : `AstroFox [Firefox ${formData.kernelVersion}]`,
+      value: isChromium
+        ? `AstroBrowser [Chromium ${displayKernelVersion}]`
+        : `AstroFox [Firefox ${displayKernelVersion}]`,
     },
     {
       label: 'Sistema / Arquitetura',
-      value: formData.platform,
+      value: formData.platform || (formData.os === 'windows' ? 'Win32' : formData.os === 'macos' ? 'MacIntel' : formData.os === 'android' ? 'Linux armv8l' : 'Linux x86_64'),
     },
     {
       label: 'User-Agent',
@@ -121,29 +127,29 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
     },
     {
       label: 'Resolução do Ecrã',
-      value: `${formData.customScreenWidth} × ${formData.customScreenHeight} (DPR ${formData.devicePixelRatio}) • ${formData.screenResolution}`,
+      value: `${formData.customScreenWidth ?? 1920} × ${formData.customScreenHeight ?? 1080} (DPR ${formData.devicePixelRatio ?? 1}) • ${formData.screenResolution || 'Com base no User-Agent'}`,
     },
     {
       label: 'Metadados WebGL',
       value: formData.webglMetadataMode === 'default'
         ? 'Predefinição'
-        : `${formData.webglRenderer} (${formData.webglVendor})`,
+        : `${formData.webglRenderer || 'Intel(R) UHD Graphics'} (${formData.webglVendor || 'Google Inc.'})`,
     },
     {
       label: 'CPU / Processador',
-      value: `${formData.cpuCores} núcleos`,
+      value: `${formData.cpuCores ?? 8} núcleos`,
     },
     {
       label: 'Touch Points',
-      value: `${formData.maxTouchPoints} pontos`,
+      value: `${formData.maxTouchPoints ?? (formData.os === 'android' ? 5 : 0)} pontos`,
     },
     {
       label: 'Dispositivos de Mídia',
-      value: `${formData.mediaDevicesCount?.micros} Mic, ${formData.mediaDevicesCount?.speakers} Saídas, ${formData.mediaDevicesCount?.webcams} Câmera`,
+      value: `${formData.mediaDevicesCount?.micros ?? 1} Mic, ${formData.mediaDevicesCount?.speakers ?? 2} Saídas, ${formData.mediaDevicesCount?.webcams ?? 1} Câmera`,
     },
     {
       label: 'RAM',
-      value: `${formData.ramGb} GB`,
+      value: `${formData.ramGb ?? formData.deviceMemory ?? 8} GB`,
     },
     {
       label: 'Nome do dispositivo',
@@ -216,7 +222,7 @@ export const Previas: React.FC<PreviasProps> = ({ formData, onChange }) => {
         {/* Header do card com título e botão New fingerprint */}
         <div className="mb-3.5 shrink-0 flex items-center justify-between border-b border-slate-200/80 dark:border-[#2D3039] pb-3.5">
           <h3 className="text-[14px] font-semibold tracking-wide text-slate-900 dark:text-white">
-            Visão Geral ({formData.kernel === 'AstroBrowser' ? 'AstroBrowser' : 'AstroFox'})
+            Visão Geral ({displayKernel})
           </h3>
           <button
             type="button"
