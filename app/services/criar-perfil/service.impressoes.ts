@@ -172,7 +172,7 @@ export function extrairImpressaoDigitalLimpa(formData: any): ImpressaoDigitalDat
       user_agent: formData.userAgent || undefined,
       user_agent_category: formData.userAgentCategory || 'Todo',
 
-      webrtc_mode: formData.webrtcMode || 'disabled',
+      webrtc_mode: formData.webrtcMode || 'substitute',
       timezone_mode: formData.timezoneMode || 'ip',
       custom_timezone: formData.timezoneMode === 'custom' && formData.customTimezone?.trim() ? formData.customTimezone.trim() : undefined,
 

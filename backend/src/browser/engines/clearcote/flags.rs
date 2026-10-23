@@ -309,8 +309,8 @@ pub fn build_clearcote_flags(
     }
 
     // WebRTC IP Mock nativo do Clearcote (patch 100-webrtc-leak.patch)
-    // Se ativado, fabrica o candidato srflx com o egress IP e suprime qualquer candidato local kHost
-    if webrtc_mode != "off" && webrtc_mode != "disabled" {
+    // Se houver proxy_ip detectado, fabrica o candidato srflx com o egress IP e suprime qualquer candidato local kHost
+    if webrtc_mode != "off" {
         if let Some(ip) = proxy_ip {
             let clean = ip.trim();
             if clean.parse::<std::net::IpAddr>().is_ok() {

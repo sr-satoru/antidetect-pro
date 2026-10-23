@@ -114,7 +114,7 @@ export function profileToFormData(profile: any): any {
     // Hardware & Impressão Digital
     cpuMode: fp.cpu_mode || activePreset.cpuMode || 'custom',
     cpuCores: fp.cpu_cores ?? activePreset.cpuCores ?? 8,
-    webrtcMode: fp.webrtc_mode || activePreset.webrtcMode || 'disabled',
+    webrtcMode: fp.webrtc_mode || activePreset.webrtcMode || 'substitute',
     timezoneMode: fp.timezone_mode || activePreset.timezoneMode || 'ip',
     customTimezone: fp.custom_timezone || '',
     locationMode: fp.location_mode || activePreset.locationMode || 'ip',

@@ -213,7 +213,7 @@ export const serviceBasePresets = {
 
       cpuMode: activePreset.cpuMode || 'custom',
       cpuCores: activePreset.cpuMode === 'custom' ? (activePreset.cpuCores || 8) : physicalPreset.cpuCores,
-      webrtcMode: activePreset.webrtcMode || 'disabled',
+      webrtcMode: activePreset.webrtcMode || 'substitute',
       timezoneMode: activePreset.timezoneMode || 'ip',
       customTimezone: activePreset.timezoneMode === 'custom' ? (activePreset.customTimezone || 'America/Sao_Paulo') : '',
       locationMode: activePreset.locationMode || 'ip',

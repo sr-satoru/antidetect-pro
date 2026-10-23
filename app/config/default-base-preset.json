@@ -26,7 +26,7 @@
   "openTabsUrls": "",
   "cpuMode": "custom",
   "cpuCores": 8,
-  "webrtcMode": "disabled",
+  "webrtcMode": "substitute",
   "timezoneMode": "ip",
   "customTimezone": "",
   "locationMode": "ip",
