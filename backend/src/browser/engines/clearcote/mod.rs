@@ -76,27 +76,35 @@ impl BrowserEngine for ClearcoteEngine {
             let proxy_scheme = format!("http://127.0.0.1:{}", relay.port);
             if let Ok(proxy_client) = reqwest::Client::builder()
                 .proxy(reqwest::Proxy::all(&proxy_scheme).map_err(|e| e.to_string())?)
-                .timeout(std::time::Duration::from_millis(2500))
+                .timeout(std::time::Duration::from_millis(6000))
                 .build()
             {
-                match proxy_client.get("https://api.ipify.org").send().await {
-                    Ok(resp) => resp.text().await.ok().and_then(|t| {
-                        let trimmed = t.trim().to_string();
-                        if trimmed.parse::<std::net::IpAddr>().is_ok() {
-                            Some(trimmed)
-                        } else {
-                            None
+                let mut detected_ip = None;
+                for check_url in &[
+                    "https://api.ipify.org",
+                    "https://icanhazip.com",
+                    "https://checkip.amazonaws.com",
+                ] {
+                    if let Ok(resp) = proxy_client.get(*check_url).send().await {
+                        if let Ok(t) = resp.text().await {
+                            let trimmed = t.trim().to_string();
+                            if trimmed.parse::<std::net::IpAddr>().is_ok() {
+                                detected_ip = Some(trimmed);
+                                break;
+                            }
                         }
-                    }),
-                    Err(_) => profile.proxy.host.as_deref().and_then(|h| {
+                    }
+                }
+                detected_ip.or_else(|| {
+                    profile.proxy.host.as_deref().and_then(|h| {
                         let clean = h.trim();
                         if clean.parse::<std::net::IpAddr>().is_ok() {
                             Some(clean.to_string())
                         } else {
                             None
                         }
-                    }),
-                }
+                    })
+                })
             } else {
                 profile.proxy.host.as_deref().and_then(|h| {
                     let clean = h.trim();

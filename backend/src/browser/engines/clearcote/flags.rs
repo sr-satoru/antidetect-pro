@@ -94,11 +94,47 @@ pub fn build_clearcote_flags(
     flags.push(format!("--fingerprint-platform={}", platform));
 
     // Versão da plataforma para Sec-CH-UA-Platform-Version (evita o tell de 19.0.0 em kWindowsVersions)
-    let platform_version = match platform {
-        "windows" => "15.0.0", // Windows 11 em Client Hints
-        "macos" => "15.0.0",   // macOS Sequoia
-        "android" => "14.0.0", // Android 14
-        _ => "6.8.0",          // Linux kernel
+    // Prioriza o valor explícito em userAgentData ou deriva coerentemente a partir de os_version
+    let profile_platform_ver = fp.get("userAgentData")
+        .and_then(|u| u.get("platformVersion"))
+        .and_then(|v| v.as_str())
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty() && *s != "19.0.0");
+
+    let os_ver_raw = fp.get("os_version")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .to_lowercase();
+
+    let platform_version = if let Some(pv) = profile_platform_ver {
+        pv.to_string()
+    } else {
+        match platform {
+            "windows" => {
+                if os_ver_raw.contains("10") && !os_ver_raw.contains("11") {
+                    "10.0.0".to_string() // Windows 10 em Client Hints
+                } else {
+                    "15.0.0".to_string() // Windows 11 em Client Hints
+                }
+            }
+            "macos" => {
+                if os_ver_raw.contains("14") {
+                    "14.5.0".to_string()
+                } else if os_ver_raw.contains("13") {
+                    "13.6.0".to_string()
+                } else {
+                    "15.0.0".to_string() // macOS Sequoia
+                }
+            }
+            "android" => {
+                if os_ver_raw.contains("13") {
+                    "13.0.0".to_string()
+                } else {
+                    "14.0.0".to_string() // Android 14
+                }
+            }
+            _ => "6.8.0".to_string(), // Linux kernel
+        }
     };
     flags.push(format!("--fingerprint-platform-version={}", platform_version));
 

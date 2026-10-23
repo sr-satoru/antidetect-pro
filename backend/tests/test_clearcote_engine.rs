@@ -100,8 +100,8 @@ fn test_clearcote_flags_generation() {
     assert!(flags.iter().any(|f| f.starts_with("--fingerprint=")));
     assert!(flags.iter().any(|f| f == "--fingerprint-platform=windows"));
     assert!(flags.iter().any(|f| f == "--fingerprint-brand=chrome"));
-    assert!(flags.iter().any(|f| f == "--fingerprint-brand-version=150"));
-    assert!(flags.iter().any(|f| f == "--fingerprint-tls-profile=chrome-150"));
+    assert!(flags.iter().any(|f| f == "--fingerprint-brand-version=135"));
+    assert!(flags.iter().any(|f| f == "--fingerprint-tls-profile=chrome-135"));
     assert!(flags.iter().any(|f| f.starts_with("--fingerprint-storage-quota=")));
     assert!(flags.iter().any(|f| f == "--webrtc-ip=198.51.100.1"));
     assert!(flags.iter().any(|f| f == "--force-webrtc-ip-handling-policy=disable_non_proxied_udp"));
@@ -223,8 +223,8 @@ fn test_clearcote_antidetect_stealth_matrix() {
     assert!(!flags.iter().any(|f| f == "--portable-profile"), "Switch inexistente --portable-profile deve ser removido");
     assert!(!flags.iter().any(|f| f.starts_with("--webrtc-ip=")), "Sem proxy não deve fabricar webrtc-ip");
 
-    // 2. Coerência de TLS do Chrome 150 (patch 210)
-    assert!(flags.iter().any(|f| f == "--fingerprint-tls-profile=chrome-150"));
+    // 2. Coerência de TLS do Chrome estável 135 (patch 210)
+    assert!(flags.iter().any(|f| f == "--fingerprint-tls-profile=chrome-135"));
 
     // 3. Cota de armazenamento determinística e realista (patch 145)
     let quota_flag = flags.iter().find(|f| f.starts_with("--fingerprint-storage-quota="));
