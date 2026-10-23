@@ -4,7 +4,7 @@
   "description": "Configuração base oficial do Star Multilogin com parâmetros idênticos aos padrões do sistema.",
   "defaultOS": "windows",
   "defaultKernel": "AstroBrowser",
-  "kernelVersion": "135",
+  "kernelVersion": "150",
   "group": "Desagrupado",
   "tags": [],
   "proxyMode": "custom",
