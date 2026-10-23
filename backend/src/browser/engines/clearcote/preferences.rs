@@ -92,6 +92,26 @@ pub fn setup_chromium_preferences(
 
     root_obj.insert("credentials_enable_service".to_string(), Value::Bool(false));
 
+    // 5. Proteção de Rede e WebRTC no Preferences (defesa em profundidade contra vazamento de IP real)
+    let webrtc = root_obj.entry("webrtc").or_insert_with(|| json!({}));
+    if let Some(w_obj) = webrtc.as_object_mut() {
+        w_obj.insert(
+            "ip_handling_policy".to_string(),
+            Value::String("disable_non_proxied_udp".to_string()),
+        );
+    }
+
+    // Desativa prefetching de rede e DNS do Chromium para evitar vazamento antecipado de domínios
+    let net = root_obj.entry("net").or_insert_with(|| json!({}));
+    if let Some(n_obj) = net.as_object_mut() {
+        n_obj.insert("network_prediction_options".to_string(), Value::from(2));
+    }
+
+    let dns = root_obj.entry("dns_prefetching").or_insert_with(|| json!({}));
+    if let Some(d_obj) = dns.as_object_mut() {
+        d_obj.insert("enabled".to_string(), Value::Bool(false));
+    }
+
     // Salva o Preferences atualizado no disco
     let content = serde_json::to_string_pretty(&root)
         .map_err(|e| format!("Falha ao serializar Chromium Preferences: {e}"))?;
