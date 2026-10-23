@@ -65,15 +65,6 @@ impl BrowserEngine for ClearcoteEngine {
         let mut all_addon_paths = net_setup.addon_paths.clone();
         all_addon_paths.extend(ext_paths);
 
-        // 3.1. Injeta extensão isolada de Credenciais e 2FA se houver contas cadastradas
-        if let Ok(Some(cred_ext_path)) = crate::extensions::CredentialsExtensionManager::prepare_extension(
-            profile_dir,
-            profile,
-            "AstroBrowser",
-        ) {
-            all_addon_paths.push(cred_ext_path.to_string_lossy().to_string());
-        }
-
         // 4. Injeta Preferences nativas do Chromium em Default/Preferences
         preferences::setup_chromium_preferences(profile_dir, profile)?;
 

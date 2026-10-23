@@ -76,15 +76,7 @@ pub fn build_clearcote_flags(
     let quota_mb = 100_000 + (seed as u64 % 400_000);
     flags.push(format!("--fingerprint-storage-quota={}", quota_mb));
 
-    // Desativação de ruído destrutivo de canvas/WebGL (Turnstile / Cloudflare Proof-of-Work)
-    // O patch 060-canvas e patch 070 do Clearcote invertem bits menos significativos em readPixels e toDataURL.
-    // O Turnstile executa provas matemáticas criptográficas em shaders offscreen e calcula hashes dos pixels.
-    // As flags nativas preservam 100% da persona (GPU, TLS, telas, hardware), mantendo a fidelidade das operações matemáticas.
-    flags.push("--cc-no-farble".to_string());
-    flags.push("--disable-fingerprint-noise".to_string());
-    flags.push("--disable-canvas-noise".to_string());
-
-    // 4. Plataforma, Marca e Versão Coerentes
+    // 4. Plataforma e Marca (Chrome coerente)
     let platform = match os.as_str() {
         "windows" => "windows",
         "macos" => "macos",
@@ -92,52 +84,6 @@ pub fn build_clearcote_flags(
         _ => "linux",
     };
     flags.push(format!("--fingerprint-platform={}", platform));
-
-    // Versão da plataforma para Sec-CH-UA-Platform-Version (evita o tell de 19.0.0 em kWindowsVersions)
-    // Prioriza o valor explícito em userAgentData ou deriva coerentemente a partir de os_version
-    let profile_platform_ver = fp.get("userAgentData")
-        .and_then(|u| u.get("platformVersion"))
-        .and_then(|v| v.as_str())
-        .map(|s| s.trim())
-        .filter(|s| !s.is_empty() && *s != "19.0.0");
-
-    let os_ver_raw = fp.get("os_version")
-        .and_then(|v| v.as_str())
-        .unwrap_or("")
-        .to_lowercase();
-
-    let platform_version = if let Some(pv) = profile_platform_ver {
-        pv.to_string()
-    } else {
-        match platform {
-            "windows" => {
-                if os_ver_raw.contains("10") && !os_ver_raw.contains("11") {
-                    "10.0.0".to_string() // Windows 10 em Client Hints
-                } else {
-                    "15.0.0".to_string() // Windows 11 em Client Hints
-                }
-            }
-            "macos" => {
-                if os_ver_raw.contains("14") {
-                    "14.5.0".to_string()
-                } else if os_ver_raw.contains("13") {
-                    "13.6.0".to_string()
-                } else {
-                    "15.0.0".to_string() // macOS Sequoia
-                }
-            }
-            "android" => {
-                if os_ver_raw.contains("13") {
-                    "13.0.0".to_string()
-                } else {
-                    "14.0.0".to_string() // Android 14
-                }
-            }
-            _ => "6.8.0".to_string(), // Linux kernel
-        }
-    };
-    flags.push(format!("--fingerprint-platform-version={}", platform_version));
-
     flags.push("--fingerprint-brand=chrome".to_string());
     flags.push("--fingerprint-brand-version=150".to_string());
     // TLS Network Persona (patch 210-tls-network-persona.patch)

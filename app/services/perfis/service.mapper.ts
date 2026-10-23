@@ -65,10 +65,7 @@ export function profileToFormData(profile: any): any {
     group: profile.group || activePreset.group || 'Desagrupado',
     tags: tagsList,
     kernel: kernel,
-    kernelVersion: (() => {
-      const v = isAndroid ? '135' : (profile.browser_version || fp.kernel_version || activePreset.kernelVersion || '135');
-      return (v === '150' || parseInt(v, 10) >= 145) ? '135' : v;
-    })(),
+    kernelVersion: isAndroid ? '150' : (profile.browser_version || fp.kernel_version || activePreset.kernelVersion || '150'),
     os: osKey,
     osVersion: fp.os_version || defaultOsVer,
     platform: fp.platform || profile.platform || defaultPlatform,

@@ -166,7 +166,7 @@ export function extrairImpressaoDigitalLimpa(formData: any): ImpressaoDigitalDat
     cookies: formData.cookies || undefined,
 
     kernel: effectiveKernel,
-    kernel_version: formData.kernelVersion || '135',
+    kernel_version: formData.kernelVersion || '150',
       os: effectiveOs,
       os_version: formData.osVersion || defaultOsVersion,
       user_agent: formData.userAgent || undefined,
@@ -290,7 +290,7 @@ export const impressaoDigitalService = {
 
       // 3. Atalhos diretos para a tabela de listagem
       kernel: (formData.os || '').toLowerCase() === 'android' ? 'AstroBrowser' : (formData.kernel || 'AstroFox'),
-      browser_version: formData.kernelVersion || '135',
+      browser_version: formData.kernelVersion || '150',
       os: (formData.os || 'windows').toLowerCase(),
       proxy_type: formData.proxyType || 'none',
       proxy_host: formData.proxyHost || undefined,
