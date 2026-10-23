@@ -62,7 +62,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
     }
     if (formData.os === 'android' && formData.kernel !== 'AstroBrowser') {
       onChange('kernel', 'AstroBrowser');
-      onChange('kernelVersion', '150');
+      onChange('kernelVersion', '135');
     }
   }, [formData.os, formData.kernel]);
 
@@ -73,7 +73,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
     }
     const activePreset = serviceBasePresets.getActivePreset();
     onChange('kernel', newKernel);
-    onChange('kernelVersion', '150');
+    onChange('kernelVersion', '135');
     handleSelectOS(formData.os || activePreset.defaultOS, newKernel);
   };
 
@@ -85,7 +85,7 @@ export const GeralTab: React.FC<GeralTabProps> = ({ formData, onChange, isEditin
     onChange('os', selectedOS);
     if (isTargetAndroid) {
       onChange('kernel', 'AstroBrowser');
-      onChange('kernelVersion', '150');
+      onChange('kernelVersion', '135');
     }
     const preset = getRandomPreset(selectedOS, effectiveKernel);
     onChange('userAgent', preset.userAgent);

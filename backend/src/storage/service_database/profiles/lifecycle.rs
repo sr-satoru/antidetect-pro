@@ -364,6 +364,9 @@ pub async fn launch_with_options(
     profile.last_launch = Some(now);
     profile.updated_at = now;
 
+    // Dispara auto-reconciliação assíncrona desacoplada de dados legados do perfil no Star Vault
+    super::reconciler::ProfileReconciler::reconcile_async(vault.clone(), profile);
+
     Ok((pid, debug_port, ws_endpoint))
 }
 

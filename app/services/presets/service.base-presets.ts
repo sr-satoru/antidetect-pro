@@ -187,7 +187,7 @@ export const serviceBasePresets = {
       group: activePreset.group || 'Desagrupado',
       tags: [...(activePreset.tags || [])],
       kernel: effectiveKernel,
-      kernelVersion: physicalPreset.kernelVersion || activePreset.kernelVersion || '150',
+      kernelVersion: physicalPreset.kernelVersion || activePreset.kernelVersion || '135',
       os: physicalPreset.os,
       osVersion: physicalPreset.osVersion,
       platform: physicalPreset.platform,

@@ -76,21 +76,81 @@ pub fn build_clearcote_flags(
     let quota_mb = 100_000 + (seed as u64 % 400_000);
     flags.push(format!("--fingerprint-storage-quota={}", quota_mb));
 
-    // 4. Plataforma e Marca (Chrome coerente)
+    // Desativação de ruído destrutivo de canvas/WebGL (Turnstile / Cloudflare Proof-of-Work)
+    // O patch 060-canvas e patch 070 do Clearcote invertem bits menos significativos em readPixels e toDataURL.
+    // O Turnstile executa provas matemáticas criptográficas em shaders offscreen e calcula hashes dos pixels.
+    // As flags nativas preservam 100% da persona (GPU, TLS, telas, hardware), mantendo a fidelidade das operações matemáticas.
+    flags.push("--cc-no-farble".to_string());
+    flags.push("--disable-fingerprint-noise".to_string());
+    flags.push("--disable-canvas-noise".to_string());
+
+    // 4. Plataforma, Marca e Versão Coerentes
     let platform = match os.as_str() {
         "windows" => "windows",
         "macos" => "macos",
+        "android" => "android",
         _ => "linux",
     };
     flags.push(format!("--fingerprint-platform={}", platform));
-    flags.push("--fingerprint-brand=chrome".to_string());
-    flags.push("--fingerprint-brand-version=150".to_string());
-    // TLS Network Persona (patch 210-tls-network-persona.patch)
-    // Alinha key shares pós-quânticos (ML-KEM/Kyber) e ALPS do ClientHello ao Chrome 150
-    flags.push("--fingerprint-tls-profile=chrome-150".to_string());
 
-    if let Some(ua) = fp.get("user_agent").and_then(|v| v.as_str()).filter(|s| !s.trim().is_empty()) {
-        flags.push(format!("--user-agent={}", ua.trim()));
+    // Versão da plataforma para Sec-CH-UA-Platform-Version (evita o tell de 19.0.0 em kWindowsVersions)
+    let platform_version = match platform {
+        "windows" => "15.0.0", // Windows 11 em Client Hints
+        "macos" => "15.0.0",   // macOS Sequoia
+        "android" => "14.0.0", // Android 14
+        _ => "6.8.0",          // Linux kernel
+    };
+    flags.push(format!("--fingerprint-platform-version={}", platform_version));
+
+    // Se o host for Linux e a persona for Windows/macOS/Android, expõe WebBluetooth para coerência
+    if cfg!(target_os = "linux") && platform != "linux" {
+        flags.push("--enable-features=WebBluetooth".to_string());
+    }
+
+    // Extrai versão maior do Chrome do perfil/UA ou assume versão estável 135 (nunca futuro Chrome 150)
+    let raw_ua = fp.get("user_agent").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty());
+    let mut major_version: u32 = 135;
+    if let Some(ua_str) = raw_ua {
+        if let Some(pos) = ua_str.find("Chrome/") {
+            let slice = &ua_str[pos + 7..];
+            let ver_str: String = slice.chars().take_while(|c| c.is_ascii_digit()).collect();
+            if let Ok(num) = ver_str.parse::<u32>() {
+                if num >= 120 && num <= 140 {
+                    major_version = num;
+                }
+            }
+        }
+    }
+
+    flags.push("--fingerprint-brand=chrome".to_string());
+    flags.push(format!("--fingerprint-brand-version={}", major_version));
+    flags.push(format!("--fingerprint-tls-profile=chrome-{}", major_version));
+
+    // Normalização estrita do User-Agent (User-Agent Reduction: Chrome/<major>.0.0.0)
+    let clean_ua = match raw_ua {
+        Some(ua_str) => {
+            if let Some(pos) = ua_str.find("Chrome/") {
+                let before = &ua_str[..pos + 7];
+                let rest = &ua_str[pos + 7..];
+                let end_ver = rest.find(' ').unwrap_or(rest.len());
+                let after = &rest[end_ver..];
+                format!("{}{}.0.0.0{}", before, major_version, after)
+            } else {
+                ua_str.to_string()
+            }
+        }
+        None => match platform {
+            "windows" => format!("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{}.0.0.0 Safari/537.36", major_version),
+            "macos" => format!("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{}.0.0.0 Safari/537.36", major_version),
+            "android" => format!("Mozilla/5.0 (Linux; Android 14; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{}.0.0.0 Mobile Safari/537.36", major_version),
+            _ => format!("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{}.0.0.0 Safari/537.36", major_version),
+        },
+    };
+    flags.push(format!("--user-agent={}", clean_ua));
+
+    // Viewport mobile nativo para personas Android
+    if platform == "android" {
+        flags.push("--window-size=412,915".to_string());
     }
 
     // 5. Hardware e Concorrência
@@ -101,12 +161,17 @@ pub fn build_clearcote_flags(
     flags.push(format!("--fingerprint-device-memory={}", device_memory));
 
     // 6. Tela, Resolução e DPR
-    let screen_w = parse_opt_u32(fp.get("custom_screen_width")).unwrap_or(1920);
-    let screen_h = parse_opt_u32(fp.get("custom_screen_height")).unwrap_or(1080);
+    let (def_w, def_h, def_dpr) = if platform == "android" {
+        (412, 915, 2.625)
+    } else {
+        (1920, 1080, 1.0)
+    };
+    let screen_w = parse_opt_u32(fp.get("custom_screen_width")).unwrap_or(def_w);
+    let screen_h = parse_opt_u32(fp.get("custom_screen_height")).unwrap_or(def_h);
     let color_depth = parse_opt_u32(fp.get("color_depth")).unwrap_or(24);
-    let dpr = parse_opt_f64(fp.get("device_pixel_ratio")).unwrap_or(1.0);
+    let dpr = parse_opt_f64(fp.get("device_pixel_ratio")).unwrap_or(def_dpr);
 
-    let avail_h = if os == "windows" && screen_h > 40 {
+    let avail_h = if platform == "windows" && screen_h > 40 {
         screen_h - 40
     } else {
         screen_h
@@ -119,16 +184,18 @@ pub fn build_clearcote_flags(
     flags.push(format!("--fingerprint-color-depth={}", color_depth));
     flags.push(format!("--fingerprint-device-pixel-ratio={:.2}", dpr));
 
-    let touch_points = parse_opt_u32(fp.get("max_touch_points")).unwrap_or(0);
+    let def_touch = if platform == "android" { 5 } else { 0 };
+    let touch_points = parse_opt_u32(fp.get("max_touch_points")).unwrap_or(def_touch);
     flags.push(format!("--fingerprint-max-touch-points={}", touch_points));
 
     // 7. GPU / WebGL
-    let default_webgl = match os.as_str() {
+    let default_webgl = match platform {
         "windows" => (
             "Google Inc. (NVIDIA)",
             "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)",
         ),
         "macos" => ("Apple", "Apple M2"),
+        "android" => ("Qualcomm", "Adreno (TM) 740"),
         _ => (
             "Google Inc. (Intel)",
             "ANGLE (Intel, Mesa Intel(R) Xe Graphics (TGL GT2), OpenGL 4.6)",

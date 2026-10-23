@@ -355,7 +355,7 @@ export function cleanPassword(raw?: string): string | undefined {
   if (!raw) return undefined;
   const trimmed = raw.trim();
   if ((trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2)
-      || (trimmed.startsWith("'") && trimmed.endsWith("'") && trimmed.length >= 2)) {
+    || (trimmed.startsWith("'") && trimmed.endsWith("'") && trimmed.length >= 2)) {
     return trimmed.slice(1, -1);
   }
   return trimmed;

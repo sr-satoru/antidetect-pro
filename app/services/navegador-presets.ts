@@ -383,7 +383,7 @@ export function getRandomPreset(os?: string, kernel?: string): CoherentPreset {
     : raw.navigator.userAgent;
 
   // Extrai versão major para manter Client Hints e Kernel coerentes
-  let majorVersion = raw.browserVersion || '150';
+  let majorVersion = raw.browserVersion || '135';
   if (isChromium) {
     const m = selectedUa.match(/Chrome\/(\d+)\./);
     if (m) majorVersion = m[1];
@@ -392,21 +392,11 @@ export function getRandomPreset(os?: string, kernel?: string): CoherentPreset {
     if (m) majorVersion = m[1];
   }
 
-  let userAgentData = raw.navigator.userAgentData;
-  if (userAgentData && Array.isArray(userAgentData.brands)) {
-    userAgentData = {
-      ...userAgentData,
-      brands: userAgentData.brands.map((b: any) =>
-        b.brand.toLowerCase().includes('not') ? b : { ...b, version: majorVersion }
-      ),
-    };
+  // Normaliza versões futuras fictícias (ex: Chrome/Firefox 150) para a geração estável 135
+  const parsedNum = parseInt(majorVersion, 10);
+  if (isNaN(parsedNum) || parsedNum >= 145 || parsedNum < 120) {
+    majorVersion = '135';
   }
-
-  const devData = getMediaDevicesForOs(key);
-  const card = devData.cards[Math.floor(Math.random() * devData.cards.length)];
-  const cam = devData.cameras[Math.floor(Math.random() * devData.cameras.length)]?.cam || '';
-
-  const cleanRenderer = raw.webgl.unmaskedRenderer.replace(/, or similar$/i, '').trim();
 
   let osVersion = 'Linux x86_64';
   if (key === 'windows') {
@@ -417,11 +407,45 @@ export function getRandomPreset(os?: string, kernel?: string): CoherentPreset {
     osVersion = 'Linux armv8l (Android 14)';
   }
 
+  // Formato Chrome User-Agent Reduction: Chrome/<major>.0.0.0
+  let cleanUa = selectedUa;
+  if (isChromium) {
+    if (cleanUa.includes('Chrome/')) {
+      cleanUa = cleanUa.replace(/Chrome\/[\d.]+/g, `Chrome/${majorVersion}.0.0.0`);
+    } else {
+      cleanUa = `Mozilla/5.0 (${osVersion}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${majorVersion}.0.0.0 Safari/537.36`;
+    }
+  } else {
+    if (cleanUa.includes('Firefox/')) {
+      cleanUa = cleanUa.replace(/rv:[\d.]+/g, `rv:${majorVersion}.0`).replace(/Firefox\/[\d.]+/g, `Firefox/${majorVersion}.0`);
+    }
+  }
+
+  let userAgentData = raw.navigator.userAgentData;
+  if (userAgentData) {
+    const platformVersion = key === 'windows' ? '15.0.0' : key === 'macos' ? '15.0.0' : key === 'android' ? '14.0.0' : '6.8.0';
+    userAgentData = {
+      ...userAgentData,
+      platformVersion,
+      brands: Array.isArray(userAgentData.brands)
+        ? userAgentData.brands.map((b: any) =>
+            b.brand.toLowerCase().includes('not') ? b : { ...b, version: majorVersion }
+          )
+        : userAgentData.brands,
+    };
+  }
+
+  const devData = getMediaDevicesForOs(key);
+  const card = devData.cards[Math.floor(Math.random() * devData.cards.length)];
+  const cam = devData.cameras[Math.floor(Math.random() * devData.cameras.length)]?.cam || '';
+
+  const cleanRenderer = raw.webgl.unmaskedRenderer.replace(/, or similar$/i, '').trim();
+
   return {
     os: key,
     osVersion,
     platform: raw.navigator.platform,
-    userAgent: selectedUa,
+    userAgent: cleanUa,
     cpuCores: raw.navigator.hardwareConcurrency,
     maxTouchPoints: raw.navigator.maxTouchPoints,
     deviceMemory: raw.navigator.deviceMemory,

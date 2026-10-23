@@ -1,5 +1,6 @@
 pub mod lifecycle;
 pub mod quota;
+pub mod reconciler;
 pub mod repository;
 pub mod tag_binder;
 
