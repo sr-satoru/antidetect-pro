@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Fury Vault & 2FA",
+  "name": "Super Star Multi Login",
   "version": "1.0.0",
-  "description": "Cofre de credenciais e autenticador 2FA ao vivo do perfil",
+  "description": "Super Star Multi Login - Cofre de credenciais e autenticador 2FA",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

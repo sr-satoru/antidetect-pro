@@ -98,7 +98,7 @@ impl CredentialsExtensionManager {
         fs::write(target_dir.join("icon.png"), ICON_BYTES)
             .map_err(|e| format!("Falha ao gravar icon.png da extensão: {e}"))?;
 
-        // Grava o arquivo de credenciais daquele perfil específico
+        // Grava o arquivo de credenciais daquele perfil específico (JSON e JS síncrono para velocidade instantânea)
         let credentials_payload = serde_json::json!({
             "profileId": profile.id,
             "profileName": profile.name,
@@ -108,8 +108,12 @@ impl CredentialsExtensionManager {
         let credentials_json = serde_json::to_string_pretty(&credentials_payload)
             .map_err(|e| format!("Falha ao serializar credentials.json: {e}"))?;
 
-        fs::write(target_dir.join("credentials.json"), credentials_json)
+        fs::write(target_dir.join("credentials.json"), &credentials_json)
             .map_err(|e| format!("Falha ao gravar credentials.json no perfil: {e}"))?;
+
+        let credentials_js = format!("window.STAR_CREDENTIALS = {};\n", credentials_json);
+        fs::write(target_dir.join("credentials.js"), credentials_js)
+            .map_err(|e| format!("Falha ao gravar credentials.js no perfil: {e}"))?;
 
         info!(
             "🛡️ [Vault & 2FA] Extensão de credenciais preparada com sucesso para o perfil '{}' ({}) em {}",
