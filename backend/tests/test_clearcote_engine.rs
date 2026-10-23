@@ -276,5 +276,26 @@ fn test_clearcote_webrtc_leak_hardening() {
     assert!(!flags_bad_ip.iter().any(|f| f.starts_with("--webrtc-ip=")), "IP inválido não deve gerar switch");
     assert!(flags_bad_ip.iter().any(|f| f == "--force-webrtc-ip-handling-policy=disable_non_proxied_udp"));
 
+    // Caso C: webrtc_mode = "off" sem proxy (conexão direta)
+    let mut profile_webrtc_off = create_mock_profile("webrtc-off-01", "AstroBrowser", "windows");
+    profile_webrtc_off.fingerprint_json = serde_json::json!({
+        "webrtc_mode": "off",
+        "location_mode": "custom",
+        "custom_latitude": -23.5505,
+        "custom_longitude": -46.6333
+    });
+    let flags_off = build_clearcote_flags(
+        &temp_dir,
+        &profile_webrtc_off,
+        None,
+        None,
+        None,
+        &[],
+        None,
+    );
+    assert!(flags_off.iter().any(|f| f == "--force-webrtc-ip-handling-policy=disable_non_proxied_udp"));
+    assert!(!flags_off.iter().any(|f| f.contains("WebRtcHideLocalIpsWithMdns")), "Não deve desativar mDNS pois expõe IP local");
+    assert!(flags_off.iter().any(|f| f == "--fingerprint-location=-23.550500,-46.633300"), "Deve injetar geolocalização customizada");
+
     let _ = std::fs::remove_dir_all(temp_dir);
 }

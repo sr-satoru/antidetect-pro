@@ -24,6 +24,7 @@ pub fn build_clearcote_flags(
     flags.push("--no-first-run".to_string());
     flags.push("--no-default-browser-check".to_string());
     flags.push("--password-store=basic".to_string());
+    flags.push("--use-mock-keychain".to_string());
     flags.push("--allow-third-party-cookies".to_string());
     flags.push("--hide-crash-restore-bubble".to_string());
     flags.push("--disable-background-mode".to_string());
@@ -51,10 +52,6 @@ pub fn build_clearcote_flags(
         .iter()
         .map(|s| s.to_string())
         .collect::<Vec<_>>();
-
-    if webrtc_mode == "off" || webrtc_mode == "disabled" {
-        disabled_features.push("WebRtcHideLocalIpsWithMdns".to_string());
-    }
 
     let valid_addons = addon_paths
         .iter()
@@ -180,11 +177,25 @@ pub fn build_clearcote_flags(
         .unwrap_or("America/Sao_Paulo");
     flags.push(format!("--timezone={}", timezone));
 
+    // 8.1 Geolocalização Nativa (patch 180-geolocation.patch)
+    // Se houver coordenadas manuais, injeta --fingerprint-location para que
+    // o Chromium entregue a posição fabricada via Mojo sem consultar o hardware/GPS do host.
+    let location_mode = fp.get("location_mode").and_then(|v| v.as_str()).unwrap_or("ip");
+    if location_mode == "custom" {
+        let lat = parse_opt_f64(fp.get("custom_latitude"));
+        let lng = parse_opt_f64(fp.get("custom_longitude"));
+        if let (Some(la), Some(lo)) = (lat, lng) {
+            flags.push(format!("--fingerprint-location={:.6},{:.6}", la, lo));
+        }
+    }
+
     // 9. WebRTC e Rede
     if let Some(proxy) = proxy_url {
         flags.push(format!("--proxy-server={}", proxy));
         flags.push("--disable-quic".to_string());
         // Força pacotes UDP do WebRTC a trafegarem pelo proxy, impedindo vazamento de IP real
+        flags.push("--force-webrtc-ip-handling-policy=disable_non_proxied_udp".to_string());
+    } else if webrtc_mode == "off" || webrtc_mode == "disabled" {
         flags.push("--force-webrtc-ip-handling-policy=disable_non_proxied_udp".to_string());
     } else {
         flags.push("--force-webrtc-ip-handling-policy=default_public_interface_only".to_string());
