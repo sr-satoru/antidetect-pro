@@ -138,51 +138,16 @@ pub fn build_clearcote_flags(
     };
     flags.push(format!("--fingerprint-platform-version={}", platform_version));
 
-    // Se o host for Linux e a persona for Windows/macOS/Android, expõe WebBluetooth para coerência
-    if cfg!(target_os = "linux") && platform != "linux" {
-        flags.push("--enable-features=WebBluetooth".to_string());
-    }
-
-    // Extrai versão maior do Chrome do perfil/UA ou assume versão estável 135 (nunca futuro Chrome 150)
-    let raw_ua = fp.get("user_agent").and_then(|v| v.as_str()).map(|s| s.trim()).filter(|s| !s.is_empty());
-    let mut major_version: u32 = 135;
-    if let Some(ua_str) = raw_ua {
-        if let Some(pos) = ua_str.find("Chrome/") {
-            let slice = &ua_str[pos + 7..];
-            let ver_str: String = slice.chars().take_while(|c| c.is_ascii_digit()).collect();
-            if let Ok(num) = ver_str.parse::<u32>() {
-                if num >= 120 && num <= 140 {
-                    major_version = num;
-                }
-            }
-        }
-    }
-
     flags.push("--fingerprint-brand=chrome".to_string());
-    flags.push(format!("--fingerprint-brand-version={}", major_version));
-    flags.push(format!("--fingerprint-tls-profile=chrome-{}", major_version));
+    flags.push("--fingerprint-brand-version=150".to_string());
+    // TLS Network Persona (patch 210-tls-network-persona.patch)
+    // Alinha key shares pós-quânticos (ML-KEM/Kyber) e ALPS do ClientHello ao Chrome 150
+    flags.push("--fingerprint-tls-profile=chrome-150".to_string());
 
-    // Normalização estrita do User-Agent (User-Agent Reduction: Chrome/<major>.0.0.0)
-    let clean_ua = match raw_ua {
-        Some(ua_str) => {
-            if let Some(pos) = ua_str.find("Chrome/") {
-                let before = &ua_str[..pos + 7];
-                let rest = &ua_str[pos + 7..];
-                let end_ver = rest.find(' ').unwrap_or(rest.len());
-                let after = &rest[end_ver..];
-                format!("{}{}.0.0.0{}", before, major_version, after)
-            } else {
-                ua_str.to_string()
-            }
-        }
-        None => match platform {
-            "windows" => format!("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{}.0.0.0 Safari/537.36", major_version),
-            "macos" => format!("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{}.0.0.0 Safari/537.36", major_version),
-            "android" => format!("Mozilla/5.0 (Linux; Android 14; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{}.0.0.0 Mobile Safari/537.36", major_version),
-            _ => format!("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{}.0.0.0 Safari/537.36", major_version),
-        },
-    };
-    flags.push(format!("--user-agent={}", clean_ua));
+    // User-Agent natural do perfil (sem truncar a versão do build)
+    if let Some(ua) = fp.get("user_agent").and_then(|v| v.as_str()).filter(|s| !s.trim().is_empty()) {
+        flags.push(format!("--user-agent={}", ua.trim()));
+    }
 
     // Viewport mobile nativo para personas Android
     if platform == "android" {
